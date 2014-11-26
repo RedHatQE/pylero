@@ -97,24 +97,24 @@ Data model:
    on Polarion but they are not meant to be used directly. Instead, higher
    level operations are defined either on the objects or on Session
    (see below).
-   
+
    Objects stored in Polarion are identified by the Polarion unique
    identifier, "URI". In the library, the corresponding attribute is "puri".
    However, the library does not provide any uniqueness management: You
    can retrieve the same Polarion object into two independent library objects
    (with the same "puri"), update them and store them independently; the last
-   update "wins" and persists.  
+   update "wins" and persists.
 
 3. Service objects
 
    are just runtime overhead. The following classes are important:
-   
+
    - PylarionLibException and its subclasses may be raised by this library
-   
+
    - Server
      - a container for data needed to connect to a Polarion instance
      - provides Sessions
-     
+
    - Session
      - wraps low level Polarion sessions
      - mediates transactions (as provided by Polarion)
@@ -258,7 +258,7 @@ if False:
     def _demo_code_0001():
         '''
         Create a test run from selected test cases of a test plan.
-        
+
         No explicit transaction handling (each background operation with
         Polarion runs in its own implicit transaction). As a consequence,
         just a partial state can be recorded in the end.
@@ -275,11 +275,11 @@ if False:
     def _demo_code_0002():
         '''
         Create a test case, a plan, a run, perform, and delete the run.
-        
+
         Create a new test case. Create a new test plan derived from a general
         plan. Add the new test case to the new plan. Create a new run from
         the new plan. Records results in the run. Delete the run.
-        
+
         The whole procedure runs in a transaction: If no exception happens
         then the data stay recorded in Polarion (the new test case and the
         new plan will be permanent). In case of an exception an automatic

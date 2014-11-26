@@ -16,7 +16,7 @@ class Server:
 
     def _createSession(self):
         return session.Session(self)
-    
+
     def session(self):
         '''
         Provide a context manager with an open session

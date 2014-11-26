@@ -49,10 +49,10 @@ class AbstractPolarionPersistentObject(AbstractPolarionMappingObject):
     def _crudCreate(self, project=None):
         '''
         Create a new object in Polarion from the data in self
-        
+
         If project == None, use the default project of the current session.
         Return self.
-        
+
         Override in subclasses.
         '''
         raise exceptions.PylarionLibException('Not implemented')
@@ -60,9 +60,9 @@ class AbstractPolarionPersistentObject(AbstractPolarionMappingObject):
     def _crudRetrieve(self):
         '''
         Retrieve data from Polarion by self's URI and copy the data to self
-        
+
         Return self.
-        
+
         Override in subclasses.
         '''
         raise exceptions.PylarionLibException('Not implemented')
@@ -70,10 +70,10 @@ class AbstractPolarionPersistentObject(AbstractPolarionMappingObject):
     def _crudUpdate(self):
         '''
         Update the corresponfing data in Polarion with the content of self.
-        
+
         Find the corresponding object in Polarion (by self's URI) and rewrite
         it with the content of self. Return self.
-        
+
         Override in subclasses.
         '''
         raise exceptions.PylarionLibException('Not implemented')
@@ -81,10 +81,10 @@ class AbstractPolarionPersistentObject(AbstractPolarionMappingObject):
     def _crudDelete(self):
         '''
         Delete the corresponding data in Polarion.
-        
+
         Find the corresponding object in Polarion (by self's URI) and delete
         it. Destroy data in self. Return self.
-        
+
         Override in subclasses.
         '''
         raise exceptions.PylarionLibException('Not implemented')

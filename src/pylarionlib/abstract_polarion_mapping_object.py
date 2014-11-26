@@ -16,7 +16,7 @@ class AbstractPolarionMappingObject:
     def _isConvertible(cls, suds_object):
         '''
         Say if the SUDS object can be mapped to self
-        
+
         Override in subclasses
         '''
         return True

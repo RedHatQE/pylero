@@ -7,7 +7,7 @@ class AbstractTest(WorkItem):
 
     # Maybe I should rename this class to AbstractSimpleTest and add -Simple-
     # to the subclasses names, too?
-    
+
     # Implementation notes:
     # On the Polarion side, the data specific for this level and interesting to us
     # are hidden a bit:
@@ -16,7 +16,7 @@ class AbstractTest(WorkItem):
     # - tcmsTags ... ditto but with 'tcmstag'
     # In practice, we must include additional SOAP calls in the _mapSpecificAttributes*()
     # methods as well as in the CRUD methods.
-    
+
     _known_subclasses = []
 
     def __init__(self, session):

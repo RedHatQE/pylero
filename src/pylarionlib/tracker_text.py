@@ -45,16 +45,16 @@ class TrackerText(AbstractPolarionCrate):
 
     @classmethod
     def _mapSpecificAttributesFromSUDS(cls, suds_object, trackerText):
-        trackerText.content_type = suds_object.type 
+        trackerText.content_type = suds_object.type
         trackerText.content = suds_object.content
-        trackerText.contentLossy = suds_object.contentLossy 
+        trackerText.contentLossy = suds_object.contentLossy
 
 
     def _mapToSUDS(self):
         sudsObject = self.session.tracker_client.factory.create('tns2:Text')
         TrackerText._mapSpecificAttributesToSUDS(self, sudsObject)
         return sudsObject
-    
+
 
     @classmethod
     def _mapFromSUDS(cls, session, suds_object):

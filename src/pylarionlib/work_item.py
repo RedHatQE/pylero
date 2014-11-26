@@ -38,22 +38,22 @@ class WorkItem(AbstractPolarionPersistentObject):
 
     @classmethod
     def _mapSpecificAttributesToSUDS(cls, workItem, suds_object):
-        
+
         AbstractPolarionPersistentObject._mapSpecificAttributesToSUDS(workItem, suds_object)
-        
+
         session = workItem.session
-        
+
         type_instance = session.tracker_client.factory.create('tns3:EnumOptionId')
         type_instance.id = workItem.type
 
         status_instance = session.tracker_client.factory.create('tns3:EnumOptionId')
         status_instance.id = workItem.status
-        
+
         suds_object.project = session.project_client.service.getProject(workItem.project)
         suds_object.title = workItem.title
         suds_object.type = type_instance
         suds_object.status = status_instance
-        
+
         # description needs cheating: Polarion server does not accept suds.null() there
         if not workItem.description:
             workItem.description = TrackerText(session) # just empty...
@@ -66,20 +66,20 @@ class WorkItem(AbstractPolarionPersistentObject):
     def _mapSpecificAttributesFromSUDS(cls, suds_object, workItem):
 
         AbstractPolarionPersistentObject._mapSpecificAttributesFromSUDS(suds_object, workItem)
-        
+
         session = workItem.session
 
         workItem.project = suds_object.project.id
         workItem.title = suds_object.title if hasattr(suds_object, 'title') else None
         workItem.type = suds_object.type.id
         workItem.status = suds_object.status.id
-        
+
         if hasattr(suds_object, 'description'):
             workItem.description = TrackerText(session)
             TrackerText._mapSpecificAttributesFromSUDS(suds_object.description, workItem.description)
         else:
             workItem.description = None
-        
+
         workItem.initialEstimate = suds_object.initialEstimate if hasattr(suds_object, 'initialEstimate') else None
 
 

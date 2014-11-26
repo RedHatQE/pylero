@@ -12,7 +12,7 @@ import sys
 import os
 import unittest
 
-# Have sources on the module search path 
+# Have sources on the module search path
 project_root = os.path.dirname((sys.path[0]))
 project_sources = os.path.join(project_root, 'src')
 sys.path.insert(1, project_sources)

@@ -19,13 +19,13 @@ my_server = Server('http://polarion.dqe.lab.eng.bos.redhat.com/polarion', my_log
 class TestWorkItemBasics(unittest.TestCase):
 
     test_session = None
-    
-    @classmethod    
+
+    @classmethod
     def setUpClass(cls):
         super(TestWorkItemBasics, cls).setUpClass()
         TestWorkItemBasics.test_session = my_server._createSession()
         TestWorkItemBasics.test_session._login()
-        
+
     @classmethod
     def tearDownClass(cls):
         TestWorkItemBasics.test_session._logout()
@@ -42,7 +42,7 @@ class TestWorkItemBasics(unittest.TestCase):
         self.assertNotEqual(permanent_title, tc.title)
         tc._crudRetrieve()
         self.assertEqual(permanent_title, tc.title)
- 
+
     def test_0002(self):
         old_title = 'vaskovo stavebni test 1'
         new_title = 'zmena v titulku!'
@@ -57,7 +57,7 @@ class TestWorkItemBasics(unittest.TestCase):
         self.assertEqual(new_title, tc.title)
         tc._crudRetrieve()
         self.assertEqual(new_title, tc.title)
- 
+
     def test_0003(self):
         title = 'vaskovo neuzitkovy test 1'
         tc1 = NonFunctionalTestCase(TestWorkItemBasics.test_session)
@@ -69,7 +69,7 @@ class TestWorkItemBasics(unittest.TestCase):
         self.assertEqual(title, tc2.title)
         self.assertIsInstance(tc2, NonFunctionalTestCase)
         self.assertEqual(tc1.title, tc2.title)
- 
+
     def test_0004(self):
         tc1 = TestSuite(TestWorkItemBasics.test_session)
         tc1.title = 'vaskovo testovy pruvod'
