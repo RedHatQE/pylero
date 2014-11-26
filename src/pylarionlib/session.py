@@ -72,8 +72,12 @@ class Session:
     def getWorkItemByPID(self, pid, project=None):
         if not project:
             project = self._get_default_project()
-        soap_work_item = self.tracker_client.service.getWorkItemById(project, pid)
-        return WorkItem._mapFromSUDS(self, soap_work_item)
+        suds_work_item = self.tracker_client.service.getWorkItemById(project, pid)
+        return WorkItem._mapFromSUDS(self, suds_work_item)
+
+    def getWorkItemByPURI(self, puri):
+        suds_work_item = self.tracker_client.service.getWorkItemByUri(puri)
+        return WorkItem._mapFromSUDS(self, suds_work_item)
 
     # TODO: other data methods
 

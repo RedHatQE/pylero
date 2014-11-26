@@ -17,7 +17,7 @@ project_root = os.path.dirname((sys.path[0]))
 project_sources = os.path.join(project_root, 'src')
 sys.path.insert(1, project_sources)
 
-# Here them main testing driver will come. In the mean time, just
+# Here the main testing driver will come. In the mean time, just
 # use brute force...
 import pylarionlib_tests.replace_me_later
 unittest.main(pylarionlib_tests.replace_me_later)

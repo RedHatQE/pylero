@@ -71,7 +71,10 @@ class TestWorkItemBasics(unittest.TestCase):
         self.assertEqual(tc1.title, tc2.title)
  
     def test_0004(self):
-        tc = TestSuite(TestWorkItemBasics.test_session)
-        tc.title = 'vaskovo testovy pruvod'
-        tc._crudCreate()
-        self.assertTrue(tc.puri.startswith('subterra:data-service:objects:'))
+        tc1 = TestSuite(TestWorkItemBasics.test_session)
+        tc1.title = 'vaskovo testovy pruvod'
+        tc1._crudCreate()
+        tc2 = TestWorkItemBasics.test_session.getWorkItemByPURI(tc1.puri)
+        self.assertEqual(tc1.puri, tc2.puri)
+        self.assertEqual(tc1.pid, tc2.pid)
+        self.assertEqual(tc1.__class__, tc2.__class__)
