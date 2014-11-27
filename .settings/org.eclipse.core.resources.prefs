@@ -10,6 +10,7 @@ encoding//src/pylarionlib/__init__.py=utf8
 encoding//src/pylarionlib/abstract_polarion_crate.py=utf8
 encoding//src/pylarionlib/abstract_polarion_mapping_object.py=utf8
 encoding//src/pylarionlib/abstract_polarion_persistent_object.py=utf8
+encoding//src/pylarionlib/document.py=utf8
 encoding//src/pylarionlib/exceptions.py=utf8
 encoding//src/pylarionlib/interface.py=utf8
 encoding//src/pylarionlib/server.py=utf8

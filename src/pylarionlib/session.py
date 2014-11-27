@@ -28,6 +28,9 @@ class Session:
     def _get_default_project(self):
         return self._server.default_project
 
+    def _get_default_namespace(self):
+        return self._server.default_namespace
+
     def _login(self):
         sc = self._session_client
         sc.service.logIn(self._server.login, self._server.password)
@@ -73,11 +76,35 @@ class Session:
         if not project:
             project = self._get_default_project()
         suds_work_item = self.tracker_client.service.getWorkItemById(project, pid)
+        if suds_work_item._unresolvable:
+            return None
         return WorkItem._mapFromSUDS(self, suds_work_item)
 
     def getWorkItemByPURI(self, puri):
         suds_work_item = self.tracker_client.service.getWorkItemByUri(puri)
+        if suds_work_item._unresolvable:
+            return None
         return WorkItem._mapFromSUDS(self, suds_work_item)
+
+    def getDocumentByPID(self, name, project=None, namespace=None):
+        if not project:
+            project = self._get_default_project()
+        if not namespace:
+            namespace = self._get_default_namespace()
+        if namespace:
+            location = '{}/{}'.format(namespace, name)
+        else:
+            location = name
+        suds_document = self.tracker_client.service.getModuleByLocation(project, location)
+        if suds_document._unresolvable:
+            return None
+        return Document._mapFromSUDS(self, suds_document)
+
+    def getDocumentByPURI(self, puri):
+        suds_document = self.tracker_client.service.getModuleByUri(puri)
+        if suds_document._unresolvable:
+            return None
+        return Document._mapFromSUDS(self, suds_document)
 
     # TODO: other data methods
 
@@ -130,3 +157,4 @@ class _Transaction:
 
 
 from .work_item import WorkItem
+from .document import Document
