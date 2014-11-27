@@ -14,16 +14,16 @@ class Session:
         return '{}/ws/services/{}WebService?wsdl'.format(self._server.url, service_name)
 
     def __init__(self, server):
-        self._server                = server
-        self._last_request_at       = None
-        self._session_id_header     = None
-        self._session_client        = _SUDS_Client_Wrapper(self._url_for_name('Session'), self)
-        self.builder_client         = _SUDS_Client_Wrapper(self._url_for_name('Builder'), self)
-        self.planning_client        = _SUDS_Client_Wrapper(self._url_for_name('Planning'), self)
-        self.project_client         = _SUDS_Client_Wrapper(self._url_for_name('Project'), self)
-        self.security_client        = _SUDS_Client_Wrapper(self._url_for_name('Security'), self)
+        self._server = server
+        self._last_request_at = None
+        self._session_id_header = None
+        self._session_client = _SUDS_Client_Wrapper(self._url_for_name('Session'), self)
+        self.builder_client = _SUDS_Client_Wrapper(self._url_for_name('Builder'), self)
+        self.planning_client = _SUDS_Client_Wrapper(self._url_for_name('Planning'), self)
+        self.project_client = _SUDS_Client_Wrapper(self._url_for_name('Project'), self)
+        self.security_client = _SUDS_Client_Wrapper(self._url_for_name('Security'), self)
         self.test_management_client = _SUDS_Client_Wrapper(self._url_for_name('TestManagement'), self)
-        self.tracker_client         = _SUDS_Client_Wrapper(self._url_for_name('Tracker'), self)
+        self.tracker_client = _SUDS_Client_Wrapper(self._url_for_name('Tracker'), self)
 
     def _get_default_project(self):
         return self._server.default_project
@@ -106,13 +106,27 @@ class Session:
             return None
         return Document._mapFromSUDS(self, suds_document)
 
+    def getSimpleTestPlanByPID(self, name, project=None, namespace=None):
+        document = self.getDocumentByPID(name, project, namespace)
+        if document and isinstance(document, SimpleTestPlan):
+            return document
+        else:
+            return None
+
+    def getSimpleTestPlanByPURI(self, puri):
+        document = self.getDocumentByPURI(puri)
+        if document and isinstance(document, SimpleTestPlan):
+            return document
+        else:
+            return None
+
     # TODO: other data methods
 
 
 class _SUDS_Client_Wrapper:
 
     def __init__(self, url, enclosing_session):
-        self._suds_client       = suds.client.Client(url)
+        self._suds_client = suds.client.Client(url)
         self._enclosing_session = enclosing_session
 
     def __getattr__(self, attr):
@@ -158,3 +172,4 @@ class _Transaction:
 
 from .work_item import WorkItem
 from .document import Document
+from .simple_test_plan import SimpleTestPlan

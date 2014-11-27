@@ -15,6 +15,7 @@ encoding//src/pylarionlib/exceptions.py=utf8
 encoding//src/pylarionlib/interface.py=utf8
 encoding//src/pylarionlib/server.py=utf8
 encoding//src/pylarionlib/session.py=utf8
+encoding//src/pylarionlib/simple_test_plan.py=utf8
 encoding//src/pylarionlib/test_classes.py=utf8
 encoding//src/pylarionlib/test_record.py=utf8
 encoding//src/pylarionlib/tracker_text.py=utf8

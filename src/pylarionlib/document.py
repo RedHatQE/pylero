@@ -58,10 +58,13 @@ class Document(AbstractPolarionPersistentObject):
     @classmethod
     def _mapFromSUDS(cls, session, suds_object):
         # TODO: sanity checks
-        # TODO: Can it be SimpleTestPlan (among others, check suds_object.type.id)? If yes, convert there, otherwise as follows
-        document = Document(session)
-        Document._mapSpecificAttributesFromSUDS(suds_object, document)
-        return document
+        if SimpleTestPlan._isConvertible(suds_object):
+            return SimpleTestPlan._mapFromSUDS(session, suds_object)
+        else:
+            # Fall back: Not a "proper" test plan, just a document
+            document = Document(session)
+            Document._mapSpecificAttributesFromSUDS(suds_object, document)
+            return document
 
 
     def _mapToSUDS(self):
@@ -143,7 +146,7 @@ class Document(AbstractPolarionPersistentObject):
                                            False,
                                            suds.null())
         suds_object = self.session.tracker_client.service.getModuleByUri(self.puri)
-        stub = Document._mapFromSUDS(self.session, suds_object)
+        stub = self.__class__._mapFromSUDS(self.session, suds_object)
 
         temp = (self.type, self.workItemTypes, self.text)
 
@@ -159,7 +162,7 @@ class Document(AbstractPolarionPersistentObject):
         if not self.puri:
             raise PylarionLibException('Current object has no URI, cannot retrieve data')
         suds_object = self.session.tracker_client.service.getModuleByUri(self.puri)
-        temp = Document._mapFromSUDS(self.session, suds_object)
+        temp = self.__class__._mapFromSUDS(self.session, suds_object)
         temp._copy(self)
         return self
 
@@ -182,9 +185,10 @@ class Document(AbstractPolarionPersistentObject):
         if not self.puri:
             raise PylarionLibException('Current object has no URI, cannot update data')
         self.session.tracker_client.service.deleteModule(self.puri)
-        empty = Document(self.session)
+        empty = self.__class__(self.session)
         empty._copy(self)
 
 
 from .tracker_text import TrackerText
 from .exceptions import PylarionLibException
+from .simple_test_plan import SimpleTestPlan

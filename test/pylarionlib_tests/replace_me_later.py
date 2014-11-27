@@ -10,6 +10,7 @@ import unittest
 from pylarionlib.server import Server
 from pylarionlib.test_classes import FunctionalTestCase, StructuralTestCase, NonFunctionalTestCase, TestSuite
 from pylarionlib.document import Document
+from pylarionlib.simple_test_plan import SimpleTestPlan
 from pylarionlib.tracker_text import TrackerText
 
 my_login = 'vkadlcik'
@@ -141,3 +142,63 @@ class TestDocumentCRUD(unittest.TestCase):
 
         self.assertIsNone(refreshed.puri)
         self.assertIsNone(TestDocumentCRUD.test_session.getDocumentByPURI(doc.puri))
+
+
+class TestSimpleTestPlanCRUD(unittest.TestCase):
+
+    test_session = None
+
+    @classmethod
+    def setUpClass(cls):
+        super(TestSimpleTestPlanCRUD, cls).setUpClass()
+        TestSimpleTestPlanCRUD.test_session = my_server._createSession()
+        TestSimpleTestPlanCRUD.test_session._login()
+
+    @classmethod
+    def tearDownClass(cls):
+        TestSimpleTestPlanCRUD.test_session._logout()
+        super(TestSimpleTestPlanCRUD, cls).tearDownClass()
+
+    def test_0001(self):
+
+        space = 'vkadlcik_spejs'
+        name = 'vaskovo dokument'
+
+        old = TestSimpleTestPlanCRUD.test_session.getDocumentByPID(name, namespace=space)
+        if old:
+            old._crudDelete()
+
+        permanent_name = name
+
+        doc = SimpleTestPlan(TestSimpleTestPlanCRUD.test_session)
+        doc.namespace = space
+        doc.structureLinkRole = 'parent'
+        doc.name = permanent_name
+        doc.text = TrackerText(TestSimpleTestPlanCRUD.test_session, 'text/html', 'cokoliv', False)
+
+        doc._crudCreate()
+
+        self.assertTrue(doc.puri.startswith('subterra:data-service:objects:'))
+        self.assertEqual(permanent_name, doc.name)
+        doc.name = 'tajna zmena v titulku!'
+        self.assertNotEqual(permanent_name, doc.name)
+
+        doc._crudRetrieve()
+
+        self.assertEqual(permanent_name, doc.name)
+
+        newContent = 'It is a tale - Told by an idiot, full of sound and fury - Signifying nothing.'
+        self.assertNotEqual(newContent, doc.text.content)
+        doc.text.content = newContent
+
+        doc._crudUpdate()
+
+        self.assertEqual(newContent, doc.text.content)
+
+        refreshed = TestSimpleTestPlanCRUD.test_session.getSimpleTestPlanByPURI(doc.puri)
+        self.assertEqual(newContent, refreshed.text.content)
+
+        refreshed._crudDelete()
+
+        self.assertIsNone(refreshed.puri)
+        self.assertIsNone(TestSimpleTestPlanCRUD.test_session.getSimpleTestPlanByPURI(doc.puri))

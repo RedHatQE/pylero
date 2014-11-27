@@ -92,6 +92,7 @@ class WorkItem(AbstractPolarionPersistentObject):
     @classmethod
     def _mapFromSUDS(cls, session, suds_object):
         # TODO: sanity checks
+        # TODO: change the following to use _isConvertible
         type_string = suds_object.type.id
         if AbstractTest._is_known_type(type_string):
             return AbstractTest._mapFromSUDS(session, suds_object)
