@@ -5,7 +5,7 @@ from .document import Document
 
 class SimpleTestPlan(Document):
     
-    # TODO: references to test cases
+    # TODO: references to test cases etc. See interface.txt for more.
 
     _typeId = 'testspecification'
 
