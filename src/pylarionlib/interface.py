@@ -199,8 +199,8 @@ if False:
         def __init__(self, namespace=None): pass
 
     # "Test plan" as is currently understood in Base OS QE. It's a specialized
-    # Document (type.id = "testspecification) and a simplified "standardized"
-    # friendly to automation:
+    # Document (type.id = "testspecification") with a simplified "standardized"
+    # content friendly to automation:
     # - a link to a parent if any (TODO: needs specification)
     # - some form of notes (TODO: needs specification)
     # - the test cases are referred (not embedded)
