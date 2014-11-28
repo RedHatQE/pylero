@@ -86,15 +86,15 @@ class Session:
             return None
         return WorkItem._mapFromSUDS(self, suds_work_item)
 
-    def getDocumentByPID(self, name, project=None, namespace=None):
+    def getDocumentByPID(self, pid, project=None, namespace=None):
         if not project:
             project = self._get_default_project()
         if not namespace:
             namespace = self._get_default_namespace()
         if namespace:
-            location = '{}/{}'.format(namespace, name)
+            location = '{}/{}'.format(namespace, pid)
         else:
-            location = name
+            location = pid
         suds_document = self.tracker_client.service.getModuleByLocation(project, location)
         if suds_document._unresolvable:
             return None
@@ -106,8 +106,8 @@ class Session:
             return None
         return Document._mapFromSUDS(self, suds_document)
 
-    def getSimpleTestPlanByPID(self, name, project=None, namespace=None):
-        document = self.getDocumentByPID(name, project, namespace)
+    def getSimpleTestPlanByPID(self, pid, project=None, namespace=None):
+        document = self.getDocumentByPID(pid, project, namespace)
         if document and isinstance(document, SimpleTestPlan):
             return document
         else:
@@ -117,6 +117,34 @@ class Session:
         document = self.getDocumentByPURI(puri)
         if document and isinstance(document, SimpleTestPlan):
             return document
+        else:
+            return None
+
+    def getTestRunByPID(self, pid, project=None):
+        if not project:
+            project = self._get_default_project()
+        suds_test_run = self.test_management_client.getTestRunById(project, pid)
+        if suds_test_run._unresolvable:
+            return None
+        return TestRun._mapFromSUDS(self, suds_test_run)
+
+    def getTestRunByPURI(self, puri):
+        suds_test_run = self.test_management_client.service.getTestRunByUri(puri)
+        if suds_test_run._unresolvable:
+            return None
+        return TestRun._mapFromSUDS(self, suds_test_run)
+
+    def getSimpleTestRunByPID(self, pid, project=None):
+        test_run = self.getTestRunByPID(pid, project)
+        if test_run and isinstance(test_run, SimpleTestRun):
+            return test_run
+        else:
+            return None
+
+    def getSimpleTestRunByPURI(self, puri):
+        test_run = self.getTestRunByPURI(puri)
+        if test_run and isinstance(test_run, SimpleTestRun):
+            return test_run
         else:
             return None
 
@@ -173,3 +201,5 @@ class _Transaction:
 from .work_item import WorkItem
 from .document import Document
 from .simple_test_plan import SimpleTestPlan
+from .test_run import TestRun
+from .simple_test_run import SimpleTestRun
