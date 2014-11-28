@@ -83,11 +83,11 @@ Data model:
           |
           +- Document
           |    |
-          |    +- SimpleTestPlan
+          |    +- SimpleTestPlan ... see below
           |
           +- AbstractTestRun
                |
-               +- SimpleTestRun
+               +- SimpleTestRun ... see below
 
    Internally, these classes have conversion methods to/from their
    respective SUDS counterparts.
@@ -104,6 +104,49 @@ Data model:
    can retrieve the same Polarion object into two independent library objects
    (with the same "puri"), update them and store them independently; the last
    update "wins" and persists.
+   
+   SimpleTestPlan and SimpleTestRun are the key data objects of this library
+   - they represent test plans and test runs as they are usually understood
+   by Base OS QE. Among other, test plans are hierarchically organized
+   and a test runs can be linked to a test plan it performs.
+   
+   For the sake of easy prototyping (no custom fields for now), let's specify: 
+
+   SimpleTestPlan
+     - is a Polarion Document
+     - type.id = "testspecification"
+     - its content (text) consists of three parts:
+       - whatever user wants there, Pylarion will ignore this
+       - Pylarion-specific data, in YAML (surrounded by [...])
+         [pylarion-structured-field-start]
+         header:
+           subject: pylarion
+           formatVersion: 0.0
+           dataType: SimpleTestPlan
+         data:
+           parentPlan:
+             uri: subterra:data-service:objects:.....
+         [pylarion-structured-field-end]
+       - list of *linked* work items (test cases)
+
+   SimpleTestRun
+     - is a Polarion Test Run
+     - it's description contains, among others, a YAML (surrounded ...) text
+       as follows:
+       [pylarion-structured-field-start]
+       header:
+         subject: pylarion
+         version: 0.0
+         dataType: SimpleTestRun
+       data:
+         plan:
+           uri: subterra:data-service:objects:.....
+         automation:
+           beaker:
+             jobs: [TJ#774928, TJ#774925, TJ#774923, TJ#775986]
+             matrix: https://beaker.engineering.redhat.com/...
+             ...
+       [pylarion-structured-field-start]
 
 3. Service objects
 
@@ -198,12 +241,7 @@ if False:
     class Document(AbstractPolarionPersistentObject):
         def __init__(self, namespace=None): pass
 
-    # "Test plan" as is currently understood in Base OS QE. It's a specialized
-    # Document (type.id = "testspecification") with a simplified "standardized"
-    # content friendly to automation:
-    # - a link to a parent if any (TODO: needs specification)
-    # - some form of notes (TODO: needs specification)
-    # - the test cases are referred (not embedded)
+    # Pylarion-friendly test plan (see above)
     class SimpleTestPlan(Document):
         def getChildrenPlans(self, project=None, all_projects=False): pass
         def createChildPlan(self, project=None): pass
@@ -214,9 +252,7 @@ if False:
 
     class AbstractTestRun(AbstractPolarionPersistentObject): pass
 
-    # Test run friendly to automation. It has a simplified standard content:
-    # - a link to a Document = test plan (TODO: needs specification)
-    # - some form of notes (TODO: needs specification)
+    # Pylarion-friendly test run (see above)
     class SimpleTestRun(AbstractTestRun):
         def getTestPlan(self): pass
         def getTestRecords(self): pass
