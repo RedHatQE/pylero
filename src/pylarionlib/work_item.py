@@ -28,6 +28,15 @@ class WorkItem(AbstractPolarionPersistentObject):
         return another
 
 
+    def _fillMissingValues(self, project=None, namespace=None):
+        super(WorkItem, self)._fillMissingValues(project, namespace)
+        if project:
+            self.project = project
+        if not self.project:
+            self.project = self.session._get_default_project()
+        return self
+
+
     @classmethod
     def _isConvertible(cls, suds_object):
         if not AbstractPolarionPersistentObject._isConvertible(suds_object):
@@ -106,10 +115,7 @@ class WorkItem(AbstractPolarionPersistentObject):
     # CRUD:
 
     def _crudCreate(self, project=None):
-        if project:
-            self.project = project
-        if not self.project:
-            self.project = self.session._get_default_project()
+        self._fillMissingValues(project)
         suds_object = self._mapToSUDS()
         self.puri = self.session.tracker_client.service.createWorkItem(suds_object)
         return self._crudRetrieve()
@@ -125,8 +131,7 @@ class WorkItem(AbstractPolarionPersistentObject):
     def _crudUpdate(self):
         if not self.puri:
             raise PylarionLibException('Current object has no URI, cannot update data')
-        if not self.project:
-            self.project = self.session._get_default_project()
+        self._fillMissingValues()
         suds_object = self._mapToSUDS()
         self.session.tracker_client.service.updateWorkItem(suds_object)
         return self._crudRetrieve()

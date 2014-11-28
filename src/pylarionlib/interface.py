@@ -133,6 +133,8 @@ if False:
 
         def _copy(self, another): pass
 
+        def _fillMissingValues(self, project=None, namespace=None): pass # defaults where not set 
+
         # --------------------------------------------------------------------
         # Conversions
         #

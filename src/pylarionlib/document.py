@@ -31,6 +31,21 @@ class Document(AbstractPolarionPersistentObject):
         return another
 
 
+    def _fillMissingValues(self, project=None, namespace=None):
+        super(Document, self)._fillMissingValues(project, namespace)
+        if project:
+            self.project = project
+        if not self.project:
+            self.project = self.session._get_default_project()
+        if namespace:
+            self.namespace = namespace
+        if not self.namespace:
+            self.namespace = self.session._get_default_namespace()
+        if not self.text:
+            self.text = TrackerText(self.session)
+        return self
+
+
     def _workItemTypesToSUDS(self):
         sudsAllowedWITypes = []
         if self.workItemTypes:
@@ -123,16 +138,9 @@ class Document(AbstractPolarionPersistentObject):
             TrackerText._mapSpecificAttributesFromSUDS(suds_object.homePageContent, document.text)
 
 
-    def _crudCreate(self, project=None):
+    def _crudCreate(self, project=None, namespace=None):
 
-        if project:
-            self.project = project
-        if not self.project:
-            self.project = self.session._get_default_project()
-        if not self.namespace:
-            self.namespace = self.session._get_default_namespace()
-        if not self.text:
-            self.text = TrackerText(self.session)
+        self._fillMissingValues(project, namespace)
 
         # This will be really crazy now. By Polarion's design and bugs, we
         # must store the document in two steps: create and update.
@@ -170,12 +178,7 @@ class Document(AbstractPolarionPersistentObject):
     def _crudUpdate(self):
         if not self.puri:
             raise PylarionLibException('Current object has no URI, cannot update data')
-        if not self.project:
-            self.project = self.session._get_default_project()
-        if not self.namespace:
-            self.namespace = self.session._get_default_namespace()
-        if not self.text:
-            self.text = TrackerText(self.session)
+        self._fillMissingValues()
         suds_object = self._mapToSUDS()
         self.session.tracker_client.service.updateModule(suds_object)
         return self._crudRetrieve()

@@ -34,6 +34,11 @@ class AbstractTest(WorkItem):
         return another
 
 
+    def _fillMissingValues(self, project=None, namespace=None):
+        super(AbstractTest, self)._fillMissingValues(project, namespace)
+        return self
+
+
     @classmethod
     def _isConvertible(cls, suds_object):
         if not WorkItem._isConvertible(suds_object):
@@ -93,6 +98,12 @@ class FunctionalTestCase(AbstractTest):
         another.pos_neg = self.pos_neg
         return another
 
+    def _fillMissingValues(self, project=None, namespace=None):
+        super(FunctionalTestCase, self)._fillMissingValues(project, namespace)
+        if not self.type:
+            self.type = FunctionalTestCase._wiType
+        return self
+
     @classmethod
     def _mapSpecificAttributesToSUDS(cls, abstractTest, suds_object):
         AbstractTest._mapSpecificAttributesToSUDS(abstractTest, suds_object)
@@ -127,6 +138,12 @@ class StructuralTestCase(AbstractTest):
         another.type = self.type
         another.pos_neg = self.pos_neg
         return another
+
+    def _fillMissingValues(self, project=None, namespace=None):
+        super(StructuralTestCase, self)._fillMissingValues(project, namespace)
+        if not self.type:
+            self.type = FunctionalTestCase._wiType
+        return self
 
     @classmethod
     def _mapSpecificAttributesToSUDS(cls, abstractTest, suds_object):
@@ -163,6 +180,12 @@ class NonFunctionalTestCase(AbstractTest):
         another.pos_neg = self.pos_neg
         return another
 
+    def _fillMissingValues(self, project=None, namespace=None):
+        super(NonFunctionalTestCase, self)._fillMissingValues(project, namespace)
+        if not self.type:
+            self.type = FunctionalTestCase._wiType
+        return self
+
     @classmethod
     def _mapSpecificAttributesToSUDS(cls, abstractTest, suds_object):
         AbstractTest._mapSpecificAttributesToSUDS(abstractTest, suds_object)
@@ -198,6 +221,12 @@ class TestSuite(AbstractTest):
         another.type = self.type
         another.testTypes = self.testTypes
         return another
+
+    def _fillMissingValues(self, project=None, namespace=None):
+        super(TestSuite, self)._fillMissingValues(project, namespace)
+        if not self.type:
+            self.type = FunctionalTestCase._wiType
+        return self
 
     @classmethod
     def _mapSpecificAttributesToSUDS(cls, abstractTest, suds_object):

@@ -18,6 +18,11 @@ class AbstractPolarionPersistentObject(AbstractPolarionMappingObject):
         return another
 
 
+    def _fillMissingValues(self, project=None, namespace=None):
+        super(AbstractPolarionPersistentObject, self)._fillMissingValues(project, namespace)
+        return self
+
+
     # mappings from/to SUDS
 
     @classmethod

@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import suds
 
-class AbstractPolarionMappingObject:
+class AbstractPolarionMappingObject(object):
 
     def  __init__(self, session):
         self.session = session
@@ -11,6 +11,9 @@ class AbstractPolarionMappingObject:
     def _copy(self, another):
         another.session = self.session
         return another
+
+    def _fillMissingValues(self, project=None, namespace=None):
+        return self
 
     @classmethod
     def _isConvertible(cls, suds_object):

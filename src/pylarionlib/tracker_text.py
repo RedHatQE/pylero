@@ -12,6 +12,7 @@ class TrackerText(AbstractPolarionCrate):
         self.content_type = content_type
         self.content      = content
         self.contentLossy = contentLossy
+        self._fillMissingValues()
 
 
     def _copy(self, another):
@@ -20,6 +21,15 @@ class TrackerText(AbstractPolarionCrate):
         another.content      = self.content
         another.contentLossy = self.contentLossy
         return another
+
+
+    def _fillMissingValues(self, project=None, namespace=None):
+        super(TrackerText, self)._fillMissingValues(project, namespace)
+        if not self.content_type:
+            self.content_type = 'text/html'
+        if not self.contentLossy:
+            self.contentLossy = False
+        return self
 
 
     @classmethod
