@@ -98,8 +98,9 @@ class TestRun(AbstractPolarionPersistentObject):
         # By Polarion's design, we store the test run in two steps:
         # create and update.
 
-        self.puri = self.session.test_management_client.service.createTestRun(self.project, self.pid, self.empty_template)
-        suds_object = self.session.test_management_client.service.getTestRunByUri(self.puri)
+        uri = self.session.test_management_client.service.createTestRun(self.project, self.pid, self.empty_template)
+        uri = '{}'.format(uri)  # work around Text jumping in sometimes
+        suds_object = self.session.test_management_client.service.getTestRunByUri(uri)
         stub = self.__class__._mapFromSUDS(self.session, suds_object)
 
         temp = (self.status, None) # use a tuple, over time there will be more attributes here

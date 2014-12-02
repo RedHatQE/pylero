@@ -117,7 +117,9 @@ class WorkItem(AbstractPolarionPersistentObject):
     def _crudCreate(self, project=None):
         self._fillMissingValues(project)
         suds_object = self._mapToSUDS()
-        self.puri = self.session.tracker_client.service.createWorkItem(suds_object)
+        uri = self.session.tracker_client.service.createWorkItem(suds_object)
+        uri = '{}'.format(uri) # work around Text jumping in sometimes
+        self.puri = uri
         return self._crudRetrieve()
 
     def _crudRetrieve(self):

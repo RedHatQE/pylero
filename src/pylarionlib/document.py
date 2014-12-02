@@ -145,7 +145,7 @@ class Document(AbstractPolarionPersistentObject):
         # This will be really crazy now. By Polarion's design and bugs, we
         # must store the document in two steps: create and update.
 
-        self.puri = self.session.tracker_client.service.createModule(
+        uri = self.session.tracker_client.service.createModule(
                                            self.project,
                                            self.namespace,
                                            self.name,
@@ -153,7 +153,8 @@ class Document(AbstractPolarionPersistentObject):
                                            self._structureLinkRoleToSUDS(),
                                            False,
                                            suds.null())
-        suds_object = self.session.tracker_client.service.getModuleByUri(self.puri)
+        uri = '{}'.format(uri) # work around Text jumping in sometimes
+        suds_object = self.session.tracker_client.service.getModuleByUri(uri)
         stub = self.__class__._mapFromSUDS(self.session, suds_object)
 
         temp = (self.type, self.workItemTypes, self.text)
