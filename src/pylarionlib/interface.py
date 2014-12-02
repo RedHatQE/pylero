@@ -131,7 +131,7 @@ Data model:
 
    SimpleTestRun
      - is a Polarion Test Run
-     - it's description contains, among others, a YAML (surrounded ...) text
+     - it's wiki contains, among others, a YAML (surrounded ...) text
        as follows:
        [pylarion-structured-field-start]
        header:
