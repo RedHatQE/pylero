@@ -66,7 +66,11 @@ Data model:
      |
      +- AbstractPolarionCrate ... not Polarion persistent ("crates")
      |    |
-     |    +- TrackerText ... 'tns2:Text' of the Tracker web service
+     |    +- AbstractTextCrate ... '*:Text' of all web services
+     |    |    |
+     |    |    + TrackerText        ... for Tracker web service
+     |    |    + TestManagementText ... for TestManagement web service
+     |    |
      |    +- TestRecord  ... 'tns3:TestRecord' of the TestManagement
      |                                                web service
      |
