@@ -108,12 +108,12 @@ Data model:
    can retrieve the same Polarion object into two independent library objects
    (with the same "puri"), update them and store them independently; the last
    update "wins" and persists.
-   
+
    SimpleTestPlan and SimpleTestRun are the key data objects of this library
    - they represent test plans and test runs as they are usually understood
    by Base OS QE. Among other, test plans are hierarchically organized
    and a test runs can be linked to a test plan it performs.
-   
+
    For the sake of easy prototyping (no custom fields for now), let's specify: 
 
    SimpleTestPlan

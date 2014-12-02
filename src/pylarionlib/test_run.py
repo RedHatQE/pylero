@@ -90,9 +90,9 @@ class TestRun(AbstractPolarionPersistentObject):
         testRun.project = session.project_client.service.getProjectByURI(suds_object.projectURI).id
         testRun.status = suds_object.status.id
 
-    
+
     def _crudCreate(self, project=None):
-        
+
         self._fillMissingValues(project)
 
         # By Polarion's design, we store the test run in two steps:

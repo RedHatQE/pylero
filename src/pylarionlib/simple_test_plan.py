@@ -9,7 +9,7 @@ class SimpleTestPlan(Document):
     # TODO: Reimplement when we configure Polarion, eventually. I guess
     #       we should dedicate one or more custom fields to declare "simple"
     #       plans and their hierarchy.
-    
+
     # TODO: references to test cases etc. See interface.txt for more.
 
     _typeId = 'testspecification'

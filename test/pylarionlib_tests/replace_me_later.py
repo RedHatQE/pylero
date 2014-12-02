@@ -26,20 +26,20 @@ my_server = Server('http://polarion.dqe.lab.eng.bos.redhat.com/polarion', my_log
 
 
 class TestWorkItemCRUD(unittest.TestCase):
- 
+
     test_session = None
- 
+
     @classmethod
     def setUpClass(cls):
         super(TestWorkItemCRUD, cls).setUpClass()
         TestWorkItemCRUD.test_session = my_server._createSession()
         TestWorkItemCRUD.test_session._login()
- 
+
     @classmethod
     def tearDownClass(cls):
         TestWorkItemCRUD.test_session._logout()
         super(TestWorkItemCRUD, cls).tearDownClass()
- 
+
     def test_0001(self):
         permanent_title = 'vaskovo uzitkovy test 1'
         tc = FunctionalTestCase(TestWorkItemCRUD.test_session)
@@ -51,7 +51,7 @@ class TestWorkItemCRUD(unittest.TestCase):
         self.assertNotEqual(permanent_title, tc.title)
         tc._crudRetrieve()
         self.assertEqual(permanent_title, tc.title)
- 
+
     def test_0002(self):
         old_title = 'vaskovo stavebni test 1'
         new_title = 'zmena v titulku!'
@@ -66,7 +66,7 @@ class TestWorkItemCRUD(unittest.TestCase):
         self.assertEqual(new_title, tc.title)
         tc._crudRetrieve()
         self.assertEqual(new_title, tc.title)
- 
+
     def test_0003(self):
         title = 'vaskovo neuzitkovy test 1'
         tc1 = NonFunctionalTestCase(TestWorkItemCRUD.test_session)
@@ -78,7 +78,7 @@ class TestWorkItemCRUD(unittest.TestCase):
         self.assertEqual(title, tc2.title)
         self.assertIsInstance(tc2, NonFunctionalTestCase)
         self.assertEqual(tc1.title, tc2.title)
- 
+
     def test_0004(self):
         tc1 = TestSuite(TestWorkItemCRUD.test_session)
         tc1.title = 'vaskovo testovy pruvod'
@@ -87,23 +87,23 @@ class TestWorkItemCRUD(unittest.TestCase):
         self.assertEqual(tc1.puri, tc2.puri)
         self.assertEqual(tc1.pid, tc2.pid)
         self.assertEqual(tc1.__class__, tc2.__class__)
- 
- 
+
+
 class TestDocumentCRUD(unittest.TestCase):
- 
+
     test_session = None
- 
+
     @classmethod
     def setUpClass(cls):
         super(TestDocumentCRUD, cls).setUpClass()
         TestDocumentCRUD.test_session = my_server._createSession()
         TestDocumentCRUD.test_session._login()
- 
+
     @classmethod
     def tearDownClass(cls):
         TestDocumentCRUD.test_session._logout()
         super(TestDocumentCRUD, cls).tearDownClass()
- 
+
     def test_0001(self):
 
         name = 'vaskovo dokument'
@@ -111,102 +111,102 @@ class TestDocumentCRUD(unittest.TestCase):
         old = TestDocumentCRUD.test_session.getDocumentByPID(name, namespace=my_space)
         if old:
             old._crudDelete()
- 
+
         permanent_name = name
- 
+
         doc = Document(TestDocumentCRUD.test_session)
         doc.namespace = my_space
         doc.structureLinkRole = 'parent'
         doc.name = permanent_name
         doc.workItemTypes = [ 'functionaltestcase', 'unittestcase' ]
         doc.text = TrackerText(TestDocumentCRUD.test_session, 'text/html', 'cokoliv', False)
- 
+
         doc._crudCreate()
- 
+
         self.assertTrue(doc.puri.startswith('subterra:data-service:objects:'))
         self.assertEqual(permanent_name, doc.name)
         doc.name = 'tajna zmena v titulku!'
         self.assertNotEqual(permanent_name, doc.name)
- 
+
         doc._crudRetrieve()
- 
+
         self.assertEqual(permanent_name, doc.name)
- 
+
         newContent = 'It is a tale - Told by an idiot, full of sound and fury - Signifying nothing.'
         self.assertNotEqual(newContent, doc.text.content)
         doc.text.content = newContent
- 
+
         doc._crudUpdate()
- 
+
         self.assertEqual(newContent, doc.text.content)
- 
+
         refreshed = TestDocumentCRUD.test_session.getDocumentByPURI(doc.puri)
         self.assertEqual(newContent, refreshed.text.content)
- 
+
         refreshed._crudDelete()
- 
+
         self.assertIsNone(refreshed.puri)
         self.assertIsNone(TestDocumentCRUD.test_session.getDocumentByPURI(doc.puri))
- 
- 
+
+
 class TestSimpleTestPlanCRUD(unittest.TestCase):
- 
+
     test_session = None
- 
+
     @classmethod
     def setUpClass(cls):
         super(TestSimpleTestPlanCRUD, cls).setUpClass()
         TestSimpleTestPlanCRUD.test_session = my_server._createSession()
         TestSimpleTestPlanCRUD.test_session._login()
- 
+
     @classmethod
     def tearDownClass(cls):
         TestSimpleTestPlanCRUD.test_session._logout()
         super(TestSimpleTestPlanCRUD, cls).tearDownClass()
- 
+
     def test_0001(self):
-  
+
         name = 'vaskovo dokument'
 
         old = TestSimpleTestPlanCRUD.test_session.getDocumentByPID(name, namespace=my_space)
         if old:
             old._crudDelete()
- 
+
         permanent_name = name
- 
+
         doc = SimpleTestPlan(TestSimpleTestPlanCRUD.test_session)
         doc.namespace = my_space
         doc.structureLinkRole = 'parent'
         doc.name = permanent_name
 
         doc._crudCreate()
- 
+
         self.assertTrue(doc.puri.startswith('subterra:data-service:objects:'))
         self.assertEqual(permanent_name, doc.name)
         doc.name = 'tajna zmena v titulku!'
         self.assertNotEqual(permanent_name, doc.name)
- 
+
         doc._crudRetrieve()
- 
+
         self.assertEqual(permanent_name, doc.name)
 
         newContent = 'It is a tale - Told by an idiot,\nfull of sound and fury - Signifying nothing.\n{}'.format(doc.text.content)
         self.assertNotEqual(newContent, doc.text.content)
         doc.text.content = newContent
- 
+
         doc._crudUpdate()
- 
+
         self.assertEqual(newContent, doc.text.content)
- 
+
         refreshed = TestSimpleTestPlanCRUD.test_session.getSimpleTestPlanByPURI(doc.puri)
         self.assertEqual(newContent, refreshed.text.content)
- 
+
         refreshed._crudDelete()
- 
+
         self.assertIsNone(refreshed.puri)
         self.assertIsNone(TestSimpleTestPlanCRUD.test_session.getSimpleTestPlanByPURI(doc.puri))
 
-                
+
 def _gen_run_id(cls):
     # TODO: make this function not so lame
     _gen_run_id.counter += 1
@@ -266,22 +266,22 @@ class TestTestRunCRUD(unittest.TestCase):
 
 
 class TestSimpleTestRunCRUD(unittest.TestCase):
- 
+
     test_session = None
- 
+
     @classmethod
     def setUpClass(cls):
         super(TestSimpleTestRunCRUD, cls).setUpClass()
         TestSimpleTestRunCRUD.test_session = my_server._createSession()
         TestSimpleTestRunCRUD.test_session._login()
- 
+
     @classmethod
     def tearDownClass(cls):
         TestSimpleTestRunCRUD.test_session._logout()
         super(TestSimpleTestRunCRUD, cls).tearDownClass()
- 
+
     def test_0001(self):
- 
+
         permanent_status = SimpleTestRun.Status.NOT_RUN
 
         simpleTestRun = SimpleTestRun(TestSimpleTestRunCRUD.test_session)

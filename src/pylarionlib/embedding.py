@@ -18,13 +18,13 @@ _EMBEDDING_END = '[{}-{}]'.format(_COMMON_EMBEDDING_TITLE, _END)
 
 
 def _yamlToText(yamlObjectToEmbed, prefix, suffix):
-    
+
     if not prefix:
         prefix = ''
 
     if not suffix:
         suffix = ''
-         
+
     return '{}{}\n{}{}\n{}'.format(
                                    prefix,
                                    _EMBEDDING_START,
