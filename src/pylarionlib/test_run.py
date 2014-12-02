@@ -5,9 +5,6 @@ from .abstract_polarion_persistent_object import AbstractPolarionPersistentObjec
 
 class TestRun(AbstractPolarionPersistentObject):
 
-    # TODO: manage test records
-
-
     empty_template = 'Empty'
 
     class Status():

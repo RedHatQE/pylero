@@ -15,8 +15,10 @@ from pylarionlib.document import Document
 from pylarionlib.simple_test_plan import SimpleTestPlan
 from pylarionlib.test_run import TestRun
 from pylarionlib.simple_test_run import SimpleTestRun
+from pylarionlib.test_record import TestRecord
 from pylarionlib.tracker_text import TrackerText
 from pylarionlib.embedding import _yamlToText, _textToYAML, _SimpleTestPlanTextEmbedding, _SimpleTestRunTextEmbedding
+from pylarionlib.test_management_text import TestManagementText
 
 my_login = 'vkadlcik'
 my_password = '94rskco.kftg9'
@@ -564,6 +566,70 @@ class TestSimpleTestPlanWorkItemOps(unittest.TestCase):
 
         refreshed = TestSimpleTestPlanWorkItemOps.test_session.getDocumentByPURI(doc.puri)
         self.assertEqual(0, len(refreshed._getTestCaseURIs()))
+
+
+class TestSimpleTestRunRecordOps(unittest.TestCase):
+
+    test_session = None
+
+    @classmethod
+    def setUpClass(cls):
+        super(TestSimpleTestRunRecordOps, cls).setUpClass()
+        TestSimpleTestRunRecordOps.test_session = my_server._createSession()
+        TestSimpleTestRunRecordOps.test_session._login()
+
+    @classmethod
+    def tearDownClass(cls):
+        TestSimpleTestRunRecordOps.test_session._logout()
+        super(TestSimpleTestRunRecordOps, cls).tearDownClass()
+
+    def test_0001(self):
+
+        session = TestSimpleTestRunRecordOps.test_session
+
+        tc1 = FunctionalTestCase(session)
+        tc1.title = 'fc 1'
+        tc1._crudCreate()
+        self.assertIsNotNone(tc1.puri)
+        tr1 = TestRecord(session, tc1.puri)
+
+        tc2 = FunctionalTestCase(session)
+        tc2.title = 'fc 2'
+        tc2._crudCreate()
+        self.assertIsNotNone(tc2.puri)
+        tr2 = TestRecord(session, tc2.puri)
+
+        tc3 = FunctionalTestCase(session)
+        tc3.title = 'fc 3'
+        tc3._crudCreate()
+        self.assertIsNotNone(tc3.puri)
+        tr3 = TestRecord(session, tc3.puri)
+
+        run = SimpleTestRun(session)
+        run.pid = _gen_run_id(TestSimpleTestRunRecordOps)
+        run._crudCreate()
+
+        self.assertEqual(0, len(run._getTestRecords()))
+
+        run._setTestRecords([tr1, tr2])
+        self.assertEqual(2, len(run._getTestRecords()))
+
+        tr3.comment = TestManagementText(session, content_type='text/html', content='screwed!', contentLossy=False)
+        tr3.duration = 3.14
+        tr3.executed = datetime.datetime.now()
+        self.result = TestRecord.Status.FAILED
+
+        run._setTestRecords([tr3])
+        self.assertEqual(1, len(run._getTestRecords()))
+
+        tr = run._getTestRecords()[0]
+        self.assertEqual(tr3.testCaseURI, tr.testCaseURI)
+        self.assertEqual(tr3.result, tr.result)
+        self.assertEqual(tr3.comment.content, tr.comment.content)
+        self.assertEqual(tr3.comment.content_type, tr.comment.content_type)
+        self.assertEqual(tr3.comment.contentLossy, tr.comment.contentLossy)
+        self.assertTrue(abs((tr3.executed - tr.executed).total_seconds()) <= 120.0) # SUDS not 100% inaccurate?
+        self.assertEqual(tr3.duration, tr.duration)
 
 
 class TestRawEmbedding(unittest.TestCase):
