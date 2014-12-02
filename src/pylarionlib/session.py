@@ -17,7 +17,7 @@ class Session:
         self._server = server
         self._last_request_at = None
         self._session_id_header = None
-        self._session_client = _SUDS_Client_Wrapper(self._url_for_name('Session'), self)
+        self._session_client = _SUDS_Client_Wrapper(self._url_for_name('Session'), None)
         self.builder_client = _SUDS_Client_Wrapper(self._url_for_name('Builder'), self)
         self.planning_client = _SUDS_Client_Wrapper(self._url_for_name('Planning'), self)
         self.project_client = _SUDS_Client_Wrapper(self._url_for_name('Project'), self)

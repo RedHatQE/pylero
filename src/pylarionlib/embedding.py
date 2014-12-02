@@ -114,6 +114,34 @@ class _SimpleTestPlanTextEmbedding(object):
         embedding.yamlObject['data']['parentPlan']['uri'] = uri
         return embedding.toText()
 
+    @classmethod
+    def getLinkedWorkItemPIDs(cls, text):
+        embedding = _SimpleTestPlanTextEmbedding.instantiateFromText(text)
+        if not embedding:
+            raise PylarionLibException('Not SimpleTestPlan embedding: {}'.format(text))
+        if not embedding.suffix:
+            embedding.suffix = ''
+        # TODO: check the format: just a repetition of (like)
+        # <div id="polarion_wiki macro name=module-workitem;params=id=BRTR-4985|external=true"></div>
+        # without newlines
+        retval = []
+        for matched in re.findall(r'<div id="polarion_wiki macro name=module-workitem;params=id=[A-Z0-9-]*\|external=true"></div>', embedding.suffix, re.DOTALL):
+            subs = re.sub(r'\|external=true"></div>$', '', matched)
+            subs = re.sub(r'.*=', '', subs)
+            if subs:
+                retval.append(subs)
+        return retval
+
+    @classmethod
+    def setLinkedWorkItemPIDs(cls, text, wipids):
+        embedding = _SimpleTestPlanTextEmbedding.instantiateFromText(text)
+        if not embedding:
+            raise PylarionLibException('Not SimpleTestPlan embedding: {}'.format(text))
+        embedding.suffix = ''
+        for pid in wipids:
+            embedding.suffix = '{}<div id="polarion_wiki macro name=module-workitem;params=id={}|external=true"></div>'.format(embedding.suffix, pid)
+        return embedding.toText()
+
 
 class _SimpleTestRunTextEmbedding(object):
 

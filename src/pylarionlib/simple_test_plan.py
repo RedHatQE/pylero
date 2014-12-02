@@ -84,6 +84,48 @@ class SimpleTestPlan(Document):
         self.text.content = _SimpleTestPlanTextEmbedding.setParentPlanURI(self.text.content, uri)
 
 
+    def _getTestCaseURIs(self):
+        # NOTE: Not persisted until _crudUpdate()
+        retval = []
+        wipids = _SimpleTestPlanTextEmbedding.getLinkedWorkItemPIDs(self.text.content)
+        for wipid in wipids:
+            wi = self.session.getWorkItemByPID(wipid, self.project)
+            if wi:
+                retval.append(wi.puri)
+        return retval
+
+
+    def _addTestCaseURI(self, uri):
+        # NOTE: Not persisted until _crudUpdate()
+        wi = self.session.getWorkItemByPURI(uri)
+        if wi.project != self.project:
+            # TODO: is that really so?
+            raise PylarionLibException('Work Item {} and Document {} are in different projects'.format(uri, self.puri))
+        wipids = _SimpleTestPlanTextEmbedding.getLinkedWorkItemPIDs(self.text.content)
+        if wi.pid not in wipids:
+            wipids.append(wi.pid)
+            self.text.content = _SimpleTestPlanTextEmbedding.setLinkedWorkItemPIDs(self.text.content, wipids)
+
+
+    def _deleteTestCaseURI(self, uri):
+        # NOTE: Not persisted until _crudUpdate()
+        wi = self.session.getWorkItemByPURI(uri)
+        if wi.project != self.project:
+            # not in the same project, kinda "unreachable"
+            raise PylarionLibException('Work Item {} and Document {} are in different projects'.format(uri, self.puri))
+        wipids = _SimpleTestPlanTextEmbedding.getLinkedWorkItemPIDs(self.text.content)
+        if wi.pid in wipids:
+            wipids.remove(wi.pid)
+            self.text.content = _SimpleTestPlanTextEmbedding.setLinkedWorkItemPIDs(self.text.content, wipids)
+
+
+    def _deleteAllTestCaseURIs(self):
+        # NOTE: Not persisted until _crudUpdate()
+        wipids = _SimpleTestPlanTextEmbedding.getLinkedWorkItemPIDs(self.text.content)
+        if wipids:
+            self.text.content = _SimpleTestPlanTextEmbedding.setLinkedWorkItemPIDs(self.text.content, [])
+
+
 from .exceptions import PylarionLibException
 from .test_classes import FunctionalTestCase, StructuralTestCase, NonFunctionalTestCase, TestSuite
 from .tracker_text import TrackerText

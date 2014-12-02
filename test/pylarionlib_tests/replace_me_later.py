@@ -487,6 +487,85 @@ class TestSimpleTestRunsLinking(unittest.TestCase):
         self.assertIsNone(TestSimpleTestRunsLinking._referred(run3.puri))
 
 
+class TestSimpleTestPlanWorkItemOps(unittest.TestCase):
+
+    test_session = None
+
+    @classmethod
+    def setUpClass(cls):
+        super(TestSimpleTestPlanWorkItemOps, cls).setUpClass()
+        TestSimpleTestPlanWorkItemOps.test_session = my_server._createSession()
+        TestSimpleTestPlanWorkItemOps.test_session._login()
+
+    @classmethod
+    def tearDownClass(cls):
+        TestSimpleTestPlanWorkItemOps.test_session._logout()
+        super(TestSimpleTestPlanWorkItemOps, cls).tearDownClass()
+
+    def test_0001(self):
+
+        tc1 = FunctionalTestCase(TestSimpleTestPlanWorkItemOps.test_session)
+        tc1.title = 'fc 1'
+        tc1._crudCreate()
+
+        tc2 = FunctionalTestCase(TestSimpleTestPlanWorkItemOps.test_session)
+        tc2.title = 'fc 2'
+        tc2._crudCreate()
+
+        tc3 = FunctionalTestCase(TestSimpleTestPlanWorkItemOps.test_session)
+        tc3.title = 'fc 3'
+        tc3._crudCreate()
+
+        self.assertIsNotNone(tc1.puri)
+        self.assertIsNotNone(tc2.puri)
+        self.assertIsNotNone(tc3.puri)
+
+        name = 'my completely new test spec 1'
+        doc = TestSimpleTestPlanWorkItemOps.test_session.getDocumentByPID(name, namespace=my_space)
+        if doc:
+            doc._crudDelete()
+        doc = SimpleTestPlan(TestSimpleTestPlanWorkItemOps.test_session)
+        doc.namespace = my_space
+        doc.structureLinkRole = 'parent'
+        doc.name = name
+        doc._crudCreate()
+
+        refreshed = TestSimpleTestPlanWorkItemOps.test_session.getDocumentByPURI(doc.puri)
+        self.assertEqual(0, len(refreshed._getTestCaseURIs()))
+
+        doc._addTestCaseURI(tc1.puri)
+        doc._addTestCaseURI(tc2.puri)
+        doc._crudUpdate()
+
+        refreshed = TestSimpleTestPlanWorkItemOps.test_session.getDocumentByPURI(doc.puri)
+        self.assertEqual(2, len(refreshed._getTestCaseURIs()))
+        self.assertTrue(tc1.puri in refreshed._getTestCaseURIs())
+        self.assertTrue(tc2.puri in refreshed._getTestCaseURIs())
+
+        doc._deleteTestCaseURI(tc1.puri)
+        doc._addTestCaseURI(tc3.puri)
+        doc._crudUpdate()
+
+        refreshed = TestSimpleTestPlanWorkItemOps.test_session.getDocumentByPURI(doc.puri)
+        self.assertEqual(2, len(refreshed._getTestCaseURIs()))
+        self.assertTrue(tc2.puri in refreshed._getTestCaseURIs())
+        self.assertTrue(tc3.puri in refreshed._getTestCaseURIs())
+
+        doc._addTestCaseURI(tc3.puri)
+        doc._crudUpdate()
+
+        refreshed = TestSimpleTestPlanWorkItemOps.test_session.getDocumentByPURI(doc.puri)
+        self.assertEqual(2, len(refreshed._getTestCaseURIs()))
+        self.assertTrue(tc2.puri in refreshed._getTestCaseURIs())
+        self.assertTrue(tc3.puri in refreshed._getTestCaseURIs())
+
+        doc._deleteAllTestCaseURIs()
+        doc._crudUpdate()
+
+        refreshed = TestSimpleTestPlanWorkItemOps.test_session.getDocumentByPURI(doc.puri)
+        self.assertEqual(0, len(refreshed._getTestCaseURIs()))
+
+
 class TestRawEmbedding(unittest.TestCase):
 
     def testBackAndForth(self):
