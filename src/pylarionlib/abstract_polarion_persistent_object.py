@@ -1,6 +1,8 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import suds.sax
+
 from .abstract_polarion_mapping_object import AbstractPolarionMappingObject
 
 class AbstractPolarionPersistentObject(AbstractPolarionMappingObject):
@@ -45,7 +47,10 @@ class AbstractPolarionPersistentObject(AbstractPolarionMappingObject):
     @classmethod
     def _mapSpecificAttributesFromSUDS(cls, suds_object, abstractPolarionPersistentObject):
         AbstractPolarionMappingObject._mapSpecificAttributesFromSUDS(suds_object, abstractPolarionPersistentObject)
-        abstractPolarionPersistentObject.puri = suds_object._uri
+        # Very, very strange. Sometimes, in the _uri, we get not a plain
+        # string but the 'Text' envelope. Needs investigations. Pushing it
+        # through format() helps, somewhat.
+        abstractPolarionPersistentObject.puri = '{}'.format(suds_object._uri)
         abstractPolarionPersistentObject.pid = suds_object.id
 
 
