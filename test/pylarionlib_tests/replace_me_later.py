@@ -16,11 +16,13 @@ from pylarionlib.simple_test_plan import SimpleTestPlan
 from pylarionlib.test_run import TestRun
 from pylarionlib.simple_test_run import SimpleTestRun
 from pylarionlib.tracker_text import TrackerText
+from pylarionlib.embedding import _yamlToText, _textToYAML, _SimpleTestPlanTextEmbedding, _SimpleTestRunTextEmbedding
 
 my_login = 'vkadlcik'
 my_password = '94rskco.kftg9'
 my_project_name = 'BrnoTraining'
-my_server = Server('http://polarion.dqe.lab.eng.bos.redhat.com/polarion', my_login, my_password, my_project_name)
+my_space = 'vkadlcik_spejs'
+my_server = Server('http://polarion.dqe.lab.eng.bos.redhat.com/polarion', my_login, my_password, my_project_name, )
 
 
 class TestWorkItemCRUD(unittest.TestCase):
@@ -103,18 +105,17 @@ class TestDocumentCRUD(unittest.TestCase):
         super(TestDocumentCRUD, cls).tearDownClass()
  
     def test_0001(self):
- 
-        space = 'vkadlcik_spejs'
+
         name = 'vaskovo dokument'
- 
-        old = TestDocumentCRUD.test_session.getDocumentByPID(name, namespace=space)
+
+        old = TestDocumentCRUD.test_session.getDocumentByPID(name, namespace=my_space)
         if old:
             old._crudDelete()
  
         permanent_name = name
  
         doc = Document(TestDocumentCRUD.test_session)
-        doc.namespace = space
+        doc.namespace = my_space
         doc.structureLinkRole = 'parent'
         doc.name = permanent_name
         doc.workItemTypes = [ 'functionaltestcase', 'unittestcase' ]
@@ -164,22 +165,20 @@ class TestSimpleTestPlanCRUD(unittest.TestCase):
         super(TestSimpleTestPlanCRUD, cls).tearDownClass()
  
     def test_0001(self):
- 
-        space = 'vkadlcik_spejs'
+  
         name = 'vaskovo dokument'
- 
-        old = TestSimpleTestPlanCRUD.test_session.getDocumentByPID(name, namespace=space)
+
+        old = TestSimpleTestPlanCRUD.test_session.getDocumentByPID(name, namespace=my_space)
         if old:
             old._crudDelete()
  
         permanent_name = name
  
         doc = SimpleTestPlan(TestSimpleTestPlanCRUD.test_session)
-        doc.namespace = space
+        doc.namespace = my_space
         doc.structureLinkRole = 'parent'
         doc.name = permanent_name
-        doc.text = TrackerText(TestSimpleTestPlanCRUD.test_session, 'text/html', 'cokoliv', False)
- 
+
         doc._crudCreate()
  
         self.assertTrue(doc.puri.startswith('subterra:data-service:objects:'))
@@ -190,8 +189,8 @@ class TestSimpleTestPlanCRUD(unittest.TestCase):
         doc._crudRetrieve()
  
         self.assertEqual(permanent_name, doc.name)
- 
-        newContent = 'It is a tale - Told by an idiot, full of sound and fury - Signifying nothing.'
+
+        newContent = 'It is a tale - Told by an idiot,\nfull of sound and fury - Signifying nothing.\n{}'.format(doc.text.content)
         self.assertNotEqual(newContent, doc.text.content)
         doc.text.content = newContent
  
@@ -310,3 +309,277 @@ class TestSimpleTestRunCRUD(unittest.TestCase):
 
         refreshed = TestSimpleTestRunCRUD.test_session.getTestRunByPURI(simpleTestRun.puri)
         self.assertEqual(new_status, refreshed.status)
+
+
+class TestSimpleTestPlansLinking(unittest.TestCase):
+
+    test_session = None
+
+    @classmethod
+    def setUpClass(cls):
+        super(TestSimpleTestPlansLinking, cls).setUpClass()
+        TestSimpleTestPlansLinking.test_session = my_server._createSession()
+        TestSimpleTestPlansLinking.test_session._login()
+
+    @classmethod
+    def tearDownClass(cls):
+        TestSimpleTestPlansLinking.test_session._logout()
+        super(TestSimpleTestPlansLinking, cls).tearDownClass()
+
+    @classmethod
+    def _referred(cls, puri):
+        refreshed = SimpleTestPlan(TestSimpleTestPlansLinking.test_session)
+        refreshed.puri = puri
+        refreshed._crudRetrieve()
+        return refreshed._getParentPlanURI()
+
+    def test_0001(self):
+
+        name_general = 'demo general plan 1'
+        name_child_1 = 'demo child plan 1'
+        name_child_2 = 'demo child plan 2'
+        name_grand_child = 'demo grand child plan'
+        all_names = [name_general, name_child_1, name_child_2, name_grand_child]
+
+        plans = {}
+
+        # create fresh new, not linked test plans
+        for name in all_names:
+
+            # delete if exists
+            doc = TestSimpleTestPlansLinking.test_session.getDocumentByPID(name, namespace=my_space)
+            if doc:
+                doc._crudDelete()
+
+            # create new
+            doc = SimpleTestPlan(TestSimpleTestPlansLinking.test_session)
+            doc.namespace = my_space
+            doc.structureLinkRole = 'parent'
+            doc.name = name
+            doc._crudCreate()
+
+            # remember
+            plans[name] = doc
+
+        # retrieve the test plans and verify no links there
+        for name in all_names:
+            self.assertIsNone(plans[name]._crudRetrieve()._getParentPlanURI())
+
+        # set the links among the plans
+        plans[name_child_1]._setParentPlanURI(plans[name_general].puri)
+        plans[name_child_1]._crudUpdate()
+        plans[name_child_2]._setParentPlanURI(plans[name_general].puri)
+        plans[name_child_2]._crudUpdate()
+        plans[name_grand_child]._setParentPlanURI(plans[name_child_1].puri)
+        plans[name_grand_child]._crudUpdate()
+
+        # verify the links
+        self.assertIsNone(TestSimpleTestPlansLinking._referred(plans[name_general].puri))
+        self.assertEqual(plans[name_general].puri, TestSimpleTestPlansLinking._referred(plans[name_child_1].puri))
+        self.assertEqual(plans[name_general].puri, TestSimpleTestPlansLinking._referred(plans[name_child_2].puri))
+        self.assertEqual(plans[name_child_1].puri, TestSimpleTestPlansLinking._referred(plans[name_grand_child].puri))
+
+        # change the links among the plans
+        plans[name_child_1]._setParentPlanURI(None)
+        plans[name_child_1]._crudUpdate()
+        plans[name_grand_child]._setParentPlanURI(plans[name_child_2].puri)
+        plans[name_grand_child]._crudUpdate()
+
+        # verify the links
+        self.assertIsNone(TestSimpleTestPlansLinking._referred(plans[name_general].puri))
+        self.assertIsNone(TestSimpleTestPlansLinking._referred(plans[name_child_1].puri))
+        self.assertEqual(plans[name_general].puri, TestSimpleTestPlansLinking._referred(plans[name_child_2].puri))
+        self.assertEqual(plans[name_child_2].puri, TestSimpleTestPlansLinking._referred(plans[name_grand_child].puri))
+
+
+class TestSimpleTestRunsLinking(unittest.TestCase):
+
+    test_session = None
+
+    @classmethod
+    def setUpClass(cls):
+        super(TestSimpleTestRunsLinking, cls).setUpClass()
+        TestSimpleTestRunsLinking.test_session = my_server._createSession()
+        TestSimpleTestRunsLinking.test_session._login()
+
+    @classmethod
+    def tearDownClass(cls):
+        TestSimpleTestRunsLinking.test_session._logout()
+        super(TestSimpleTestRunsLinking, cls).tearDownClass()
+
+    @classmethod
+    def _referred(cls, puri):
+        refreshed = SimpleTestRun(TestSimpleTestRunsLinking.test_session)
+        refreshed.puri = puri
+        refreshed._crudRetrieve()
+        return refreshed._getPlanURI()
+
+    def test_0001(self):
+
+        name_plan_1 = 'demo plan 1'
+        name_plan_2 = 'demo plan 2'
+        all_names = [name_plan_1, name_plan_2]
+
+        plans = {}
+
+        # create fresh new, not linked test plans
+        for name in all_names:
+
+            # delete if exists
+            doc = TestSimpleTestRunsLinking.test_session.getDocumentByPID(name, namespace=my_space)
+            if doc:
+                doc._crudDelete()
+
+            # create new
+            doc = SimpleTestPlan(TestSimpleTestRunsLinking.test_session)
+            doc.namespace = my_space
+            doc.structureLinkRole = 'parent'
+            doc.name = name
+            doc._crudCreate()
+
+            # remember
+            plans[name] = doc
+
+        # create new simple runs, not linked
+        run1 = SimpleTestRun(TestSimpleTestRunsLinking.test_session)
+        run1.pid = _gen_run_id(TestSimpleTestRunsLinking)
+        run1._crudCreate()
+        run2 = SimpleTestRun(TestSimpleTestRunsLinking.test_session)
+        run2.pid = _gen_run_id(TestSimpleTestRunsLinking)
+        run2._crudCreate()
+        run3 = SimpleTestRun(TestSimpleTestRunsLinking.test_session)
+        run3.pid = _gen_run_id(TestSimpleTestRunsLinking)
+        run3._crudCreate()
+
+        # verify not linked
+        self.assertIsNone(TestSimpleTestRunsLinking._referred(run1.puri))
+        self.assertIsNone(TestSimpleTestRunsLinking._referred(run2.puri))
+        self.assertIsNone(TestSimpleTestRunsLinking._referred(run3.puri))
+
+        # set the links
+        run1._setPlanURI(plans[name_plan_1].puri)
+        run2._setPlanURI(plans[name_plan_2].puri)
+        run3._setPlanURI(plans[name_plan_1].puri)
+
+        # verify linked
+        self.assertEqual(plans[name_plan_1].puri, TestSimpleTestRunsLinking._referred(run1.puri))
+        self.assertEqual(plans[name_plan_2].puri, TestSimpleTestRunsLinking._referred(run2.puri))
+        self.assertEqual(plans[name_plan_1].puri, TestSimpleTestRunsLinking._referred(run3.puri))
+
+        # switch the links
+        run1._setPlanURI(plans[name_plan_2].puri)
+        run2._setPlanURI(plans[name_plan_1].puri)
+        run3._setPlanURI(plans[name_plan_2].puri)
+
+        # verify linked
+        self.assertEqual(plans[name_plan_2].puri, TestSimpleTestRunsLinking._referred(run1.puri))
+        self.assertEqual(plans[name_plan_1].puri, TestSimpleTestRunsLinking._referred(run2.puri))
+        self.assertEqual(plans[name_plan_2].puri, TestSimpleTestRunsLinking._referred(run3.puri))
+
+        # unset the links
+        run1._setPlanURI(None)
+        run2._setPlanURI(None)
+        run3._setPlanURI(None)
+
+        # verify not linked
+        self.assertIsNone(TestSimpleTestRunsLinking._referred(run1.puri))
+        self.assertIsNone(TestSimpleTestRunsLinking._referred(run2.puri))
+        self.assertIsNone(TestSimpleTestRunsLinking._referred(run3.puri))
+
+
+class TestRawEmbedding(unittest.TestCase):
+
+    def testBackAndForth(self):
+        text1 = '''Creeps in this petty pace from day to day,
+To the last syllable of recorded time;
+[pylarion-structured-field-start]  
+header:
+  subject: pylarion
+  formatVersion: 0.0
+  dataType: SimpleTestPlan
+data:
+  parentPlan:
+    uri: subterra:data-service:objects:...
+[pylarion-structured-field-end]
+And all our yesterdays have lighted fools
+The way to dusty death. Out, out, brief candle!
+'''
+        yamlObject1, prefix1, suffix1 = _textToYAML(text1)
+
+        self.assertEqual('pylarion', yamlObject1['header']['subject'])
+        self.assertEqual(0.0, yamlObject1['header']['formatVersion'])
+        self.assertEqual('SimpleTestPlan', yamlObject1['header']['dataType'])
+        self.assertEqual('subterra:data-service:objects:...', yamlObject1['data']['parentPlan']['uri'])
+
+        text2 = _yamlToText(yamlObject1, prefix1, suffix1)
+
+        lines = text2.splitlines()
+        self.assertEqual('Creeps in this petty pace from day to day,', lines[0])
+        self.assertEqual('To the last syllable of recorded time;', lines[1])
+        self.assertEqual('[pylarion-structured-field-start]', lines[2])
+        self.assertEqual('[pylarion-structured-field-end]', lines[-3])
+        self.assertEqual('And all our yesterdays have lighted fools', lines[-2])
+        self.assertEqual('The way to dusty death. Out, out, brief candle!', lines[-1])
+
+        yamlObject2, prefix2, suffix2 = _textToYAML(text2)
+        self.assertEqual(yamlObject1, yamlObject2)
+        self.assertEqual(prefix1, prefix2)
+        self.assertEqual(suffix1, suffix2)
+
+    def testNotInstantiable_0001(self):
+        text='''Hello world'''
+        self.assertIsNone(_SimpleTestPlanTextEmbedding.instantiateFromText(text))
+        self.assertIsNone(_SimpleTestRunTextEmbedding.instantiateFromText(text))
+
+    def testRootSimpleTestPlanTextEmbedding(self):
+        text='''[pylarion-structured-field-start]  
+header:
+  subject: pylarion
+  formatVersion: 0.0
+  dataType: SimpleTestPlan
+data:
+  parentPlan:
+    uri: 
+[pylarion-structured-field-end]
+trailing text
+'''
+        instance = _SimpleTestPlanTextEmbedding.instantiateFromText(text)
+        self.assertEqual('', instance.prefix)
+        self.assertIsNone(instance.yamlObject['data']['parentPlan']['uri'])
+        self.assertEqual('trailing text\n', instance.suffix)
+
+    def testChildSimpleTestPlanTextEmbedding(self):
+        text='''some text before
+continuing...
+[pylarion-structured-field-start]  
+header:
+  subject: pylarion
+  formatVersion: 0.0
+  dataType: SimpleTestPlan
+data:
+  parentPlan:
+    uri: subterra:data-service:objects:myParentURI
+[pylarion-structured-field-end]
+'''
+        instance = _SimpleTestPlanTextEmbedding.instantiateFromText(text)
+        self.assertEqual('some text before\ncontinuing...\n', instance.prefix)
+        self.assertEqual('subterra:data-service:objects:myParentURI', instance.yamlObject['data']['parentPlan']['uri'])
+        self.assertEqual('', instance.suffix)
+
+    def testSimpleTestRunTextEmbedding(self):
+        text='''abc
+[pylarion-structured-field-start]  
+header:
+  subject: pylarion
+  formatVersion: 0.0
+  dataType: SimpleTestRun
+data:
+  plan:
+    uri: subterra:data-service:objects:myPlanURI
+[pylarion-structured-field-end]
+xyz
+'''
+        instance = _SimpleTestRunTextEmbedding.instantiateFromText(text)
+        self.assertEqual('abc\n', instance.prefix)
+        self.assertEqual('subterra:data-service:objects:myPlanURI', instance.yamlObject['data']['plan']['uri'])
+        self.assertEqual('xyz\n', instance.suffix)

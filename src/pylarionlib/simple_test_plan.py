@@ -4,6 +4,11 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from .document import Document
 
 class SimpleTestPlan(Document):
+
+    # A temporary implementation for "simple" (Pylarion-friendly) test plans.
+    # TODO: Reimplement when we configure Polarion, eventually. I guess
+    #       we should dedicate one or more custom fields to declare "simple"
+    #       plans and their hierarchy.
     
     # TODO: references to test cases etc. See interface.txt for more.
 
@@ -14,6 +19,8 @@ class SimpleTestPlan(Document):
         Document.__init__(self, session)
 
         self.type = SimpleTestPlan._typeId
+
+        self.text = TrackerText(session, content=_SimpleTestPlanTextEmbedding.instantiateFromParentURI(None).toText())
 
         self.workItemTypes = [ tcls._wiType for tcls in [ FunctionalTestCase, StructuralTestCase, NonFunctionalTestCase, TestSuite ] ]
 
@@ -28,7 +35,9 @@ class SimpleTestPlan(Document):
             return False
         if suds_object.type.id != SimpleTestPlan._typeId:
             return False
-        # TODO: check text.content for a simple, expected text
+        if not SimpleTestPlan._hasParentPlanEmbedding(suds_object):
+            return False
+        # TODO: check all the test inside are linked only
         return True
 
 
@@ -36,6 +45,8 @@ class SimpleTestPlan(Document):
     def _mapFromSUDS(cls, session, suds_object):
         simpleTestPlan = SimpleTestPlan(session)
         SimpleTestPlan._mapSpecificAttributesFromSUDS(suds_object, simpleTestPlan)
+        if not SimpleTestPlan._hasParentPlanEmbedding(suds_object):
+            raise PylarionLibException('No valid SimpleTestPlan embedding'.format(suds_object))
         return simpleTestPlan
 
 
@@ -45,4 +56,35 @@ class SimpleTestPlan(Document):
         return suds_object
 
 
+    def _crudCreate(self, project=None, namespace=None):
+        # Work around a chicken-and-egg problem introduced by the two-steps
+        # process needed to create a Document (Hint: by Polarion's design)
+        tempDocument = Document(self.session)
+        self._copy(tempDocument)
+        tempDocument._crudCreate(project=project, namespace=namespace)
+        self.puri = tempDocument.puri
+        return self._crudRetrieve()
+
+
+    @classmethod
+    def _hasParentPlanEmbedding(cls, suds_object):
+        if not hasattr(suds_object, 'homePageContent'):
+            return False
+        if not hasattr(suds_object.homePageContent, 'content'):
+            return False
+        return None != _SimpleTestPlanTextEmbedding.instantiateFromText(suds_object.homePageContent.content)
+
+
+    def _getParentPlanURI(self):
+        return _SimpleTestPlanTextEmbedding.getParentPlanURI(self.text.content)
+
+
+    def _setParentPlanURI(self, uri):
+        # NOTE: Not persisted until _crudUpdate()
+        self.text.content = _SimpleTestPlanTextEmbedding.setParentPlanURI(self.text.content, uri)
+
+
+from .exceptions import PylarionLibException
 from .test_classes import FunctionalTestCase, StructuralTestCase, NonFunctionalTestCase, TestSuite
+from .tracker_text import TrackerText
+from .embedding import _SimpleTestPlanTextEmbedding
