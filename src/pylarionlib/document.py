@@ -36,11 +36,11 @@ class Document(AbstractPolarionPersistentObject):
         if project:
             self.project = project
         if not self.project:
-            self.project = self.session._get_default_project()
+            self.project = self.session._getDefaultProject()
         if namespace:
             self.namespace = namespace
         if not self.namespace:
-            self.namespace = self.session._get_default_namespace()
+            self.namespace = self.session._getDefaultNamespace()
         if not self.text:
             self.text = TrackerText(self.session)
         return self
@@ -50,14 +50,14 @@ class Document(AbstractPolarionPersistentObject):
         sudsAllowedWITypes = []
         if self.workItemTypes:
             for i in self.workItemTypes:
-                wiTypeInstance = self.session.tracker_client.factory.create('tns3:EnumOptionId')
+                wiTypeInstance = self.session.trackerClient.factory.create('tns3:EnumOptionId')
                 wiTypeInstance.id = i
                 sudsAllowedWITypes.append(wiTypeInstance)
         return sudsAllowedWITypes
 
 
     def _structureLinkRoleToSUDS(self):
-        sudsStructureLinkRole = self.session.tracker_client.factory.create('tns3:EnumOptionId')
+        sudsStructureLinkRole = self.session.trackerClient.factory.create('tns3:EnumOptionId')
         sudsStructureLinkRole.id = self.structureLinkRole
         return sudsStructureLinkRole
 
@@ -83,7 +83,7 @@ class Document(AbstractPolarionPersistentObject):
 
 
     def _mapToSUDS(self):
-        sudsObject = self.session.tracker_client.factory.create('tns3:Module')
+        sudsObject = self.session.trackerClient.factory.create('tns3:Module')
         Document._mapSpecificAttributesToSUDS(self, sudsObject)
         return sudsObject
 
@@ -95,16 +95,16 @@ class Document(AbstractPolarionPersistentObject):
 
         session = document.session
 
-        sudsObject.project = session.project_client.service.getProject(document.project)
+        sudsObject.project = session.projectClient.service.getProject(document.project)
         sudsObject.moduleFolder = document.namespace
         sudsObject.moduleName = document.name
 
-        sudsObject.type = session.tracker_client.factory.create('tns3:EnumOptionId')
+        sudsObject.type = session.trackerClient.factory.create('tns3:EnumOptionId')
         sudsObject.type.id = document.type
 
         sudsObject.allowedWITypes = document._workItemTypesToSUDS()
 
-        sudsObject.structureLinkRole = session.tracker_client.factory.create('tns3:EnumOptionId')
+        sudsObject.structureLinkRole = session.trackerClient.factory.create('tns3:EnumOptionId')
         sudsObject.structureLinkRole.id = document.structureLinkRole
 
         if not document.text:
@@ -145,7 +145,7 @@ class Document(AbstractPolarionPersistentObject):
         # This will be really crazy now. By Polarion's design and bugs, we
         # must store the document in two steps: create and update.
 
-        uri = self.session.tracker_client.service.createModule(
+        uri = self.session.trackerClient.service.createModule(
                                            self.project,
                                            self.namespace,
                                            self.name,
@@ -154,7 +154,7 @@ class Document(AbstractPolarionPersistentObject):
                                            False,
                                            suds.null())
         uri = '{}'.format(uri) # work around Text jumping in sometimes
-        sudsObject = self.session.tracker_client.service.getModuleByUri(uri)
+        sudsObject = self.session.trackerClient.service.getModuleByUri(uri)
         stub = self.__class__._mapFromSUDS(self.session, sudsObject)
 
         temp = (self.type, self.workItemTypes, self.text)
@@ -170,7 +170,7 @@ class Document(AbstractPolarionPersistentObject):
     def _crudRetrieve(self):
         if not self.puri:
             raise PylarionLibException('Current object has no URI, cannot retrieve data')
-        sudsObject = self.session.tracker_client.service.getModuleByUri(self.puri)
+        sudsObject = self.session.trackerClient.service.getModuleByUri(self.puri)
         temp = self.__class__._mapFromSUDS(self.session, sudsObject)
         temp._copy(self)
         return self
@@ -181,14 +181,14 @@ class Document(AbstractPolarionPersistentObject):
             raise PylarionLibException('Current object has no URI, cannot update data')
         self._fillMissingValues()
         sudsObject = self._mapToSUDS()
-        self.session.tracker_client.service.updateModule(sudsObject)
+        self.session.trackerClient.service.updateModule(sudsObject)
         return self._crudRetrieve()
 
 
     def _crudDelete(self):
         if not self.puri:
             raise PylarionLibException('Current object has no URI, cannot update data')
-        self.session.tracker_client.service.deleteModule(self.puri)
+        self.session.trackerClient.service.deleteModule(self.puri)
         empty = self.__class__(self.session)
         empty._copy(self)
 

@@ -7,6 +7,6 @@ class TestManagementText(AbstractTextCrate):
     ''' A crate to deal with 'tns2:Text' of the TestManagement service '''
 
     def _mapToSUDS(self):
-        sudsObject = self.session.test_management_client.factory.create('tns2:Text')
+        sudsObject = self.session.testManagementClient.factory.create('tns2:Text')
         TestManagementText._mapSpecificAttributesToSUDS(self, sudsObject)
         return sudsObject

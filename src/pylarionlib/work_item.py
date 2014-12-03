@@ -33,7 +33,7 @@ class WorkItem(AbstractPolarionPersistentObject):
         if project:
             self.project = project
         if not self.project:
-            self.project = self.session._get_default_project()
+            self.project = self.session._getDefaultProject()
         return self
 
 
@@ -52,16 +52,16 @@ class WorkItem(AbstractPolarionPersistentObject):
 
         session = workItem.session
 
-        type_instance = session.tracker_client.factory.create('tns3:EnumOptionId')
-        type_instance.id = workItem.type
+        typeInstance = session.trackerClient.factory.create('tns3:EnumOptionId')
+        typeInstance.id = workItem.type
 
-        status_instance = session.tracker_client.factory.create('tns3:EnumOptionId')
-        status_instance.id = workItem.status
+        statusInstance = session.trackerClient.factory.create('tns3:EnumOptionId')
+        statusInstance.id = workItem.status
 
-        sudsObject.project = session.project_client.service.getProject(workItem.project)
+        sudsObject.project = session.projectClient.service.getProject(workItem.project)
         sudsObject.title = workItem.title
-        sudsObject.type = type_instance
-        sudsObject.status = status_instance
+        sudsObject.type = typeInstance
+        sudsObject.status = statusInstance
 
         # description needs cheating: Polarion server does not accept suds.null() there
         if not workItem.description:
@@ -93,7 +93,7 @@ class WorkItem(AbstractPolarionPersistentObject):
 
 
     def _mapToSUDS(self):
-        sudsObject = self.session.tracker_client.factory.create('tns3:WorkItem')
+        sudsObject = self.session.trackerClient.factory.create('tns3:WorkItem')
         WorkItem._mapSpecificAttributesToSUDS(self, sudsObject)
         return sudsObject
 
@@ -102,8 +102,8 @@ class WorkItem(AbstractPolarionPersistentObject):
     def _mapFromSUDS(cls, session, sudsObject):
         # TODO: sanity checks
         # TODO: change the following to use _isConvertible
-        type_string = sudsObject.type.id
-        if AbstractTest._is_known_type(type_string):
+        typeString = sudsObject.type.id
+        if AbstractTest._isKnownType(typeString):
             return AbstractTest._mapFromSUDS(session, sudsObject)
         else:
             # fallback for the types we don't care much
@@ -117,7 +117,7 @@ class WorkItem(AbstractPolarionPersistentObject):
     def _crudCreate(self, project=None):
         self._fillMissingValues(project)
         sudsObject = self._mapToSUDS()
-        uri = self.session.tracker_client.service.createWorkItem(sudsObject)
+        uri = self.session.trackerClient.service.createWorkItem(sudsObject)
         uri = '{}'.format(uri) # work around Text jumping in sometimes
         self.puri = uri
         return self._crudRetrieve()
@@ -125,7 +125,7 @@ class WorkItem(AbstractPolarionPersistentObject):
     def _crudRetrieve(self):
         if not self.puri:
             raise PylarionLibException('Current object has no URI, cannot retrieve data')
-        sudsObject = self.session.tracker_client.service.getWorkItemByUri(self.puri)
+        sudsObject = self.session.trackerClient.service.getWorkItemByUri(self.puri)
         temp = WorkItem._mapFromSUDS(self.session, sudsObject)
         temp._copy(self)
         return self
@@ -135,7 +135,7 @@ class WorkItem(AbstractPolarionPersistentObject):
             raise PylarionLibException('Current object has no URI, cannot update data')
         self._fillMissingValues()
         sudsObject = self._mapToSUDS()
-        self.session.tracker_client.service.updateWorkItem(sudsObject)
+        self.session.trackerClient.service.updateWorkItem(sudsObject)
         return self._crudRetrieve()
 
     def _crudDelete(self):

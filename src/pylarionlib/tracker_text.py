@@ -7,6 +7,6 @@ class TrackerText(AbstractTextCrate):
     ''' A crate to deal with 'tns2:Text' of the Tracker service '''
 
     def _mapToSUDS(self):
-        sudsObject = self.session.tracker_client.factory.create('tns2:Text')
+        sudsObject = self.session.trackerClient.factory.create('tns2:Text')
         TrackerText._mapSpecificAttributesToSUDS(self, sudsObject)
         return sudsObject

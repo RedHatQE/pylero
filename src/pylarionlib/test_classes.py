@@ -18,7 +18,7 @@ class AbstractTest(WorkItem):
     class TagsConstants(object):
         CF_NAME = 'tcmstag'
 
-    _known_subclasses = []
+    _knownSubclasses = []
 
 
     def __init__(self, session):
@@ -91,9 +91,9 @@ class AbstractTest(WorkItem):
 
 
     @classmethod
-    def _is_known_type(cls, type_string):
-        for subclass in AbstractTest._known_subclasses:
-            if type_string == subclass._wiType:
+    def _isKnownType(cls, typeString):
+        for subclass in AbstractTest._knownSubclasses:
+            if typeString == subclass._wiType:
                 return True
         return False
 
@@ -101,11 +101,11 @@ class AbstractTest(WorkItem):
     @classmethod
     def _mapFromSUDS(cls, session, sudsObject):
         # TODO: sanity checks?
-        type_string = sudsObject.type.id
-        for subclass in AbstractTest._known_subclasses:
-            if type_string == subclass._wiType:
+        typeString = sudsObject.type.id
+        for subclass in AbstractTest._knownSubclasses:
+            if typeString == subclass._wiType:
                 return subclass._mapFromSUDS(session, sudsObject)
-        raise PylarionLibException('Unknown work item type {}'.format(type_string))
+        raise PylarionLibException('Unknown work item type {}'.format(typeString))
 
 
     # Helper methods for CRUD
@@ -115,16 +115,16 @@ class AbstractTest(WorkItem):
         if wishedScriptURL == actualSriptURL:
             return
         if actualSriptURL:
-            self.session.tracker_client.service.removeHyperlink(self.puri, actualSriptURL)
+            self.session.trackerClient.service.removeHyperlink(self.puri, actualSriptURL)
         if wishedScriptURL:
-            self.session.tracker_client.service.addHyperlink(self.puri, wishedScriptURL, TrackerHyperlink._createRoleSUDSObjects(self.session, AbstractTest._SCRIPT_URL_ROLE))
+            self.session.trackerClient.service.addHyperlink(self.puri, wishedScriptURL, TrackerHyperlink._createRoleSUDSObjects(self.session, AbstractTest._SCRIPT_URL_ROLE))
         self._crudRetrieve()
         if wishedScriptURL != self.scriptURL:
             raise PylarionLibException('Cannot add Hyperlink={} to Work Item {}'.format(wishedScriptURL, self.puri))
 
     def _retrieveAutomation(self):
         self.automation = None
-        envelope = self.session.tracker_client.service.getCustomField(self.puri, AbstractTest.AutomationConstants.CF_NAME)
+        envelope = self.session.trackerClient.service.getCustomField(self.puri, AbstractTest.AutomationConstants.CF_NAME)
         if envelope:
             if hasattr(envelope, 'value'):
                 if envelope.value:
@@ -135,19 +135,19 @@ class AbstractTest(WorkItem):
         actualAutomation = self.automation
         if wishedAutomation == actualAutomation:
             return
-        cf = self.session.tracker_client.factory.create('tns3:CustomField')
+        cf = self.session.trackerClient.factory.create('tns3:CustomField')
         cf.parentItemURI = self.puri
         cf.key = AbstractTest.AutomationConstants.CF_NAME
-        cf.value = self.session.tracker_client.factory.create('tns3:EnumOptionId')
+        cf.value = self.session.trackerClient.factory.create('tns3:EnumOptionId')
         cf.value.id = wishedAutomation
-        self.session.tracker_client.service.setCustomField(cf)
+        self.session.trackerClient.service.setCustomField(cf)
         self._retrieveAutomation()
         if wishedAutomation != self.automation:
             raise PylarionLibException('Cannot set Automation={} to Work Item {}'.format(wishedAutomation, self.puri))
 
     def _retrieveTags(self):
         self.tags = set()
-        envelope = self.session.tracker_client.service.getCustomField(self.puri, AbstractTest.TagsConstants.CF_NAME)
+        envelope = self.session.trackerClient.service.getCustomField(self.puri, AbstractTest.TagsConstants.CF_NAME)
         if envelope:
             if hasattr(envelope, 'value'):
                 if envelope.value:
@@ -157,11 +157,11 @@ class AbstractTest(WorkItem):
         actualTags = self.tags
         if wishedTags == actualTags:
             return
-        cf = self.session.tracker_client.factory.create('tns3:CustomField')
+        cf = self.session.trackerClient.factory.create('tns3:CustomField')
         cf.parentItemURI = self.puri
         cf.key = AbstractTest.TagsConstants.CF_NAME
         cf.value = ','.join(wishedTags)
-        self.session.tracker_client.service.setCustomField(cf)
+        self.session.trackerClient.service.setCustomField(cf)
         self._retrieveTags()
         if wishedTags != self.tags:
             raise PylarionLibException('Cannot set Tags={} to Work Item {}'.format(wishedTags, self.puri))
@@ -199,17 +199,17 @@ class AbstractTest(WorkItem):
 class FunctionalTestCase(AbstractTest):
 
     _wiType = 'functionaltestcase'
-    _known_subclasses = []
+    _knownSubclasses = []
 
     def __init__(self, session):
         AbstractTest.__init__(self, session)
         self.type = FunctionalTestCase._wiType
-        self.pos_neg = None
+        self.posNeg = None
 
     def _copy(self, another):
         AbstractTest._copy(self, another)
         another.type = self.type
-        another.pos_neg = self.pos_neg
+        another.posNeg = self.posNeg
         return another
 
     def _fillMissingValues(self, project=None, namespace=None):
@@ -220,9 +220,9 @@ class FunctionalTestCase(AbstractTest):
 
     @classmethod
     def _mapFromSUDS(cls, session, sudsObject):
-        type_string = sudsObject.type.id
-        if type_string != FunctionalTestCase._wiType:
-            raise PylarionLibException('Cannot instantiate from {}'.format(type_string))
+        typeString = sudsObject.type.id
+        if typeString != FunctionalTestCase._wiType:
+            raise PylarionLibException('Cannot instantiate from {}'.format(typeString))
         wi = FunctionalTestCase(session)
         FunctionalTestCase._mapSpecificAttributesFromSUDS(sudsObject, wi)
         return wi
@@ -231,17 +231,17 @@ class FunctionalTestCase(AbstractTest):
 class StructuralTestCase(AbstractTest):
 
     _wiType = 'structuraltestcase'
-    _known_subclasses = []
+    _knownSubclasses = []
 
     def __init__(self, session):
         AbstractTest.__init__(self, session)
         self.type = StructuralTestCase._wiType
-        self.pos_neg = None
+        self.posNeg = None
 
     def _copy(self, another):
         AbstractTest._copy(self, another)
         another.type = self.type
-        another.pos_neg = self.pos_neg
+        another.posNeg = self.posNeg
         return another
 
     def _fillMissingValues(self, project=None, namespace=None):
@@ -252,9 +252,9 @@ class StructuralTestCase(AbstractTest):
 
     @classmethod
     def _mapFromSUDS(cls, session, sudsObject):
-        type_string = sudsObject.type.id
-        if type_string != StructuralTestCase._wiType:
-            raise PylarionLibException('Cannot instantiate from {}'.format(type_string))
+        typeString = sudsObject.type.id
+        if typeString != StructuralTestCase._wiType:
+            raise PylarionLibException('Cannot instantiate from {}'.format(typeString))
         wi = StructuralTestCase(session)
         StructuralTestCase._mapSpecificAttributesFromSUDS(sudsObject, wi)
         return wi
@@ -263,17 +263,17 @@ class StructuralTestCase(AbstractTest):
 class NonFunctionalTestCase(AbstractTest):
 
     _wiType = 'nonfunctionaltestcase'
-    _known_subclasses = []
+    _knownSubclasses = []
 
     def __init__(self, session):
         AbstractTest.__init__(self, session)
         self.type = NonFunctionalTestCase._wiType
-        self.pos_neg = None
+        self.posNeg = None
 
     def _copy(self, another):
         AbstractTest._copy(self, another)
         another.type = self.type
-        another.pos_neg = self.pos_neg
+        another.posNeg = self.posNeg
         return another
 
     def _fillMissingValues(self, project=None, namespace=None):
@@ -284,9 +284,9 @@ class NonFunctionalTestCase(AbstractTest):
 
     @classmethod
     def _mapFromSUDS(cls, session, sudsObject):
-        type_string = sudsObject.type.id
-        if type_string != NonFunctionalTestCase._wiType:
-            raise PylarionLibException('Cannot instantiate from {}'.format(type_string))
+        typeString = sudsObject.type.id
+        if typeString != NonFunctionalTestCase._wiType:
+            raise PylarionLibException('Cannot instantiate from {}'.format(typeString))
         wi = NonFunctionalTestCase(session)
         NonFunctionalTestCase._mapSpecificAttributesFromSUDS(sudsObject, wi)
         return wi
@@ -295,7 +295,7 @@ class NonFunctionalTestCase(AbstractTest):
 class TestSuite(AbstractTest):
 
     _wiType = 'testsuite'
-    _known_subclasses = []
+    _knownSubclasses = []
 
     def __init__(self, session):
         AbstractTest.__init__(self, session)
@@ -316,15 +316,15 @@ class TestSuite(AbstractTest):
 
     @classmethod
     def _mapFromSUDS(cls, session, sudsObject):
-        type_string = sudsObject.type.id
-        if type_string != TestSuite._wiType:
-            raise PylarionLibException('Cannot instantiate from {}'.format(type_string))
+        typeString = sudsObject.type.id
+        if typeString != TestSuite._wiType:
+            raise PylarionLibException('Cannot instantiate from {}'.format(typeString))
         wi = TestSuite(session)
         TestSuite._mapSpecificAttributesFromSUDS(sudsObject, wi)
         return wi
 
 
-AbstractTest._known_subclasses = [ FunctionalTestCase, StructuralTestCase, NonFunctionalTestCase, TestSuite ]
+AbstractTest._knownSubclasses = [ FunctionalTestCase, StructuralTestCase, NonFunctionalTestCase, TestSuite ]
 
 
 from .exceptions import PylarionLibException

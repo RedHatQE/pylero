@@ -55,7 +55,7 @@ class SimpleTestRun(TestRun):
 
 
     def _mapToSUDS(self):
-        sudsObject = self.session.test_management_client.factory.create('tns3:TestRun')
+        sudsObject = self.session.testManagementClient.factory.create('tns3:TestRun')
         SimpleTestRun._mapSpecificAttributesToSUDS(self, sudsObject)
         return sudsObject
 
@@ -88,7 +88,7 @@ class SimpleTestRun(TestRun):
 
 
     def _retrieveTestPlanURI(self):
-        wiki = self.session.test_management_client.service.getWikiContentForTestRun(self.puri)
+        wiki = self.session.testManagementClient.service.getWikiContentForTestRun(self.puri)
         self.testPlanURI = _SimpleTestRunTextEmbedding.getPlanURI(wiki.content)
 
 
@@ -96,10 +96,10 @@ class SimpleTestRun(TestRun):
         actualTestPlanURI = self.testPlanURI
         if wishedTestPlanURI == actualTestPlanURI:
             return
-        wiki = self.session.test_management_client.service.getWikiContentForTestRun(self.puri)
+        wiki = self.session.testManagementClient.service.getWikiContentForTestRun(self.puri)
         newContent = _SimpleTestRunTextEmbedding.setPlanURI(wiki.content, wishedTestPlanURI)
         wiki.content = newContent
-        self.session.test_management_client.service.updateWikiContentForTestRun(self.puri, wiki)
+        self.session.testManagementClient.service.updateWikiContentForTestRun(self.puri, wiki)
         self._retrieveTestPlanURI()
         if wishedTestPlanURI != self.testPlanURI:
             raise PylarionLibException('Cannot set Test Plan URI={} to Test Run {}'.format(wishedTestPlanURI, self.puri))
@@ -119,7 +119,7 @@ class SimpleTestRun(TestRun):
 
     def _fixTestRecords(self, wishedTestRecords):
 
-        sudsObject = self.session.test_management_client.service.getTestRunByUri(self.puri)
+        sudsObject = self.session.testManagementClient.service.getTestRunByUri(self.puri)
         self._retrieveTestRecords(sudsObject)
 
         if self._hasEquivTestRecords(wishedTestRecords):
@@ -138,14 +138,14 @@ class SimpleTestRun(TestRun):
         # "Empty" the run: I'm afraid there's this clumsy way only
         if records and len(records) > 0:
             for i in xrange(len(records) - 1, -1, -1):
-                self.session.test_management_client.service.updateTestRecordAtIndex(self.puri, i, suds.null())
+                self.session.testManagementClient.service.updateTestRecordAtIndex(self.puri, i, suds.null())
 
         if wishedTestRecords:
             for tr in wishedTestRecords:
                 if tr:
-                    self.session.test_management_client.service.addTestRecordToTestRun(self.puri, tr._mapToSUDS())
+                    self.session.testManagementClient.service.addTestRecordToTestRun(self.puri, tr._mapToSUDS())
 
-        sudsObject = self.session.test_management_client.service.getTestRunByUri(self.puri)
+        sudsObject = self.session.testManagementClient.service.getTestRunByUri(self.puri)
         self._retrieveTestRecords(sudsObject)
 
         if not self._hasEquivTestRecords(wishedTestRecords):
@@ -165,14 +165,14 @@ class SimpleTestRun(TestRun):
             self._copy(tempTestRun)
             tempTestRun._crudCreate(project=project)
 
-            wiki = self.session.test_management_client.service.getWikiContentForTestRun(tempTestRun.puri)
+            wiki = self.session.testManagementClient.service.getWikiContentForTestRun(tempTestRun.puri)
             embedding = _SimpleTestRunTextEmbedding.instantiateFromPlanURI(wishedTestPlanURI)
             embedding.prefix = wiki.content
             if not embedding.prefix.endswith('\n'):
                 embedding.prefix = '{}\n'.format(embedding.prefix)
             embedding.suffix = ''
             wiki.content = embedding.toText()
-            self.session.test_management_client.service.updateWikiContentForTestRun(tempTestRun.puri, wiki)
+            self.session.testManagementClient.service.updateWikiContentForTestRun(tempTestRun.puri, wiki)
 
             tempTestRun._copy(self)
 

@@ -255,10 +255,10 @@ if False:
 
     # Pylarion-friendly test plan (see above)
     class SimpleTestPlan(Document):
-        def getChildrenPlans(self, project=None, all_projects=False): pass
+        def getChildrenPlans(self, project=None, allProjects=False): pass
         def createChildPlan(self, project=None): pass
-        def getTestCases(self, project=None, all_projects=False): pass
-        def addTestCase(self, test_case): pass
+        def getTestCases(self, project=None, allProjects=False): pass
+        def addTestCase(self, testCase): pass
         def deleteTestCase(self, arg): pass  # TestCase instance, URI, test "name" like "/CoreOS/..."
         def createRun(self, project=None): pass
 
@@ -268,13 +268,13 @@ if False:
     class SimpleTestRun(AbstractTestRun):
         def getTestPlan(self): pass
         def getTestRecords(self): pass
-        def deleteTestRecord(self, test_ref): pass  # TestRecord or TestCase instance, TestCase URI, test "name"
-        def setTestRecordResult(self, test_ref, result, duration=None, executed=None, comment=None): pass
+        def deleteTestRecord(self, testRef): pass  # TestRecord or TestCase instance, TestCase URI, test "name"
+        def setTestRecordResult(self, testRef, result, duration=None, executed=None, comment=None): pass
 
     class Server:
         # no singleton dance
 
-        def __init__(self, url, login, password, default_project=None, default_namespace=None, timeout=60): pass
+        def __init__(self, url, login, password, defaultProject=None, defaultNamespace=None, timeout=60): pass
         def session(self): pass  # a context manager to enter/exit a session
 
     class Session:
@@ -289,9 +289,9 @@ if False:
         def newXXX(self, project=None, namespace=None): pass
         def getXXXByPID(self, pid, project=None): pass
         def getXXXByPURI(self, puri): pass
-        def findAllXXXs(self, query, project=None, all_projects=False, namespace=None): pass
-        def findXXXsByQuery(self, query, project=None, all_projects=False, namespace=None): pass
-        def findXXXsByTCMSTag(self, tag, project=None, all_projects=False): pass  # just for tests cases
+        def findAllXXXs(self, query, project=None, allProjects=False, namespace=None): pass
+        def findXXXsByQuery(self, query, project=None, allProjects=False, namespace=None): pass
+        def findXXXsByTCMSTag(self, tag, project=None, allProjects=False): pass  # just for tests cases
         def loadXXX(self, reference, project=None, namespace=None): pass  # URI or ID or "title" or ...
         def save(self, obj): pass  # CRUD create or update
         def delete(self, obj): pass  # CRUD delete
@@ -305,7 +305,7 @@ if False:
     # Examples
     # ------------------------------------------------------------------------
 
-    def _demo_code_0001():
+    def _demoCode0001():
         '''
         Create a test run from selected test cases of a test plan.
 
@@ -313,16 +313,16 @@ if False:
         Polarion runs in its own implicit transaction). As a consequence,
         just a partial state can be recorded in the end.
         '''
-        with Server(url='http://example.com/polarion', login='joe', password='secret_password', default_project='BaseOS') as s:
+        with Server(url='http://example.com/polarion', login='joe', password='secret_password', defaultProject='BaseOS') as s:
             generalPlan = s.loadSimpleTestPlan('DTS 3.0 General test plan')
             runForEclipse = generalPlan.createRun()
             runForEclipse.description = 'DTS 3.0 Beta 2: Eclipse'
             s.save(runForEclipse)
             for testCase in runForEclipse.getTestRecords():
-                if 'eclipse' not in testCase.tcms_tags:
+                if 'eclipse' not in testCase.tags:
                     runForEclipse.deleteTestRecord(testCase)
 
-    def _demo_code_0002():
+    def _demoCode0002():
         '''
         Create a test case, a plan, a run, perform, and delete the run.
 
@@ -335,7 +335,7 @@ if False:
         new plan will be permanent). In case of an exception an automatic
         rollback will take place.
         '''
-        with Server(url='http://example.com/polarion', login='joe', password='secret_password', default_project='JoesProject') as s:
+        with Server(url='http://example.com/polarion', login='joe', password='secret_password', defaultProject='JoesProject') as s:
             with s.transaction():
 
                 # create a new functional test case

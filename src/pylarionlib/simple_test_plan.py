@@ -51,7 +51,7 @@ class SimpleTestPlan(Document):
 
 
     def _mapToSUDS(self):
-        sudsObject = self.session.tracker_client.factory.create('tns3:Module')
+        sudsObject = self.session.trackerClient.factory.create('tns3:Module')
         SimpleTestPlan._mapSpecificAttributesToSUDS(self, sudsObject)
         return sudsObject
 

@@ -24,7 +24,7 @@ class TrackerHyperlink(AbstractPolarionCrate):
 
     @classmethod
     def _createRoleSUDSObjects(cls, session, role):
-        retval = session.tracker_client.factory.create('tns3:EnumOptionId')
+        retval = session.trackerClient.factory.create('tns3:EnumOptionId')
         retval.id = role
         return retval
 
@@ -55,7 +55,7 @@ class TrackerHyperlink(AbstractPolarionCrate):
 
 
     def _mapToSUDS(self):
-        sudsObject = self.session.tracker_client.factory.create('tns3:Hyperlink')
+        sudsObject = self.session.trackerClient.factory.create('tns3:Hyperlink')
         TrackerHyperlink._mapSpecificAttributesToSUDS(self, sudsObject)
         return sudsObject
 

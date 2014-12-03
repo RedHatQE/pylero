@@ -83,7 +83,7 @@ class TestRecord(AbstractPolarionCrate):
         sudsObject.testCaseURI = testRecord.testCaseURI
 
         if testRecord.result:
-            sudsObject.result = session.test_management_client.factory.create('tns4:EnumOptionId')
+            sudsObject.result = session.testManagementClient.factory.create('tns4:EnumOptionId')
             sudsObject.result.id = testRecord.result
 
         if testRecord.comment:
@@ -124,7 +124,7 @@ class TestRecord(AbstractPolarionCrate):
 
 
     def _mapToSUDS(self):
-        sudsObject = self.session.test_management_client.factory.create('tns3:TestRecord')
+        sudsObject = self.session.testManagementClient.factory.create('tns3:TestRecord')
         TestRecord._mapSpecificAttributesToSUDS(self, sudsObject)
         return sudsObject
 

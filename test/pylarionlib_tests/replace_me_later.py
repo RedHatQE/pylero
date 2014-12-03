@@ -30,22 +30,22 @@ my_server = Server('http://polarion.dqe.lab.eng.bos.redhat.com/polarion', my_log
 
 class TestWorkItemCRUD(unittest.TestCase):
 
-    test_session = None
+    testSession = None
 
     @classmethod
     def setUpClass(cls):
         super(TestWorkItemCRUD, cls).setUpClass()
-        TestWorkItemCRUD.test_session = my_server._createSession()
-        TestWorkItemCRUD.test_session._login()
+        TestWorkItemCRUD.testSession = my_server._createSession()
+        TestWorkItemCRUD.testSession._login()
 
     @classmethod
     def tearDownClass(cls):
-        TestWorkItemCRUD.test_session._logout()
+        TestWorkItemCRUD.testSession._logout()
         super(TestWorkItemCRUD, cls).tearDownClass()
 
     def test_0001(self):
         permanent_title = 'vaskovo uzitkovy test 1'
-        tc = FunctionalTestCase(TestWorkItemCRUD.test_session)
+        tc = FunctionalTestCase(TestWorkItemCRUD.testSession)
         tc.title = permanent_title
         tc._crudCreate()
         self.assertTrue(tc.puri.startswith('subterra:data-service:objects:'))
@@ -58,7 +58,7 @@ class TestWorkItemCRUD(unittest.TestCase):
     def test_0002(self):
         old_title = 'vaskovo stavebni test 1'
         new_title = 'zmena v titulku!'
-        tc = StructuralTestCase(TestWorkItemCRUD.test_session)
+        tc = StructuralTestCase(TestWorkItemCRUD.testSession)
         tc.title = old_title
         tc._crudCreate()
         self.assertTrue(tc.puri.startswith('subterra:data-service:objects:'))
@@ -72,12 +72,12 @@ class TestWorkItemCRUD(unittest.TestCase):
 
     def test_0003(self):
         title = 'vaskovo neuzitkovy test 1'
-        tc1 = NonFunctionalTestCase(TestWorkItemCRUD.test_session)
+        tc1 = NonFunctionalTestCase(TestWorkItemCRUD.testSession)
         tc1.title = title
         tc1._crudCreate()
         self.assertTrue(tc1.puri.startswith('subterra:data-service:objects:'))
         pid = tc1.pid
-        tc2 = TestWorkItemCRUD.test_session.getWorkItemByPID(pid)
+        tc2 = TestWorkItemCRUD.testSession.getWorkItemByPID(pid)
         self.assertEqual(title, tc2.title)
         self.assertIsInstance(tc2, NonFunctionalTestCase)
         self.assertEqual(tc1.title, tc2.title)
@@ -90,11 +90,11 @@ class TestWorkItemCRUD(unittest.TestCase):
         automation2 = AbstractTest.AutomationConstants.VALUE_MANUAL_ONLY
         tags1 = set(['Maharaja', 'Dhiraya', 'Bir', 'Bikram', 'Shah', 'Deva'])
         tags2 = set(['Mobutu', 'Sese', 'Seko', 'Kuku', 'Ngbanda', 'Wa', 'Za', 'Banga'])
-        tc1 = TestSuite(TestWorkItemCRUD.test_session)
+        tc1 = TestSuite(TestWorkItemCRUD.testSession)
         tc1.title = 'vaskovo testovy pruvod'
         tc1.scriptURL = surl1
         tc1._crudCreate()
-        tc2 = TestWorkItemCRUD.test_session.getWorkItemByPURI(tc1.puri)
+        tc2 = TestWorkItemCRUD.testSession.getWorkItemByPURI(tc1.puri)
         self.assertEqual(tc1.puri, tc2.puri)
         self.assertEqual(tc1.pid, tc2.pid)
         self.assertEqual(tc1.__class__, tc2.__class__)
@@ -108,7 +108,7 @@ class TestWorkItemCRUD(unittest.TestCase):
         tc2.automation = automation1
         tc2.tags = tags1
         tc2._crudUpdate()
-        tc3 = TestWorkItemCRUD.test_session.getWorkItemByPURI(tc2.puri)
+        tc3 = TestWorkItemCRUD.testSession.getWorkItemByPURI(tc2.puri)
         self.assertEqual(surl2, tc2.scriptURL)
         self.assertEqual(surl2, tc3.scriptURL)
         self.assertEqual(automation1, tc2.automation)
@@ -119,7 +119,7 @@ class TestWorkItemCRUD(unittest.TestCase):
         tc3.automation = None
         tc3.tags = set()
         tc3._crudUpdate()
-        tc4 = TestWorkItemCRUD.test_session.getWorkItemByPURI(tc3.puri)
+        tc4 = TestWorkItemCRUD.testSession.getWorkItemByPURI(tc3.puri)
         self.assertIsNone(tc3.scriptURL)
         self.assertIsNone(tc4.scriptURL)
         self.assertIsNone(tc3.automation)
@@ -130,7 +130,7 @@ class TestWorkItemCRUD(unittest.TestCase):
         tc4.automation = automation2
         tc4.tags = tags2
         tc4._crudUpdate()
-        tc5 = TestWorkItemCRUD.test_session.getWorkItemByPURI(tc4.puri)
+        tc5 = TestWorkItemCRUD.testSession.getWorkItemByPURI(tc4.puri)
         self.assertEqual(surl1, tc4.scriptURL)
         self.assertEqual(surl1, tc5.scriptURL)
         self.assertEqual(automation2, tc4.automation)
@@ -141,35 +141,35 @@ class TestWorkItemCRUD(unittest.TestCase):
 
 class TestDocumentCRUD(unittest.TestCase):
 
-    test_session = None
+    testSession = None
 
     @classmethod
     def setUpClass(cls):
         super(TestDocumentCRUD, cls).setUpClass()
-        TestDocumentCRUD.test_session = my_server._createSession()
-        TestDocumentCRUD.test_session._login()
+        TestDocumentCRUD.testSession = my_server._createSession()
+        TestDocumentCRUD.testSession._login()
 
     @classmethod
     def tearDownClass(cls):
-        TestDocumentCRUD.test_session._logout()
+        TestDocumentCRUD.testSession._logout()
         super(TestDocumentCRUD, cls).tearDownClass()
 
     def test_0001(self):
 
         name = 'vaskovo dokument'
 
-        old = TestDocumentCRUD.test_session.getDocumentByPID(name, namespace=my_space)
+        old = TestDocumentCRUD.testSession.getDocumentByPID(name, namespace=my_space)
         if old:
             old._crudDelete()
 
         permanent_name = name
 
-        doc = Document(TestDocumentCRUD.test_session)
+        doc = Document(TestDocumentCRUD.testSession)
         doc.namespace = my_space
         doc.structureLinkRole = 'parent'
         doc.name = permanent_name
         doc.workItemTypes = [ 'functionaltestcase', 'unittestcase' ]
-        doc.text = TrackerText(TestDocumentCRUD.test_session, 'text/html', 'cokoliv', False)
+        doc.text = TrackerText(TestDocumentCRUD.testSession, 'text/html', 'cokoliv', False)
 
         doc._crudCreate()
 
@@ -190,41 +190,41 @@ class TestDocumentCRUD(unittest.TestCase):
 
         self.assertEqual(newContent, doc.text.content)
 
-        refreshed = TestDocumentCRUD.test_session.getDocumentByPURI(doc.puri)
+        refreshed = TestDocumentCRUD.testSession.getDocumentByPURI(doc.puri)
         self.assertEqual(newContent, refreshed.text.content)
 
         refreshed._crudDelete()
 
         self.assertIsNone(refreshed.puri)
-        self.assertIsNone(TestDocumentCRUD.test_session.getDocumentByPURI(doc.puri))
+        self.assertIsNone(TestDocumentCRUD.testSession.getDocumentByPURI(doc.puri))
 
 
 class TestSimpleTestPlanCRUD(unittest.TestCase):
 
-    test_session = None
+    testSession = None
 
     @classmethod
     def setUpClass(cls):
         super(TestSimpleTestPlanCRUD, cls).setUpClass()
-        TestSimpleTestPlanCRUD.test_session = my_server._createSession()
-        TestSimpleTestPlanCRUD.test_session._login()
+        TestSimpleTestPlanCRUD.testSession = my_server._createSession()
+        TestSimpleTestPlanCRUD.testSession._login()
 
     @classmethod
     def tearDownClass(cls):
-        TestSimpleTestPlanCRUD.test_session._logout()
+        TestSimpleTestPlanCRUD.testSession._logout()
         super(TestSimpleTestPlanCRUD, cls).tearDownClass()
 
     def test_0001(self):
 
         name = 'vaskovo dokument'
 
-        old = TestSimpleTestPlanCRUD.test_session.getDocumentByPID(name, namespace=my_space)
+        old = TestSimpleTestPlanCRUD.testSession.getDocumentByPID(name, namespace=my_space)
         if old:
             old._crudDelete()
 
         permanent_name = name
 
-        doc = SimpleTestPlan(TestSimpleTestPlanCRUD.test_session)
+        doc = SimpleTestPlan(TestSimpleTestPlanCRUD.testSession)
         doc.namespace = my_space
         doc.structureLinkRole = 'parent'
         doc.name = permanent_name
@@ -248,20 +248,20 @@ class TestSimpleTestPlanCRUD(unittest.TestCase):
 
         self.assertEqual(newContent, doc.text.content)
 
-        refreshed = TestSimpleTestPlanCRUD.test_session.getSimpleTestPlanByPURI(doc.puri)
+        refreshed = TestSimpleTestPlanCRUD.testSession.getSimpleTestPlanByPURI(doc.puri)
         self.assertEqual(newContent, refreshed.text.content)
 
         refreshed._crudDelete()
 
         self.assertIsNone(refreshed.puri)
-        self.assertIsNone(TestSimpleTestPlanCRUD.test_session.getSimpleTestPlanByPURI(doc.puri))
+        self.assertIsNone(TestSimpleTestPlanCRUD.testSession.getSimpleTestPlanByPURI(doc.puri))
 
 
 def _gen_run_id(cls):
     # TODO: make this function not so lame
     _gen_run_id.counter += 1
     return '{}_{}_{}_{}'.format(
-                                      cls.test_session._server.login,
+                                      cls.testSession._server.login,
                                       datetime.datetime.now().strftime('%Y-%m-%d__%H_%M_%S'),
                                       _gen_run_id.counter,
                                       random.random()
@@ -271,24 +271,24 @@ _gen_run_id.counter = 0
 
 class TestTestRunCRUD(unittest.TestCase):
 
-    test_session = None
+    testSession = None
 
     @classmethod
     def setUpClass(cls):
         super(TestTestRunCRUD, cls).setUpClass()
-        TestTestRunCRUD.test_session = my_server._createSession()
-        TestTestRunCRUD.test_session._login()
+        TestTestRunCRUD.testSession = my_server._createSession()
+        TestTestRunCRUD.testSession._login()
 
     @classmethod
     def tearDownClass(cls):
-        TestTestRunCRUD.test_session._logout()
+        TestTestRunCRUD.testSession._logout()
         super(TestTestRunCRUD, cls).tearDownClass()
 
     def test_0001(self):
 
         permanent_status = TestRun.Status.IN_PROGRESS
 
-        testRun = TestRun(TestTestRunCRUD.test_session)
+        testRun = TestRun(TestTestRunCRUD.testSession)
         testRun.pid = _gen_run_id(TestTestRunCRUD)
         testRun.status = permanent_status
 
@@ -311,30 +311,30 @@ class TestTestRunCRUD(unittest.TestCase):
 
         self.assertEqual(new_status, testRun.status)
 
-        refreshed = TestTestRunCRUD.test_session.getTestRunByPURI(testRun.puri)
+        refreshed = TestTestRunCRUD.testSession.getTestRunByPURI(testRun.puri)
         self.assertEqual(new_status, refreshed.status)
 
 
 class TestSimpleTestRunCRUD(unittest.TestCase):
 
-    test_session = None
+    testSession = None
 
     @classmethod
     def setUpClass(cls):
         super(TestSimpleTestRunCRUD, cls).setUpClass()
-        TestSimpleTestRunCRUD.test_session = my_server._createSession()
-        TestSimpleTestRunCRUD.test_session._login()
+        TestSimpleTestRunCRUD.testSession = my_server._createSession()
+        TestSimpleTestRunCRUD.testSession._login()
 
     @classmethod
     def tearDownClass(cls):
-        TestSimpleTestRunCRUD.test_session._logout()
+        TestSimpleTestRunCRUD.testSession._logout()
         super(TestSimpleTestRunCRUD, cls).tearDownClass()
 
     def test_0001(self):
 
         permanent_status = SimpleTestRun.Status.NOT_RUN
 
-        simpleTestRun = SimpleTestRun(TestSimpleTestRunCRUD.test_session)
+        simpleTestRun = SimpleTestRun(TestSimpleTestRunCRUD.testSession)
         simpleTestRun.pid = _gen_run_id(TestSimpleTestRunCRUD)
         simpleTestRun.status = permanent_status
 
@@ -357,28 +357,28 @@ class TestSimpleTestRunCRUD(unittest.TestCase):
 
         self.assertEqual(new_status, simpleTestRun.status)
 
-        refreshed = TestSimpleTestRunCRUD.test_session.getTestRunByPURI(simpleTestRun.puri)
+        refreshed = TestSimpleTestRunCRUD.testSession.getTestRunByPURI(simpleTestRun.puri)
         self.assertEqual(new_status, refreshed.status)
 
 
 class TestSimpleTestPlansLinking(unittest.TestCase):
 
-    test_session = None
+    testSession = None
 
     @classmethod
     def setUpClass(cls):
         super(TestSimpleTestPlansLinking, cls).setUpClass()
-        TestSimpleTestPlansLinking.test_session = my_server._createSession()
-        TestSimpleTestPlansLinking.test_session._login()
+        TestSimpleTestPlansLinking.testSession = my_server._createSession()
+        TestSimpleTestPlansLinking.testSession._login()
 
     @classmethod
     def tearDownClass(cls):
-        TestSimpleTestPlansLinking.test_session._logout()
+        TestSimpleTestPlansLinking.testSession._logout()
         super(TestSimpleTestPlansLinking, cls).tearDownClass()
 
     @classmethod
     def _referred(cls, puri):
-        refreshed = SimpleTestPlan(TestSimpleTestPlansLinking.test_session)
+        refreshed = SimpleTestPlan(TestSimpleTestPlansLinking.testSession)
         refreshed.puri = puri
         refreshed._crudRetrieve()
         return refreshed._getParentPlanURI()
@@ -397,12 +397,12 @@ class TestSimpleTestPlansLinking(unittest.TestCase):
         for name in all_names:
 
             # delete if exists
-            doc = TestSimpleTestPlansLinking.test_session.getDocumentByPID(name, namespace=my_space)
+            doc = TestSimpleTestPlansLinking.testSession.getDocumentByPID(name, namespace=my_space)
             if doc:
                 doc._crudDelete()
 
             # create new
-            doc = SimpleTestPlan(TestSimpleTestPlansLinking.test_session)
+            doc = SimpleTestPlan(TestSimpleTestPlansLinking.testSession)
             doc.namespace = my_space
             doc.structureLinkRole = 'parent'
             doc.name = name
@@ -444,22 +444,22 @@ class TestSimpleTestPlansLinking(unittest.TestCase):
 
 class TestSimpleTestRunsLinking(unittest.TestCase):
 
-    test_session = None
+    testSession = None
 
     @classmethod
     def setUpClass(cls):
         super(TestSimpleTestRunsLinking, cls).setUpClass()
-        TestSimpleTestRunsLinking.test_session = my_server._createSession()
-        TestSimpleTestRunsLinking.test_session._login()
+        TestSimpleTestRunsLinking.testSession = my_server._createSession()
+        TestSimpleTestRunsLinking.testSession._login()
 
     @classmethod
     def tearDownClass(cls):
-        TestSimpleTestRunsLinking.test_session._logout()
+        TestSimpleTestRunsLinking.testSession._logout()
         super(TestSimpleTestRunsLinking, cls).tearDownClass()
 
     @classmethod
     def _referred(cls, puri):
-        refreshed = SimpleTestRun(TestSimpleTestRunsLinking.test_session)
+        refreshed = SimpleTestRun(TestSimpleTestRunsLinking.testSession)
         refreshed.puri = puri
         refreshed._crudRetrieve()
         return refreshed.testPlanURI
@@ -476,12 +476,12 @@ class TestSimpleTestRunsLinking(unittest.TestCase):
         for name in all_names:
 
             # delete if exists
-            doc = TestSimpleTestRunsLinking.test_session.getDocumentByPID(name, namespace=my_space)
+            doc = TestSimpleTestRunsLinking.testSession.getDocumentByPID(name, namespace=my_space)
             if doc:
                 doc._crudDelete()
 
             # create new
-            doc = SimpleTestPlan(TestSimpleTestRunsLinking.test_session)
+            doc = SimpleTestPlan(TestSimpleTestRunsLinking.testSession)
             doc.namespace = my_space
             doc.structureLinkRole = 'parent'
             doc.name = name
@@ -491,14 +491,14 @@ class TestSimpleTestRunsLinking(unittest.TestCase):
             plans[name] = doc
 
         # create new simple runs, not linked
-        run1 = SimpleTestRun(TestSimpleTestRunsLinking.test_session)
+        run1 = SimpleTestRun(TestSimpleTestRunsLinking.testSession)
         run1.pid = _gen_run_id(TestSimpleTestRunsLinking)
         run1.testPlanURI = plans[name_plan_2].puri
         run1._crudCreate()
-        run2 = SimpleTestRun(TestSimpleTestRunsLinking.test_session)
+        run2 = SimpleTestRun(TestSimpleTestRunsLinking.testSession)
         run2.pid = _gen_run_id(TestSimpleTestRunsLinking)
         run2._crudCreate()
-        run3 = SimpleTestRun(TestSimpleTestRunsLinking.test_session)
+        run3 = SimpleTestRun(TestSimpleTestRunsLinking.testSession)
         run3.pid = _gen_run_id(TestSimpleTestRunsLinking)
         run3._crudCreate()
 
@@ -540,30 +540,30 @@ class TestSimpleTestRunsLinking(unittest.TestCase):
 
 class TestSimpleTestPlanWorkItemOps(unittest.TestCase):
 
-    test_session = None
+    testSession = None
 
     @classmethod
     def setUpClass(cls):
         super(TestSimpleTestPlanWorkItemOps, cls).setUpClass()
-        TestSimpleTestPlanWorkItemOps.test_session = my_server._createSession()
-        TestSimpleTestPlanWorkItemOps.test_session._login()
+        TestSimpleTestPlanWorkItemOps.testSession = my_server._createSession()
+        TestSimpleTestPlanWorkItemOps.testSession._login()
 
     @classmethod
     def tearDownClass(cls):
-        TestSimpleTestPlanWorkItemOps.test_session._logout()
+        TestSimpleTestPlanWorkItemOps.testSession._logout()
         super(TestSimpleTestPlanWorkItemOps, cls).tearDownClass()
 
     def test_0001(self):
 
-        tc1 = FunctionalTestCase(TestSimpleTestPlanWorkItemOps.test_session)
+        tc1 = FunctionalTestCase(TestSimpleTestPlanWorkItemOps.testSession)
         tc1.title = 'fc 1'
         tc1._crudCreate()
 
-        tc2 = FunctionalTestCase(TestSimpleTestPlanWorkItemOps.test_session)
+        tc2 = FunctionalTestCase(TestSimpleTestPlanWorkItemOps.testSession)
         tc2.title = 'fc 2'
         tc2._crudCreate()
 
-        tc3 = FunctionalTestCase(TestSimpleTestPlanWorkItemOps.test_session)
+        tc3 = FunctionalTestCase(TestSimpleTestPlanWorkItemOps.testSession)
         tc3.title = 'fc 3'
         tc3._crudCreate()
 
@@ -572,23 +572,23 @@ class TestSimpleTestPlanWorkItemOps(unittest.TestCase):
         self.assertIsNotNone(tc3.puri)
 
         name = 'my completely new test spec 1'
-        doc = TestSimpleTestPlanWorkItemOps.test_session.getDocumentByPID(name, namespace=my_space)
+        doc = TestSimpleTestPlanWorkItemOps.testSession.getDocumentByPID(name, namespace=my_space)
         if doc:
             doc._crudDelete()
-        doc = SimpleTestPlan(TestSimpleTestPlanWorkItemOps.test_session)
+        doc = SimpleTestPlan(TestSimpleTestPlanWorkItemOps.testSession)
         doc.namespace = my_space
         doc.structureLinkRole = 'parent'
         doc.name = name
         doc._crudCreate()
 
-        refreshed = TestSimpleTestPlanWorkItemOps.test_session.getDocumentByPURI(doc.puri)
+        refreshed = TestSimpleTestPlanWorkItemOps.testSession.getDocumentByPURI(doc.puri)
         self.assertEqual(0, len(refreshed._getTestCaseURIs()))
 
         doc._addTestCaseURI(tc1.puri)
         doc._addTestCaseURI(tc2.puri)
         doc._crudUpdate()
 
-        refreshed = TestSimpleTestPlanWorkItemOps.test_session.getDocumentByPURI(doc.puri)
+        refreshed = TestSimpleTestPlanWorkItemOps.testSession.getDocumentByPURI(doc.puri)
         self.assertEqual(2, len(refreshed._getTestCaseURIs()))
         self.assertTrue(tc1.puri in refreshed._getTestCaseURIs())
         self.assertTrue(tc2.puri in refreshed._getTestCaseURIs())
@@ -597,7 +597,7 @@ class TestSimpleTestPlanWorkItemOps(unittest.TestCase):
         doc._addTestCaseURI(tc3.puri)
         doc._crudUpdate()
 
-        refreshed = TestSimpleTestPlanWorkItemOps.test_session.getDocumentByPURI(doc.puri)
+        refreshed = TestSimpleTestPlanWorkItemOps.testSession.getDocumentByPURI(doc.puri)
         self.assertEqual(2, len(refreshed._getTestCaseURIs()))
         self.assertTrue(tc2.puri in refreshed._getTestCaseURIs())
         self.assertTrue(tc3.puri in refreshed._getTestCaseURIs())
@@ -605,7 +605,7 @@ class TestSimpleTestPlanWorkItemOps(unittest.TestCase):
         doc._addTestCaseURI(tc3.puri)
         doc._crudUpdate()
 
-        refreshed = TestSimpleTestPlanWorkItemOps.test_session.getDocumentByPURI(doc.puri)
+        refreshed = TestSimpleTestPlanWorkItemOps.testSession.getDocumentByPURI(doc.puri)
         self.assertEqual(2, len(refreshed._getTestCaseURIs()))
         self.assertTrue(tc2.puri in refreshed._getTestCaseURIs())
         self.assertTrue(tc3.puri in refreshed._getTestCaseURIs())
@@ -613,28 +613,28 @@ class TestSimpleTestPlanWorkItemOps(unittest.TestCase):
         doc._deleteAllTestCaseURIs()
         doc._crudUpdate()
 
-        refreshed = TestSimpleTestPlanWorkItemOps.test_session.getDocumentByPURI(doc.puri)
+        refreshed = TestSimpleTestPlanWorkItemOps.testSession.getDocumentByPURI(doc.puri)
         self.assertEqual(0, len(refreshed._getTestCaseURIs()))
 
 
 class TestSimpleTestRunRecordOps(unittest.TestCase):
 
-    test_session = None
+    testSession = None
 
     @classmethod
     def setUpClass(cls):
         super(TestSimpleTestRunRecordOps, cls).setUpClass()
-        TestSimpleTestRunRecordOps.test_session = my_server._createSession()
-        TestSimpleTestRunRecordOps.test_session._login()
+        TestSimpleTestRunRecordOps.testSession = my_server._createSession()
+        TestSimpleTestRunRecordOps.testSession._login()
 
     @classmethod
     def tearDownClass(cls):
-        TestSimpleTestRunRecordOps.test_session._logout()
+        TestSimpleTestRunRecordOps.testSession._logout()
         super(TestSimpleTestRunRecordOps, cls).tearDownClass()
 
     def test_0001(self):
 
-        session = TestSimpleTestRunRecordOps.test_session
+        session = TestSimpleTestRunRecordOps.testSession
 
         tc1 = FunctionalTestCase(session)
         tc1.title = 'fc 1'
@@ -663,7 +663,7 @@ class TestSimpleTestRunRecordOps(unittest.TestCase):
         run.testRecords = [tr1, tr2]; run._crudUpdate()
         self.assertEqual(2, len(run.testRecords))
 
-        tr3.comment = TestManagementText(session, content_type='text/html', content='screwed!', contentLossy=False)
+        tr3.comment = TestManagementText(session, contentType='text/html', content='screwed!', contentLossy=False)
         tr3.duration = 3.14
         tr3.executed = datetime.datetime.now()
         self.result = TestRecord.Status.FAILED
@@ -675,7 +675,7 @@ class TestSimpleTestRunRecordOps(unittest.TestCase):
         self.assertEqual(tr3.testCaseURI, tr.testCaseURI)
         self.assertEqual(tr3.result, tr.result)
         self.assertEqual(tr3.comment.content, tr.comment.content)
-        self.assertEqual(tr3.comment.content_type, tr.comment.content_type)
+        self.assertEqual(tr3.comment.contentType, tr.comment.contentType)
         self.assertEqual(tr3.comment.contentLossy, tr.comment.contentLossy)
         self.assertTrue(abs((tr3.executed - tr.executed).total_seconds()) <= 120.0)  # SUDS not 100% inaccurate?
         self.assertEqual(tr3.duration, tr.duration)

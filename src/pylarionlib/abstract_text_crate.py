@@ -7,9 +7,9 @@ class AbstractTextCrate(AbstractPolarionCrate):
     ''' Common abstraction for various '*:Text' types '''
 
 
-    def __init__(self, session, content_type='text/html', content='', contentLossy=False):
+    def __init__(self, session, contentType='text/html', content='', contentLossy=False):
         AbstractPolarionCrate.__init__(self, session)
-        self.content_type = content_type
+        self.contentType = contentType
         self.content      = content
         self.contentLossy = contentLossy
         self._fillMissingValues()
@@ -43,7 +43,7 @@ class AbstractTextCrate(AbstractPolarionCrate):
 
     def _copy(self, another):
         AbstractPolarionCrate._copy(self, another)
-        another.content_type = self.content_type
+        another.contentType = self.contentType
         another.content      = self.content
         another.contentLossy = self.contentLossy
         return another
@@ -51,8 +51,8 @@ class AbstractTextCrate(AbstractPolarionCrate):
 
     def _fillMissingValues(self, project=None, namespace=None):
         super(AbstractTextCrate, self)._fillMissingValues(project, namespace)
-        if not self.content_type:
-            self.content_type = 'text/html'
+        if not self.contentType:
+            self.contentType = 'text/html'
         if not self.contentLossy:
             self.contentLossy = False
         return self
@@ -74,14 +74,14 @@ class AbstractTextCrate(AbstractPolarionCrate):
 
     @classmethod
     def _mapSpecificAttributesToSUDS(cls, text, sudsObject):
-        sudsObject.type = text.content_type
+        sudsObject.type = text.contentType
         sudsObject.content = text.content
         sudsObject.contentLossy = text.contentLossy
 
 
     @classmethod
     def _mapSpecificAttributesFromSUDS(cls, sudsObject, text):
-        text.content_type = sudsObject.type
+        text.contentType = sudsObject.type
         text.content = sudsObject.content
         text.contentLossy = sudsObject.contentLossy
 
