@@ -109,9 +109,17 @@ Data model:
    (with the same "puri"), update them and store them independently; the last
    update "wins" and persists.
 
+   Test Cases are modeled by subclasses of AbstractTest. Their corresponding
+   Polarion's counterparts are Works Items of the same names and the following
+   mapping:
+   - Test Case's scriptURL = the first and only Work Item's hyperlink
+   - Test Case's automation = Work Item's custom field "caseautomation"
+   - Test Case's tags = Work Item's custom field "tcmstags"
+   (The mapping is provisional.)
+
    SimpleTestPlan and SimpleTestRun are the key data objects of this library
    - they represent test plans and test runs as they are usually understood
-   by Base OS QE. Among other, test plans are hierarchically organized
+   by Base OS QE. Among others, test plans are hierarchically organized
    and a test runs can be linked to a test plan it performs.
 
    For the sake of easy prototyping (no custom fields for now), let's specify: 
@@ -327,7 +335,7 @@ if False:
         new plan will be permanent). In case of an exception an automatic
         rollback will take place.
         '''
-        with Server(url='http://example.com/polarion', login='joe', password='secret_password', default_project='') as s:
+        with Server(url='http://example.com/polarion', login='joe', password='secret_password', default_project='JoesProject') as s:
             with s.transaction():
 
                 # create a new functional test case
