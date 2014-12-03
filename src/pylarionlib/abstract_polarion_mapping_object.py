@@ -16,7 +16,7 @@ class AbstractPolarionMappingObject(object):
         return self
 
     @classmethod
-    def _isConvertible(cls, suds_object):
+    def _isConvertible(cls, sudsObject):
         '''
         Say if the SUDS object can be mapped to self
 
@@ -25,11 +25,11 @@ class AbstractPolarionMappingObject(object):
         return True
 
     @classmethod
-    def _mapSpecificAttributesToSUDS(cls, abstractPolarionMappingObject, suds_object):
+    def _mapSpecificAttributesToSUDS(cls, abstractPolarionMappingObject, sudsObject):
         pass
 
     @classmethod
-    def _mapSpecificAttributesFromSUDS(cls, suds_object, abstractPolarionMappingObject):
+    def _mapSpecificAttributesFromSUDS(cls, sudsObject, abstractPolarionMappingObject):
         pass
 
     def _mapToSUDS(self):
@@ -37,6 +37,6 @@ class AbstractPolarionMappingObject(object):
         return suds.null()
 
     @classmethod
-    def _mapFromSUDS(cls, session, suds_object):
+    def _mapFromSUDS(cls, session, sudsObject):
         # TODO: delegate to subclasses if possible
         return AbstractPolarionMappingObject(session)

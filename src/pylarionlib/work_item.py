@@ -38,17 +38,17 @@ class WorkItem(AbstractPolarionPersistentObject):
 
 
     @classmethod
-    def _isConvertible(cls, suds_object):
-        if not AbstractPolarionPersistentObject._isConvertible(suds_object):
+    def _isConvertible(cls, sudsObject):
+        if not AbstractPolarionPersistentObject._isConvertible(sudsObject):
             return False
         # TODO: check all the attributes; some are allowed be absent (f.ex. title)
         return True
 
 
     @classmethod
-    def _mapSpecificAttributesToSUDS(cls, workItem, suds_object):
+    def _mapSpecificAttributesToSUDS(cls, workItem, sudsObject):
 
-        AbstractPolarionPersistentObject._mapSpecificAttributesToSUDS(workItem, suds_object)
+        AbstractPolarionPersistentObject._mapSpecificAttributesToSUDS(workItem, sudsObject)
 
         session = workItem.session
 
@@ -58,57 +58,57 @@ class WorkItem(AbstractPolarionPersistentObject):
         status_instance = session.tracker_client.factory.create('tns3:EnumOptionId')
         status_instance.id = workItem.status
 
-        suds_object.project = session.project_client.service.getProject(workItem.project)
-        suds_object.title = workItem.title
-        suds_object.type = type_instance
-        suds_object.status = status_instance
+        sudsObject.project = session.project_client.service.getProject(workItem.project)
+        sudsObject.title = workItem.title
+        sudsObject.type = type_instance
+        sudsObject.status = status_instance
 
         # description needs cheating: Polarion server does not accept suds.null() there
         if not workItem.description:
             workItem.description = TrackerText(session) # just empty...
-        suds_object.description = workItem.description._mapToSUDS()
+        sudsObject.description = workItem.description._mapToSUDS()
 
-        suds_object.initialEstimate = workItem.initialEstimate if workItem.initialEstimate else suds.null()
+        sudsObject.initialEstimate = workItem.initialEstimate if workItem.initialEstimate else suds.null()
 
 
     @classmethod
-    def _mapSpecificAttributesFromSUDS(cls, suds_object, workItem):
+    def _mapSpecificAttributesFromSUDS(cls, sudsObject, workItem):
 
-        AbstractPolarionPersistentObject._mapSpecificAttributesFromSUDS(suds_object, workItem)
+        AbstractPolarionPersistentObject._mapSpecificAttributesFromSUDS(sudsObject, workItem)
 
         session = workItem.session
 
-        workItem.project = suds_object.project.id
-        workItem.title = suds_object.title if hasattr(suds_object, 'title') else None
-        workItem.type = suds_object.type.id
-        workItem.status = suds_object.status.id
+        workItem.project = sudsObject.project.id
+        workItem.title = sudsObject.title if hasattr(sudsObject, 'title') else None
+        workItem.type = sudsObject.type.id
+        workItem.status = sudsObject.status.id
 
-        if hasattr(suds_object, 'description'):
+        if hasattr(sudsObject, 'description'):
             workItem.description = TrackerText(session)
-            TrackerText._mapSpecificAttributesFromSUDS(suds_object.description, workItem.description)
+            TrackerText._mapSpecificAttributesFromSUDS(sudsObject.description, workItem.description)
         else:
             workItem.description = None
 
-        workItem.initialEstimate = suds_object.initialEstimate if hasattr(suds_object, 'initialEstimate') else None
+        workItem.initialEstimate = sudsObject.initialEstimate if hasattr(sudsObject, 'initialEstimate') else None
 
 
     def _mapToSUDS(self):
-        suds_object = self.session.tracker_client.factory.create('tns3:WorkItem')
-        WorkItem._mapSpecificAttributesToSUDS(self, suds_object)
-        return suds_object
+        sudsObject = self.session.tracker_client.factory.create('tns3:WorkItem')
+        WorkItem._mapSpecificAttributesToSUDS(self, sudsObject)
+        return sudsObject
 
 
     @classmethod
-    def _mapFromSUDS(cls, session, suds_object):
+    def _mapFromSUDS(cls, session, sudsObject):
         # TODO: sanity checks
         # TODO: change the following to use _isConvertible
-        type_string = suds_object.type.id
+        type_string = sudsObject.type.id
         if AbstractTest._is_known_type(type_string):
-            return AbstractTest._mapFromSUDS(session, suds_object)
+            return AbstractTest._mapFromSUDS(session, sudsObject)
         else:
             # fallback for the types we don't care much
             workItem = WorkItem(session)
-            WorkItem._mapSpecificAttributesFromSUDS(suds_object, workItem)
+            WorkItem._mapSpecificAttributesFromSUDS(sudsObject, workItem)
             return workItem
 
 
@@ -116,8 +116,8 @@ class WorkItem(AbstractPolarionPersistentObject):
 
     def _crudCreate(self, project=None):
         self._fillMissingValues(project)
-        suds_object = self._mapToSUDS()
-        uri = self.session.tracker_client.service.createWorkItem(suds_object)
+        sudsObject = self._mapToSUDS()
+        uri = self.session.tracker_client.service.createWorkItem(sudsObject)
         uri = '{}'.format(uri) # work around Text jumping in sometimes
         self.puri = uri
         return self._crudRetrieve()
@@ -125,8 +125,8 @@ class WorkItem(AbstractPolarionPersistentObject):
     def _crudRetrieve(self):
         if not self.puri:
             raise PylarionLibException('Current object has no URI, cannot retrieve data')
-        suds_object = self.session.tracker_client.service.getWorkItemByUri(self.puri)
-        temp = WorkItem._mapFromSUDS(self.session, suds_object)
+        sudsObject = self.session.tracker_client.service.getWorkItemByUri(self.puri)
+        temp = WorkItem._mapFromSUDS(self.session, sudsObject)
         temp._copy(self)
         return self
 
@@ -134,8 +134,8 @@ class WorkItem(AbstractPolarionPersistentObject):
         if not self.puri:
             raise PylarionLibException('Current object has no URI, cannot update data')
         self._fillMissingValues()
-        suds_object = self._mapToSUDS()
-        self.session.tracker_client.service.updateWorkItem(suds_object)
+        sudsObject = self._mapToSUDS()
+        self.session.tracker_client.service.updateWorkItem(sudsObject)
         return self._crudRetrieve()
 
     def _crudDelete(self):

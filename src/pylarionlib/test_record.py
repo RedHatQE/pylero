@@ -68,59 +68,59 @@ class TestRecord(AbstractPolarionCrate):
 
 
     @classmethod
-    def _isConvertible(cls, suds_object):
-        if suds_object == None:
+    def _isConvertible(cls, sudsObject):
+        if sudsObject == None:
             return False
         # TODO: verify with WSDLs if some attributes could be omitted
         return True
 
 
     @classmethod
-    def _mapSpecificAttributesToSUDS(cls, testRecord, suds_object):
+    def _mapSpecificAttributesToSUDS(cls, testRecord, sudsObject):
 
         session = testRecord.session
 
-        suds_object.testCaseURI = testRecord.testCaseURI
+        sudsObject.testCaseURI = testRecord.testCaseURI
 
         if testRecord.result:
-            suds_object.result = session.test_management_client.factory.create('tns4:EnumOptionId')
-            suds_object.result.id = testRecord.result
+            sudsObject.result = session.test_management_client.factory.create('tns4:EnumOptionId')
+            sudsObject.result.id = testRecord.result
 
         if testRecord.comment:
-            suds_object.comment = testRecord.comment._mapToSUDS()
+            sudsObject.comment = testRecord.comment._mapToSUDS()
 
         if testRecord.executed:
-            suds_object.executed = suds.sax.date.DateTime(testRecord.executed)
+            sudsObject.executed = suds.sax.date.DateTime(testRecord.executed)
 
-        suds_object.duration = testRecord.duration
+        sudsObject.duration = testRecord.duration
 
 
     @classmethod
-    def _mapSpecificAttributesFromSUDS(cls, suds_object, testRecord):
+    def _mapSpecificAttributesFromSUDS(cls, sudsObject, testRecord):
 
         session = testRecord.session
 
-        testRecord.testCaseURI = suds_object.testCaseURI
+        testRecord.testCaseURI = sudsObject.testCaseURI
 
         testRecord.result = None
-        if hasattr(suds_object, 'result'):
-            if hasattr(suds_object.result, 'id'):
-                testRecord.result = suds_object.result.id
+        if hasattr(sudsObject, 'result'):
+            if hasattr(sudsObject.result, 'id'):
+                testRecord.result = sudsObject.result.id
 
         testRecord.comment = None
-        if hasattr(suds_object, 'comment'):
-            if suds_object.comment:
+        if hasattr(sudsObject, 'comment'):
+            if sudsObject.comment:
                 testRecord.comment = TestManagementText(session)
-                TestManagementText._mapSpecificAttributesFromSUDS(suds_object.comment, testRecord.comment)
+                TestManagementText._mapSpecificAttributesFromSUDS(sudsObject.comment, testRecord.comment)
 
         testRecord.executed = None
-        if hasattr(suds_object, 'executed'):
-            if suds_object.executed:
-                testRecord.executed = suds_object.executed
+        if hasattr(sudsObject, 'executed'):
+            if sudsObject.executed:
+                testRecord.executed = sudsObject.executed
 
         testRecord.duration = None
-        if hasattr(suds_object, 'duration'):
-            testRecord.duration = suds_object.duration
+        if hasattr(sudsObject, 'duration'):
+            testRecord.duration = sudsObject.duration
 
 
     def _mapToSUDS(self):
@@ -130,9 +130,9 @@ class TestRecord(AbstractPolarionCrate):
 
 
     @classmethod
-    def _mapFromSUDS(cls, session, suds_object):
+    def _mapFromSUDS(cls, session, sudsObject):
         testRecord = TestRecord(session)
-        TestRecord._mapSpecificAttributesFromSUDS(suds_object, testRecord)
+        TestRecord._mapSpecificAttributesFromSUDS(sudsObject, testRecord)
         return testRecord
 
 

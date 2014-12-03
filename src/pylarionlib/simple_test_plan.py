@@ -26,34 +26,34 @@ class SimpleTestPlan(Document):
 
 
     @classmethod
-    def _isConvertible(cls, suds_object):
-        if not Document._isConvertible(suds_object):
+    def _isConvertible(cls, sudsObject):
+        if not Document._isConvertible(sudsObject):
             return False
-        if not hasattr(suds_object, 'type'):
+        if not hasattr(sudsObject, 'type'):
             return False
-        if not hasattr(suds_object, 'id'):
+        if not hasattr(sudsObject, 'id'):
             return False
-        if suds_object.type.id != SimpleTestPlan._typeId:
+        if sudsObject.type.id != SimpleTestPlan._typeId:
             return False
-        if not SimpleTestPlan._hasParentPlanEmbedding(suds_object):
+        if not SimpleTestPlan._hasParentPlanEmbedding(sudsObject):
             return False
         # TODO: check all the test inside are linked only
         return True
 
 
     @classmethod
-    def _mapFromSUDS(cls, session, suds_object):
+    def _mapFromSUDS(cls, session, sudsObject):
         simpleTestPlan = SimpleTestPlan(session)
-        SimpleTestPlan._mapSpecificAttributesFromSUDS(suds_object, simpleTestPlan)
-        if not SimpleTestPlan._hasParentPlanEmbedding(suds_object):
-            raise PylarionLibException('No valid SimpleTestPlan embedding'.format(suds_object))
+        SimpleTestPlan._mapSpecificAttributesFromSUDS(sudsObject, simpleTestPlan)
+        if not SimpleTestPlan._hasParentPlanEmbedding(sudsObject):
+            raise PylarionLibException('No valid SimpleTestPlan embedding'.format(sudsObject))
         return simpleTestPlan
 
 
     def _mapToSUDS(self):
-        suds_object = self.session.tracker_client.factory.create('tns3:Module')
-        SimpleTestPlan._mapSpecificAttributesToSUDS(self, suds_object)
-        return suds_object
+        sudsObject = self.session.tracker_client.factory.create('tns3:Module')
+        SimpleTestPlan._mapSpecificAttributesToSUDS(self, sudsObject)
+        return sudsObject
 
 
     def _crudCreate(self, project=None, namespace=None):
@@ -67,12 +67,12 @@ class SimpleTestPlan(Document):
 
 
     @classmethod
-    def _hasParentPlanEmbedding(cls, suds_object):
-        if not hasattr(suds_object, 'homePageContent'):
+    def _hasParentPlanEmbedding(cls, sudsObject):
+        if not hasattr(sudsObject, 'homePageContent'):
             return False
-        if not hasattr(suds_object.homePageContent, 'content'):
+        if not hasattr(sudsObject.homePageContent, 'content'):
             return False
-        return None != _SimpleTestPlanTextEmbedding.instantiateFromText(suds_object.homePageContent.content)
+        return None != _SimpleTestPlanTextEmbedding.instantiateFromText(sudsObject.homePageContent.content)
 
 
     def _getParentPlanURI(self):

@@ -34,34 +34,34 @@ class SimpleTestRun(TestRun):
     # SUDS mapping
 
     @classmethod
-    def _isConvertible(cls, suds_object):
-        if not TestRun._isConvertible(suds_object):
+    def _isConvertible(cls, sudsObject):
+        if not TestRun._isConvertible(sudsObject):
             return False
-        return SimpleTestRun._hasPlanEmbedding(suds_object)
+        return SimpleTestRun._hasPlanEmbedding(sudsObject)
 
 
     @classmethod
-    def _mapSpecificAttributesFromSUDS(cls, suds_object, testRun):
-        TestRun._mapSpecificAttributesFromSUDS(suds_object, testRun)
+    def _mapSpecificAttributesFromSUDS(cls, sudsObject, testRun):
+        TestRun._mapSpecificAttributesFromSUDS(sudsObject, testRun)
         testRun._retrieveTestPlanURI()
-        testRun._retrieveTestRecords(suds_object)
+        testRun._retrieveTestRecords(sudsObject)
 
 
     @classmethod
-    def _mapFromSUDS(cls, session, suds_object):
+    def _mapFromSUDS(cls, session, sudsObject):
         simpleTestRun = SimpleTestRun(session)
-        SimpleTestRun._mapSpecificAttributesFromSUDS(suds_object, simpleTestRun)
+        SimpleTestRun._mapSpecificAttributesFromSUDS(sudsObject, simpleTestRun)
         return simpleTestRun
 
 
     def _mapToSUDS(self):
-        suds_object = self.session.test_management_client.factory.create('tns3:TestRun')
-        SimpleTestRun._mapSpecificAttributesToSUDS(self, suds_object)
-        return suds_object
+        sudsObject = self.session.test_management_client.factory.create('tns3:TestRun')
+        SimpleTestRun._mapSpecificAttributesToSUDS(self, sudsObject)
+        return sudsObject
 
 
     @classmethod
-    def _hasPlanEmbedding(cls, suds_object):
+    def _hasPlanEmbedding(cls, sudsObject):
         # TODO: Look into getWikiContentForTestRun(...) and decide
         return True
 
@@ -105,13 +105,13 @@ class SimpleTestRun(TestRun):
             raise PylarionLibException('Cannot set Test Plan URI={} to Test Run {}'.format(wishedTestPlanURI, self.puri))
 
 
-    def _retrieveTestRecords(self, suds_object):
+    def _retrieveTestRecords(self, sudsObject):
         self.testRecords = []
-        if hasattr(suds_object, 'records'):
-            if suds_object.records:
-                if suds_object.records[0]:
-                    if len(suds_object.records[0]) > 0:
-                        for r in suds_object.records[0]:
+        if hasattr(sudsObject, 'records'):
+            if sudsObject.records:
+                if sudsObject.records[0]:
+                    if len(sudsObject.records[0]) > 0:
+                        for r in sudsObject.records[0]:
                             if hasattr(r, 'testCaseURI'):
                                 if r.testCaseURI != None:
                                     self.testRecords.append(TestRecord._mapFromSUDS(self.session, r))
@@ -119,8 +119,8 @@ class SimpleTestRun(TestRun):
 
     def _fixTestRecords(self, wishedTestRecords):
 
-        suds_object = self.session.test_management_client.service.getTestRunByUri(self.puri)
-        self._retrieveTestRecords(suds_object)
+        sudsObject = self.session.test_management_client.service.getTestRunByUri(self.puri)
+        self._retrieveTestRecords(sudsObject)
 
         if self._hasEquivTestRecords(wishedTestRecords):
             return
@@ -133,7 +133,7 @@ class SimpleTestRun(TestRun):
         #    record!
         # TODO: Report to Polarion
 
-        records = suds_object.records[0]
+        records = sudsObject.records[0]
 
         # "Empty" the run: I'm afraid there's this clumsy way only
         if records and len(records) > 0:
@@ -145,8 +145,8 @@ class SimpleTestRun(TestRun):
                 if tr:
                     self.session.test_management_client.service.addTestRecordToTestRun(self.puri, tr._mapToSUDS())
 
-        suds_object = self.session.test_management_client.service.getTestRunByUri(self.puri)
-        self._retrieveTestRecords(suds_object)
+        sudsObject = self.session.test_management_client.service.getTestRunByUri(self.puri)
+        self._retrieveTestRecords(sudsObject)
 
         if not self._hasEquivTestRecords(wishedTestRecords):
             raise PylarionLibException('For Test Run {}, cannot set Test Records: {}'.format(self.puri, wishedTestRecords))

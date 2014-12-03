@@ -200,13 +200,13 @@ if False:
 
         # Is a given SUDS object convertible to the current "front-end" class?
         @classmethod
-        def _isConvertible(cls, suds_object): pass
+        def _isConvertible(cls, sudsObject): pass
 
         # Create a front-end object from a SUDS object. Make the new instance
         # as much specific as possible. In other words, create an instance of
         # the current class or, if possible, its most specific subclass.
         @classmethod
-        def _mapFromSUDS(cls, session, suds_object): pass
+        def _mapFromSUDS(cls, session, sudsObject): pass
 
         # Convert a front-end object to SUDS. Use all available data ("go to
         # subclasses")
@@ -215,9 +215,9 @@ if False:
         # Convert data specific just for the current level of abstraction and
         # above. (Helper methods to implement the conversions above.)
         @classmethod
-        def _mapSpecificAttributesToSUDS(cls, abstractPolarionMappingObject, suds_object): pass
+        def _mapSpecificAttributesToSUDS(cls, abstractPolarionMappingObject, sudsObject): pass
         @classmethod
-        def _mapSpecificAttributesFromSUDS(cls, suds_object, abstractPolarionMappingObject): pass
+        def _mapSpecificAttributesFromSUDS(cls, sudsObject, abstractPolarionMappingObject): pass
 
         # End of Conversions
         # --------------------------------------------------------------------

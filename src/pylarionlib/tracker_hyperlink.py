@@ -30,28 +30,28 @@ class TrackerHyperlink(AbstractPolarionCrate):
 
 
     @classmethod
-    def _isConvertible(cls, suds_object):
-        if suds_object == None:
+    def _isConvertible(cls, sudsObject):
+        if sudsObject == None:
             return False
-        if hasattr(suds_object, 'role') and not hasattr(suds_object.role, 'id'):
+        if hasattr(sudsObject, 'role') and not hasattr(sudsObject.role, 'id'):
             return False
         return True
 
 
     @classmethod
-    def _mapSpecificAttributesToSUDS(cls, trackerHyperlink, suds_object):
-        suds_object.role = TrackerHyperlink._createRoleSUDSObjects(trackerHyperlink.session, trackerHyperlink.role)
-        suds_object.uri = trackerHyperlink.uri
+    def _mapSpecificAttributesToSUDS(cls, trackerHyperlink, sudsObject):
+        sudsObject.role = TrackerHyperlink._createRoleSUDSObjects(trackerHyperlink.session, trackerHyperlink.role)
+        sudsObject.uri = trackerHyperlink.uri
 
 
     @classmethod
-    def _mapSpecificAttributesFromSUDS(cls, suds_object, trackerHyperlink):
+    def _mapSpecificAttributesFromSUDS(cls, sudsObject, trackerHyperlink):
 
         trackerHyperlink.role = None
-        if hasattr(suds_object, 'role') and hasattr(suds_object.role, 'id'):
-            trackerHyperlink.role = suds_object.role.id
+        if hasattr(sudsObject, 'role') and hasattr(sudsObject.role, 'id'):
+            trackerHyperlink.role = sudsObject.role.id
 
-        trackerHyperlink.uri = suds_object.uri
+        trackerHyperlink.uri = sudsObject.uri
 
 
     def _mapToSUDS(self):
@@ -61,7 +61,7 @@ class TrackerHyperlink(AbstractPolarionCrate):
 
 
     @classmethod
-    def _mapFromSUDS(cls, session, suds_object):
+    def _mapFromSUDS(cls, session, sudsObject):
         trackerHyperlink = TrackerHyperlink(session)
-        TrackerHyperlink._mapSpecificAttributesFromSUDS(suds_object, trackerHyperlink)
+        TrackerHyperlink._mapSpecificAttributesFromSUDS(sudsObject, trackerHyperlink)
         return trackerHyperlink

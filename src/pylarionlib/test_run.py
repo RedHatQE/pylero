@@ -39,53 +39,53 @@ class TestRun(AbstractPolarionPersistentObject):
 
 
     @classmethod
-    def _isConvertible(cls, suds_object):
-        if not AbstractPolarionPersistentObject._isConvertible(suds_object):
+    def _isConvertible(cls, sudsObject):
+        if not AbstractPolarionPersistentObject._isConvertible(sudsObject):
             return False
         # TODO: check all the attributes
         return True
 
 
     @classmethod
-    def _mapFromSUDS(cls, session, suds_object):
+    def _mapFromSUDS(cls, session, sudsObject):
         # TODO: sanity checks
-        if SimpleTestRun._isConvertible(suds_object):
-            return SimpleTestRun._mapFromSUDS(session, suds_object)
+        if SimpleTestRun._isConvertible(sudsObject):
+            return SimpleTestRun._mapFromSUDS(session, sudsObject)
         else:
             # Fall back: Not a "proper" test plan, just a document
             testRun = TestRun(session)
-            TestRun._mapSpecificAttributesFromSUDS(suds_object, testRun)
+            TestRun._mapSpecificAttributesFromSUDS(sudsObject, testRun)
             return testRun
 
 
     def _mapToSUDS(self):
-        suds_object = self.session.test_management_client.factory.create('tns3:TestRun')
-        TestRun._mapSpecificAttributesToSUDS(self, suds_object)
-        return suds_object
+        sudsObject = self.session.test_management_client.factory.create('tns3:TestRun')
+        TestRun._mapSpecificAttributesToSUDS(self, sudsObject)
+        return sudsObject
 
 
     @classmethod
-    def _mapSpecificAttributesToSUDS(cls, testRun, suds_object):
+    def _mapSpecificAttributesToSUDS(cls, testRun, sudsObject):
 
-        AbstractPolarionPersistentObject._mapSpecificAttributesToSUDS(testRun, suds_object)
+        AbstractPolarionPersistentObject._mapSpecificAttributesToSUDS(testRun, sudsObject)
 
         session = testRun.session
 
-        suds_object.projectURI = session.project_client.service.getProject(testRun.project)._uri
+        sudsObject.projectURI = session.project_client.service.getProject(testRun.project)._uri
 
-        suds_object.status = session.test_management_client.factory.create('tns4:EnumOptionId')
-        suds_object.status.id = testRun.status
+        sudsObject.status = session.test_management_client.factory.create('tns4:EnumOptionId')
+        sudsObject.status.id = testRun.status
 
 
     @classmethod
-    def _mapSpecificAttributesFromSUDS(cls, suds_object, testRun):
+    def _mapSpecificAttributesFromSUDS(cls, sudsObject, testRun):
 
-        AbstractPolarionPersistentObject._mapSpecificAttributesFromSUDS(suds_object, testRun)
+        AbstractPolarionPersistentObject._mapSpecificAttributesFromSUDS(sudsObject, testRun)
 
         session = testRun.session
 
-        testRun.project = session.project_client.service.getProjectByURI(suds_object.projectURI).id
-        testRun.status = suds_object.status.id
+        testRun.project = session.project_client.service.getProjectByURI(sudsObject.projectURI).id
+        testRun.status = sudsObject.status.id
 
 
     def _crudCreate(self, project=None):
@@ -97,8 +97,8 @@ class TestRun(AbstractPolarionPersistentObject):
 
         uri = self.session.test_management_client.service.createTestRun(self.project, self.pid, self.empty_template)
         uri = '{}'.format(uri)  # work around Text jumping in sometimes
-        suds_object = self.session.test_management_client.service.getTestRunByUri(uri)
-        stub = self.__class__._mapFromSUDS(self.session, suds_object)
+        sudsObject = self.session.test_management_client.service.getTestRunByUri(uri)
+        stub = self.__class__._mapFromSUDS(self.session, sudsObject)
 
         temp = (self.status, None) # use a tuple, over time there will be more attributes here
 
@@ -111,8 +111,8 @@ class TestRun(AbstractPolarionPersistentObject):
     def _crudRetrieve(self):
         if not self.puri:
             raise PylarionLibException('Current object has no URI, cannot retrieve data')
-        suds_object = self.session.test_management_client.service.getTestRunByUri(self.puri)
-        temp = self.__class__._mapFromSUDS(self.session, suds_object)
+        sudsObject = self.session.test_management_client.service.getTestRunByUri(self.puri)
+        temp = self.__class__._mapFromSUDS(self.session, sudsObject)
         temp._copy(self)
         return self
 
@@ -121,8 +121,8 @@ class TestRun(AbstractPolarionPersistentObject):
         if not self.puri:
             raise PylarionLibException('Current object has no URI, cannot update data')
         self._fillMissingValues()
-        suds_object = self._mapToSUDS()
-        self.session.test_management_client.service.updateTestRun(suds_object)
+        sudsObject = self._mapToSUDS()
+        self.session.test_management_client.service.updateTestRun(sudsObject)
         return self._crudRetrieve()
 
 

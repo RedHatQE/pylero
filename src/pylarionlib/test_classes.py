@@ -42,50 +42,50 @@ class AbstractTest(WorkItem):
 
 
     @classmethod
-    def _parseScriptURL(cls, suds_object):
+    def _parseScriptURL(cls, sudsObject):
         # return (is-properly-structured, url-if-any)
-        if not suds_object:
+        if not sudsObject:
             return (False, None)
-        if not hasattr(suds_object, 'hyperlinks'):
+        if not hasattr(sudsObject, 'hyperlinks'):
             return (True, None)
-        if len(suds_object.hyperlinks) == 0:
+        if len(sudsObject.hyperlinks) == 0:
             return (True, None)
-        if len(suds_object.hyperlinks) > 1:
+        if len(sudsObject.hyperlinks) > 1:
             return (False, None)
-        if len(suds_object.hyperlinks[0]) == 0:
+        if len(sudsObject.hyperlinks[0]) == 0:
             return (True, None)
-        if len(suds_object.hyperlinks[0]) > 1:
+        if len(sudsObject.hyperlinks[0]) > 1:
             return (False, None)
-        if not hasattr(suds_object.hyperlinks[0][0], 'uri'):
+        if not hasattr(sudsObject.hyperlinks[0][0], 'uri'):
             return (True, None)
-        return (True, suds_object.hyperlinks[0][0].uri)
+        return (True, sudsObject.hyperlinks[0][0].uri)
 
 
     # SUDS mapping
 
     @classmethod
-    def _isConvertible(cls, suds_object):
-        if not WorkItem._isConvertible(suds_object):
+    def _isConvertible(cls, sudsObject):
+        if not WorkItem._isConvertible(sudsObject):
             return False
-        return AbstractTest._parseScriptURL(suds_object)[0]
+        return AbstractTest._parseScriptURL(sudsObject)[0]
 
 
     @classmethod
-    def _mapSpecificAttributesToSUDS(cls, abstractTest, suds_object):
-        WorkItem._mapSpecificAttributesToSUDS(abstractTest, suds_object)
+    def _mapSpecificAttributesToSUDS(cls, abstractTest, sudsObject):
+        WorkItem._mapSpecificAttributesToSUDS(abstractTest, sudsObject)
         if abstractTest.scriptURL:
             # Except Polarion ignores this item for create/update :-(
             # Instead, we must use addHyperlink() and removeHyperlink() of Polarion's SOAP API.
             hyperlink = TrackerHyperlink(abstractTest.session, role=AbstractTest._SCRIPT_URL_ROLE, uri=abstractTest.scriptURL)
-            suds_object.hyperlinks = [ [ hyperlink._mapToSUDS() ] ]
+            sudsObject.hyperlinks = [ [ hyperlink._mapToSUDS() ] ]
         else:
             hyperlink = suds.null()
 
 
     @classmethod
-    def _mapSpecificAttributesFromSUDS(cls, suds_object, abstractTest):
-        WorkItem._mapSpecificAttributesFromSUDS(suds_object, abstractTest)
-        abstractTest.scriptURL = AbstractTest._parseScriptURL(suds_object)[1]
+    def _mapSpecificAttributesFromSUDS(cls, sudsObject, abstractTest):
+        WorkItem._mapSpecificAttributesFromSUDS(sudsObject, abstractTest)
+        abstractTest.scriptURL = AbstractTest._parseScriptURL(sudsObject)[1]
         abstractTest._retrieveAutomation()
         abstractTest._retrieveTags()
 
@@ -99,12 +99,12 @@ class AbstractTest(WorkItem):
 
 
     @classmethod
-    def _mapFromSUDS(cls, session, suds_object):
+    def _mapFromSUDS(cls, session, sudsObject):
         # TODO: sanity checks?
-        type_string = suds_object.type.id
+        type_string = sudsObject.type.id
         for subclass in AbstractTest._known_subclasses:
             if type_string == subclass._wiType:
-                return subclass._mapFromSUDS(session, suds_object)
+                return subclass._mapFromSUDS(session, sudsObject)
         raise PylarionLibException('Unknown work item type {}'.format(type_string))
 
 
@@ -219,12 +219,12 @@ class FunctionalTestCase(AbstractTest):
         return self
 
     @classmethod
-    def _mapFromSUDS(cls, session, suds_object):
-        type_string = suds_object.type.id
+    def _mapFromSUDS(cls, session, sudsObject):
+        type_string = sudsObject.type.id
         if type_string != FunctionalTestCase._wiType:
             raise PylarionLibException('Cannot instantiate from {}'.format(type_string))
         wi = FunctionalTestCase(session)
-        FunctionalTestCase._mapSpecificAttributesFromSUDS(suds_object, wi)
+        FunctionalTestCase._mapSpecificAttributesFromSUDS(sudsObject, wi)
         return wi
 
 
@@ -251,12 +251,12 @@ class StructuralTestCase(AbstractTest):
         return self
 
     @classmethod
-    def _mapFromSUDS(cls, session, suds_object):
-        type_string = suds_object.type.id
+    def _mapFromSUDS(cls, session, sudsObject):
+        type_string = sudsObject.type.id
         if type_string != StructuralTestCase._wiType:
             raise PylarionLibException('Cannot instantiate from {}'.format(type_string))
         wi = StructuralTestCase(session)
-        StructuralTestCase._mapSpecificAttributesFromSUDS(suds_object, wi)
+        StructuralTestCase._mapSpecificAttributesFromSUDS(sudsObject, wi)
         return wi
 
 
@@ -283,12 +283,12 @@ class NonFunctionalTestCase(AbstractTest):
         return self
 
     @classmethod
-    def _mapFromSUDS(cls, session, suds_object):
-        type_string = suds_object.type.id
+    def _mapFromSUDS(cls, session, sudsObject):
+        type_string = sudsObject.type.id
         if type_string != NonFunctionalTestCase._wiType:
             raise PylarionLibException('Cannot instantiate from {}'.format(type_string))
         wi = NonFunctionalTestCase(session)
-        NonFunctionalTestCase._mapSpecificAttributesFromSUDS(suds_object, wi)
+        NonFunctionalTestCase._mapSpecificAttributesFromSUDS(sudsObject, wi)
         return wi
 
 
@@ -315,12 +315,12 @@ class TestSuite(AbstractTest):
         return self
 
     @classmethod
-    def _mapFromSUDS(cls, session, suds_object):
-        type_string = suds_object.type.id
+    def _mapFromSUDS(cls, session, sudsObject):
+        type_string = sudsObject.type.id
         if type_string != TestSuite._wiType:
             raise PylarionLibException('Cannot instantiate from {}'.format(type_string))
         wi = TestSuite(session)
-        TestSuite._mapSpecificAttributesFromSUDS(suds_object, wi)
+        TestSuite._mapSpecificAttributesFromSUDS(sudsObject, wi)
         return wi
 
 

@@ -28,30 +28,30 @@ class AbstractPolarionPersistentObject(AbstractPolarionMappingObject):
     # mappings from/to SUDS
 
     @classmethod
-    def _isConvertible(cls, suds_object):
-        if suds_object == None:
+    def _isConvertible(cls, sudsObject):
+        if sudsObject == None:
             return False
         # TODO: verify with WSDL if some attributes could be omitted
-        if not hasattr(suds_object, '_uri'):
+        if not hasattr(sudsObject, '_uri'):
             return False
-        if not hasattr(suds_object, 'id'):
+        if not hasattr(sudsObject, 'id'):
             return False
         return True
 
     @classmethod
-    def _mapSpecificAttributesToSUDS(cls, abstractPolarionPersistentObject, suds_object):
-        AbstractPolarionMappingObject._mapSpecificAttributesToSUDS(abstractPolarionPersistentObject, suds_object)
-        suds_object._uri = abstractPolarionPersistentObject.puri
-        suds_object.id = abstractPolarionPersistentObject.pid
+    def _mapSpecificAttributesToSUDS(cls, abstractPolarionPersistentObject, sudsObject):
+        AbstractPolarionMappingObject._mapSpecificAttributesToSUDS(abstractPolarionPersistentObject, sudsObject)
+        sudsObject._uri = abstractPolarionPersistentObject.puri
+        sudsObject.id = abstractPolarionPersistentObject.pid
 
     @classmethod
-    def _mapSpecificAttributesFromSUDS(cls, suds_object, abstractPolarionPersistentObject):
-        AbstractPolarionMappingObject._mapSpecificAttributesFromSUDS(suds_object, abstractPolarionPersistentObject)
+    def _mapSpecificAttributesFromSUDS(cls, sudsObject, abstractPolarionPersistentObject):
+        AbstractPolarionMappingObject._mapSpecificAttributesFromSUDS(sudsObject, abstractPolarionPersistentObject)
         # Very, very strange. Sometimes, in the _uri, we get not a plain
         # string but the 'Text' envelope. Needs investigations. Pushing it
         # through format() helps, somewhat.
-        abstractPolarionPersistentObject.puri = '{}'.format(suds_object._uri)
-        abstractPolarionPersistentObject.pid = suds_object.id
+        abstractPolarionPersistentObject.puri = '{}'.format(sudsObject._uri)
+        abstractPolarionPersistentObject.pid = sudsObject.id
 
 
     # CRUD:

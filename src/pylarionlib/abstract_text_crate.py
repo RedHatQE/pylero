@@ -59,31 +59,31 @@ class AbstractTextCrate(AbstractPolarionCrate):
 
 
     @classmethod
-    def _isConvertible(cls, suds_object):
-        if suds_object == None:
+    def _isConvertible(cls, sudsObject):
+        if sudsObject == None:
             return True
         # TODO: verify with WSDLs if some attributes could be omitted
-        if not hasattr(suds_object, 'type'):
+        if not hasattr(sudsObject, 'type'):
             return False
-        if not hasattr(suds_object, 'content'):
+        if not hasattr(sudsObject, 'content'):
             return False
-        if not hasattr(suds_object, 'contentLossy'):
+        if not hasattr(sudsObject, 'contentLossy'):
             return False
         return True
 
 
     @classmethod
-    def _mapSpecificAttributesToSUDS(cls, text, suds_object):
-        suds_object.type = text.content_type
-        suds_object.content = text.content
-        suds_object.contentLossy = text.contentLossy
+    def _mapSpecificAttributesToSUDS(cls, text, sudsObject):
+        sudsObject.type = text.content_type
+        sudsObject.content = text.content
+        sudsObject.contentLossy = text.contentLossy
 
 
     @classmethod
-    def _mapSpecificAttributesFromSUDS(cls, suds_object, text):
-        text.content_type = suds_object.type
-        text.content = suds_object.content
-        text.contentLossy = suds_object.contentLossy
+    def _mapSpecificAttributesFromSUDS(cls, sudsObject, text):
+        text.content_type = sudsObject.type
+        text.content = sudsObject.content
+        text.contentLossy = sudsObject.contentLossy
 
 
     def _mapToSUDS(self):
@@ -92,9 +92,9 @@ class AbstractTextCrate(AbstractPolarionCrate):
 
 
     @classmethod
-    def _mapFromSUDS(cls, session, suds_object):
+    def _mapFromSUDS(cls, session, sudsObject):
         text = AbstractTextCrate(session)
-        AbstractTextCrate._mapSpecificAttributesFromSUDS(suds_object, text)
+        AbstractTextCrate._mapSpecificAttributesFromSUDS(sudsObject, text)
         return text
 
 

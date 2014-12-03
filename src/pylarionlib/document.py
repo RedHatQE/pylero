@@ -63,79 +63,79 @@ class Document(AbstractPolarionPersistentObject):
 
 
     @classmethod
-    def _isConvertible(cls, suds_object):
-        if not AbstractPolarionPersistentObject._isConvertible(suds_object):
+    def _isConvertible(cls, sudsObject):
+        if not AbstractPolarionPersistentObject._isConvertible(sudsObject):
             return False
         # TODO: check all the attributes
         return True
 
 
     @classmethod
-    def _mapFromSUDS(cls, session, suds_object):
+    def _mapFromSUDS(cls, session, sudsObject):
         # TODO: sanity checks
-        if SimpleTestPlan._isConvertible(suds_object):
-            return SimpleTestPlan._mapFromSUDS(session, suds_object)
+        if SimpleTestPlan._isConvertible(sudsObject):
+            return SimpleTestPlan._mapFromSUDS(session, sudsObject)
         else:
             # Fall back: Not a "proper" test plan, just a document
             document = Document(session)
-            Document._mapSpecificAttributesFromSUDS(suds_object, document)
+            Document._mapSpecificAttributesFromSUDS(sudsObject, document)
             return document
 
 
     def _mapToSUDS(self):
-        suds_object = self.session.tracker_client.factory.create('tns3:Module')
-        Document._mapSpecificAttributesToSUDS(self, suds_object)
-        return suds_object
+        sudsObject = self.session.tracker_client.factory.create('tns3:Module')
+        Document._mapSpecificAttributesToSUDS(self, sudsObject)
+        return sudsObject
 
 
     @classmethod
-    def _mapSpecificAttributesToSUDS(cls, document, suds_object):
+    def _mapSpecificAttributesToSUDS(cls, document, sudsObject):
 
-        AbstractPolarionPersistentObject._mapSpecificAttributesToSUDS(document, suds_object)
+        AbstractPolarionPersistentObject._mapSpecificAttributesToSUDS(document, sudsObject)
 
         session = document.session
 
-        suds_object.project = session.project_client.service.getProject(document.project)
-        suds_object.moduleFolder = document.namespace
-        suds_object.moduleName = document.name
+        sudsObject.project = session.project_client.service.getProject(document.project)
+        sudsObject.moduleFolder = document.namespace
+        sudsObject.moduleName = document.name
 
-        suds_object.type = session.tracker_client.factory.create('tns3:EnumOptionId')
-        suds_object.type.id = document.type
+        sudsObject.type = session.tracker_client.factory.create('tns3:EnumOptionId')
+        sudsObject.type.id = document.type
 
-        suds_object.allowedWITypes = document._workItemTypesToSUDS()
+        sudsObject.allowedWITypes = document._workItemTypesToSUDS()
 
-        suds_object.structureLinkRole = session.tracker_client.factory.create('tns3:EnumOptionId')
-        suds_object.structureLinkRole.id = document.structureLinkRole
+        sudsObject.structureLinkRole = session.tracker_client.factory.create('tns3:EnumOptionId')
+        sudsObject.structureLinkRole.id = document.structureLinkRole
 
         if not document.text:
             document.text = TrackerText(session)
-        suds_object.homePageContent = document.text._mapToSUDS()
+        sudsObject.homePageContent = document.text._mapToSUDS()
 
 
     @classmethod
-    def _mapSpecificAttributesFromSUDS(cls, suds_object, document):
+    def _mapSpecificAttributesFromSUDS(cls, sudsObject, document):
 
-        AbstractPolarionPersistentObject._mapSpecificAttributesFromSUDS(suds_object, document)
+        AbstractPolarionPersistentObject._mapSpecificAttributesFromSUDS(sudsObject, document)
 
         session = document.session
 
-        document.project = suds_object.project.id
-        document.namespace = suds_object.moduleFolder
-        document.name = suds_object.moduleName
+        document.project = sudsObject.project.id
+        document.namespace = sudsObject.moduleFolder
+        document.name = sudsObject.moduleName
 
-        if hasattr(suds_object, 'type'):
-            document.type = suds_object.type.id
+        if hasattr(sudsObject, 'type'):
+            document.type = sudsObject.type.id
 
         document.workItemTypes = []
-        if hasattr(suds_object, 'allowedWITypes') and hasattr(suds_object.allowedWITypes, 'EnumOptionId') and suds_object.allowedWITypes.EnumOptionId:
-            for i in suds_object.allowedWITypes.EnumOptionId:
+        if hasattr(sudsObject, 'allowedWITypes') and hasattr(sudsObject.allowedWITypes, 'EnumOptionId') and sudsObject.allowedWITypes.EnumOptionId:
+            for i in sudsObject.allowedWITypes.EnumOptionId:
                 document.workItemTypes.append(i.id)
 
-        document.structureLinkRole = suds_object.structureLinkRole.id
+        document.structureLinkRole = sudsObject.structureLinkRole.id
 
-        if hasattr(suds_object, 'homePageContent'):
+        if hasattr(sudsObject, 'homePageContent'):
             document.text = TrackerText(session)
-            TrackerText._mapSpecificAttributesFromSUDS(suds_object.homePageContent, document.text)
+            TrackerText._mapSpecificAttributesFromSUDS(sudsObject.homePageContent, document.text)
 
 
     def _crudCreate(self, project=None, namespace=None):
@@ -154,8 +154,8 @@ class Document(AbstractPolarionPersistentObject):
                                            False,
                                            suds.null())
         uri = '{}'.format(uri) # work around Text jumping in sometimes
-        suds_object = self.session.tracker_client.service.getModuleByUri(uri)
-        stub = self.__class__._mapFromSUDS(self.session, suds_object)
+        sudsObject = self.session.tracker_client.service.getModuleByUri(uri)
+        stub = self.__class__._mapFromSUDS(self.session, sudsObject)
 
         temp = (self.type, self.workItemTypes, self.text)
 
@@ -170,8 +170,8 @@ class Document(AbstractPolarionPersistentObject):
     def _crudRetrieve(self):
         if not self.puri:
             raise PylarionLibException('Current object has no URI, cannot retrieve data')
-        suds_object = self.session.tracker_client.service.getModuleByUri(self.puri)
-        temp = self.__class__._mapFromSUDS(self.session, suds_object)
+        sudsObject = self.session.tracker_client.service.getModuleByUri(self.puri)
+        temp = self.__class__._mapFromSUDS(self.session, sudsObject)
         temp._copy(self)
         return self
 
@@ -180,8 +180,8 @@ class Document(AbstractPolarionPersistentObject):
         if not self.puri:
             raise PylarionLibException('Current object has no URI, cannot update data')
         self._fillMissingValues()
-        suds_object = self._mapToSUDS()
-        self.session.tracker_client.service.updateModule(suds_object)
+        sudsObject = self._mapToSUDS()
+        self.session.tracker_client.service.updateModule(sudsObject)
         return self._crudRetrieve()
 
 
