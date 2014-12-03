@@ -72,6 +72,12 @@ class Session:
     def transaction(self):
         return _Transaction(self)
 
+    def newFunctionalTestCase(self, project=None):
+        tc = FunctionalTestCase(self)
+        # TODO fill
+        tc._crudCreate(project)
+        return tc
+
     def getWorkItemByPID(self, pid, project=None):
         if not project:
             project = self._get_default_project()
@@ -203,3 +209,4 @@ from .document import Document
 from .simple_test_plan import SimpleTestPlan
 from .test_run import TestRun
 from .simple_test_run import SimpleTestRun
+from .test_classes import FunctionalTestCase

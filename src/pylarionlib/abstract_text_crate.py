@@ -15,6 +15,32 @@ class AbstractTextCrate(AbstractPolarionCrate):
         self._fillMissingValues()
 
 
+    @classmethod
+    def _isLikeNone(cls, t):
+        if t == None:
+            return True
+        if not hasattr(t, 'content'):
+            return True
+        if not t.content:
+            return True
+        if t.content.isspace():
+            return True
+        return False
+
+
+    @classmethod
+    def _staticEquiv(cls, t1, t2):
+        e1 = AbstractTextCrate._isLikeNone(t1)
+        e2 = AbstractTextCrate._isLikeNone(t2)
+        if e1 and e2:
+            return True
+        if e1 != e2:
+            return False
+        x1 = '{}'.format(t1.content)
+        x2 = '{}'.format(t2.content)
+        return x1 == x2
+
+
     def _copy(self, another):
         AbstractPolarionCrate._copy(self, another)
         another.content_type = self.content_type

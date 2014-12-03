@@ -26,6 +26,31 @@ class TestRecord(AbstractPolarionCrate):
         self._fillMissingValues()
 
 
+    def _equiv(self, other):
+        if not other:
+            return False
+        if self.testCaseURI != other.testCaseURI:
+            return False
+        if self.result != other.result:
+            return False
+        if not TestManagementText._staticEquiv(self.comment, other.comment):
+            return False
+        if not self.executed and other.executed:
+            return False
+        if self.executed and not other.executed:
+            return False
+        if self.executed and other.executed:
+            # For unknown reasons, datetime values stored and retrieved
+            # from/to Plarion differ in milliseconds. Ignore that.
+            delta = self.executed - other.executed
+            deltaSec = abs(delta.total_seconds())
+            if deltaSec > 1.0:
+                return False
+        if self.duration != other.duration:
+            return False
+        return True
+
+
     def _copy(self, another):
         AbstractPolarionCrate._copy(self, another)
         another.testCaseURI = self.testCaseURI

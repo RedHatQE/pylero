@@ -25,7 +25,7 @@ my_login = 'vkadlcik'
 my_password = '94rskco.kftg9'
 my_project_name = 'BrnoTraining'
 my_space = 'vkadlcik_spejs'
-my_server = Server('http://polarion.dqe.lab.eng.bos.redhat.com/polarion', my_login, my_password, my_project_name, )
+my_server = Server('http://polarion.dqe.lab.eng.bos.redhat.com/polarion', my_login, my_password, my_project_name)
 
 
 class TestWorkItemCRUD(unittest.TestCase):
@@ -349,7 +349,7 @@ class TestSimpleTestRunCRUD(unittest.TestCase):
 
         self.assertEqual(permanent_status, simpleTestRun.status)
 
-        new_status = _gen_run_id(TestSimpleTestRunCRUD)
+        new_status = SimpleTestRun.Status.IN_PROGRESS
         self.assertNotEqual(new_status, simpleTestRun.status)
         simpleTestRun.status = new_status
 
@@ -462,7 +462,7 @@ class TestSimpleTestRunsLinking(unittest.TestCase):
         refreshed = SimpleTestRun(TestSimpleTestRunsLinking.test_session)
         refreshed.puri = puri
         refreshed._crudRetrieve()
-        return refreshed._getPlanURI()
+        return refreshed.testPlanURI
 
     def test_0001(self):
 
@@ -493,6 +493,7 @@ class TestSimpleTestRunsLinking(unittest.TestCase):
         # create new simple runs, not linked
         run1 = SimpleTestRun(TestSimpleTestRunsLinking.test_session)
         run1.pid = _gen_run_id(TestSimpleTestRunsLinking)
+        run1.testPlanURI = plans[name_plan_2].puri
         run1._crudCreate()
         run2 = SimpleTestRun(TestSimpleTestRunsLinking.test_session)
         run2.pid = _gen_run_id(TestSimpleTestRunsLinking)
@@ -501,15 +502,15 @@ class TestSimpleTestRunsLinking(unittest.TestCase):
         run3.pid = _gen_run_id(TestSimpleTestRunsLinking)
         run3._crudCreate()
 
-        # verify not linked
-        self.assertIsNone(TestSimpleTestRunsLinking._referred(run1.puri))
+        # verify how linked
+        self.assertEquals(plans[name_plan_2].puri, TestSimpleTestRunsLinking._referred(run1.puri))
         self.assertIsNone(TestSimpleTestRunsLinking._referred(run2.puri))
         self.assertIsNone(TestSimpleTestRunsLinking._referred(run3.puri))
 
         # set the links
-        run1._setPlanURI(plans[name_plan_1].puri)
-        run2._setPlanURI(plans[name_plan_2].puri)
-        run3._setPlanURI(plans[name_plan_1].puri)
+        run1.testPlanURI = plans[name_plan_1].puri; run1._crudUpdate()
+        run2.testPlanURI = plans[name_plan_2].puri; run2._crudUpdate()
+        run3.testPlanURI = plans[name_plan_1].puri; run3._crudUpdate()
 
         # verify linked
         self.assertEqual(plans[name_plan_1].puri, TestSimpleTestRunsLinking._referred(run1.puri))
@@ -517,9 +518,9 @@ class TestSimpleTestRunsLinking(unittest.TestCase):
         self.assertEqual(plans[name_plan_1].puri, TestSimpleTestRunsLinking._referred(run3.puri))
 
         # switch the links
-        run1._setPlanURI(plans[name_plan_2].puri)
-        run2._setPlanURI(plans[name_plan_1].puri)
-        run3._setPlanURI(plans[name_plan_2].puri)
+        run1.testPlanURI = plans[name_plan_2].puri; run1._crudUpdate()
+        run2.testPlanURI = plans[name_plan_1].puri; run2._crudUpdate()
+        run3.testPlanURI = plans[name_plan_2].puri; run3._crudUpdate()
 
         # verify linked
         self.assertEqual(plans[name_plan_2].puri, TestSimpleTestRunsLinking._referred(run1.puri))
@@ -527,9 +528,9 @@ class TestSimpleTestRunsLinking(unittest.TestCase):
         self.assertEqual(plans[name_plan_2].puri, TestSimpleTestRunsLinking._referred(run3.puri))
 
         # unset the links
-        run1._setPlanURI(None)
-        run2._setPlanURI(None)
-        run3._setPlanURI(None)
+        run1.testPlanURI = None; run1._crudUpdate()
+        run2.testPlanURI = None; run2._crudUpdate()
+        run3.testPlanURI = None; run3._crudUpdate()
 
         # verify not linked
         self.assertIsNone(TestSimpleTestRunsLinking._referred(run1.puri))
@@ -657,27 +658,33 @@ class TestSimpleTestRunRecordOps(unittest.TestCase):
         run.pid = _gen_run_id(TestSimpleTestRunRecordOps)
         run._crudCreate()
 
-        self.assertEqual(0, len(run._getTestRecords()))
+        self.assertEqual(0, len(run.testRecords))
 
-        run._setTestRecords([tr1, tr2])
-        self.assertEqual(2, len(run._getTestRecords()))
+        run.testRecords = [tr1, tr2]; run._crudUpdate()
+        self.assertEqual(2, len(run.testRecords))
 
         tr3.comment = TestManagementText(session, content_type='text/html', content='screwed!', contentLossy=False)
         tr3.duration = 3.14
         tr3.executed = datetime.datetime.now()
         self.result = TestRecord.Status.FAILED
 
-        run._setTestRecords([tr3])
-        self.assertEqual(1, len(run._getTestRecords()))
+        run.testRecords = [tr3]; run._crudUpdate()
+        self.assertEqual(1, len(run.testRecords))
 
-        tr = run._getTestRecords()[0]
+        tr = run.testRecords[0]
         self.assertEqual(tr3.testCaseURI, tr.testCaseURI)
         self.assertEqual(tr3.result, tr.result)
         self.assertEqual(tr3.comment.content, tr.comment.content)
         self.assertEqual(tr3.comment.content_type, tr.comment.content_type)
         self.assertEqual(tr3.comment.contentLossy, tr.comment.contentLossy)
-        self.assertTrue(abs((tr3.executed - tr.executed).total_seconds()) <= 120.0) # SUDS not 100% inaccurate?
+        self.assertTrue(abs((tr3.executed - tr.executed).total_seconds()) <= 120.0)  # SUDS not 100% inaccurate?
         self.assertEqual(tr3.duration, tr.duration)
+
+        run = SimpleTestRun(session)
+        run.pid = _gen_run_id(TestSimpleTestRunRecordOps)
+        run.testRecords = [tr1, tr2]
+        run._crudCreate()
+        self.assertEqual(2, len(run.testRecords))
 
 
 class TestRawEmbedding(unittest.TestCase):
@@ -720,12 +727,12 @@ The way to dusty death. Out, out, brief candle!
         self.assertEqual(suffix1, suffix2)
 
     def testNotInstantiable_0001(self):
-        text='''Hello world'''
+        text = '''Hello world'''
         self.assertIsNone(_SimpleTestPlanTextEmbedding.instantiateFromText(text))
         self.assertIsNone(_SimpleTestRunTextEmbedding.instantiateFromText(text))
 
     def testRootSimpleTestPlanTextEmbedding(self):
-        text='''[pylarion-structured-field-start]  
+        text = '''[pylarion-structured-field-start]  
 header:
   subject: pylarion
   formatVersion: 0.0
@@ -742,7 +749,7 @@ trailing text
         self.assertEqual('trailing text\n', instance.suffix)
 
     def testChildSimpleTestPlanTextEmbedding(self):
-        text='''some text before
+        text = '''some text before
 continuing...
 [pylarion-structured-field-start]  
 header:
@@ -760,7 +767,7 @@ data:
         self.assertEqual('', instance.suffix)
 
     def testSimpleTestRunTextEmbedding(self):
-        text='''abc
+        text = '''abc
 [pylarion-structured-field-start]  
 header:
   subject: pylarion

@@ -199,7 +199,7 @@ class _SimpleTestRunTextEmbedding(object):
     def getPlanURI(cls, text):
         embedding = _SimpleTestRunTextEmbedding.instantiateFromText(text)
         if not embedding:
-            raise PylarionLibException('Not SimpleTestRun embedding: {}'.format(text))
+            return None
         return embedding.yamlObject['data']['plan']['uri']
 
     @classmethod

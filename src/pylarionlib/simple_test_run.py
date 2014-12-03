@@ -20,13 +20,31 @@ class SimpleTestRun(TestRun):
 
     def __init__(self, session):
         super(SimpleTestRun, self).__init__(session)
+        self.testPlanURI = None
+        self.testRecords = []
 
+
+    def _copy(self, another):
+        super(SimpleTestRun, self)._copy(another)
+        another.testPlanURI = self.testPlanURI
+        another.testRecords = self.testRecords
+        return another
+
+
+    # SUDS mapping
 
     @classmethod
     def _isConvertible(cls, suds_object):
         if not TestRun._isConvertible(suds_object):
             return False
         return SimpleTestRun._hasPlanEmbedding(suds_object)
+
+
+    @classmethod
+    def _mapSpecificAttributesFromSUDS(cls, suds_object, testRun):
+        TestRun._mapSpecificAttributesFromSUDS(suds_object, testRun)
+        testRun._retrieveTestPlanURI()
+        testRun._retrieveTestRecords(suds_object)
 
 
     @classmethod
@@ -42,66 +60,53 @@ class SimpleTestRun(TestRun):
         return suds_object
 
 
-    def _crudCreate(self, project=None):
-
-        # Custom code to CREATE a persistent instance.
-        # First, we must work around Polarion's inability to create a (normal)
-        # test run in one step.
-        # Second, the wiki content (where we store a reference to a test plan)
-        # isn't directly accessible (we must call yet another methods of the
-        # Polarion API).
-        # Lasciate ogne speranza, voi ch'intrate
-
-        tempTestRun = TestRun(self.session)
-        self._copy(tempTestRun)
-        tempTestRun._crudCreate(project=project)
-
-        wiki = self.session.test_management_client.service.getWikiContentForTestRun(tempTestRun.puri)
-        embedding = _SimpleTestRunTextEmbedding.instantiateFromPlanURI(None)
-        embedding.prefix = wiki.content
-        if not embedding.prefix.endswith('\n'):
-            embedding.prefix = '{}\n'.format(embedding.prefix)
-        embedding.suffix = ''
-        wiki.content = embedding.toText()
-        self.session.test_management_client.service.updateWikiContentForTestRun(tempTestRun.puri, wiki)
-
-        self.puri = tempTestRun.puri
-
-        # For some peculiar reason, out testing project creates test run
-        # with one predefined test record though there's no corresponding
-        # work item. For now, just brute force.
-        # TODO: Investigate, maybe template problem?
-        self._setTestRecords([])
-
-        return self._crudRetrieve()
-
-
     @classmethod
     def _hasPlanEmbedding(cls, suds_object):
         # TODO: Look into getWikiContentForTestRun(...) and decide
         return True
 
 
-    def _getPlanURI(self):
-        wiki = self.session.test_management_client.service.getWikiContentForTestRun(self.puri)
-        return _SimpleTestRunTextEmbedding.getPlanURI(wiki.content)
+    # Helper methods for CRUD
+
+    def _hasEquivTestRecords(self, testRecordList):
+        if not self.testRecords and not testRecordList:
+            return True
+        if not self.testRecords and testRecordList:
+            return False
+        if self.testRecords and not testRecordList:
+            return False
+        if len(self.testRecords) != len(testRecordList):
+            return False
+        for i, j in zip(self.testRecords, testRecordList):
+            if not i and j:
+                return False
+            if i and not j:
+                return False
+            if not i._equiv(j):
+                return False
+        return True
 
 
-    def _setPlanURI(self, uri):
-        # NOTE: Persisted immediately!
+    def _retrieveTestPlanURI(self):
         wiki = self.session.test_management_client.service.getWikiContentForTestRun(self.puri)
-        newContent = _SimpleTestRunTextEmbedding.setPlanURI(wiki.content, uri)
+        self.testPlanURI = _SimpleTestRunTextEmbedding.getPlanURI(wiki.content)
+
+
+    def _fixTestPlanURI(self, wishedTestPlanURI):
+        actualTestPlanURI = self.testPlanURI
+        if wishedTestPlanURI == actualTestPlanURI:
+            return
+        wiki = self.session.test_management_client.service.getWikiContentForTestRun(self.puri)
+        newContent = _SimpleTestRunTextEmbedding.setPlanURI(wiki.content, wishedTestPlanURI)
         wiki.content = newContent
         self.session.test_management_client.service.updateWikiContentForTestRun(self.puri, wiki)
+        self._retrieveTestPlanURI()
+        if wishedTestPlanURI != self.testPlanURI:
+            raise PylarionLibException('Cannot set Test Plan URI={} to Test Run {}'.format(wishedTestPlanURI, self.puri))
 
 
-    def _getTestRecords(self):
-
-        suds_object = self.session.test_management_client.service.getTestRunByUri(self.puri)
-        if not suds_object or suds_object._unresolvable:
-            raise PylarionLibException('Test Run UID not found: {}'.format(self.puri))
-
-        retval = []
+    def _retrieveTestRecords(self, suds_object):
+        self.testRecords = []
         if hasattr(suds_object, 'records'):
             if suds_object.records:
                 if suds_object.records[0]:
@@ -109,13 +114,16 @@ class SimpleTestRun(TestRun):
                         for r in suds_object.records[0]:
                             if hasattr(r, 'testCaseURI'):
                                 if r.testCaseURI != None:
-                                    retval.append(TestRecord._mapFromSUDS(self.session, r))
-
-        return retval
+                                    self.testRecords.append(TestRecord._mapFromSUDS(self.session, r))
 
 
-    def _setTestRecords(self, testRecords):
-        # NOTE: Persisted immediately (and per partes)!
+    def _fixTestRecords(self, wishedTestRecords):
+
+        suds_object = self.session.test_management_client.service.getTestRunByUri(self.puri)
+        self._retrieveTestRecords(suds_object)
+
+        if self._hasEquivTestRecords(wishedTestRecords):
+            return
 
         # The "natural" way - updating individual test tecords - does not
         # work:
@@ -125,12 +133,6 @@ class SimpleTestRun(TestRun):
         #    record!
         # TODO: Report to Polarion
 
-        suds_object = self.session.test_management_client.service.getTestRunByUri(self.puri)
-        if not suds_object or suds_object._unresolvable:
-            raise PylarionLibException('Test Run UID not found: {}'.format(self.puri))
-
-        # There has to be the following item, otherwise we are screwed.
-        # ATM I don't know how to create it "manually".
         records = suds_object.records[0]
 
         # "Empty" the run: I'm afraid there's this clumsy way only
@@ -138,10 +140,57 @@ class SimpleTestRun(TestRun):
             for i in xrange(len(records) - 1, -1, -1):
                 self.session.test_management_client.service.updateTestRecordAtIndex(self.puri, i, suds.null())
 
-        if testRecords:
-            for tr in testRecords:
+        if wishedTestRecords:
+            for tr in wishedTestRecords:
                 if tr:
                     self.session.test_management_client.service.addTestRecordToTestRun(self.puri, tr._mapToSUDS())
+
+        suds_object = self.session.test_management_client.service.getTestRunByUri(self.puri)
+        self._retrieveTestRecords(suds_object)
+
+        if not self._hasEquivTestRecords(wishedTestRecords):
+            raise PylarionLibException('For Test Run {}, cannot set Test Records: {}'.format(self.puri, wishedTestRecords))
+
+
+    def _crudCreateOrUpdate(self, create=True, project=None):
+
+        wishedTestPlanURI = self.testPlanURI
+        wishedTestRecords = self.testRecords
+
+        if create:
+            # Custom code to CREATE a persistent instance.
+            # Lasciate ogne speranza, voi ch'intrate
+
+            tempTestRun = TestRun(self.session)
+            self._copy(tempTestRun)
+            tempTestRun._crudCreate(project=project)
+
+            wiki = self.session.test_management_client.service.getWikiContentForTestRun(tempTestRun.puri)
+            embedding = _SimpleTestRunTextEmbedding.instantiateFromPlanURI(wishedTestPlanURI)
+            embedding.prefix = wiki.content
+            if not embedding.prefix.endswith('\n'):
+                embedding.prefix = '{}\n'.format(embedding.prefix)
+            embedding.suffix = ''
+            wiki.content = embedding.toText()
+            self.session.test_management_client.service.updateWikiContentForTestRun(tempTestRun.puri, wiki)
+
+            tempTestRun._copy(self)
+
+        else:
+            super(SimpleTestRun, self)._crudUpdate()
+
+        self._fixTestPlanURI(wishedTestPlanURI)
+        self._fixTestRecords(wishedTestRecords)
+        return self._crudRetrieve()
+
+
+    # CRUD
+
+    def _crudCreate(self, project=None):
+        self._crudCreateOrUpdate(True, project)
+
+    def _crudUpdate(self):
+        self._crudCreateOrUpdate(False)
 
 
 from .exceptions import PylarionLibException
