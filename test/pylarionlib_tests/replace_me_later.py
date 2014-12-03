@@ -19,6 +19,7 @@ from pylarionlib.test_record import TestRecord
 from pylarionlib.tracker_text import TrackerText
 from pylarionlib.embedding import _yamlToText, _textToYAML, _SimpleTestPlanTextEmbedding, _SimpleTestRunTextEmbedding
 from pylarionlib.test_management_text import TestManagementText
+from pylarionlib.test_classes import AbstractTest
 
 my_login = 'vkadlcik'
 my_password = '94rskco.kftg9'
@@ -80,15 +81,62 @@ class TestWorkItemCRUD(unittest.TestCase):
         self.assertEqual(title, tc2.title)
         self.assertIsInstance(tc2, NonFunctionalTestCase)
         self.assertEqual(tc1.title, tc2.title)
+        self.assertIsNone(tc2.scriptURL)
 
     def test_0004(self):
+        surl1 = 'http://example.com/1'
+        surl2 = 'http://example.com/2'
+        automation1 = AbstractTest.AutomationConstants.VALUE_AUTOMATED
+        automation2 = AbstractTest.AutomationConstants.VALUE_MANUAL_ONLY
+        tags1 = set(['Maharaja', 'Dhiraya', 'Bir', 'Bikram', 'Shah', 'Deva'])
+        tags2 = set(['Mobutu', 'Sese', 'Seko', 'Kuku', 'Ngbanda', 'Wa', 'Za', 'Banga'])
         tc1 = TestSuite(TestWorkItemCRUD.test_session)
         tc1.title = 'vaskovo testovy pruvod'
+        tc1.scriptURL = surl1
         tc1._crudCreate()
         tc2 = TestWorkItemCRUD.test_session.getWorkItemByPURI(tc1.puri)
         self.assertEqual(tc1.puri, tc2.puri)
         self.assertEqual(tc1.pid, tc2.pid)
         self.assertEqual(tc1.__class__, tc2.__class__)
+        self.assertEqual(surl1, tc1.scriptURL)
+        self.assertEqual(surl1, tc2.scriptURL)
+        self.assertIsNone(tc1.automation)
+        self.assertIsNone(tc2.automation)
+        self.assertEqual(set(), tc1.tags)
+        self.assertEqual(set(), tc2.tags)
+        tc2.scriptURL = surl2
+        tc2.automation = automation1
+        tc2.tags = tags1
+        tc2._crudUpdate()
+        tc3 = TestWorkItemCRUD.test_session.getWorkItemByPURI(tc2.puri)
+        self.assertEqual(surl2, tc2.scriptURL)
+        self.assertEqual(surl2, tc3.scriptURL)
+        self.assertEqual(automation1, tc2.automation)
+        self.assertEqual(automation1, tc3.automation)
+        self.assertEqual(tags1, tc2.tags)
+        self.assertEqual(tags1, tc3.tags)
+        tc3.scriptURL = None
+        tc3.automation = None
+        tc3.tags = set()
+        tc3._crudUpdate()
+        tc4 = TestWorkItemCRUD.test_session.getWorkItemByPURI(tc3.puri)
+        self.assertIsNone(tc3.scriptURL)
+        self.assertIsNone(tc4.scriptURL)
+        self.assertIsNone(tc3.automation)
+        self.assertIsNone(tc4.automation)
+        self.assertEqual(set(), tc3.tags)
+        self.assertEqual(set(), tc4.tags)
+        tc4.scriptURL = surl1
+        tc4.automation = automation2
+        tc4.tags = tags2
+        tc4._crudUpdate()
+        tc5 = TestWorkItemCRUD.test_session.getWorkItemByPURI(tc4.puri)
+        self.assertEqual(surl1, tc4.scriptURL)
+        self.assertEqual(surl1, tc5.scriptURL)
+        self.assertEqual(automation2, tc4.automation)
+        self.assertEqual(automation2, tc5.automation)
+        self.assertEqual(tags2, tc4.tags)
+        self.assertEqual(tags2, tc5.tags)
 
 
 class TestDocumentCRUD(unittest.TestCase):

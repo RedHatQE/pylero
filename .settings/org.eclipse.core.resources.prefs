@@ -23,6 +23,7 @@ encoding//src/pylarionlib/test_classes.py=utf8
 encoding//src/pylarionlib/test_management_text.py=utf8
 encoding//src/pylarionlib/test_record.py=utf8
 encoding//src/pylarionlib/test_run.py=utf8
+encoding//src/pylarionlib/tracker_hyperlink.py=utf8
 encoding//src/pylarionlib/tracker_text.py=utf8
 encoding//src/pylarionlib/work_item.py=utf8
 encoding//test/main.py=utf8
