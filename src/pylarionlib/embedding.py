@@ -22,6 +22,10 @@ def _yamlToText(yamlObjectToEmbed, prefix, suffix):
     if not prefix:
         prefix = ''
 
+    if prefix:
+        if not prefix.endswith('\n'):
+            prefix = '{}\n'.format(prefix)
+
     if not suffix:
         suffix = ''
 

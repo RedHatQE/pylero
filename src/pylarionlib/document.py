@@ -8,11 +8,11 @@ from .abstract_polarion_persistent_object import AbstractPolarionPersistentObjec
 class Document(AbstractPolarionPersistentObject):
 
 
-    def __init__(self, session):
+    def __init__(self, session, project=None, namespace=None, name=None):
         AbstractPolarionPersistentObject.__init__(self, session)
-        self.project = None
-        self.namespace = None
-        self.name = None
+        self.project = project
+        self.namespace = namespace
+        self.name = name
         self.type = None
         self.workItemTypes = []
         self.structureLinkRole = None

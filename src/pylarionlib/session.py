@@ -152,6 +152,22 @@ class Session:
                        tags=tags)
         return tc._crudCreate(project)
 
+    def newSimpleTestPlan(self,
+                          project=None,
+                          space=None,
+                          name=None,
+                          initialText=None,
+                          parentPlanPURI=None,
+                          testCasesPURIs=[]):
+        plan = SimpleTestPlan(self,
+                              project=project,
+                              namespace=space,
+                              name=name,
+                              initialText=initialText,
+                              parentPlanPURI=parentPlanPURI,
+                              testCasesPURIs=testCasesPURIs)
+        return plan._crudCreate()
+
     def getWorkItemByPID(self, pid, project=None):
         if not project:
             project = self._getDefaultProject()

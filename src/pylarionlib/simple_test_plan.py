@@ -12,17 +12,26 @@ class SimpleTestPlan(Document):
 
     # TODO: references to test cases etc. See interface.txt for more.
 
-    _typeId = 'testspecification'
+    _DOCUMENT_TYPE = 'testspecification'
+    _DOCUMENT_STRUCTURE_LINK_ROLE = 'parent'
 
-    def __init__(self, session):
+    def __init__(self, session, project=None, namespace=None, name=None, initialText=None, parentPlanPURI=None, testCasesPURIs=[]):
 
-        Document.__init__(self, session)
+        Document.__init__(self, session, project=project, namespace=namespace, name=name)
 
-        self.type = SimpleTestPlan._typeId
+        self.type = SimpleTestPlan._DOCUMENT_TYPE
 
-        self.text = TrackerText(session, content=_SimpleTestPlanTextEmbedding.instantiateFromParentURI(None).toText())
+        self.structureLinkRole = SimpleTestPlan._DOCUMENT_STRUCTURE_LINK_ROLE
 
         self.workItemTypes = [ tcls._WI_TYPE for tcls in [ FunctionalTestCase, StructuralTestCase, NonFunctionalTestCase, TestSuite ] ]
+
+        embedding = _SimpleTestPlanTextEmbedding.instantiateFromParentURI(parentPlanPURI)
+        embedding.prefix = initialText
+        self.text = TrackerText(session, content=embedding.toText())
+
+        if testCasesPURIs:
+            for i in testCasesPURIs:
+                self._addTestCaseURI(i)
 
 
     @classmethod
@@ -33,7 +42,7 @@ class SimpleTestPlan(Document):
             return False
         if not hasattr(sudsObject, 'id'):
             return False
-        if sudsObject.type.id != SimpleTestPlan._typeId:
+        if sudsObject.type.id != SimpleTestPlan._DOCUMENT_TYPE:
             return False
         if not SimpleTestPlan._hasParentPlanEmbedding(sudsObject):
             return False
@@ -59,9 +68,13 @@ class SimpleTestPlan(Document):
     def _crudCreate(self, project=None, namespace=None):
         # Work around a chicken-and-egg problem introduced by the two-steps
         # process needed to create a Document (Hint: by Polarion's design)
+        if project:
+            self.project = project
+        if namespace:
+            self.namespace = namespace
         tempDocument = Document(self.session)
         self._copy(tempDocument)
-        tempDocument._crudCreate(project=project, namespace=namespace)
+        tempDocument._crudCreate(project=self.project, namespace=self.namespace)
         self.puri = tempDocument.puri
         return self._crudRetrieve()
 
@@ -124,6 +137,36 @@ class SimpleTestPlan(Document):
         wipids = _SimpleTestPlanTextEmbedding.getLinkedWorkItemPIDs(self.text.content)
         if wipids:
             self.text.content = _SimpleTestPlanTextEmbedding.setLinkedWorkItemPIDs(self.text.content, [])
+
+
+    # public methods
+
+    def getPlanText(self):
+        embedding = _SimpleTestPlanTextEmbedding.instantiateFromText(self.text.content)
+        return embedding.prefix
+
+    def setPlanText(self, newText):
+        embedding = _SimpleTestPlanTextEmbedding.instantiateFromText(self.text.content)
+        embedding.prefix = newText
+        self.text.content = embedding.toText()
+
+    def getParentPlanPURI(self):
+        return self._getParentPlanURI()
+
+    def setParentPlanPURI(self, puri):
+        self._setParentPlanURI(puri)
+
+    def getTestCasesPURIs(self):
+        return self._getTestCaseURIs()
+
+    def addTestCasePURI(self, puri):
+        self._addTestCaseURI(self, puri)
+
+    def deleteTestCasePURI(self, puri):
+        self._deleteTestCaseURI(puri)
+
+    def deleteAllTestCases(self):
+        self._deleteAllTestCaseURIs()
 
 
 from .exceptions import PylarionLibException

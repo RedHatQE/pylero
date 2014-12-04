@@ -25,7 +25,7 @@ my_login = 'vkadlcik'
 my_password = '94rskco.kftg9'
 my_project_name = 'BrnoTraining'
 my_space = 'vkadlcik_spejs'
-my_server = Server('http://polarion.dqe.lab.eng.bos.redhat.com/polarion', my_login, my_password, my_project_name)
+my_server = Server('http://polarion.dqe.lab.eng.bos.redhat.com/polarion', my_login, my_password, my_project_name, my_space)
 
 
 class TestWorkItemCRUD(unittest.TestCase):
@@ -803,7 +803,7 @@ class AbstractTestSessionAPITestCase(unittest.TestCase):
     def sess(self):
         return self.__class__.testSession
 
-    def assertMatchAfterRetrieve(self, justCreatedTestCase, title=None, description=None, initialEstimate=None, automation=None, scriptURL=None, tags=set()):
+    def assertMatchTestCaseAfterRetrieve(self, justCreatedTestCase, title=None, description=None, initialEstimate=None, automation=None, scriptURL=None, tags=set()):
         tc2 = AbstractTest(self.sess())
         tc2.puri = justCreatedTestCase.puri
         tc2._crudRetrieve()
@@ -828,6 +828,26 @@ class AbstractTestSessionAPITestCase(unittest.TestCase):
         self.assertEqual(tags, justCreatedTestCase.tags)
         self.assertEqual(tags, tc2.tags)
 
+    def assertMatchPlanAfterRetrieve(self, justCreatedPlan, space=None, name=None, initialText=None, parentPlanPURI=None, testCasesPURIs=[]):
+        plan2 = SimpleTestPlan(self.sess())
+        plan2.puri = justCreatedPlan.puri
+        plan2._crudRetrieve()
+        self.assertEqual(space, justCreatedPlan.namespace)
+        self.assertEqual(space, plan2.namespace)
+        self.assertEqual(name, justCreatedPlan.name)
+        self.assertEqual(name, plan2.name)
+        if not initialText:
+            initialText = ''
+        if initialText:
+            if not initialText.endswith('\n'):
+                initialText = '{}\n'.format(initialText)
+        self.assertEqual(initialText, justCreatedPlan.getPlanText())
+        self.assertEqual(initialText, plan2.getPlanText())
+        self.assertEqual(parentPlanPURI, justCreatedPlan.getParentPlanPURI())
+        self.assertEqual(parentPlanPURI, plan2.getParentPlanPURI())
+        self.assertEqual(testCasesPURIs, justCreatedPlan.getTestCasesPURIs())
+        self.assertEqual(testCasesPURIs, plan2.getTestCasesPURIs())
+
 class TestSessionAPI_newFunctionalTestCase(AbstractTestSessionAPITestCase):
 
     def test_0001(self):
@@ -846,7 +866,7 @@ class TestSessionAPI_newFunctionalTestCase(AbstractTestSessionAPITestCase):
                                                scriptURL=scriptURL,
                                                tags=tags,
                                                posNeg=None)
-        self.assertMatchAfterRetrieve(tc, title, description, initialEstimate, automation, scriptURL, tags)
+        self.assertMatchTestCaseAfterRetrieve(tc, title, description, initialEstimate, automation, scriptURL, tags)
 
 class TestSessionAPI_newStructuralTestCase(AbstractTestSessionAPITestCase):
 
@@ -866,7 +886,7 @@ class TestSessionAPI_newStructuralTestCase(AbstractTestSessionAPITestCase):
                                                scriptURL=scriptURL,
                                                tags=tags,
                                                posNeg=None)
-        self.assertMatchAfterRetrieve(tc, title, description, initialEstimate, automation, scriptURL, tags)
+        self.assertMatchTestCaseAfterRetrieve(tc, title, description, initialEstimate, automation, scriptURL, tags)
 
 class TestSessionAPI_newNonFunctionalTestCase(AbstractTestSessionAPITestCase):
 
@@ -886,7 +906,7 @@ class TestSessionAPI_newNonFunctionalTestCase(AbstractTestSessionAPITestCase):
                                                   scriptURL=scriptURL,
                                                   tags=tags,
                                                   posNeg=None)
-        self.assertMatchAfterRetrieve(tc, title, description, initialEstimate, automation, scriptURL, set())
+        self.assertMatchTestCaseAfterRetrieve(tc, title, description, initialEstimate, automation, scriptURL, set())
 
 class TestSessionAPI_newTestSuite(AbstractTestSessionAPITestCase):
 
@@ -906,4 +926,51 @@ class TestSessionAPI_newTestSuite(AbstractTestSessionAPITestCase):
                                       scriptURL=scriptURL,
                                       tags=tags,
                                       posNeg=None)
-        self.assertMatchAfterRetrieve(tc, title, description, initialEstimate, automation, scriptURL, tags)
+        self.assertMatchTestCaseAfterRetrieve(tc, title, description, initialEstimate, automation, scriptURL, tags)
+
+class TestSessionAPI_newSimpleTestPlan(AbstractTestSessionAPITestCase):
+
+    def test_0001(self):
+        space = my_space
+        name = 'Whatever 1'
+        initialText = 'libovolný text<br/>\nFollowing the fox...<br/>'
+        parentPlanPURI = None
+        testCasesPURIs = []
+        plan = self.sess().getDocumentByPID(name, namespace=my_space)
+        if plan:
+            plan._crudDelete()
+        plan = self.sess().newSimpleTestPlan(project=my_project_name,
+                                             space=space,
+                                             name=name,
+                                             initialText=initialText,
+                                             parentPlanPURI=parentPlanPURI,
+                                             testCasesPURIs=testCasesPURIs)
+        self.assertMatchPlanAfterRetrieve(plan, space, name, initialText, parentPlanPURI, testCasesPURIs)
+
+    def test_0002(self):
+
+        tc1 = self.sess().newStructuralTestCase(title='ftc1')
+        tc2 = self.sess().newStructuralTestCase(title='ftc2')
+        tc3 = self.sess().newStructuralTestCase(title='ftc3')
+
+        gen_plan_name = 'Gen Gen Gen 0'
+        gen_plan = self.sess().getDocumentByPID(gen_plan_name, namespace=my_space)
+        if gen_plan:
+            gen_plan._crudDelete()
+        gen_plan = self.sess().newSimpleTestPlan(name=gen_plan_name)
+
+        space = my_space
+        name = 'Whatever 2'
+        initialText = None
+        parentPlanPURI = gen_plan.puri
+        testCasesPURIs = [tc1.puri, tc2.puri, tc3.puri]
+        plan = self.sess().getDocumentByPID(name, namespace=my_space)
+        if plan:
+            plan._crudDelete()
+        plan = self.sess().newSimpleTestPlan(project=my_project_name,
+                                             space=space,
+                                             name=name,
+                                             initialText=initialText,
+                                             parentPlanPURI=parentPlanPURI,
+                                             testCasesPURIs=testCasesPURIs)
+        self.assertMatchPlanAfterRetrieve(plan, space, name, initialText, parentPlanPURI, testCasesPURIs)
