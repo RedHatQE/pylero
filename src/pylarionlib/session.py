@@ -168,6 +168,20 @@ class Session:
                               testCasesPURIs=testCasesPURIs)
         return plan._crudCreate()
 
+    def newSimpleTestRun(self,
+                          project=None,
+                          status=None,
+                          namePrefix=None,
+                          testPlanPURI=None,
+                          testCasesPURIs=[]):
+        run = SimpleTestRun(self,
+                            project=project,
+                            status=status,
+                            namePrefix=namePrefix,
+                            testPlanPURI=testPlanPURI,
+                            testCasesPURIs=testCasesPURIs)
+        return run._crudCreate()
+
     def getWorkItemByPID(self, pid, project=None):
         if not project:
             project = self._getDefaultProject()
@@ -219,7 +233,7 @@ class Session:
     def getTestRunByPID(self, pid, project=None):
         if not project:
             project = self._getDefaultProject()
-        sudsTestRun = self.testManagementClient.getTestRunById(project, pid)
+        sudsTestRun = self.testManagementClient.service.getTestRunById(project, pid)
         if sudsTestRun._unresolvable:
             return None
         return TestRun._mapFromSUDS(self, sudsTestRun)

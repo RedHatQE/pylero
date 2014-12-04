@@ -303,7 +303,7 @@ class TestTestRunCRUD(unittest.TestCase):
 
         self.assertEqual(permanent_status, testRun.status)
 
-        new_status = _gen_run_id(TestTestRunCRUD)
+        new_status = TestRun.Status.NOT_RUN
         self.assertNotEqual(new_status, testRun.status)
         testRun.status = new_status
 
@@ -462,7 +462,7 @@ class TestSimpleTestRunsLinking(unittest.TestCase):
         refreshed = SimpleTestRun(TestSimpleTestRunsLinking.testSession)
         refreshed.puri = puri
         refreshed._crudRetrieve()
-        return refreshed.testPlanURI
+        return refreshed.testPlanPURI
 
     def test_0001(self):
 
@@ -493,7 +493,7 @@ class TestSimpleTestRunsLinking(unittest.TestCase):
         # create new simple runs, not linked
         run1 = SimpleTestRun(TestSimpleTestRunsLinking.testSession)
         run1.pid = _gen_run_id(TestSimpleTestRunsLinking)
-        run1.testPlanURI = plans[name_plan_2].puri
+        run1.testPlanPURI = plans[name_plan_2].puri
         run1._crudCreate()
         run2 = SimpleTestRun(TestSimpleTestRunsLinking.testSession)
         run2.pid = _gen_run_id(TestSimpleTestRunsLinking)
@@ -508,9 +508,9 @@ class TestSimpleTestRunsLinking(unittest.TestCase):
         self.assertIsNone(TestSimpleTestRunsLinking._referred(run3.puri))
 
         # set the links
-        run1.testPlanURI = plans[name_plan_1].puri; run1._crudUpdate()
-        run2.testPlanURI = plans[name_plan_2].puri; run2._crudUpdate()
-        run3.testPlanURI = plans[name_plan_1].puri; run3._crudUpdate()
+        run1.testPlanPURI = plans[name_plan_1].puri; run1._crudUpdate()
+        run2.testPlanPURI = plans[name_plan_2].puri; run2._crudUpdate()
+        run3.testPlanPURI = plans[name_plan_1].puri; run3._crudUpdate()
 
         # verify linked
         self.assertEqual(plans[name_plan_1].puri, TestSimpleTestRunsLinking._referred(run1.puri))
@@ -518,9 +518,9 @@ class TestSimpleTestRunsLinking(unittest.TestCase):
         self.assertEqual(plans[name_plan_1].puri, TestSimpleTestRunsLinking._referred(run3.puri))
 
         # switch the links
-        run1.testPlanURI = plans[name_plan_2].puri; run1._crudUpdate()
-        run2.testPlanURI = plans[name_plan_1].puri; run2._crudUpdate()
-        run3.testPlanURI = plans[name_plan_2].puri; run3._crudUpdate()
+        run1.testPlanPURI = plans[name_plan_2].puri; run1._crudUpdate()
+        run2.testPlanPURI = plans[name_plan_1].puri; run2._crudUpdate()
+        run3.testPlanPURI = plans[name_plan_2].puri; run3._crudUpdate()
 
         # verify linked
         self.assertEqual(plans[name_plan_2].puri, TestSimpleTestRunsLinking._referred(run1.puri))
@@ -528,9 +528,9 @@ class TestSimpleTestRunsLinking(unittest.TestCase):
         self.assertEqual(plans[name_plan_2].puri, TestSimpleTestRunsLinking._referred(run3.puri))
 
         # unset the links
-        run1.testPlanURI = None; run1._crudUpdate()
-        run2.testPlanURI = None; run2._crudUpdate()
-        run3.testPlanURI = None; run3._crudUpdate()
+        run1.testPlanPURI = None; run1._crudUpdate()
+        run2.testPlanPURI = None; run2._crudUpdate()
+        run3.testPlanPURI = None; run3._crudUpdate()
 
         # verify not linked
         self.assertIsNone(TestSimpleTestRunsLinking._referred(run1.puri))
@@ -848,6 +848,28 @@ class AbstractTestSessionAPITestCase(unittest.TestCase):
         self.assertEqual(testCasesPURIs, justCreatedPlan.getTestCasesPURIs())
         self.assertEqual(testCasesPURIs, plan2.getTestCasesPURIs())
 
+    def assertMatchRunAfterRetrieve(self, justCreatedRun, status=None, namePrefix=None, testPlanPURI=None, testPlanName=None, testCasesPURIs=[]):
+        run2 = SimpleTestRun(self.sess())
+        run2.puri = justCreatedRun.puri
+        run2._crudRetrieve()
+        if not status:
+            status = TestRun.Status.NOT_RUN
+        self.assertEqual(status, justCreatedRun.status)
+        self.assertEqual(status, run2.status)
+        prefix = None
+        if namePrefix:
+            prefix = namePrefix
+        elif testPlanName:
+            prefix = testPlanName
+        else:
+            prefix = my_login
+        self.assertTrue(justCreatedRun.pid.startswith(prefix))
+        self.assertTrue(run2.pid.startswith(prefix))
+        self.assertEqual(testPlanPURI, justCreatedRun.testPlanPURI)
+        self.assertEqual(testPlanPURI, run2.testPlanPURI)
+        self.assertEqual(testCasesPURIs, [i.testCaseURI for i in justCreatedRun.testRecords])
+        self.assertEqual(testCasesPURIs, [i.testCaseURI for i in run2.testRecords])
+
 class TestSessionAPI_newFunctionalTestCase(AbstractTestSessionAPITestCase):
 
     def test_0001(self):
@@ -974,3 +996,41 @@ class TestSessionAPI_newSimpleTestPlan(AbstractTestSessionAPITestCase):
                                              parentPlanPURI=parentPlanPURI,
                                              testCasesPURIs=testCasesPURIs)
         self.assertMatchPlanAfterRetrieve(plan, space, name, initialText, parentPlanPURI, testCasesPURIs)
+
+class TestSessionAPI_newSimpleTestRun(AbstractTestSessionAPITestCase):
+
+    def test_0001(self):
+
+        tc1 = self.sess().newStructuralTestCase(title='ftc1')
+        tc2 = self.sess().newStructuralTestCase(title='ftc2')
+        tc3 = self.sess().newStructuralTestCase(title='ftc3')
+
+        testPlanName = 'My test spec'
+        plan = self.sess().getDocumentByPID(testPlanName)
+        if plan:
+            plan._crudDelete()
+        plan = self.sess().newSimpleTestPlan(name=testPlanName, initialText='Is this a real world?')
+
+        status = TestRun.Status.FINISHED
+        namePrefix = None
+        testPlanPURI = plan.puri
+        testCasesPURIs = [tc1.puri, tc2.puri, tc3.puri]
+
+        run = self.sess().newSimpleTestRun(status=status, namePrefix=namePrefix, testPlanPURI=testPlanPURI, testCasesPURIs=testCasesPURIs)
+        self.assertMatchRunAfterRetrieve(run, status, namePrefix, testPlanPURI, testPlanName, testCasesPURIs)
+
+        status = TestRun.Status.IN_PROGRESS
+        namePrefix = 'Some deliberate name'
+        testPlanPURI = None
+        testCasesPURIs = []
+
+        run = self.sess().newSimpleTestRun(status=status, namePrefix=namePrefix, testPlanPURI=testPlanPURI, testCasesPURIs=testCasesPURIs)
+        self.assertMatchRunAfterRetrieve(run, status, namePrefix, testPlanPURI, None, testCasesPURIs)
+
+        status = None
+        namePrefix = None
+        testPlanPURI = None
+        testCasesPURIs = [tc1.puri]
+
+        run = self.sess().newSimpleTestRun(status=status, namePrefix=namePrefix, testPlanPURI=testPlanPURI, testCasesPURIs=testCasesPURIs)
+        self.assertMatchRunAfterRetrieve(run, status, namePrefix, testPlanPURI, None, testCasesPURIs)

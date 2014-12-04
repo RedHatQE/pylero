@@ -14,10 +14,10 @@ class TestRun(AbstractPolarionPersistentObject):
         FINISHED    = "finished"
 
 
-    def __init__(self, session):
+    def __init__(self, session, project=None, status=None):
         AbstractPolarionPersistentObject.__init__(self, session)
-        self.project = None
-        self.status = None
+        self.project = project
+        self.status = status
 
 
     def _copy(self, another):

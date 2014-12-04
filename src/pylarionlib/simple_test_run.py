@@ -1,6 +1,8 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import datetime
+
 import suds
 
 from .test_run import TestRun
@@ -18,16 +20,22 @@ class SimpleTestRun(TestRun):
 
     # TODO: manage status: testRun.status.id = 'inprogress' # other values: notrun, finished (defined by project, template, Polarion?)
 
-    def __init__(self, session):
-        super(SimpleTestRun, self).__init__(session)
-        self.testPlanURI = None
+    def __init__(self, session, project=None, status=None, namePrefix=None, testPlanPURI=None, testCasesPURIs=[]):
+        super(SimpleTestRun, self).__init__(session, project=project, status=status)
+        self.testPlanPURI = testPlanPURI
         self.testRecords = []
+        if testCasesPURIs:
+            for i in testCasesPURIs:
+                if i:
+                    self.testRecords.append(TestRecord(session, i))
+        self._namePrefix = namePrefix
 
 
     def _copy(self, another):
         super(SimpleTestRun, self)._copy(another)
-        another.testPlanURI = self.testPlanURI
+        another.testPlanPURI = self.testPlanPURI
         another.testRecords = self.testRecords
+        another._namePrefix = self._namePrefix
         return another
 
 
@@ -89,11 +97,11 @@ class SimpleTestRun(TestRun):
 
     def _retrieveTestPlanURI(self):
         wiki = self.session.testManagementClient.service.getWikiContentForTestRun(self.puri)
-        self.testPlanURI = _SimpleTestRunTextEmbedding.getPlanURI(wiki.content)
+        self.testPlanPURI = _SimpleTestRunTextEmbedding.getPlanURI(wiki.content)
 
 
     def _fixTestPlanURI(self, wishedTestPlanURI):
-        actualTestPlanURI = self.testPlanURI
+        actualTestPlanURI = self.testPlanPURI
         if wishedTestPlanURI == actualTestPlanURI:
             return
         wiki = self.session.testManagementClient.service.getWikiContentForTestRun(self.puri)
@@ -101,7 +109,7 @@ class SimpleTestRun(TestRun):
         wiki.content = newContent
         self.session.testManagementClient.service.updateWikiContentForTestRun(self.puri, wiki)
         self._retrieveTestPlanURI()
-        if wishedTestPlanURI != self.testPlanURI:
+        if wishedTestPlanURI != self.testPlanPURI:
             raise PylarionLibException('Cannot set Test Plan URI={} to Test Run {}'.format(wishedTestPlanURI, self.puri))
 
 
@@ -152,18 +160,54 @@ class SimpleTestRun(TestRun):
             raise PylarionLibException('For Test Run {}, cannot set Test Records: {}'.format(self.puri, wishedTestRecords))
 
 
+    def _generatePIDIfNotSet(self):
+        if not self.pid:
+            # Establish a prefix for the name:
+            # 1. First, try to get the name of the test plan, if any
+            if not self._namePrefix:
+                if self.testPlanPURI:
+                    plan = self.session.trackerClient.service.getModuleByUri(self.testPlanPURI)
+                    if plan and not plan._unresolvable:
+                        if plan.moduleName:
+                            self._namePrefix = plan.moduleName
+            # 2. Fall back to the login and a timestamp
+            if not self._namePrefix:
+                self._namePrefix = '{}__{}'.format(self.session._server.login, datetime.datetime.now().strftime('%Y-%m-%d__%H_%M_%S'))
+            # Now, use a counter as a suffix: Use the first free "slot"
+            i = 0
+            while True:
+                nameTip = '{}__{:024}'.format(self._namePrefix, i)
+                er = self.session.testManagementClient.service.getTestRunById(self.project, nameTip)
+                if er and er._unresolvable:
+                    self.pid = nameTip
+                    break
+                # Real men would check for overflowing but...
+                i += 1
+
+
     def _crudCreateOrUpdate(self, create=True, project=None):
 
-        wishedTestPlanURI = self.testPlanURI
+        wishedTestPlanURI = self.testPlanPURI
         wishedTestRecords = self.testRecords
 
         if create:
-            # Custom code to CREATE a persistent instance.
+            # Custom code to CREATE a persistent instance. Several problems
+            # here, f.ex.
+            # - Must invent a new unique name (Polarion ID) for the run
+            # - Must create the run in several steps
             # Lasciate ogne speranza, voi ch'intrate
+
+            if project:
+                self.project = project
+            if not self.project:
+                self.project = self.session._getDefaultProject()
+
+            self._generatePIDIfNotSet()
 
             tempTestRun = TestRun(self.session)
             self._copy(tempTestRun)
-            tempTestRun._crudCreate(project=project)
+
+            tempTestRun._crudCreate(project=self.project)
 
             wiki = self.session.testManagementClient.service.getWikiContentForTestRun(tempTestRun.puri)
             embedding = _SimpleTestRunTextEmbedding.instantiateFromPlanURI(wishedTestPlanURI)
