@@ -22,7 +22,7 @@ class SimpleTestPlan(Document):
 
         self.text = TrackerText(session, content=_SimpleTestPlanTextEmbedding.instantiateFromParentURI(None).toText())
 
-        self.workItemTypes = [ tcls._wiType for tcls in [ FunctionalTestCase, StructuralTestCase, NonFunctionalTestCase, TestSuite ] ]
+        self.workItemTypes = [ tcls._WI_TYPE for tcls in [ FunctionalTestCase, StructuralTestCase, NonFunctionalTestCase, TestSuite ] ]
 
 
     @classmethod

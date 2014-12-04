@@ -21,11 +21,26 @@ class AbstractTest(WorkItem):
     _knownSubclasses = []
 
 
-    def __init__(self, session):
-        WorkItem.__init__(self, session)
-        self.automation = None
-        self.scriptURL = None
-        self.tags = set()
+    def __init__(self, session,
+                 project=None,
+                 title=None,
+                 wiType=None,
+                 status=None,
+                 description=None,
+                 initialEstimate=None,
+                 automation=None,
+                 scriptURL=None,
+                 tags=set()):
+        WorkItem.__init__(self, session,
+                          project=project,
+                          title=title,
+                          wiType=wiType,
+                          status=status,
+                          description=description,
+                          initialEstimate=initialEstimate)
+        self.automation = automation
+        self.scriptURL = scriptURL
+        self.tags = tags
 
 
     def _copy(self, another):
@@ -93,7 +108,7 @@ class AbstractTest(WorkItem):
     @classmethod
     def _isKnownType(cls, typeString):
         for subclass in AbstractTest._knownSubclasses:
-            if typeString == subclass._wiType:
+            if typeString == subclass._WI_TYPE:
                 return True
         return False
 
@@ -103,7 +118,7 @@ class AbstractTest(WorkItem):
         # TODO: sanity checks?
         typeString = sudsObject.type.id
         for subclass in AbstractTest._knownSubclasses:
-            if typeString == subclass._wiType:
+            if typeString == subclass._WI_TYPE:
                 return subclass._mapFromSUDS(session, sudsObject)
         raise PylarionLibException('Unknown work item type {}'.format(typeString))
 
@@ -190,38 +205,54 @@ class AbstractTest(WorkItem):
     # CRUD
 
     def _crudCreate(self, project=None):
-        self._crudCreateOrUpdate(True, project=project)
+        return self._crudCreateOrUpdate(True, project=project)
 
     def _crudUpdate(self):
-        self._crudCreateOrUpdate(False)
+        return self._crudCreateOrUpdate(False)
 
 
 class FunctionalTestCase(AbstractTest):
 
-    _wiType = 'functionaltestcase'
+    _WI_TYPE = 'functionaltestcase'
     _knownSubclasses = []
 
-    def __init__(self, session):
-        AbstractTest.__init__(self, session)
-        self.type = FunctionalTestCase._wiType
+    def __init__(self, session,
+                 project=None,
+                 title=None,
+                 status=None,
+                 description=None,
+                 initialEstimate=None,
+                 automation=None,
+                 scriptURL=None,
+                 tags=set(),
+                 posNeg=None):
+        AbstractTest.__init__(self, session,
+                              project=project,
+                              title=title,
+                              wiType=FunctionalTestCase._WI_TYPE,
+                              status=status,
+                              description=description,
+                              initialEstimate=initialEstimate,
+                              automation=automation,
+                              scriptURL=scriptURL,
+                              tags=tags)
         self.posNeg = None
 
     def _copy(self, another):
         AbstractTest._copy(self, another)
-        another.type = self.type
         another.posNeg = self.posNeg
         return another
 
     def _fillMissingValues(self, project=None, namespace=None):
         super(FunctionalTestCase, self)._fillMissingValues(project, namespace)
-        if not self.type:
-            self.type = FunctionalTestCase._wiType
+        if not self.wiType:
+            self.wiType = FunctionalTestCase._WI_TYPE
         return self
 
     @classmethod
     def _mapFromSUDS(cls, session, sudsObject):
         typeString = sudsObject.type.id
-        if typeString != FunctionalTestCase._wiType:
+        if typeString != FunctionalTestCase._WI_TYPE:
             raise PylarionLibException('Cannot instantiate from {}'.format(typeString))
         wi = FunctionalTestCase(session)
         FunctionalTestCase._mapSpecificAttributesFromSUDS(sudsObject, wi)
@@ -230,30 +261,46 @@ class FunctionalTestCase(AbstractTest):
 
 class StructuralTestCase(AbstractTest):
 
-    _wiType = 'structuraltestcase'
+    _WI_TYPE = 'structuraltestcase'
     _knownSubclasses = []
 
-    def __init__(self, session):
-        AbstractTest.__init__(self, session)
-        self.type = StructuralTestCase._wiType
+    def __init__(self, session,
+                 project=None,
+                 title=None,
+                 status=None,
+                 description=None,
+                 initialEstimate=None,
+                 automation=None,
+                 scriptURL=None,
+                 tags=set(),
+                 posNeg=None):
+        AbstractTest.__init__(self, session,
+                              project=project,
+                              title=title,
+                              wiType=StructuralTestCase._WI_TYPE,
+                              status=status,
+                              description=description,
+                              initialEstimate=initialEstimate,
+                              automation=automation,
+                              scriptURL=scriptURL,
+                              tags=tags)
         self.posNeg = None
 
     def _copy(self, another):
         AbstractTest._copy(self, another)
-        another.type = self.type
         another.posNeg = self.posNeg
         return another
 
     def _fillMissingValues(self, project=None, namespace=None):
         super(StructuralTestCase, self)._fillMissingValues(project, namespace)
-        if not self.type:
-            self.type = FunctionalTestCase._wiType
+        if not self.wiType:
+            self.wiType = FunctionalTestCase._WI_TYPE
         return self
 
     @classmethod
     def _mapFromSUDS(cls, session, sudsObject):
         typeString = sudsObject.type.id
-        if typeString != StructuralTestCase._wiType:
+        if typeString != StructuralTestCase._WI_TYPE:
             raise PylarionLibException('Cannot instantiate from {}'.format(typeString))
         wi = StructuralTestCase(session)
         StructuralTestCase._mapSpecificAttributesFromSUDS(sudsObject, wi)
@@ -262,30 +309,46 @@ class StructuralTestCase(AbstractTest):
 
 class NonFunctionalTestCase(AbstractTest):
 
-    _wiType = 'nonfunctionaltestcase'
+    _WI_TYPE = 'nonfunctionaltestcase'
     _knownSubclasses = []
 
-    def __init__(self, session):
-        AbstractTest.__init__(self, session)
-        self.type = NonFunctionalTestCase._wiType
+    def __init__(self, session,
+                 project=None,
+                 title=None,
+                 status=None,
+                 description=None,
+                 initialEstimate=None,
+                 automation=None,
+                 scriptURL=None,
+                 tags=set(),
+                 posNeg=None):
+        AbstractTest.__init__(self, session,
+                              project=project,
+                              title=title,
+                              wiType=NonFunctionalTestCase._WI_TYPE,
+                              status=status,
+                              description=description,
+                              initialEstimate=initialEstimate,
+                              automation=automation,
+                              scriptURL=scriptURL,
+                              tags=tags)
         self.posNeg = None
 
     def _copy(self, another):
         AbstractTest._copy(self, another)
-        another.type = self.type
         another.posNeg = self.posNeg
         return another
 
     def _fillMissingValues(self, project=None, namespace=None):
         super(NonFunctionalTestCase, self)._fillMissingValues(project, namespace)
-        if not self.type:
-            self.type = FunctionalTestCase._wiType
+        if not self.wiType:
+            self.wiType = FunctionalTestCase._WI_TYPE
         return self
 
     @classmethod
     def _mapFromSUDS(cls, session, sudsObject):
         typeString = sudsObject.type.id
-        if typeString != NonFunctionalTestCase._wiType:
+        if typeString != NonFunctionalTestCase._WI_TYPE:
             raise PylarionLibException('Cannot instantiate from {}'.format(typeString))
         wi = NonFunctionalTestCase(session)
         NonFunctionalTestCase._mapSpecificAttributesFromSUDS(sudsObject, wi)
@@ -294,30 +357,46 @@ class NonFunctionalTestCase(AbstractTest):
 
 class TestSuite(AbstractTest):
 
-    _wiType = 'testsuite'
+    _WI_TYPE = 'testsuite'
     _knownSubclasses = []
 
-    def __init__(self, session):
-        AbstractTest.__init__(self, session)
-        self.type = TestSuite._wiType
+    def __init__(self, session,
+                 project=None,
+                 title=None,
+                 status=None,
+                 description=None,
+                 initialEstimate=None,
+                 automation=None,
+                 scriptURL=None,
+                 tags=set(),
+                 posNeg=None):
+        AbstractTest.__init__(self, session,
+                              project=project,
+                              title=title,
+                              wiType=TestSuite._WI_TYPE,
+                              status=status,
+                              description=description,
+                              initialEstimate=initialEstimate,
+                              automation=automation,
+                              scriptURL=scriptURL,
+                              tags=tags)
         self.testTypes = None
 
     def _copy(self, another):
         AbstractTest._copy(self, another)
-        another.type = self.type
         another.testTypes = self.testTypes
         return another
 
     def _fillMissingValues(self, project=None, namespace=None):
         super(TestSuite, self)._fillMissingValues(project, namespace)
-        if not self.type:
-            self.type = FunctionalTestCase._wiType
+        if not self.wiType:
+            self.wiType = FunctionalTestCase._WI_TYPE
         return self
 
     @classmethod
     def _mapFromSUDS(cls, session, sudsObject):
         typeString = sudsObject.type.id
-        if typeString != TestSuite._wiType:
+        if typeString != TestSuite._WI_TYPE:
             raise PylarionLibException('Cannot instantiate from {}'.format(typeString))
         wi = TestSuite(session)
         TestSuite._mapSpecificAttributesFromSUDS(sudsObject, wi)

@@ -7,21 +7,34 @@ from .abstract_polarion_persistent_object import AbstractPolarionPersistentObjec
 
 class WorkItem(AbstractPolarionPersistentObject):
 
-    def __init__(self, session):
+    def __init__(self, session,
+                 project=None,
+                 title=None,
+                 wiType=None,
+                 status=None,
+                 description=None,
+                 initialEstimate=None):
+
         AbstractPolarionPersistentObject.__init__(self, session)
-        self.project = None
-        self.title = None
-        self.type = None
-        self.status = None
-        self.description = None
-        self.initialEstimate = None
+
+        self.project = project
+        self.title = title
+        self.wiType = wiType
+        self.status = status
+        self.description = description
+        self.initialEstimate = initialEstimate
+
+        if self.description:
+            if type(self.description) in [str, unicode]:
+                content = self.description
+                self.description = TrackerText(self.session, content=content)
 
 
     def _copy(self, another):
         AbstractPolarionPersistentObject._copy(self, another)
         another.project = self.project
         another.title = self.title
-        another.type = self.type
+        another.wiType = self.wiType
         another.status = self.status
         another.description = self.description
         another.initialEstimate = self.initialEstimate
@@ -53,7 +66,7 @@ class WorkItem(AbstractPolarionPersistentObject):
         session = workItem.session
 
         typeInstance = session.trackerClient.factory.create('tns3:EnumOptionId')
-        typeInstance.id = workItem.type
+        typeInstance.id = workItem.wiType
 
         statusInstance = session.trackerClient.factory.create('tns3:EnumOptionId')
         statusInstance.id = workItem.status
@@ -80,7 +93,7 @@ class WorkItem(AbstractPolarionPersistentObject):
 
         workItem.project = sudsObject.project.id
         workItem.title = sudsObject.title if hasattr(sudsObject, 'title') else None
-        workItem.type = sudsObject.type.id
+        workItem.wiType = sudsObject.type.id
         workItem.status = sudsObject.status.id
 
         if hasattr(sudsObject, 'description'):

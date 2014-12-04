@@ -187,10 +187,10 @@ class SimpleTestRun(TestRun):
     # CRUD
 
     def _crudCreate(self, project=None):
-        self._crudCreateOrUpdate(True, project)
+        return self._crudCreateOrUpdate(True, project)
 
     def _crudUpdate(self):
-        self._crudCreateOrUpdate(False)
+        return self._crudCreateOrUpdate(False)
 
 
 from .exceptions import PylarionLibException

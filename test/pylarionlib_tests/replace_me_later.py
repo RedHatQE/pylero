@@ -783,3 +783,127 @@ xyz
         self.assertEqual('abc\n', instance.prefix)
         self.assertEqual('subterra:data-service:objects:myPlanURI', instance.yamlObject['data']['plan']['uri'])
         self.assertEqual('xyz\n', instance.suffix)
+
+
+class AbstractTestSessionAPITestCase(unittest.TestCase):
+
+    testSession = None
+
+    @classmethod
+    def setUpClass(cls):
+        super(AbstractTestSessionAPITestCase, cls).setUpClass()
+        AbstractTestSessionAPITestCase.testSession = my_server._createSession()
+        AbstractTestSessionAPITestCase.testSession._login()
+
+    @classmethod
+    def tearDownClass(cls):
+        AbstractTestSessionAPITestCase.testSession._logout()
+        super(AbstractTestSessionAPITestCase, cls).tearDownClass()
+
+    def sess(self):
+        return self.__class__.testSession
+
+    def assertMatchAfterRetrieve(self, justCreatedTestCase, title=None, description=None, initialEstimate=None, automation=None, scriptURL=None, tags=set()):
+        tc2 = AbstractTest(self.sess())
+        tc2.puri = justCreatedTestCase.puri
+        tc2._crudRetrieve()
+        self.assertEqual(title, justCreatedTestCase.title)
+        self.assertEqual(title, tc2.title)
+        if description:
+            self.assertEqual(description, justCreatedTestCase.description.content)
+            self.assertEqual(description, tc2.description.content)
+        else:
+            self.assertIsNone(justCreatedTestCase.description)
+            self.assertIsNone(tc2.description)
+        if initialEstimate:
+            self.assertEqual(initialEstimate, justCreatedTestCase.initialEstimate)
+            self.assertEqual(initialEstimate, tc2.initialEstimate)
+        else:
+            self.assertIsNone(justCreatedTestCase.initialEstimate)
+            self.assertIsNone(tc2.initialEstimate)
+        self.assertEqual(automation, justCreatedTestCase.automation)
+        self.assertEqual(automation, tc2.automation)
+        self.assertEqual(scriptURL, justCreatedTestCase.scriptURL)
+        self.assertEqual(scriptURL, tc2.scriptURL)
+        self.assertEqual(tags, justCreatedTestCase.tags)
+        self.assertEqual(tags, tc2.tags)
+
+class TestSessionAPI_newFunctionalTestCase(AbstractTestSessionAPITestCase):
+
+    def test_0001(self):
+        title = 'Just another title 1'
+        description = 'Just another description 1'
+        initialEstimate = '1h'
+        automation = AbstractTest.AutomationConstants.VALUE_AUTOMATED
+        scriptURL = 'http://example.com/nothing_to_see_here_1.html'
+        tags = set(['one', 'two', 'three'])
+        tc = self.sess().newFunctionalTestCase(project=None,
+                                               title=title,
+                                               status=None,
+                                               description=description,
+                                               initialEstimate=initialEstimate,
+                                               automation=automation,
+                                               scriptURL=scriptURL,
+                                               tags=tags,
+                                               posNeg=None)
+        self.assertMatchAfterRetrieve(tc, title, description, initialEstimate, automation, scriptURL, tags)
+
+class TestSessionAPI_newStructuralTestCase(AbstractTestSessionAPITestCase):
+
+    def test_0001(self):
+        title = 'Just another title 2'
+        description = 'Just another description 2'
+        initialEstimate = '1d'
+        automation = AbstractTest.AutomationConstants.VALUE_MANUAL_ONLY
+        scriptURL = 'http://example.com/nothing_to_see_here_2.html'
+        tags = set()
+        tc = self.sess().newStructuralTestCase(project=None,
+                                               title=title,
+                                               status=None,
+                                               description=description,
+                                               initialEstimate=initialEstimate,
+                                               automation=automation,
+                                               scriptURL=scriptURL,
+                                               tags=tags,
+                                               posNeg=None)
+        self.assertMatchAfterRetrieve(tc, title, description, initialEstimate, automation, scriptURL, tags)
+
+class TestSessionAPI_newNonFunctionalTestCase(AbstractTestSessionAPITestCase):
+
+    def test_0001(self):
+        title = 'Just another title 3'
+        description = ''
+        initialEstimate = None
+        automation = None
+        scriptURL = None
+        tags = None
+        tc = self.sess().newNonFunctionalTestCase(project=None,
+                                                  title=title,
+                                                  status=None,
+                                                  description=description,
+                                                  initialEstimate=initialEstimate,
+                                                  automation=automation,
+                                                  scriptURL=scriptURL,
+                                                  tags=tags,
+                                                  posNeg=None)
+        self.assertMatchAfterRetrieve(tc, title, description, initialEstimate, automation, scriptURL, set())
+
+class TestSessionAPI_newTestSuite(AbstractTestSessionAPITestCase):
+
+    def test_0001(self):
+        title = 'Just another title 4'
+        description = None
+        initialEstimate = ''
+        automation = AbstractTest.AutomationConstants.VALUE_AUTOMATED
+        scriptURL = 'whatever'
+        tags = set(['one two'])
+        tc = self.sess().newTestSuite(project=None,
+                                      title=title,
+                                      status=None,
+                                      description=description,
+                                      initialEstimate=initialEstimate,
+                                      automation=automation,
+                                      scriptURL=scriptURL,
+                                      tags=tags,
+                                      posNeg=None)
+        self.assertMatchAfterRetrieve(tc, title, description, initialEstimate, automation, scriptURL, tags)
