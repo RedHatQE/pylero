@@ -62,7 +62,7 @@ TODO
   - Split the source files (and maybe create subpackages), the sheer size
     of the files is not much user/hacker-friendly.
 
-- Finish the public API. It is already drafted, see the the methods listed
+- Finish the public API. It is already drafted, see the methods listed in the
   file interface.py: on Session and on some persistent objects. I think the 
   implementation should be pretty straight-forward, just by getting/setting
   attributes of the persistent objects and performing CRUD on them. In case

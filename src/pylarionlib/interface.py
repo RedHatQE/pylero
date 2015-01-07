@@ -120,7 +120,7 @@ Data model:
    SimpleTestPlan and SimpleTestRun are the key data objects of this library
    - they represent test plans and test runs as they are usually understood
    by Base OS QE. Among others, test plans are hierarchically organized
-   and a test runs can be linked to a test plan it performs.
+   and a test run can be linked to a test plan it performs.
 
    For the sake of easy prototyping (no custom fields for now), let's specify: 
 
@@ -128,7 +128,7 @@ Data model:
      - is a Polarion Document
      - type.id = "testspecification"
      - its content (text) consists of three parts:
-       - whatever user wants there, Pylarion will ignore this
+       - whatever an user wants there, Pylarion will ignore this
        - Pylarion-specific data, in YAML (surrounded by [...])
          [pylarion-structured-field-start]
          header:
@@ -285,7 +285,7 @@ if False:
         def txRelease(self): pass  # if in a session: rollback
         def transaction(self): pass  # a context manager for a "normal" transaction
 
-        # For or all AbstractPolarionPersistentObject subclasses XXX:
+        # For all AbstractPolarionPersistentObject subclasses XXX:
         def newXXX(self, project=None, namespace=None): pass
         def getXXXByPID(self, pid, project=None): pass
         def getXXXByPURI(self, puri): pass
