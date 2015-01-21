@@ -52,7 +52,7 @@ class TestRun(AbstractPolarionPersistentObject):
         if SimpleTestRun._isConvertible(sudsObject):
             return SimpleTestRun._mapFromSUDS(session, sudsObject)
         else:
-            # Fall back: Not a "proper" test plan, just a document
+            # Fall back: Not SimpleTestRun, just a standard Polarion's TestRun
             testRun = TestRun(session)
             TestRun._mapSpecificAttributesFromSUDS(sudsObject, testRun)
             return testRun
