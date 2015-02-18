@@ -9,17 +9,17 @@ import datetime
 import random
 import unittest
 
-from pylarionlib.server import Server
-from pylarionlib.test_classes import FunctionalTestCase, StructuralTestCase, NonFunctionalTestCase, TestSuite
-from pylarionlib.document import Document
-from pylarionlib.simple_test_plan import SimpleTestPlan
-from pylarionlib.test_run import TestRun
-from pylarionlib.simple_test_run import SimpleTestRun
-from pylarionlib.test_record import TestRecord
-from pylarionlib.tracker_text import TrackerText
-from pylarionlib.embedding import _yamlToText, _textToYAML, _SimpleTestPlanTextEmbedding, _SimpleTestRunTextEmbedding
-from pylarionlib.test_management_text import TestManagementText
-from pylarionlib.test_classes import AbstractTest
+from pylarion.server import Server
+from pylarion.test_classes import FunctionalTestCase, StructuralTestCase, NonFunctionalTestCase, TestSuite
+from pylarion.document import Document
+from pylarion.simple_test_plan import SimpleTestPlan
+from pylarion.test_run import TestRun
+from pylarion.simple_test_run import SimpleTestRun
+from pylarion.test_record import TestRecord
+from pylarion.tracker_text import TrackerText
+from pylarion.embedding import _yamlToText, _textToYAML, _SimpleTestPlanTextEmbedding, _SimpleTestRunTextEmbedding
+from pylarion.test_management_text import TestManagementText
+from pylarion.test_classes import AbstractTest
 
 my_login = 'vkadlcik'
 my_password = '94rskco.kftg9'
