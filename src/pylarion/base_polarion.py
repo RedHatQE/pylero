@@ -242,8 +242,10 @@ class BasePolarion(object):
                                                      additional_parms)))
                 else:
                     setattr(self.__class__, key, property(
+                        # if the attribute doesn't exist in the current object
+                        # return None
                         lambda self, suds_key=self._cls_suds_map[key]:
-                            getattr(self._suds_object, suds_key),
+                            getattr(self._suds_object, suds_key, None),
                         lambda self, value, suds_key=self._cls_suds_map[key]:
                             setattr(self._suds_object, suds_key, value)))
 # after all properties are defined set the id field to the value passed in.
@@ -273,7 +275,7 @@ class BasePolarion(object):
                 named_arg = "suds_object"
         if hasattr(self._suds_object, suds_field_name):
             args = {}
-            args[named_arg] = getattr(self._suds_object, suds_field_name)
+            args[named_arg] = getattr(self._suds_object, suds_field_name, None)
             obj = obj_cls(**args)
         else:
             obj = obj_cls()
