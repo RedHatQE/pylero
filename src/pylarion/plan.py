@@ -11,6 +11,7 @@ import pylarion.text as t
 from pylarion.plan_record import PlanRecord
 from pylarion.plan_statistics import PlanStatistics
 from pylarion.plan_record import ArrayOfPlanRecord
+import pylarion.work_item as wi
 
 
 class Plan(bp.BasePolarion):
@@ -153,7 +154,8 @@ class Plan(bp.BasePolarion):
         cls.session.planning_client.service.deletePlans(project_id, plan_ids)
 
     @classmethod
-    def search(cls, query, sort="plan_id", limit=-1, fields=[], search_templates=False):
+    def search(cls, query, sort="plan_id", limit=-1, fields=[],
+               search_templates=False):
         """search plans or plan templates
 
         Args
@@ -220,10 +222,8 @@ class Plan(bp.BasePolarion):
                     "The Plan {0} was not found.".format(plan_id))
 
     def _fix_circular_refs(self):
-        # This module imports work_item and work_item imports this module.
         # The module references itself as a class attribute, which is not
         # allowed, so the self reference is defined here.
-        import pylarion.work_item as wi
         self._cls_suds_map["parent"]["cls"] = self.__class__
 
     def add_plan_items(self, work_items):
