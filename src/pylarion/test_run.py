@@ -122,31 +122,41 @@ class TestRun(bp.BasePolarion):
             raise PylarionLibException("Test Run was not created")
 
     @classmethod
-    def create_template(cls, project_id, template_id, template="Empty",
-                        select_test_cases_by="manualSelection", query=None,
-                        document_name=None, test_case_ids=[]):
+    def create_template(cls, project_id, template_id,
+                        parent_template_id="Empty",
+                        select_test_cases_by="staticQueryResult", query=None,
+                        doc_with_space=None):  # , test_case_ids=[]):
+        # see comment below regarding test_case)ids.
         """class method create_template for creating a new template in Polarion
 
         Args:
             project_id (string) - the Polarion project to create the test run
                                   in
-            test_run_id (string) - the unique identifier for the test run
-            template (string) - the id of the template to base the test run on.
+            template_id (string) - the unique identifier for the template
+            parent_template_id - the template that this is based onthe ba
+            select_test_cases_by - the method used to choose test cases
+                                   NOTE: It is currently not possible to select
+                                         test cases manually via the API
+            query - the Lucene query, for query methods
+            doc_with_space - the space/doc_name, for document methods
 
         Returns:
-            The created TestRun object
+            The created TestRun Template object
         Implements:
             test_management.createTestRun
         """
-        tr = cls.create(project_id, template_id, template)
+        tr = cls.create(project_id, template_id, parent_template_id)
         tr.is_template = True
         tr.select_test_cases_by = select_test_cases_by
         if query:
             tr.query = query
-        if test_case_ids:
-            for test_case_id in test_case_ids:
-                tr.add_test_record_by_object(testrec.TestRecord(
-                                             test_case_id, project_id))
+        elif doc_with_space:
+            tr.document = doc.Document(project_id, doc_with_space)
+# TODO: This should work as soon as Polarion implements Change Request REQ-6334
+#        if test_case_ids:
+#            for test_case_id in test_case_ids:
+#                tr.add_test_record_by_object(testrec.TestRecord(
+#                                             test_case_id, project_id))
 
         tr.update()
         return TestRun(template_id, project_id=project_id)

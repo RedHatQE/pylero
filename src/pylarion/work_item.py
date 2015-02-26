@@ -201,7 +201,7 @@ class WorkItem(bp.BasePolarion):
     has_query = True
 
     @classmethod
-    def create(cls, wi):
+    def create(cls, work_item_id, project_id, wi_type, title, desc):
         """Creates a new work item with the given content. The project and the
         type have to be set for the workitem for the creation to succeed. The
         uri MUST NOT be set otherwise the creation will fail. To create a work
@@ -211,14 +211,25 @@ class WorkItem(bp.BasePolarion):
         the desired target Module/Document.
 
         Args:
-            wi (WorkItem)
+            work_item_id (string) - id of new WorkItem
+            project_id - id of project to create work item in
+            wi_type - type of work item (functionaltestcase,...)
+            title - title of WorkItem
+            desc - description of WorkItem
         Returns:
             new wi.WorkItem
         Implements:
             Tracker.createWorkItem
         """
-        wi_uri = cls.session.tracker_client.service.createWorkItem(wi)
-        return wi.WorkItem(uri=wi_uri)
+        wi = WorkItem()
+        wi.work_item_id = work_item_id
+        wi.project = p.Project(project_id)
+        wi.type = wi_type
+        wi.title = title
+        wi.description = desc
+        wi_uri = cls.session.tracker_client.service.createWorkItem(
+            wi._suds_object)
+        return WorkItem(uri=wi_uri)
 
     @classmethod
     def get_query_result_count(cls, query):

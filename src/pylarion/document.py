@@ -1,7 +1,6 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
-import suds
 from pylarion.exceptions import PylarionLibException
 import pylarion.base_polarion as bp
 import pylarion.enum_option_id as eoi
@@ -77,7 +76,7 @@ class Document(bp.BasePolarion):
     has_query = True
 
     @classmethod
-    def create(cls, project_id, space, document_name,
+    def create(cls, project_id, space, document_name, document_title,
                allowed_wi_types, structure_link_role, home_page_content):
                 # There is no document object.
         # don't know what to do with the URI it returns.
@@ -86,22 +85,27 @@ class Document(bp.BasePolarion):
 
         Args:
             project_id - project to create module in
-            space - document space location with one component or null for
-                    default space (can be null)
-            document_name - Document name (not null)
-            allowed_wi_types - one type must be specified
+            space - document space location with one component or None for
+                    default space
+            document_name - Document name (required)
+            document_title - Document title (required)
+            allowed_wi_types - list of types, at least one must be specified
             structure_link_role - required, role which defines the hierarchy of
                                   work items inside the Module
             home_page_content - HTML markup for document home page
-                                (can be null)
         Returns:
             None
         Implements:
             Tracker.createDocument
         """
+        if isinstance(allowed_wi_types, str):
+            allowed_wi_types = [allowed_wi_types]
+        awit = [eoi.EnumOptionId(item)._suds_object
+                for item in allowed_wi_types]
+        slr = eoi.EnumOptionId(structure_link_role)._suds_object
         uri = cls.session.tracker_client.service.createDocument(
-            project_id, space, document_name, allowed_wi_types,
-            structure_link_role, False, home_page_content)
+            project_id, space, document_name, document_title, awit,
+            slr, home_page_content)
         return Document(uri=uri)
 
     @classmethod
@@ -174,13 +178,13 @@ class Document(bp.BasePolarion):
             base_name, query, is_sql, fields=fields, sort=sort, limit=limit,
             baseline_revision=baseline_revision, has_fields=not query_uris)
 
-    def __init__(self, project_id=None, space=None, fields=None,
+    def __init__(self, project_id=None, doc_with_space=None, fields=None,
                  uri=None, suds_object=None):
         """constructor for the Module object. Gets the module object from the
         Polarion server based on parameters passed in.
         Args:
             project_id - the project where the module is located
-            space - specific space of the repository,
+            doc_with_space - specific space/doc_name of the repository,
                     required if project_id is given (Testing, Development, ...)
             fields - optional list of fields that should be contained in the
                      returned object.
@@ -197,12 +201,12 @@ class Document(bp.BasePolarion):
         super(self.__class__, self).__init__(suds_object=suds_object)
         # function names and parameter lists generated dynamically based on
         # parameters passed in.
-        if space or uri:
+        if doc_with_space or uri:
             function_name = "getModuleBy"
             parms = []
-            if space:
+            if doc_with_space:
                 function_name += "Location"
-                parms.append(project_id, space)
+                parms += [project_id, doc_with_space]
             elif uri:
                 function_name += "Uri"
                 parms.append(uri)
