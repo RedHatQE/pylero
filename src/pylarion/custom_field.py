@@ -2,6 +2,7 @@
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
 import pylarion.base_polarion as bp
+from pylarion.enum_option_id import EnumOptionId
 
 
 class CustomField(bp.BasePolarion):
@@ -14,7 +15,7 @@ class CustomField(bp.BasePolarion):
 """
     _cls_suds_map = {"key": "key",
                      "parent_item_uri": "parentItemURI",
-                     "value": "value",
+                     "value": {"field_name": "value", "cls": EnumOptionId},
                      "uri": "_uri",
                      "_unresolved": "_unresolved"}
     _obj_client = "tracker_client"

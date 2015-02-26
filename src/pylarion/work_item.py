@@ -958,6 +958,13 @@ class WorkItem(bp.BasePolarion):
         self._verify_obj()
         self.session.tracker_client.service.resetWorkflow(self.uri)
 
+    def set_custom_field(self, key, value):
+        c = cf.CustomField()
+        c.key = key
+        c.value = value
+        c.parent_item_uri = self.uri
+        self.session.tracker_client.service.setCustomField(c._suds_object)
+
     def set_fields_null(self, fields):
         """sets the specified fields to Null.
 
