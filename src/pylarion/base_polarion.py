@@ -197,8 +197,61 @@ class BasePolarion(object):
                 # variables
                 # at the end of function (self._cls_suds_map[key] was evaluated
                 # as the last key value in the for loop for all defined lambdas
+                # Property Builder, parses _cls_suds_map to build properties:
+                # custom fields:
+                #    getter has parameters:
+                #        suds_field_name
+                #        Pylarion class related to property
+                #    setter has parameters:
+                #        val - the value that the property is set to
+                #        suds_field_name
+                #        Pylarion class related to property
+                #        is_enum - boolean, used to verify enumerated value
+                # array object fields:
+                #    getter has parameters:
+                #        suds_field_name
+                #        Pylarion class related to property
+                #    setter has parameters:
+                #        val - the value that the property is set to
+                #        suds_field_name
+                #        Pylarion class related to property
+                #        Pylarion Array class related to the property
+                #        inner_field_name - the field within the Pylarion array
+                # object fields:
+                #    getter has parameters:
+                #        suds_field_name
+                #        Pylarion class related to property
+                #        named_arg - argument name to pas to the constructor
+                #    setter has parameters:
+                #        val - the value that the property is set to
+                #        suds_field_name
+                #        Pylarion class related to property
+                #        sync_field - the field from the instantiated class
+                #                     that the attribute is set to
+                #        additional_args - args needed for the obj constructor
+                # regular fields;
+                #    use getattr and setattr
                 if isinstance(self._cls_suds_map[key], dict):
-                    if "is_array" in self._cls_suds_map[key]:
+                    if "is_custom" in self._cls_suds_map[key]:
+                        setattr(self.__class__, key, property(
+                            lambda self,
+                            suds_field_name=self._cls_suds_map[key]
+                                ["field_name"],
+                                obj_cls=self._cls_suds_map[key]["cls"] if
+                                "cls" in self._cls_suds_map[key] else None:
+                                    self._custom_getter(
+                                        suds_field_name, obj_cls),
+                                lambda self, val,
+                                suds_field_name=self._cls_suds_map[key]
+                                    ["field_name"],
+                                obj_cls=self._cls_suds_map[key]["cls"] if
+                                "cls" in self._cls_suds_map[key] else None,
+                                is_enum=self._cls_suds_map[key]["is_enum"] if
+                                "is_enum" in self._cls_suds_map[key]
+                                else False:
+                                    self._custom_setter(val, suds_field_name,
+                                                        obj_cls, is_enum)))
+                    elif "is_array" in self._cls_suds_map[key]:
                         setattr(self.__class__, key, property(
                             lambda self,
                             suds_field_name=self._cls_suds_map[key]
@@ -279,7 +332,7 @@ class BasePolarion(object):
             obj = obj_cls(**args)
         else:
             obj = obj_cls()
-        if obj._id_field:
+        if obj:
             return getattr(obj, obj._id_field)
         else:
             return obj
@@ -318,6 +371,9 @@ class BasePolarion(object):
         The Polarion array object always has a single Python list item which
         contains a list of the WSDL objects. This function converts each WSDL
         object to its Pylarion object and returns that list
+        Args:
+            suds_field_name - the field name of the Polarion object to get
+            obj_cls - the Pylarion object that the field references
         """
         if hasattr(self._suds_object, suds_field_name) and \
                 getattr(self._suds_object, suds_field_name) != "":
@@ -336,6 +392,13 @@ class BasePolarion(object):
         or an empty list.
         An empty list erases the attribute value.
         Otherwise it sets the attribute the value passed in.
+
+        Args:
+            val - the value that the property is set to
+            suds_field_name - the field name of the Polarion object to set
+            obj_cls - Pylarion class related to property
+            arr_cls - Pylarion Array class related to the property
+            suds_arr_inner_field_name - field name within the Pylarion array
         """
         # TODO: Still needs to be fully tested. Looks like there are some bugs.
         arr_inst = arr_cls()
@@ -365,6 +428,62 @@ class BasePolarion(object):
                         getattr(getattr(self._suds_object, suds_field_name),
                                 suds_arr_inner_field_name).append(
                                     item._suds_object)
+
+    def _custom_getter(self, suds_field_name, obj_cls):
+        """Works with custom fields that has attributes stored differently
+        if the attribute has been changed, it gets it from there.
+
+        Args:
+            suds_field_name - the field name of the Polarion object to get
+            obj_cls - the Pylarion object that the field references
+        """
+        if suds_field_name in self._changed_fields:
+            if obj_cls:
+                obj = obj_cls(suds_object=self._changed_fields
+                              [suds_field_name])
+            else:
+                obj = self._changed_fields[suds_field_name]
+        elif self.uri:
+            cf = self.get_custom_field(suds_field_name)
+            if obj_cls:
+                obj = obj_cls(suds_object=cf._suds_object.value)
+            else:
+                obj = cf.value
+        else:
+            obj = None
+        if hasattr(obj, "_id_field") and obj._id_field:
+            return getattr(obj, obj._id_field)
+        else:
+            return obj
+
+    def _custom_setter(self, val, suds_field_name, obj_cls, is_enum):
+        """Works with custom fields that has to keep track of values and what
+        changed so that on update it can also update all the custom fields at
+        the same time.
+        Args:
+            val - the value that the property is being set to
+            suds_field_name - the field name of the Polarion object to set
+            obj_cls - the Pylarion object that the field references
+            is_enum - bool, tells the function if it should validate the value
+        """
+        if isinstance(val, str):
+            if is_enum:
+                valid_values = self.get_valid_field_values(suds_field_name)
+                if val not in valid_values:
+                    raise PylarionLibException("Acceptable values for {0} are:"
+                                               "{1}".format(suds_field_name,
+                                                            valid_values))
+            self._changed_fields[suds_field_name] = obj_cls(val)._suds_object \
+                if obj_cls else val
+        elif isinstance(val, obj_cls):
+            self._changed_fields[suds_field_name] = obj_cls._suds_object
+        elif isinstance(val, obj_cls()._suds_object.__class__):
+            self._changed_fields[suds_field_name] = val
+        elif not val:
+            self._changed_fields[suds_field_name] = None
+        else:
+            raise PylarionLibException("The value must be of type {0}.".format(
+                obj_cls.__name__))
 
     def _get_file_data(self, path):
         """Method for getting attachment data that can be passed to the soap
@@ -500,3 +619,17 @@ class BasePolarion(object):
         """
         self._verify_obj()
         return self.session.security_client.service.getLocationForURI(self.uri)
+
+    def get_valid_field_values(self, suds_field):
+        """Gets the available enumeration options.
+        Args:
+            field - The field to get values for
+        Returns:
+            Array of EnumOptions
+        Implements:
+            Tracker.getEnumOptionsForId
+        """
+        enum_id = suds_field
+        enums = self.session.tracker_client.service. \
+            getEnumOptionsForId(self.uri, enum_id)
+        return [enum.id for enum in enums]

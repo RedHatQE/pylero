@@ -43,7 +43,7 @@ class TestRun(bp.BasePolarion):
                 STATIC_LIVEDOC
 
         status
-        summary_defect (WorkItem)
+        summary_defect (_WorkItem)
         template (TestRun) - template that the TestRun is based on.
         test_run_id (str) - Unique identifier of the test run within the
                             project
@@ -81,7 +81,8 @@ class TestRun(bp.BasePolarion):
                      "status": {"field_name": "status",
                                 "cls": eoi.EnumOptionId},
                      "summary_defect": {"field_name": "summaryDefectURI",
-                                        "cls": wi.WorkItem, "named_arg": "uri",
+                                        "cls": wi._WorkItem,
+                                        "named_arg": "uri",
                                         "sync_field": "uri"},
                      "template": {"field_name": "templateURI",
                                   "named_arg": "uri", "sync_field": "uri"},
@@ -374,7 +375,7 @@ class TestRun(bp.BasePolarion):
             executed_by (str) - user id
             executed (datetime)
             duration (float)
-            defect_work_item_id (str) - wi.WorkItem id of defect
+            defect_work_item_id (str) - wi._WorkItem id of defect
         Returns:
             None
         Implements:
@@ -382,8 +383,8 @@ class TestRun(bp.BasePolarion):
         """
         self._verify_obj()
         project = self.project.project_id
-        tc = wi.WorkItem(work_item_id=test_case_id, project_id=project,
-                         fields=["work_item_id"])
+        tc = wi._WorkItem(work_item_id=test_case_id, project_id=project,
+                          fields=["work_item_id"])
         if test_comment:
             if isinstance(test_comment, str):
                 obj_comment = t.Text(obj_id=test_comment)
@@ -396,8 +397,8 @@ class TestRun(bp.BasePolarion):
             suds_comment = suds.null()
         user = u.User(user_id=executed_by)
         if defect_work_item_id:
-            defect = wi.WorkItem(work_item_id=defect_work_item_id,
-                                 project_id=project, fields=["work_item_id"])
+            defect = wi._WorkItem(work_item_id=defect_work_item_id,
+                                  project_id=project, fields=["work_item_id"])
             defect_uri = defect.uri
         else:
             defect_uri = None
@@ -427,26 +428,26 @@ class TestRun(bp.BasePolarion):
 
     def create_summary_defect(self, defect_template_id=None):
         """method create_summary_defect, adds a new summary wi.WorkItem for the
-        test case based on the WorkItem template id passed in. If not template
+        test case based on the _WorkItem template id passed in. If not template
         is passed in, it creates it based on the default template.
 
         Args:
-            defect_template_id (str) - the wi.WorkItem template id to base the
+            defect_template_id (str) - the wi._WorkItem template id to base the
             new summary defect. can be null
         Returns:
-            the created wi.WorkItem
+            the created wi._WorkItem
         Implements:
             test_management.createSummaryDefect
         """
 
         self._verify_obj()
         project = self.project.project_id
-        suds_defect_template = wi.WorkItem(work_item_id=defect_template_id,
-                                           project_id=project)
+        suds_defect_template = wi._WorkItem(work_item_id=defect_template_id,
+                                            project_id=project)
         defect_template_uri = suds_defect_template._uri
         wi_uri = self.session.test_management_client.service. \
             createSummaryDefect(self.uri, defect_template_uri)
-        return wi.WorkItem(uri=wi_uri)
+        return wi._WorkItem(uri=wi_uri)
 
     def delete_attachment_from_test_record(self, test_case_id, filename):
         """Deletes Test Record Attachment of specified record and
@@ -601,13 +602,13 @@ class TestRun(bp.BasePolarion):
         """
         self._verify_obj()
         project = self.project.project_id
-        suds_defect_template = wi.WorkItem(work_item_id=defect_template_id,
-                                           project_id=project)
+        suds_defect_template = wi._WorkItem(work_item_id=defect_template_id,
+                                            project_id=project)
         defect_template_uri = suds_defect_template._uri
         wi_uri = self.session.test_management_client.service. \
             updateSummaryDefect(self.uri, source, total_failures, total_errors,
                                 total_tests, defect_template_uri)
-        return wi.WorkItem(uri=wi_uri)
+        return wi._WorkItem(uri=wi_uri)
 
     def update_test_record_by_fields(self, test_case_id,
                                      test_result=suds.null(),
@@ -630,7 +631,7 @@ class TestRun(bp.BasePolarion):
                        default is now.
             duration - duration of the test case execution, any negative value
                        is treated as None.
-            defect_work_item_id - wi.WorkItem id of defect, can be None
+            defect_work_item_id - wi._WorkItem id of defect, can be None
 
         Returns:
             None
@@ -645,8 +646,8 @@ class TestRun(bp.BasePolarion):
         index = self._get_index_of_test_record(test_case_id)
         if defect_work_item_id:
             project = self.project.project_id
-            defect = wi.WorkItem(work_item_id=defect_work_item_id,
-                                 project_id=project, fields=["work_item_id"])
+            defect = wi._WorkItem(work_item_id=defect_work_item_id,
+                                  project_id=project, fields=["work_item_id"])
             defect_uri = defect.uri
         else:
             defect_uri = suds.null()

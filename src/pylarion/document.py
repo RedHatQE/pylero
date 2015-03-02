@@ -225,25 +225,25 @@ class Document(bp.BasePolarion):
         """create a work item in the current document
 
         Args:
-            parent_id - The work_item_id of the parent wi.WorkItem
+            parent_id - The work_item_id of the parent wi._WorkItem
             wi - The Work Item object to create.
         returns
-            The created wi.WorkItem
+            The created wi._WorkItem
         """
         self._verify_obj()
         project_id = self.project.project_id
-        if isinstance(w_item, wi.WorkItem):
+        if isinstance(w_item, wi._WorkItem):
             suds_wi = w_item._suds_object
-        elif isinstance(w_item, wi.WorkItem()._suds_object.__class__):
+        elif isinstance(w_item, wi._WorkItem()._suds_object.__class__):
             suds_wi = w_item
         else:
             raise PylarionLibException(
-                "the w_item parameter must be a WorkItem")
-        parent = wi.WorkItem(work_item_id=parent_id,
-                             project_id=project_id)
+                "the w_item parameter must be a _WorkItem")
+        parent = wi._WorkItem(work_item_id=parent_id,
+                              project_id=project_id)
         wi_uri = self.session.tracker_client.service(self.uri, parent.uri,
                                                      suds_wi)
-        return wi.WorkItem(uri=wi_uri)
+        return wi._WorkItem(uri=wi_uri)
 
     def delete(self):
         """delete the current document
@@ -273,14 +273,14 @@ class Document(bp.BasePolarion):
             list of wi.WorkItem objects
         """
         self._verify_obj()
-        parent = wi.WorkItem(work_item_id=parent_work_item_id,
-                             project_id=self.project.project_id)
+        parent = wi._WorkItem(work_item_id=parent_work_item_id,
+                              project_id=self.project.project_id)
         p_fields = self._convert_obj_fields_to_polarion(fields)
         suds_wi = self.session.tracker_client.service. \
             getModuleWorkItems(self.uri, parent.uri, deep, p_fields)
         work_items = []
         for w_item in suds_wi:
-            work_items.append(wi.WorkItem(suds_object=w_item))
+            work_items.append(wi._WorkItem(suds_object=w_item))
         return work_items
 
     def update(self):

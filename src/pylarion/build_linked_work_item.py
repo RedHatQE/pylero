@@ -17,7 +17,7 @@ class BuildLinkedWorkItem(bp.BasePolarion):
     _cls_suds_map = {"revision": "revision",
                      "role": {"field_name": "role", "cls": eoi.EnumOptionId},
                      "work_item": {"field_name": "workItem",
-                                   "cls": wi.WorkItem},
+                                   "cls": wi._WorkItem},
                      "uri": "_uri",
                      "_unresolved": "_unresolved"}
     _obj_client = "builder_client"

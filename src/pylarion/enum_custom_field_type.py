@@ -12,16 +12,18 @@ class EnumCustomFieldType(bp.BasePolarion):
         depends_on (string)
         description (string)
         enum_id (string)
-        enum_custom_field_type_id (string)
+        id (string)
         name (string)
         required (boolean)
-        type (QName)
+        type (string)
 """
+# id field is called id and not enum_custom_field_type_id because it is often
+# mixed with custom_field_type and they need to be accessed interchangeably
     _cls_suds_map = {"default_value": "defaultValue",
                      "depends_on": "dependsOn",
                      "description": "description",
                      "enum_id": "enumId",
-                     "enum_custom_field_type_id": "id",
+                     "id": "id",
                      "name": "name",
                      "required": "required",
                      "type": "type",
