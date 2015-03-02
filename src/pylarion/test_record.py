@@ -48,14 +48,11 @@ class TestRecord(bp.BasePolarion):
     _obj_struct = "tns3:TestRecord"
 
     def __init__(self, project_id=None, test_case_id=None, suds_object=None):
-        if not suds_object and not project_id:
-            raise PylarionLibException("If the suds_object is not passed in,"
-                                       " then project id must be")
-        self.project_id = project_id
+        self.project_id = project_id if project_id else self.default_project
         super(self.__class__, self).__init__(None, suds_object)
         if test_case_id:
             self.test_case_uri = wi._WorkItem(test_case_id,
-                                              project_id=project_id).uri
+                                              project_id=self.project_id).uri
 
     def _fix_circular_refs(self):
         # need to pass in the project_id parm to the Work Item,
