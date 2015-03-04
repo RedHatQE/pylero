@@ -240,12 +240,12 @@ class Plan(bp.BasePolarion):
         if work_items:
             if not isinstance(work_items, list):
                 raise PylarionLibException(
-                    "work_items must be a list of wi.WorkItem objects")
+                    "work_items must be a list of wi._WorkItem objects")
         p_items = []
         for item in work_items:
-            if isinstance(item, wi.WorkItem):
+            if isinstance(item, wi._WorkItem):
                 p_items.append(item._suds_object)
-            elif isinstance(item, wi.WorkItem()._suds_object.__class__):
+            elif isinstance(item, wi._WorkItem()._suds_object.__class__):
                 p_items.append(item)
         self.session.planning_client.service.addPlanItems(self.uri, p_items)
 
@@ -293,12 +293,12 @@ class Plan(bp.BasePolarion):
         if work_items:
             if not isinstance(work_items, list):
                 raise PylarionLibException(
-                    "work_items must be a list of wi.WorkItem objects")
+                    "work_items must be a list of wi._WorkItem objects")
         p_items = []
         for item in work_items:
-            if isinstance(item, wi.WorkItem):
+            if isinstance(item, wi._WorkItem):
                 p_items.append(item._suds_object)
-            elif isinstance(item, wi.WorkItem()._suds_object.__class__):
+            elif isinstance(item, wi._WorkItem()._suds_object.__class__):
                 p_items.append(item)
         self.session.planning_client.service.removePlanItems(self.uri, p_items)
 

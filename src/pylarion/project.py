@@ -249,7 +249,6 @@ class Project(bp.BasePolarion):
         config_steps = self.session.test_management_client.service. \
             getTestStepsConfiguration(self.project_id)
         return config_steps[0]
-        #return [step.id for step in config_steps[0]]
 
     def get_tests_configuration(self):
         """method get_tests_configuration retrieves the test management

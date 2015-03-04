@@ -24,7 +24,8 @@ class TestRecord(bp.BasePolarion):
                                      "inner_field_name": "TestRunAttachment"},
                      "comment": {"field_name": "comment", 'cls': t.Text},
                      "defect_case_id": {"field_name": "defectURI",
-                                        "cls": wi.WorkItem, "named_arg": "uri",
+                                        "cls": wi._WorkItem,
+                                        "named_arg": "uri",
                                         "sync_field": "uri"},
                      "duration": "duration",
                      "executed": "executed",
@@ -34,7 +35,7 @@ class TestRecord(bp.BasePolarion):
                      "result": {"field_name": "result",
                                 "cls": eoi.EnumTestResult},
                      "test_case_id": {"field_name": "testCaseURI",
-                                      "cls": wi.WorkItem, "named_arg": "uri",
+                                      "cls": wi._WorkItem, "named_arg": "uri",
                                       "sync_field": "uri"},
                      "test_case_revision": "testCaseRevision",
                      "test_step_results": {"field_name": "testStepResults",
@@ -53,8 +54,8 @@ class TestRecord(bp.BasePolarion):
         self.project_id = project_id
         super(self.__class__, self).__init__(None, suds_object)
         if test_case_id:
-            self.test_case_uri = wi.WorkItem(test_case_id,
-                                             project_id=project_id).uri
+            self.test_case_uri = wi._WorkItem(test_case_id,
+                                              project_id=project_id).uri
 
     def _fix_circular_refs(self):
         # need to pass in the project_id parm to the Work Item,
