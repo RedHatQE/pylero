@@ -38,10 +38,12 @@ class Connection(object):
             server_url = config.get(cls.CONFIG_SECTION, "url")
             login = config.get(cls.CONFIG_SECTION, "user")
             pwd = config.get(cls.CONFIG_SECTION, "password")
+            proj = config.get(cls.CONFIG_SECTION, "default_project")
             srv = Server(server_url, login, pwd)
             cls.session = srv.session()
             cls.session._login()
             cls.connected = True
+            cls.session.default_project = proj
         return cls.session
 
 
@@ -177,6 +179,7 @@ class BasePolarion(object):
         # circular references by applying the reference only after the class
         # has been instantiated. Some objects contain references to themselves,
         # for example a parent attribute.
+        self.default_project = self.session.default_project
         if hasattr(self, "_fix_circular_refs"):
             self._fix_circular_refs()
         # if _id_field has not been set in the child class, the obj_id field

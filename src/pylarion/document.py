@@ -47,7 +47,7 @@ class Document(bp.BasePolarion):
                      "document_absolute_location": "moduleAbsoluteLocation",
                      "document_folder": "moduleFolder",
                      "document_name": "moduleName",
-                     "project": {"field_name": "project", "cls": p.Project},
+                     "project_id": {"field_name": "project", "cls": p.Project},
                      "signature_contexts": {"field_name": "signatureContexts",
                                             "is_array": True,
                                             "cls": sigcon.SignatureContext,
@@ -231,7 +231,6 @@ class Document(bp.BasePolarion):
             The created wi._WorkItem
         """
         self._verify_obj()
-        project_id = self.project.project_id
         if isinstance(w_item, wi._WorkItem):
             suds_wi = w_item._suds_object
         elif isinstance(w_item, wi._WorkItem()._suds_object.__class__):
@@ -240,7 +239,7 @@ class Document(bp.BasePolarion):
             raise PylarionLibException(
                 "the w_item parameter must be a _WorkItem")
         parent = wi._WorkItem(work_item_id=parent_id,
-                              project_id=project_id)
+                              project_id=self.project_id)
         wi_uri = self.session.tracker_client.service(self.uri, parent.uri,
                                                      suds_wi)
         return wi._WorkItem(uri=wi_uri)
@@ -274,7 +273,7 @@ class Document(bp.BasePolarion):
         """
         self._verify_obj()
         parent = wi._WorkItem(work_item_id=parent_work_item_id,
-                              project_id=self.project.project_id)
+                              project_id=self.project_id)
         p_fields = self._convert_obj_fields_to_polarion(fields)
         suds_wi = self.session.tracker_client.service. \
             getModuleWorkItems(self.uri, parent.uri, deep, p_fields)

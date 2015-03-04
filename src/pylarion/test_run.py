@@ -66,8 +66,10 @@ class TestRun(bp.BasePolarion):
                      "is_template": "isTemplate",
                      "keep_in_history": "keepInHistory",
                      "location": "location",
-                     "project": {"field_name": "projectURI", "cls": p.Project,
-                                 "named_arg": "uri", "sync_field": "uri"},
+                     "project_id": {"field_name": "projectURI",
+                                    "cls": p.Project,
+                                    "named_arg": "uri",
+                                    "sync_field": "uri"},
                      "query": "query",
                      "records": {"field_name": "records",
                                  "is_array": True,
@@ -382,8 +384,8 @@ class TestRun(bp.BasePolarion):
             test_management.addTestRecord
         """
         self._verify_obj()
-        project = self.project.project_id
-        tc = wi._WorkItem(work_item_id=test_case_id, project_id=project,
+        tc = wi._WorkItem(work_item_id=test_case_id,
+                          project_id=self.project_id,
                           fields=["work_item_id"])
         if test_comment:
             if isinstance(test_comment, str):
@@ -398,7 +400,8 @@ class TestRun(bp.BasePolarion):
         user = u.User(user_id=executed_by)
         if defect_work_item_id:
             defect = wi._WorkItem(work_item_id=defect_work_item_id,
-                                  project_id=project, fields=["work_item_id"])
+                                  project_id=self.project_id,
+                                  fields=["work_item_id"])
             defect_uri = defect.uri
         else:
             defect_uri = None
@@ -441,9 +444,8 @@ class TestRun(bp.BasePolarion):
         """
 
         self._verify_obj()
-        project = self.project.project_id
         suds_defect_template = wi._WorkItem(work_item_id=defect_template_id,
-                                            project_id=project)
+                                            project_id=self.project_id)
         defect_template_uri = suds_defect_template._uri
         wi_uri = self.session.test_management_client.service. \
             createSummaryDefect(self.uri, defect_template_uri)
@@ -601,9 +603,8 @@ class TestRun(bp.BasePolarion):
             test_management.updateSummaryDefect
         """
         self._verify_obj()
-        project = self.project.project_id
         suds_defect_template = wi._WorkItem(work_item_id=defect_template_id,
-                                            project_id=project)
+                                            project_id=self.project_id)
         defect_template_uri = suds_defect_template._uri
         wi_uri = self.session.test_management_client.service. \
             updateSummaryDefect(self.uri, source, total_failures, total_errors,
@@ -645,9 +646,9 @@ class TestRun(bp.BasePolarion):
         self._verify_obj()
         index = self._get_index_of_test_record(test_case_id)
         if defect_work_item_id:
-            project = self.project.project_id
             defect = wi._WorkItem(work_item_id=defect_work_item_id,
-                                  project_id=project, fields=["work_item_id"])
+                                  project_id=self.project_id,
+                                  fields=["work_item_id"])
             defect_uri = defect.uri
         else:
             defect_uri = suds.null()

@@ -77,7 +77,7 @@ class _WorkItem(BasePolarion):
         planning_constraints (ArrayOfPlanningConstraint)
         previous_status (EnumOptionId)
         priority (PriorityOptionId)
-        project (Project)
+        project_id (Project)
         remaining_estimate (duration)
         resolution (EnumOptionId)
         resolved_on (dateTime)
@@ -188,7 +188,7 @@ class _WorkItem(BasePolarion):
                                          "cls": EnumOptionId},
                      "priority": {"field_name": "priority",
                                   "cls": PriorityOptionId},
-                     "project": {"field_name": "project", "cls": Project},
+                     "project_id": {"field_name": "project", "cls": Project},
                      "remaining_estimate": "remainingEstimate",
                      "resolution": {"field_name": "resolution", "cls":
                                     EnumOptionId},
@@ -382,6 +382,8 @@ class _WorkItem(BasePolarion):
                     self._suds_object._unresolvable):
                 raise PylarionLibException(
                     "The wi.WorkItem {0} was not found.".format(work_item_id))
+        if not self.project_id:
+            self.project_id = self.default_project
 
     def _fix_circular_refs(self):
         # This module imports plan and plan imports this module.
@@ -485,7 +487,7 @@ class _WorkItem(BasePolarion):
         """
         self._verify_obj()
         wi_linked = _WorkItem(work_item_id=linked_work_item_id,
-                              project_id=self.project)
+                              project_id=self.project_id)
         function_name = "addLinkedItem"
         parms = [self.uri, wi_linked.uri, role]
         if revision:
@@ -777,7 +779,7 @@ class _WorkItem(BasePolarion):
             Tracker.getEnumControlKeyForId
         """
         return self.session.tracker_client.service.getEnumControlKeyForId(
-            self.project, enum_id)
+            self.project_id, enum_id)
 
     def get_enum_control_key_for_key(self, key):
         """Gets the enumeration control key for the specified work item key.
@@ -792,7 +794,7 @@ class _WorkItem(BasePolarion):
             Tracker.getEnumControlKeyForId
         """
         return self.session.tracker_client.service.getEnumControlKeyForId(
-            self.project, key)
+            self.project_id, key)
 
     def get_initial_workflow_action(self, work_item_type=None):
         """Gets the initial workflow action for the specified object, returns
@@ -1146,18 +1148,17 @@ class _SpecificWorkItem(_WorkItem):
         _WorkItem.create(project_id, work_item_id, cls._wi_type, title, desc,
                          status, **kwargs)
 
-    def __init__(self, project_id, work_item_id=None, suds_object=None,
+    def __init__(self, project_id=None, work_item_id=None, suds_object=None,
                  uri=None, fields=None, revision=None):
         """In this constructor, it adds the custom fields per WorkItem type to
         the _cls_suds_map along with the is_custom and is_enum fields.
         In the property builder of the base class, it defines special behavior
         for custom fields so they are treated like regular attributes
         """
-        if not project_id:
-            raise PylarionLibException("project_id is required")
+        self.project_id = project_id if project_id else self.default_project
         self._required_fields = []
         self._changed_fields = {}
-        cfts = self.get_defined_custom_field_types(project_id,
+        cfts = self.get_defined_custom_field_types(self.project_id,
                                                    self._wi_type)
         for cft in cfts:
             # try to convert custom field names to use the coding conventions
@@ -1179,7 +1180,7 @@ class _SpecificWorkItem(_WorkItem):
             self._cls_suds_map[local_name]["is_custom"] = True
             if cft.required:
                 self._required_fields.append(local_name)
-        super(_SpecificWorkItem, self).__init__(project_id, work_item_id,
+        super(_SpecificWorkItem, self).__init__(self.project_id, work_item_id,
                                                 suds_object, uri, fields,
                                                 revision)
         if self.type and self.type != self._wi_type:
