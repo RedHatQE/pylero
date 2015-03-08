@@ -231,6 +231,7 @@ class _WorkItem(BasePolarion):
             wi_type - type of work item (functionaltestcase,...)
             title - title of WorkItem
             desc - description of WorkItem
+            status - initial status of the WorkItem, draft by default
         Returns:
             new wi.WorkItem
         Implements:
@@ -247,6 +248,8 @@ class _WorkItem(BasePolarion):
         new_wi = _WorkItem(uri=wi_uri)
         for field in kwargs:
             setattr(new_wi, field, kwargs[field])
+        new_wi.update()
+        return new_wi
 
     @classmethod
     def get_query_result_count(cls, query):
@@ -1096,7 +1099,7 @@ class _SpecificWorkItem(_WorkItem):
     _wi_type = ""
 
     @classmethod
-    def _custom_fields(cls, project_id):
+    def custom_fields(cls, project_id):
         """List of custom fields for the project and specific wi_type
         Args:
             project_id - project that the user is working with

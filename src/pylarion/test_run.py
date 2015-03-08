@@ -5,19 +5,22 @@ import os
 import suds
 import datetime
 from pylarion.exceptions import PylarionLibException
-import pylarion.base_polarion as bp
-import pylarion.test_run_attachment as tra
-import pylarion.enum_option_id as eoi
-import pylarion.test_record as testrec
-import pylarion.custom as custom
-import pylarion.document as doc
-import pylarion.work_item as wi
-import pylarion.user as u
-import pylarion.project as p
-import pylarion.text as t
+from pylarion.base_polarion import BasePolarion
+from pylarion.test_run_attachment import TestRunAttachment
+from pylarion.test_run_attachment import ArrayOfTestRunAttachment
+from pylarion.enum_option_id import EnumOptionId
+from pylarion.test_record import TestRecord
+from pylarion.test_record import ArrayOfTestRecord
+from pylarion.custom import Custom
+from pylarion.custom import ArrayOfCustom
+from pylarion.document import Document
+from pylarion.work_item import _WorkItem
+from pylarion.user import User
+from pylarion.project import Project
+from pylarion.text import Text
 
 
-class TestRun(bp.BasePolarion):
+class TestRun(BasePolarion):
     """Object to manage the Polarion Test Management WS tns3:TestRun
 
     Attributes:
@@ -53,48 +56,48 @@ class TestRun(bp.BasePolarion):
     """
     _cls_suds_map = {"attachments": {"field_name": "attachments",
                                      "is_array": True,
-                                     "cls": tra.TestRunAttachment,
-                                     "arr_cls": tra.ArrayOfTestRunAttachment,
+                                     "cls": TestRunAttachment,
+                                     "arr_cls": ArrayOfTestRunAttachment,
                                      "inner_field_name": "TestRunAttachment"},
-                     "author": {"field_name": "authorURI", "cls": u.User,
+                     "author": {"field_name": "authorURI", "cls": User,
                                 "named_arg": "uri", "sync_field": "uri"},
                      "created": "created",
                      "document": {"field_name": "document",
-                                  "cls": doc.Document},
+                                  "cls": Document},
                      "finished_on": "finishedOn", "group_id": "groupId",
                      "test_run_id": "id",
                      "is_template": "isTemplate",
                      "keep_in_history": "keepInHistory",
                      "location": "location",
                      "project_id": {"field_name": "projectURI",
-                                    "cls": p.Project,
+                                    "cls": Project,
                                     "named_arg": "uri",
                                     "sync_field": "uri"},
                      "query": "query",
                      "records": {"field_name": "records",
                                  "is_array": True,
-                                 "cls": testrec.TestRecord,
-                                 "arr_cls": testrec.ArrayOfTestRecord,
+                                 "cls": TestRecord,
+                                 "arr_cls": ArrayOfTestRecord,
                                  "inner_field_name": "TestRecord"},
                      "select_test_cases_by": {"field_name":
                                               "selectTestCasesBy",
                                               "cls":
-                                              eoi.EnumSelectTestCasesBy},
+                                              EnumOptionId},
                      "status": {"field_name": "status",
-                                "cls": eoi.EnumOptionId},
+                                "cls": EnumOptionId},
                      "summary_defect": {"field_name": "summaryDefectURI",
-                                        "cls": wi._WorkItem,
+                                        "cls": _WorkItem,
                                         "named_arg": "uri",
                                         "sync_field": "uri"},
                      "template": {"field_name": "templateURI",
                                   "named_arg": "uri", "sync_field": "uri"},
                      "type": {"field_name": "type",
-                              "cls": eoi.EnumTestRunTypes},
+                              "cls": EnumOptionId},
                      "updated": "updated",
                      "custom_fields": {"field_name": "customFields",
                                        "is_array": True,
-                                       "cls": custom.Custom,
-                                       "arr_cls": custom.ArrayOfCustom,
+                                       "cls": Custom,
+                                       "arr_cls": ArrayOfCustom,
                                        "inner_field_name": "Custom"},
                      "uri": "_uri",
                      "_unresolvable": "_unresolvable"}
@@ -154,7 +157,7 @@ class TestRun(bp.BasePolarion):
         if query:
             tr.query = query
         elif doc_with_space:
-            tr.document = doc.Document(project_id, doc_with_space)
+            tr.document = Document(project_id, doc_with_space)
 # TODO: This should work as soon as Polarion implements Change Request REQ-6334
 #        if test_case_ids:
 #            for test_case_id in test_case_ids:
@@ -251,8 +254,7 @@ class TestRun(bp.BasePolarion):
             self._suds_object = self.session.test_management_client.service. \
                 getTestRunByUri(uri)
         if test_run_id or uri:
-            if not (hasattr(self._suds_object, "_unresolvable") or
-                    self._suds_object._unresolvable):
+            if not getattr(self._suds_object, "_unresolvable", None):
                 raise PylarionLibException(
                     "The Test Run {0} was not found.".format(test_run_id))
 
@@ -384,24 +386,24 @@ class TestRun(bp.BasePolarion):
             test_management.addTestRecord
         """
         self._verify_obj()
-        tc = wi._WorkItem(work_item_id=test_case_id,
-                          project_id=self.project_id,
-                          fields=["work_item_id"])
+        tc = _WorkItem(work_item_id=test_case_id,
+                       project_id=self.project_id,
+                       fields=["work_item_id"])
         if test_comment:
             if isinstance(test_comment, str):
-                obj_comment = t.Text(obj_id=test_comment)
+                obj_comment = Text(obj_id=test_comment)
                 suds_comment = obj_comment._suds_object
-            elif isinstance(test_comment, t.Text):
+            elif isinstance(test_comment, Text):
                 suds_comment = test_comment._suds_object
             else:  # is a suds object
                 suds_comment = test_comment
         else:
             suds_comment = suds.null()
-        user = u.User(user_id=executed_by)
+        user = User(user_id=executed_by)
         if defect_work_item_id:
-            defect = wi._WorkItem(work_item_id=defect_work_item_id,
-                                  project_id=self.project_id,
-                                  fields=["work_item_id"])
+            defect = _WorkItem(work_item_id=defect_work_item_id,
+                               project_id=self.project_id,
+                               fields=["work_item_id"])
             defect_uri = defect.uri
         else:
             defect_uri = None
@@ -421,9 +423,9 @@ class TestRun(bp.BasePolarion):
             test_management.addTestRecordToTestRun
         """
         self._verify_obj()
-        if isinstance(test_record, testrec.TestRecord):
+        if isinstance(test_record, TestRecord):
             suds_object = test_record._suds_object
-        elif isinstance(test_record, testrec.TestRecord().
+        elif isinstance(test_record, TestRecord().
                         _suds_object.__class__):
             suds_object = test_record
         self.session.test_management_client.service.addTestRecordToTestRun(
@@ -444,12 +446,12 @@ class TestRun(bp.BasePolarion):
         """
 
         self._verify_obj()
-        suds_defect_template = wi._WorkItem(work_item_id=defect_template_id,
-                                            project_id=self.project_id)
+        suds_defect_template = _WorkItem(work_item_id=defect_template_id,
+                                         project_id=self.project_id)
         defect_template_uri = suds_defect_template._uri
         wi_uri = self.session.test_management_client.service. \
             createSummaryDefect(self.uri, defect_template_uri)
-        return wi._WorkItem(uri=wi_uri)
+        return _WorkItem(uri=wi_uri)
 
     def delete_attachment_from_test_record(self, test_case_id, filename):
         """Deletes Test Record Attachment of specified record and
@@ -512,7 +514,7 @@ class TestRun(bp.BasePolarion):
         self._verify_obj()
         suds_attach = self.session.test_management_client.service. \
             getTestRunAttachment(self.uri, filename)
-        return tra.TestRunAttachment(suds_object=suds_attach)
+        return TestRunAttachment(suds_object=suds_attach)
 
     def get_attachments(self):
         """method get_attachments returns all the attachments for the TestRun
@@ -526,8 +528,26 @@ class TestRun(bp.BasePolarion):
         self._verify_obj()
         suds_attach = self.session.test_management_client.service. \
             getTestRunAttachments(self.uri)
-        obj_attach = tra.ArrayOfTestRunAttachment(suds_object=suds_attach)
+        obj_attach = ArrayOfTestRunAttachment(suds_object=suds_attach)
         return obj_attach
+
+    def get_custom_field(self, field_name):
+        """gets custom field values.
+        Args:
+            field_name - name of the custom field
+        Returns:
+            value of the custom field.
+        Note: Polarion WSDL currently does not publish the list of custom
+              fields, so this function cannot do any verification if the field
+              is valid.
+        """
+        self._verify_obj()
+        cf = self.custom_fields
+        match = filter(lambda x: x.key == field_name, cf)
+        if match:
+            return match[0].value
+        else:
+            return None
 
     def get_wiki_content(self):
         """method get_wiki_content returns the wiki content for the Test Run
@@ -541,7 +561,33 @@ class TestRun(bp.BasePolarion):
         self._verify_obj()
         suds_wiki = self.session.test_management_client.service. \
             getWikiContentForTestRun(self.uri)
-        return t.Text(suds_object=suds_wiki)
+        return Text(suds_object=suds_wiki)
+
+    def set_custom_field(self, field_name, value):
+        """sets custom field values.
+        Args:
+            field_name - name of the custom field
+        Returns:
+            value of the custom field.
+        Note: Polarion WSDL currently does not publish the list of custom
+              fields, so this function cannot do any verification if the field
+              or value is valid.
+        """
+        self._verify_obj()
+        cf = self.custom_fields
+        cust = Custom()
+        cust.key = field_name
+        cust.value = value
+        if cf:
+            # check if the custom field already exists and if so, modify it.
+            match = filter(lambda x: x.key == field_name, cf)
+            if match:
+                match[0].value = value
+            else:
+                cf.append(cust)
+        else:
+            cf = [cust]
+        self.custom_fields = cf
 
     def update(self):
         """method update updates the testRun object with the attribute values
@@ -603,13 +649,13 @@ class TestRun(bp.BasePolarion):
             test_management.updateSummaryDefect
         """
         self._verify_obj()
-        suds_defect_template = wi._WorkItem(work_item_id=defect_template_id,
-                                            project_id=self.project_id)
+        suds_defect_template = _WorkItem(work_item_id=defect_template_id,
+                                         project_id=self.project_id)
         defect_template_uri = suds_defect_template._uri
         wi_uri = self.session.test_management_client.service. \
             updateSummaryDefect(self.uri, source, total_failures, total_errors,
                                 total_tests, defect_template_uri)
-        return wi._WorkItem(uri=wi_uri)
+        return _WorkItem(uri=wi_uri)
 
     def update_test_record_by_fields(self, test_case_id,
                                      test_result=suds.null(),
@@ -626,13 +672,13 @@ class TestRun(bp.BasePolarion):
                                    passed
                                    failed
                                    blocked
-            test_comment - (str or t.Text object) - may be None
+            test_comment - (str or Text object) - may be None
             executed_by (str) - user id
             executed - date when the test case has been executed,
                        default is now.
             duration - duration of the test case execution, any negative value
                        is treated as None.
-            defect_work_item_id - wi._WorkItem id of defect, can be None
+            defect_work_item_id - _WorkItem id of defect, can be None
 
         Returns:
             None
@@ -646,23 +692,23 @@ class TestRun(bp.BasePolarion):
         self._verify_obj()
         index = self._get_index_of_test_record(test_case_id)
         if defect_work_item_id:
-            defect = wi._WorkItem(work_item_id=defect_work_item_id,
-                                  project_id=self.project_id,
-                                  fields=["work_item_id"])
+            defect = _WorkItem(work_item_id=defect_work_item_id,
+                               project_id=self.project_id,
+                               fields=["work_item_id"])
             defect_uri = defect.uri
         else:
             defect_uri = suds.null()
         if test_comment:
             if isinstance(test_comment, str):
-                obj_comment = t.Text(obj_id=test_comment)
+                obj_comment = Text(obj_id=test_comment)
                 suds_comment = obj_comment._suds_object
-            elif isinstance(test_comment, t.Text):
+            elif isinstance(test_comment, Text):
                 suds_comment = test_comment._suds_object
             else:  # is a suds object
                 suds_comment = test_comment
         else:
             suds_comment = suds.null()
-        user = u.User(user_id=executed_by)
+        user = User(user_id=executed_by)
         self.session.test_management_client.service. \
             updateTestRecord(self.uri, index, test_result, suds_comment,
                              user.uri, executed, duration, defect_uri)
@@ -681,9 +727,9 @@ class TestRun(bp.BasePolarion):
         """
         self._verify_obj()
         index = self._get_index_of_test_record(test_case_id)
-        if isinstance(test_record, testrec.TestRecord):
+        if isinstance(test_record, TestRecord):
             suds_object = test_record._suds_object
-        elif isinstance(test_record, testrec.TestRecord().
+        elif isinstance(test_record, TestRecord().
                         _suds_object.__class__):
             suds_object = test_record
         self.session.test_management_client.service.updateTestRecordAtIndex(
@@ -702,9 +748,9 @@ class TestRun(bp.BasePolarion):
         self._verify_obj()
         if content:
             if isinstance(content, str):
-                obj_content = t.Text(obj_id=content)
+                obj_content = Text(obj_id=content)
                 suds_content = obj_content._suds_object
-            elif isinstance(content, t.Text):
+            elif isinstance(content, Text):
                 suds_content = content._suds_object
             else:  # is a suds object
                 suds_content = content
