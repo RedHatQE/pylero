@@ -39,6 +39,10 @@ class Connection(object):
             login = config.get(cls.CONFIG_SECTION, "user")
             pwd = config.get(cls.CONFIG_SECTION, "password")
             proj = config.get(cls.CONFIG_SECTION, "default_project")
+            if not (server_url and login and pwd and proj):
+                raise PylarionLibException("The config files must contain "
+                                           "valid values for: url, user, "
+                                           "password and default_project")
             srv = Server(server_url, login, pwd)
             cls.session = srv.session()
             cls.session._login()
@@ -378,8 +382,7 @@ class BasePolarion(object):
             suds_field_name - the field name of the Polarion object to get
             obj_cls - the Pylarion object that the field references
         """
-        if hasattr(self._suds_object, suds_field_name) and \
-                getattr(self._suds_object, suds_field_name) != "":
+        if getattr(self._suds_object, suds_field_name, None):
             obj_lst = []
             # ArrayOf Polarion objects have a double list.
             for inst in getattr(self._suds_object, suds_field_name)[0]:
@@ -507,7 +510,7 @@ class BasePolarion(object):
         # verifies if the object contains a suds object from the server by
         # checking if the uri field is populated. If no URI it didn't come from
         # the server
-        if not hasattr(self, "uri") or not self.uri:
+        if not getattr(self, "uri", None):
             raise PylarionLibException("There is no {0} loaded".format(
                 self.__class__.__name__))
 

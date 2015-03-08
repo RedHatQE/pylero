@@ -216,8 +216,7 @@ class Plan(bp.BasePolarion):
             self._suds_object = self.session.planning_client.service. \
                 getPlanByUri(uri)
         if plan_id or uri:
-            if not (hasattr(self._suds_object, "_unresolvable") or
-                    self._suds_object._unresolvable):
+            if not getattr(self._suds_object, "_unresolvable", None):
                 raise PylarionLibException(
                     "The Plan {0} was not found.".format(plan_id))
 
