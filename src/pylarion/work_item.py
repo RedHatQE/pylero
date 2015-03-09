@@ -395,7 +395,7 @@ class _WorkItem(BasePolarion):
             self._suds_object = getattr(self.session.tracker_client.service,
                                         function_name)(*parms)
         if not suds_object:
-            if not getattr(self._suds_object, "_unresolvable", None):
+            if getattr(self._suds_object, "_unresolvable", True):
                 raise PylarionLibException(
                     "The WorkItem {0} was not found.".format(work_item_id))
         if not self.project_id:

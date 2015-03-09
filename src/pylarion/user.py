@@ -116,7 +116,7 @@ class User(BasePolarion):
             elif uri:
                 self._suds_object = self.session.project_client.service. \
                     getUserByUri(uri)
-            if not getattr(self._suds_object, "_unresolvable", None):
+            if getattr(self._suds_object, "_unresolvable", True):
                 raise PylarionLibException(
                     "The user {0} was not found.".format(user_id))
 

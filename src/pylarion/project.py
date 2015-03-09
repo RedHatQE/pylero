@@ -95,7 +95,7 @@ class Project(BasePolarion):
             self._suds_object = self.session.project_client.service. \
                 getProjectByURI(uri)
         if project_id or location or uri:
-            if not getattr(self._suds_object, "_unresolvable", None):
+            if getattr(self._suds_object, "_unresolvable", True):
                 raise PylarionLibException("The Project was not found.")
 
     def create_document(self, location, document_name, document_title,
