@@ -1,11 +1,11 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
-import pylarion.base_polarion as bp
-import pylarion.enum_option_id as eoi
+from pylarion.base_polarion import BasePolarion
+from pylarion.enum_option_id import EnumOptionId
 
 
-class WorkflowAction(bp.BasePolarion):
+class WorkflowAction(BasePolarion):
     """Object to handle the Polarion WSDL tns3:WorkflowAction class
 
     Attributes (for specific details, see Polarion):
@@ -15,7 +15,7 @@ class WorkflowAction(bp.BasePolarion):
         native_action_id (string)
         required_features (ArrayOf_xsd_string)
         suggested_features (ArrayOf_xsd_string)
-        target_status (eoi.EnumOptionId)
+        target_status (EnumOptionId)
         unavailability_message (string)
 """
     _cls_suds_map = {"action_id": "actionId",
@@ -24,8 +24,9 @@ class WorkflowAction(bp.BasePolarion):
                      "native_action_id": "nativeActionId",
                      "required_features": "requiredFeatures",
                      "suggested_features": "suggestedFeatures",
-                     "target_status": {"field_name": "targetStatus",
-                                       "cls": eoi.EnumOptionId},
+                     "target_status":
+                     {"field_name": "targetStatus",
+                      "cls": EnumOptionId},
                      "unavailability_message": "unavailabilityMessage",
                      "uri": "_uri",
                      "_unresolved": "_unresolved"}

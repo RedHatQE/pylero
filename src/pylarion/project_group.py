@@ -1,13 +1,13 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
-from pylarion.exceptions import PylarionLibException
-import pylarion.base_polarion as bp
-import pylarion.subterra_uri as stu
-import pylarion.project as p
+from pylarion.base_polarion import BasePolarion
+from pylarion.subterra_uri import SubterraURI
+from pylarion.subterra_uri import ArrayOfSubterraURI
+from pylarion.project import Project
 
 
-class ProjectGroup(bp.BasePolarion):
+class ProjectGroup(BasePolarion):
     """Object to handle the Polarion WSDL tns2:ProjectGroup class
 
     Attributes (for specific details, see Polarion):
@@ -17,15 +17,17 @@ class ProjectGroup(bp.BasePolarion):
         parent_uri (SubterraURI)
         project_ids (ArrayOfstring)
 """
-    _cls_suds_map = {"group_uris": {"field_name": "groupURIs",
-                                    "is_array": True,
-                                    "cls": stu.SubterraURI,
-                                    "arr_cls": stu.ArrayOfSubterraURI,
-                                    "inner_field_name": "SubterraURI"},
+    _cls_suds_map = {"group_uris":
+                     {"field_name": "groupURIs",
+                      "is_array": True,
+                      "cls": SubterraURI,
+                      "arr_cls": ArrayOfSubterraURI,
+                      "inner_field_name": "SubterraURI"},
                      "location": "location",
                      "name": "name",
-                     "parent_uri": {"field_name": "parentURI",
-                                    "cls": stu.SubterraURI},
+                     "parent_uri":
+                     {"field_name": "parentURI",
+                      "cls": SubterraURI},
                      "project_ids": "projectIDs",
                      "uri": "_uri",
                      "_unresolved": "_unresolved"}
@@ -97,7 +99,7 @@ class ProjectGroup(bp.BasePolarion):
         projects = []
         for suds_project in self.session.project_client.service. \
                 getContainedProjects(self.uri):
-            projects.append(p.Project(suds_object=suds_project))
+            projects.append(Project(suds_object=suds_project))
         return projects
 
     def get_deep_contained_projects(self):
@@ -113,5 +115,5 @@ class ProjectGroup(bp.BasePolarion):
         projects = []
         for suds_project in self.session.project_client.service. \
                 getDeepContainedProjects(self.uri):
-            projects.append(p.Project(suds_object=suds_project))
+            projects.append(Project(suds_object=suds_project))
         return projects

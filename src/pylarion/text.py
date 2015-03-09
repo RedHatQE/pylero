@@ -1,10 +1,10 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
-import pylarion.base_polarion as bp
+from pylarion.base_polarion import BasePolarion
 
 
-class Text(bp.BasePolarion):
+class Text(BasePolarion):
     """Object to manage Polarion TestManagement WS tns2:Text
 
     Rich text object
@@ -15,7 +15,8 @@ class Text(bp.BasePolarion):
             (eg. text/html)
         content_lossy (bool):
     """
-    _cls_suds_map = {"content": "content", "content_type": "type",
+    _cls_suds_map = {"content": "content",
+                     "content_type": "type",
                      "content_lossy": "contentLossy"}
     _id_field = "content"
     _obj_client = "test_management_client"
@@ -28,7 +29,7 @@ class Text(bp.BasePolarion):
         self._suds_object.contentLossy = False
 
 
-class ArrayOfText(bp.BasePolarion):
+class ArrayOfText(BasePolarion):
     """Object containing list of Text objects"""
     _obj_client = "test_management_client"
     _obj_struct = "tns2:ArrayOfText"

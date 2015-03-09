@@ -1,12 +1,11 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
-import pylarion.base_polarion as bp
-import pylarion.license_info as licinfo
+from pylarion.base_polarion import BasePolarion
 
 
 # Array of License Info is listed as: ArrayOf_tns3_LicenseInfo
-class ProductLicense(bp.BasePolarion):
+class ProductLicense(BasePolarion):
     """Object to handle the Polarion WSDL tns3:ProductLicense class
 
     Attributes (for specific details, see Polarion):

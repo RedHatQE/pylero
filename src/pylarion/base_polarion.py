@@ -142,7 +142,7 @@ class BasePolarion(object):
         suds_objs = getattr(cls.session.tracker_client.service,
                             function_name)(*parms)
         # some functions return list of strings and not objects.
-        if suds_objs and isinstance(suds_objs[0], str):
+        if suds_objs and isinstance(suds_objs[0], basestring):
             return suds_objs
         else:
             objs = []
@@ -358,7 +358,7 @@ class BasePolarion(object):
         """
         if not sync_field:
             sync_field = "_suds_object"
-        if isinstance(val, str):
+        if isinstance(val, basestring):
             obj = obj_cls(val, **additional_parms)
             setattr(self._suds_object, suds_field_name,
                     getattr(obj, sync_field))
@@ -457,7 +457,7 @@ class BasePolarion(object):
                 obj = cf.value
         else:
             obj = None
-        if hasattr(obj, "_id_field") and obj._id_field:
+        if getattr(obj, "_id_field", None):
             return getattr(obj, obj._id_field)
         else:
             return obj
@@ -472,7 +472,7 @@ class BasePolarion(object):
             obj_cls - the Pylarion object that the field references
             is_enum - bool, tells the function if it should validate the value
         """
-        if isinstance(val, str):
+        if isinstance(val, basestring):
             if is_enum:
                 valid_values = self.get_valid_field_values(suds_field_name)
                 if val not in valid_values:

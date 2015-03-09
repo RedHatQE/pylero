@@ -1,11 +1,11 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
-import pylarion.base_polarion as bp
-import pylarion.user as u
+from pylarion.base_polarion import BasePolarion
+from pylarion.user import User
 
 
-class WikiPageAttachment(bp.BasePolarion):
+class WikiPageAttachment(BasePolarion):
     """Object to handle the Polarion WSDL tns3:WikiPageAttachment class
 
     Attributes (for specific details, see Polarion):
@@ -17,7 +17,9 @@ class WikiPageAttachment(bp.BasePolarion):
         updated (dateTime)
         url (string)
 """
-    _cls_suds_map = {"author": {"field_name": "author", "cls": u.User},
+    _cls_suds_map = {"author":
+                     {"field_name": "author",
+                      "cls": User},
                      "file_name": "fileName",
                      "wiki_page_attachment_id": "id",
                      "length": "length",
@@ -30,6 +32,6 @@ class WikiPageAttachment(bp.BasePolarion):
     _obj_struct = "tns3:WikiPageAttachment"
 
 
-class ArrayOfWikiPageAttachment(bp.BasePolarion):
+class ArrayOfWikiPageAttachment(BasePolarion):
     _obj_client = "tracker_client"
     _obj_struct = "tns3:ArrayOfWikiPageAttachment"

@@ -1,11 +1,11 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
-import pylarion.base_polarion as bp
-import pylarion.text as t
+from pylarion.base_polarion import BasePolarion
+from pylarion.text import Text
 
 
-class TimePoint(bp.BasePolarion):
+class TimePoint(BasePolarion):
     """Object to handle the Polarion WSDL tns5:TimePoint class
 
     Attributes (for specific details, see Polarion):
@@ -17,8 +17,9 @@ class TimePoint(bp.BasePolarion):
         time (date)
 """
     _cls_suds_map = {"closed": "closed",
-                     "description": {"field_name": "description",
-                                     "cls": t.Text},
+                     "description":
+                     {"field_name": "description",
+                      "cls": Text},
                      "earliest_planned_start": "earliestPlannedStart",
                      "time_point_id": "id",
                      "name": "name",

@@ -2,73 +2,92 @@
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
 from pylarion.exceptions import PylarionLibException
-import pylarion.base_polarion as bp
-import pylarion.enum_option_id as eoi
-import pylarion.user as u
-import pylarion.subterra_uri as stu
-import pylarion.text as t
-import pylarion.module_comment as modcom
-import pylarion.project as p
-import pylarion.custom as custom
-import pylarion.signature_context as sigcon
-import pylarion.work_item as wi
+from pylarion.base_polarion import BasePolarion
+from pylarion.enum_option_id import EnumOptionId
+from pylarion.enum_option_id import ArrayOfEnumOptionId
+from pylarion.user import User
+from pylarion.subterra_uri import SubterraURI
+from pylarion.text import Text
+from pylarion.module_comment import ModuleComment
+from pylarion.module_comment import ArrayOfModuleComment
+from pylarion.project import Project
+from pylarion.custom import Custom
+from pylarion.custom import ArrayOfCustom
+from pylarion.signature_context import SignatureContext
+from pylarion.signature_context import ArrayOfSignatureContext
+from pylarion.work_item import _WorkItem
 
 
-class Document(bp.BasePolarion):
+class Document(BasePolarion):
     '''An object to manage the TestManagement WS tns4:Module '''
-    _cls_suds_map = {"allowed_wi_types": {"field_name": "AllowedWITypes",
-                                          "is_array": True,
-                                          "cls": eoi.EnumOptionId,
-                                          "arr_cls": eoi.ArrayOfEnumOptionId,
-                                          "inner_field_name":
-                                          "eoi.EnumOptionId"},
+    _cls_suds_map = {"allowed_wi_types":
+                     {"field_name": "AllowedWITypes",
+                      "is_array": True,
+                      "cls": EnumOptionId,
+                      "arr_cls": ArrayOfEnumOptionId,
+                      "inner_field_name":
+                      "EnumOptionId"},
                      "are_links_from_parent_to_child":
                      "areLinksFromParentToChild",
-                     "author": {"field_name": "author", "cls": u.User},
+                     "author":
+                     {"field_name": "author",
+                      "cls": User},
                      "auto_suspect": "autoSuspect",
-                     "branched_from": {"field_name": "branchedFrom"},
+                     "branched_from":
+                     {"field_name": "branchedFrom"},  # populated in circ refs
                      "branched_with_query": "branchedWithQuery",
-                     "comments": {"field_name": "comments",
-                                  "is_array": True,
-                                  "cls": modcom.ModuleComment,
-                                  "arr_cls": modcom.ArrayOfModuleComment,
-                                  "inner_field_name": "ModuleComment"},
+                     "comments":
+                     {"field_name": "comments",
+                      "is_array": True,
+                      "cls": ModuleComment,
+                      "arr_cls": ArrayOfModuleComment,
+                      "inner_field_name": "ModuleComment"},
                      "created": "created",
                      "derived_fields": "derived_fields",  # arrayOfstring?
-                     "derived_from_uri": {"field_name": "derivedFromURI",
-                                          "cls": stu.SubterraURI},
-                     "derived_from_link_role": {"field_name":
-                                                "derivedFromLinkRole",
-                                                "cls": eoi.EnumOptionId},
-                     "home_page_content": {"field_name": "homePageContent",
-                                           "cls": t.Text},
+                     "derived_from_uri":
+                     {"field_name": "derivedFromURI",
+                      "cls": SubterraURI},
+                     "derived_from_link_role":
+                     {"field_name": "derivedFromLinkRole",
+                      "cls": EnumOptionId},
+                     "home_page_content":
+                     {"field_name": "homePageContent",
+                      "cls": Text},
                      "document_id": "id",
                      "space": "location",
                      "document_absolute_location": "moduleAbsoluteLocation",
                      "document_folder": "moduleFolder",
                      "document_name": "moduleName",
-                     "project_id": {"field_name": "project", "cls": p.Project},
-                     "signature_contexts": {"field_name": "signatureContexts",
-                                            "is_array": True,
-                                            "cls": sigcon.SignatureContext,
-                                            "arr_cls":
-                                            sigcon.ArrayOfSignatureContext,
-                                            "inner_field_name":
-                                            "SignatureContext"},
-                     "status": {"field_name": "status",
-                                "cls": eoi.EnumOptionId},
-                     "structure_link_role": {"field_name": "structureLinkRole",
-                                             "cls": eoi.EnumOptionId},
+                     "project_id":
+                     {"field_name": "project",
+                      "cls": Project},
+                     "signature_contexts":
+                     {"field_name": "signatureContexts",
+                      "is_array": True,
+                      "cls": SignatureContext,
+                      "arr_cls": ArrayOfSignatureContext,
+                      "inner_field_name": "SignatureContext"},
+                     "status":
+                     {"field_name": "status",
+                      "cls": EnumOptionId},
+                     "structure_link_role":
+                     {"field_name": "structureLinkRole",
+                      "cls": EnumOptionId},
                      "title": "title",
-                     "type": {"field_name": "type", "cls": eoi.EnumOptionId},
+                     "type":
+                     {"field_name": "type",
+                      "cls": EnumOptionId},
                      "updated": "updated",
-                     "updated_by": {"field_name": "updatedBy", "cls": u.User},
+                     "updated_by":
+                     {"field_name": "updatedBy",
+                      "cls": User},
                      "uses_outline_numbering": "usesOutlineNumbering",
-                     "custom_fields": {"field_name": "customFields",
-                                       "is_array": True,
-                                       "cls": custom.Custom,
-                                       "arr_cls": custom.ArrayOfCustom,
-                                       "inner_field_name": "Custom"},
+                     "custom_fields":
+                     {"field_name": "customFields",
+                      "is_array": True,
+                      "cls": Custom,
+                      "arr_cls": ArrayOfCustom,
+                      "inner_field_name": "Custom"},
                      "uri": "_uri",
                      "_unresolvable": "_unresolvable"}
     _obj_client = "test_management_client"
@@ -98,11 +117,11 @@ class Document(bp.BasePolarion):
         Implements:
             Tracker.createDocument
         """
-        if isinstance(allowed_wi_types, str):
+        if isinstance(allowed_wi_types, basestring):
             allowed_wi_types = [allowed_wi_types]
-        awit = [eoi.EnumOptionId(item)._suds_object
+        awit = [EnumOptionId(item)._suds_object
                 for item in allowed_wi_types]
-        slr = eoi.EnumOptionId(structure_link_role)._suds_object
+        slr = EnumOptionId(structure_link_role)._suds_object
         uri = cls.session.tracker_client.service.createDocument(
             project_id, space, document_name, document_title, awit,
             slr, home_page_content)
@@ -225,24 +244,24 @@ class Document(bp.BasePolarion):
         """create a work item in the current document
 
         Args:
-            parent_id - The work_item_id of the parent wi._WorkItem
+            parent_id - The work_item_id of the parent _WorkItem
             wi - The Work Item object to create.
         returns
-            The created wi._WorkItem
+            The created _WorkItem
         """
         self._verify_obj()
-        if isinstance(w_item, wi._WorkItem):
+        if isinstance(w_item, _WorkItem):
             suds_wi = w_item._suds_object
-        elif isinstance(w_item, wi._WorkItem()._suds_object.__class__):
+        elif isinstance(w_item, _WorkItem()._suds_object.__class__):
             suds_wi = w_item
         else:
             raise PylarionLibException(
                 "the w_item parameter must be a _WorkItem")
-        parent = wi._WorkItem(work_item_id=parent_id,
-                              project_id=self.project_id)
+        parent = _WorkItem(work_item_id=parent_id,
+                           project_id=self.project_id)
         wi_uri = self.session.tracker_client.service(self.uri, parent.uri,
                                                      suds_wi)
-        return wi._WorkItem(uri=wi_uri)
+        return _WorkItem(uri=wi_uri)
 
     def delete(self):
         """delete the current document
@@ -269,17 +288,17 @@ class Document(bp.BasePolarion):
                      be filled using following syntax:
                      customFields.CUSTOM_FIELD_ID (e.g. customFields.risk).
         Returns:
-            list of wi.WorkItem objects
+            list of _WorkItem objects
         """
         self._verify_obj()
-        parent = wi._WorkItem(work_item_id=parent_work_item_id,
-                              project_id=self.project_id)
+        parent = _WorkItem(work_item_id=parent_work_item_id,
+                           project_id=self.project_id)
         p_fields = self._convert_obj_fields_to_polarion(fields)
         suds_wi = self.session.tracker_client.service. \
             getModuleWorkItems(self.uri, parent.uri, deep, p_fields)
         work_items = []
         for w_item in suds_wi:
-            work_items.append(wi._WorkItem(suds_object=w_item))
+            work_items.append(_WorkItem(suds_object=w_item))
         return work_items
 
     def update(self):

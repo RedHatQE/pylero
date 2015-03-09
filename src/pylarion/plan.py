@@ -3,24 +3,26 @@ from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
 import suds
 from pylarion.exceptions import PylarionLibException
-import pylarion.base_polarion as bp
-import pylarion.subterra_uri as stu
-import pylarion.enum_option_id as eoi
-import pylarion.custom as custom
-import pylarion.text as t
+from pylarion.base_polarion import BasePolarion
+from pylarion.subterra_uri import SubterraURI
+from pylarion.enum_option_id import EnumOptionId
+from pylarion.enum_option_id import ArrayOfEnumOptionId
+from pylarion.custom import Custom
+from pylarion.custom import ArrayOfCustom
+from pylarion.text import Text
 from pylarion.plan_record import PlanRecord
 from pylarion.plan_statistics import PlanStatistics
 from pylarion.plan_record import ArrayOfPlanRecord
-import pylarion.work_item as wi
+from pylarion.work_item import _WorkItem
 
 
-class Plan(bp.BasePolarion):
+class Plan(BasePolarion):
     """Object to handle the Polarion WSDL tns6:Plan class
 
     Attributes (for specific details, see Polarion):
-        allowed_types (ArrayOfeoi.EnumOptionId)
+        allowed_types (ArrayOfEnumOptionId)
         author_uri (SubterraURI)
-        calculation_type (eoi.EnumOptionId)
+        calculation_type (EnumOptionId)
         capacity (float)
         color (string)
         created (dateTime)
@@ -42,54 +44,64 @@ class Plan(bp.BasePolarion):
         sort_order (int)
         start_date (date)
         started_on (dateTime)
-        status (eoi.EnumOptionId)
+        status (EnumOptionId)
         template_uri (SubterraURI)
         updated (dateTime)
 """
-    _cls_suds_map = {"allowed_types": {"field_name": "allowedTypes",
-                                       "is_array": True,
-                                       "cls": eoi.EnumOptionId,
-                                       "arr_cls": eoi.ArrayOfEnumOptionId,
-                                       "inner_field_name": "eoi.EnumOptionId"},
-                     "author_uri": {"field_name": "authorURI",
-                                    "cls": stu.SubterraURI},
-                     "calculation_type": {"field_name": "calculationType",
-                                          "cls": eoi.EnumOptionId},
+    _cls_suds_map = {"allowed_types":
+                     {"field_name": "allowedTypes",
+                      "is_array": True,
+                      "cls": EnumOptionId,
+                      "arr_cls": ArrayOfEnumOptionId,
+                      "inner_field_name": "EnumOptionId"},
+                     "author_uri":
+                     {"field_name": "authorURI",
+                      "cls": SubterraURI},
+                     "calculation_type":
+                     {"field_name": "calculationType",
+                      "cls": EnumOptionId},
                      "capacity": "capacity",
                      "color": "color",
                      "created": "created",
-                     "custom_fields": {"field_name": "customFields",
-                                       "is_array": True,
-                                       "cls": custom.Custom,
-                                       "arr_cls": custom.ArrayOfCustom,
-                                       "inner_field_name": "Custom"},
+                     "custom_fields":
+                     {"field_name": "customFields",
+                      "is_array": True,
+                      "cls": Custom,
+                      "arr_cls": ArrayOfCustom,
+                      "inner_field_name": "Custom"},
                      "default_estimate": "defaultEstimate",
-                     "description": {"field_name": "description",
-                                     "cls": t.Text},
+                     "description":
+                     {"field_name": "description",
+                      "cls": Text},
                      "due_date": "dueDate",
                      "estimation_field": "estimationField",
                      "finished_on": "finishedOn",
                      "is_template": "isTemplate",
                      "location": "location",
                      "name": "name",
-                     "parent": {"field_name": "parent"},
+                     "parent":
+                     {"field_name": "parent"},  # populated in circ refs
                      "plan_id": "id",
                      "previous_time_spent": "previousTimeSpent",
                      "prioritization_field": "prioritizationField",
-                     "project_uri": {"field_name": "projectURI",
-                                     "cls": stu.SubterraURI},
-                     "records": {"field_name": "records",
-                                 "is_array": True,
-                                 "cls": PlanRecord,
-                                 "arr_cls": ArrayOfPlanRecord,
-                                 "inner_field_name": "PlanRecord"},
+                     "project_uri":
+                     {"field_name": "projectURI",
+                      "cls": SubterraURI},
+                     "records":
+                     {"field_name": "records",
+                      "is_array": True,
+                      "cls": PlanRecord,
+                      "arr_cls": ArrayOfPlanRecord,
+                      "inner_field_name": "PlanRecord"},
                      "sort_order": "sortOrder",
                      "start_date": "startDate",
                      "started_on": "startedOn",
-                     "status": {"field_name": "status",
-                                "cls": eoi.EnumOptionId},
-                     "template_uri": {"field_name": "templateURI",
-                                      "cls": stu.SubterraURI},
+                     "status":
+                     {"field_name": "status",
+                      "cls": EnumOptionId},
+                     "template_uri":
+                     {"field_name": "templateURI",
+                      "cls": SubterraURI},
                      "updated": "updated",
                      "uri": "_uri",
                      "_unresolved": "_unresolved"}
@@ -196,7 +208,7 @@ class Plan(bp.BasePolarion):
             plan_id - ID of the plan
             project_id - ID of the project that contains the specific plan
                          required when plan_id is given
-            uri - the stu.SubterraURI of the plan to load
+            uri - the SubterraURI of the plan to load
             suds_object - the Polarion Plan object
         Returns:
             None
@@ -239,12 +251,12 @@ class Plan(bp.BasePolarion):
         if work_items:
             if not isinstance(work_items, list):
                 raise PylarionLibException(
-                    "work_items must be a list of wi._WorkItem objects")
+                    "work_items must be a list of _WorkItem objects")
         p_items = []
         for item in work_items:
-            if isinstance(item, wi._WorkItem):
+            if isinstance(item, _WorkItem):
                 p_items.append(item._suds_object)
-            elif isinstance(item, wi._WorkItem()._suds_object.__class__):
+            elif isinstance(item, _WorkItem()._suds_object.__class__):
                 p_items.append(item)
         self.session.planning_client.service.addPlanItems(self.uri, p_items)
 
@@ -269,14 +281,14 @@ class Plan(bp.BasePolarion):
         Args:
             None
         Returns:
-            t.Text object
+            Text object
         Implements:
             Planning.getPlanWikiContent
         """
         self._verify_obj()
         suds_obj = self.session.planning_client.service.getPlanWikiContent(
             self.uri)
-        return t.Text(suds_object=suds_obj)
+        return Text(suds_object=suds_obj)
 
     def remove_plan_items(self, work_items):
         """Remove plan records to the plan.
@@ -292,12 +304,12 @@ class Plan(bp.BasePolarion):
         if work_items:
             if not isinstance(work_items, list):
                 raise PylarionLibException(
-                    "work_items must be a list of wi._WorkItem objects")
+                    "work_items must be a list of _WorkItem objects")
         p_items = []
         for item in work_items:
-            if isinstance(item, wi._WorkItem):
+            if isinstance(item, _WorkItem):
                 p_items.append(item._suds_object)
-            elif isinstance(item, wi._WorkItem()._suds_object.__class__):
+            elif isinstance(item, _WorkItem()._suds_object.__class__):
                 p_items.append(item)
         self.session.planning_client.service.removePlanItems(self.uri, p_items)
 
@@ -305,7 +317,7 @@ class Plan(bp.BasePolarion):
         """method set_wiki_content updates the wiki for the current Plan
 
         Args:
-            Content (str or t.Text object)
+            Content (str or Text object)
         Returns:
             None
         Implements:
@@ -313,10 +325,10 @@ class Plan(bp.BasePolarion):
         """
         self._verify_obj()
         if content:
-            if isinstance(content, str):
-                obj_content = t.Text(obj_id=content)
+            if isinstance(content, basestring):
+                obj_content = Text(obj_id=content)
                 suds_content = obj_content._suds_object
-            elif isinstance(content, t.Text):
+            elif isinstance(content, Text):
                 suds_content = content._suds_object
             else:  # is a suds object
                 suds_content = content
@@ -352,6 +364,6 @@ class Plan(bp.BasePolarion):
         return self.session.planning_client.service.wasPlanStarted(self.uri)
 
 
-class ArrayOfPlan(bp.BasePolarion):
+class ArrayOfPlan(BasePolarion):
     _obj_client = "builder_client"
     _obj_struct = "tns6:ArrayOfPlan"

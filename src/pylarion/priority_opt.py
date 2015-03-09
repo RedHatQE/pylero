@@ -1,11 +1,11 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
-import pylarion.base_polarion as bp
-import pylarion.properties as prop
+from pylarion.base_polarion import BasePolarion
+from pylarion.properties import Properties
 
 
-class PriorityOpt(bp.BasePolarion):
+class PriorityOpt(BasePolarion):
     """Object to handle the Polarion WSDL tns5:PriorityOpt class
 
     Attributes (for specific details, see Polarion):
@@ -26,8 +26,9 @@ class PriorityOpt(bp.BasePolarion):
                      "priority_opt_id": "id",
                      "name": "name",
                      "phantom": "phantom",
-                     "properties": {"field_name": "properties",
-                                    "cls": prop.Properties},
+                     "properties":
+                     {"field_name": "properties",
+                      "cls": Properties},
                      "sequence_number": "sequenceNumber",
                      "uri": "_uri",
                      "_unresolved": "_unresolved"}

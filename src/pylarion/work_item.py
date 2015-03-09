@@ -35,6 +35,7 @@ from pylarion.subterra_uri import SubterraURI
 from pylarion.planning_constraint import PlanningConstraint
 from pylarion.planning_constraint import ArrayOfPlanningConstraint
 from pylarion.enum_option_id import EnumOptionId
+# ArrayOfEnumOptionId is used in dynamic code for custom fields
 from pylarion.enum_option_id import ArrayOfEnumOptionId
 from pylarion.priority_option_id import PriorityOptionId
 from pylarion.project import Project
@@ -91,124 +92,140 @@ class _WorkItem(BasePolarion):
         work_item_id (string)
         work_records (ArrayOfWorkRecord)
 """
-    _cls_suds_map = {"approvals": {"field_name": "approvals",
-                                   "is_array": True,
-                                   "cls": Approval,
-                                   "arr_cls": ArrayOfApproval,
-                                   "inner_field_name": "Approval"},
-                     "assignee": {"field_name": "assignee",
-                                  "is_array": True,
-                                  "cls": User,
-                                  "arr_cls": ArrayOfUser,
-                                  "inner_field_name": "User"},
-                     "attachments": {"field_name": "attachments",
-                                     "is_array": True,
-                                     "cls": Attachment,
-                                     "arr_cls": ArrayOfAttachment,
-                                     "inner_field_name": "Attachment"},
-                     "author": {"field_name": "author", "cls": User},
+    _cls_suds_map = {"approvals":
+                     {"field_name": "approvals",
+                      "is_array": True,
+                      "cls": Approval,
+                      "arr_cls": ArrayOfApproval,
+                      "inner_field_name": "Approval"},
+                     "assignee":
+                     {"field_name": "assignee",
+                      "is_array": True,
+                      "cls": User,
+                      "arr_cls": ArrayOfUser,
+                      "inner_field_name": "User"},
+                     "attachments":
+                     {"field_name": "attachments",
+                      "is_array": True,
+                      "cls": Attachment,
+                      "arr_cls": ArrayOfAttachment,
+                      "inner_field_name": "Attachment"},
+                     "author":
+                     {"field_name": "author",
+                      "cls": User},
                      "auto_suspect": "autoSuspect",
-                     "categories": {"field_name": "categories",
-                                    "is_array": True,
-                                    "cls": Category,
-                                    "arr_cls": ArrayOfCategory,
-                                    "inner_field_name": "Category"},
-                     "comments": {"field_name": "comments",
-                                  "is_array": True,
-                                  "cls": Comment,
-                                  "arr_cls": ArrayOfComment,
-                                  "inner_field_name": "Comment"},
+                     "categories":
+                     {"field_name": "categories",
+                      "is_array": True,
+                      "cls": Category,
+                      "arr_cls": ArrayOfCategory,
+                      "inner_field_name": "Category"},
+                     "comments":
+                     {"field_name": "comments",
+                      "is_array": True,
+                      "cls": Comment,
+                      "arr_cls": ArrayOfComment,
+                      "inner_field_name": "Comment"},
                      "created": "created",
-                     "custom_fields": {"field_name": "customFields",
-                                       "is_array": True,
-                                       "cls": Custom,
-                                       "arr_cls": ArrayOfCustom,
-                                       "inner_field_name": "Custom"},
-                     "description": {"field_name": "description",
-                                     "cls": Text},
+                     "custom_fields":
+                     {"field_name": "customFields",
+                      "is_array": True,
+                      "cls": Custom,
+                      "arr_cls": ArrayOfCustom,
+                      "inner_field_name": "Custom"},
+                     "description":
+                     {"field_name": "description",
+                      "cls": Text},
                      "due_date": "dueDate",
                      "externally_linked_work_items":
-                     {"field_name":
-                      "externallyLinkedWorkItems",
+                     {"field_name": "externallyLinkedWorkItems",
                       "is_array": True,
                       "cls": ExternallyLinkedWorkItem,
                       "arr_cls": ArrayOfExternallyLinkedWorkItem,
                       "inner_field_name": "ExternallyLinkedWorkItem"},
-                     "hyperlinks": {"field_name": "hyperlinks",
-                                    "is_array": True,
-                                    "cls": Hyperlink,
-                                    "arr_cls": ArrayOfHyperlink,
-                                    "inner_field_name": "Hyperlink"},
+                     "hyperlinks":
+                     {"field_name": "hyperlinks",
+                      "is_array": True,
+                      "cls": Hyperlink,
+                      "arr_cls": ArrayOfHyperlink,
+                      "inner_field_name": "Hyperlink"},
                      "initial_estimate": "initialEstimate",
-                     "linked_revisions": {"field_name": "linkedRevisions",
-                                          "is_array": True,
-                                          "cls": Revision,
-                                          "arr_cls": ArrayOfRevision,
-                                          "inner_field_name": "Revision"},
-                     "linked_revisions_derived": {"field_name":
-                                                  "linkedRevisionsDerived",
-                                                  "is_array": True,
-                                                  "cls": Revision,
-                                                  "arr_cls":
-                                                  ArrayOfRevision,
-                                                  "inner_field_name":
-                                                  "Revision"},
-                     "linked_work_items": {"field_name": "linkedWorkItems",
-                                           "is_array": True,
-                                           "cls": LinkedWorkItem,
-                                           "arr_cls":
-                                           ArrayOfLinkedWorkItem,
-                                           "inner_field_name":
-                                           "LinkedWorkItem"},
-                     "linked_work_items_derived": {"field_name":
-                                                   "linkedWorkItemsDerived",
-                                                   "is_array": True,
-                                                   "cls": LinkedWorkItem,
-                                                   "arr_cls":
-                                                   ArrayOfLinkedWorkItem,
-                                                   "inner_field_name":
-                                                   "LinkedWorkItem"},
+                     "linked_revisions":
+                     {"field_name": "linkedRevisions",
+                      "is_array": True,
+                      "cls": Revision,
+                      "arr_cls": ArrayOfRevision,
+                      "inner_field_name": "Revision"},
+                     "linked_revisions_derived":
+                     {"field_name": "linkedRevisionsDerived",
+                      "is_array": True,
+                      "cls": Revision,
+                      "arr_cls": ArrayOfRevision,
+                      "inner_field_name": "Revision"},
+                     "linked_work_items":
+                     {"field_name": "linkedWorkItems",
+                      "is_array": True,
+                      "cls": LinkedWorkItem,
+                      "arr_cls": ArrayOfLinkedWorkItem,
+                      "inner_field_name": "LinkedWorkItem"},
+                     "linked_work_items_derived":
+                     {"field_name": "linkedWorkItemsDerived",
+                      "is_array": True,
+                      "cls": LinkedWorkItem,
+                      "arr_cls": ArrayOfLinkedWorkItem,
+                      "inner_field_name": "LinkedWorkItem"},
                      "location": "location",
-                     "module_uri": {"field_name": "moduleURI", "cls":
-                                    SubterraURI},
+                     "module_uri":
+                     {"field_name": "moduleURI",
+                      "cls": SubterraURI},
                      "outline_number": "outlineNumber",
                      "planned_end": "plannedEnd",
                      # planned_in completed in the _fix_circular_imports func
-                     "planned_in": {"field_name": "plannedIn"},
+                     "planned_in":
+                     {"field_name": "plannedIn"},  # populated in circular refs
                      "planned_start": "plannedStart",
-                     "planning_constraints": {"field_name":
-                                              "planningConstraints",
-                                              "is_array": True,
-                                              "cls": PlanningConstraint,
-                                              "arr_cls":
-                                              ArrayOfPlanningConstraint,
-                                              "inner_field_name":
-                                              "PlanningConstraint"},
-                     "previous_status": {"field_name": "previousStatus",
-                                         "cls": EnumOptionId},
-                     "priority": {"field_name": "priority",
-                                  "cls": PriorityOptionId},
-                     "project_id": {"field_name": "project", "cls": Project},
+                     "planning_constraints":
+                     {"field_name": "planningConstraints",
+                      "is_array": True,
+                      "cls": PlanningConstraint,
+                      "arr_cls": ArrayOfPlanningConstraint,
+                      "inner_field_name": "PlanningConstraint"},
+                     "previous_status":
+                     {"field_name": "previousStatus",
+                      "cls": EnumOptionId},
+                     "priority":
+                     {"field_name": "priority",
+                      "cls": PriorityOptionId},
+                     "project_id":
+                     {"field_name": "project",
+                      "cls": Project},
                      "remaining_estimate": "remainingEstimate",
-                     "resolution": {"field_name": "resolution", "cls":
-                                    EnumOptionId},
+                     "resolution":
+                     {"field_name": "resolution",
+                      "cls": EnumOptionId},
                      "resolved_on": "resolvedOn",
-                     "severity": {"field_name": "severity", "cls":
-                                  EnumOptionId},
-                     "status": {"field_name": "status",
-                                "cls": EnumOptionId},
-                     "time_point": {"field_name": "timePoint", "cls":
-                                    TimePoint},
+                     "severity":
+                     {"field_name": "severity",
+                      "cls": EnumOptionId},
+                     "status":
+                     {"field_name": "status",
+                      "cls": EnumOptionId},
+                     "time_point":
+                     {"field_name": "timePoint",
+                      "cls": TimePoint},
                      "time_spent": "timeSpent",
                      "title": "title",
-                     "type": {"field_name": "type", "cls": EnumOptionId},
+                     "type":
+                     {"field_name": "type",
+                      "cls": EnumOptionId},
                      "updated": "updated",
                      "work_item_id": "id",
-                     "work_records": {"field_name": "workRecords",
-                                      "is_array": True,
-                                      "cls": WorkRecord,
-                                      "arr_cls": ArrayOfWorkRecord,
-                                      "inner_field_name": "WorkRecord"},
+                     "work_records":
+                     {"field_name": "workRecords",
+                      "is_array": True,
+                      "cls": WorkRecord,
+                      "arr_cls": ArrayOfWorkRecord,
+                      "inner_field_name": "WorkRecord"},
                      "uri": "_uri",
                      "_unresolved": "_unresolved"}
     _id_field = "work_item_id"
@@ -233,7 +250,7 @@ class _WorkItem(BasePolarion):
             desc - description of WorkItem
             status - initial status of the WorkItem, draft by default
         Returns:
-            new wi.WorkItem
+            new _WorkItem
         Implements:
             Tracker.createWorkItem
         """
@@ -308,7 +325,7 @@ class _WorkItem(BasePolarion):
             baseline_revision (str) if populated, query done in specified rev
             query_uris (bool) - returns a list of URI of the Modules found
         Returns:
-            list of wi.WorkItem objects
+            list of _WorkItem objects
         Implements:
             Tracker.queryWorkItemUris
             Tracker.queryWorkItemUrisBySQL
@@ -336,16 +353,16 @@ class _WorkItem(BasePolarion):
         """WorkItem constructor.
 
         Args:
-            project_id - the Polarion project that the wi.WorkItem is located
+            project_id - the Polarion project that the _WorkItem is located
                          in.
             work_item_id - when given, the object is populated with the
-                          wi._WorkItem's data . Requires project_id parameter
-            suds_object - Polarion wi.WorkItem object. When given, the object
+                          _WorkItem's data . Requires project_id parameter
+            suds_object - Polarion _WorkItem object. When given, the object
                           is populated by object data.
-            uri - the uri that references the Polarion wi.WorkItem
+            uri - the uri that references the Polarion _WorkItem
             fields - the fields that are requested to be populated.
                     if this is null then it will return all fields.
-            revision - if given, get the wi.WorkItem in the specified revision
+            revision - if given, get the _WorkItem in the specified revision
                        Is only relevant if URI is given.
         Notes:
             Either test_run_id and project or suds_object or uri can be passed
@@ -395,7 +412,7 @@ class _WorkItem(BasePolarion):
         self._cls_suds_map["planned_in"]["inner_field_name"] = "Plan"
 
     def add_approvee(self, approvee_id):
-        """method add_approvee adds an approvee to the current wi.WorkItem
+        """method add_approvee adds an approvee to the current _WorkItem
 
         Args:
             approvee_id (str) - user_id of approvee to add
@@ -408,7 +425,7 @@ class _WorkItem(BasePolarion):
         self.session.tracker_client.service.addApprovee(self.uri, approvee_id)
 
     def add_assignee(self, assignee_id):
-        """method add_assignee adds an assignee to the current wi.WorkItem
+        """method add_assignee adds an assignee to the current _WorkItem
 
         Args:
             assignee_id (str) - user_id of assignee to add
@@ -422,7 +439,7 @@ class _WorkItem(BasePolarion):
                                                                assignee_id)
 
     def add_category(self, category_id):
-        """method add_category adds a category to the current wi.WorkItem
+        """method add_category adds a category to the current _WorkItem
 
         Args:
             category_id (str) - id of the category to add
@@ -452,7 +469,7 @@ class _WorkItem(BasePolarion):
             self.uri, repository_name, revision_id)
 
     def add_hyperlink(self, url, role):
-        """method add_hyperlink adds a hyperlink to a wi.WorkItem
+        """method add_hyperlink adds a hyperlink to a _WorkItem
 
         Args:
             url - the url of the hyperlink to add.
@@ -468,7 +485,7 @@ class _WorkItem(BasePolarion):
 
     def add_linked_item(self, linked_work_item_id, role,
                         revision=None, suspect=None):
-        """method add_linked_item adds a linked wi.WorkItem to current wi.WorkItem
+        """method add_linked_item adds a linked _WorkItem to current _WorkItem
 
         Args:
             linked_work_item_id - the URI of the target work item the link
@@ -496,7 +513,7 @@ class _WorkItem(BasePolarion):
                        function_name)(*parms)
 
     def add_linked_revision(self, revision):
-        """method add_linked_revision links a revision to the current wi.WorkItem
+        """method add_linked_revision links a revision to the current _WorkItem
 
         Args:
             revision - the revision to add.
@@ -511,13 +528,13 @@ class _WorkItem(BasePolarion):
 
     def create_attachment(self, path, title):
         """method create_attachment adds the given attachment to the current
-        wi.WorkItem
+        _WorkItem
 
         Args:
             path - file path to upload
             title - u.User friendly name of the file
         Notes:
-            Raises an error if the wi.WorkItem object is not populated
+            Raises an error if the _WorkItem object is not populated
         Implements
             Tracker.createAttachment
         """
@@ -528,7 +545,7 @@ class _WorkItem(BasePolarion):
             createAttachment(self.uri, filename, title, data)
 
     def create_comment(self, content):
-        """method create_comment adds a comment to the current wi.WorkItem
+        """method create_comment adds a comment to the current _WorkItem
 
         Args:
             content (Text or str)
@@ -539,7 +556,7 @@ class _WorkItem(BasePolarion):
         """
         self._verify_obj()
         if content:
-            if isinstance(content, str):
+            if isinstance(content, basestring):
                 obj_content = Text(obj_id=content)
                 suds_content = obj_content._suds_object
             elif isinstance(content, Text):
@@ -584,7 +601,7 @@ class _WorkItem(BasePolarion):
 
     def delete_attachment(self, attachment_id):
         """method delete_attachment removes the specified attachment from the
-        current wi.WorkItem
+        current _WorkItem
 
         Args:
             attachment_id (str) - the ID of the attachment to be removed.
@@ -820,7 +837,7 @@ class _WorkItem(BasePolarion):
 
     def get_test_steps(self):
         """method get_test_steps retrieves the test steps of the current
-        WorkItem. If the wi.WorkItem is not populated, it returns an exception.
+        WorkItem. If the _WorkItem is not populated, it returns an exception.
         Args:
             None
         Returns:
@@ -856,7 +873,7 @@ class _WorkItem(BasePolarion):
 
     def perform_workflow_action(self, action_id):
         """Executes a workflow action. The actions that can be performed can be
-        received by wi.WorkItem.getAvailableActions(java.lang.String).
+        received by _WorkItem.getAvailableActions(java.lang.String).
 
         Args:
             actionId - the id of the action to execute.
@@ -870,7 +887,7 @@ class _WorkItem(BasePolarion):
                                                                   action_id)
 
     def remove_assignee(self, assignee_id):
-        """removes an assignee from the wi.WorkItem.
+        """removes an assignee from the _WorkItem.
         Args:
             assignee_id - user id of the assignee to remove
         Returns
@@ -883,7 +900,7 @@ class _WorkItem(BasePolarion):
                                                                   assignee_id)
 
     def remove_category(self, category_id):
-        """removes a category from the wi.WorkItem.
+        """removes a category from the _WorkItem.
         Args:
             assignee_id - user id of the assignee to remove
         Returns
@@ -928,7 +945,7 @@ class _WorkItem(BasePolarion):
             removeExternallyLinkedItem(self.uri, external_wi.uri, role)
 
     def remove_hyperlink(self, url):
-        """Removes a hyperlink from the wi.WorkItem
+        """Removes a hyperlink from the _WorkItem
 
         Args:
             url - the url of the hyperlink to remove
@@ -1058,7 +1075,7 @@ class _WorkItem(BasePolarion):
                                                                  parm)
 
     def update(self):
-        """Update the server with the current wi.WorkItem data
+        """Update the server with the current _WorkItem data
         Args:
             None
         Returns:
@@ -1071,7 +1088,7 @@ class _WorkItem(BasePolarion):
 
     def update_attachment(self, attachment_id, path, title):
         """method update_attachment updates the specified attachment to the
-        current wi.WorkItem
+        current _WorkItem
 
         Args:
             attachment_id - the ID of the attachment to be updated

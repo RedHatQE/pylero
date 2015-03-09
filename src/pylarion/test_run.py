@@ -54,51 +54,64 @@ class TestRun(BasePolarion):
         updated
         custom_fields
     """
-    _cls_suds_map = {"attachments": {"field_name": "attachments",
-                                     "is_array": True,
-                                     "cls": TestRunAttachment,
-                                     "arr_cls": ArrayOfTestRunAttachment,
-                                     "inner_field_name": "TestRunAttachment"},
-                     "author": {"field_name": "authorURI", "cls": User,
-                                "named_arg": "uri", "sync_field": "uri"},
+    _cls_suds_map = {"attachments":
+                     {"field_name": "attachments",
+                      "is_array": True,
+                      "cls": TestRunAttachment,
+                      "arr_cls": ArrayOfTestRunAttachment,
+                      "inner_field_name": "TestRunAttachment"},
+                     "author":
+                     {"field_name": "authorURI",
+                      "cls": User,
+                      "named_arg": "uri",
+                      "sync_field": "uri"},
                      "created": "created",
-                     "document": {"field_name": "document",
-                                  "cls": Document},
-                     "finished_on": "finishedOn", "group_id": "groupId",
+                     "document":
+                     {"field_name": "document",
+                      "cls": Document},
+                     "finished_on": "finishedOn",
+                     "group_id": "groupId",
                      "test_run_id": "id",
                      "is_template": "isTemplate",
                      "keep_in_history": "keepInHistory",
                      "location": "location",
-                     "project_id": {"field_name": "projectURI",
-                                    "cls": Project,
-                                    "named_arg": "uri",
-                                    "sync_field": "uri"},
+                     "project_id":
+                     {"field_name": "projectURI",
+                      "cls": Project,
+                      "named_arg": "uri",
+                      "sync_field": "uri"},
                      "query": "query",
-                     "records": {"field_name": "records",
-                                 "is_array": True,
-                                 "cls": TestRecord,
-                                 "arr_cls": ArrayOfTestRecord,
-                                 "inner_field_name": "TestRecord"},
-                     "select_test_cases_by": {"field_name":
-                                              "selectTestCasesBy",
-                                              "cls":
-                                              EnumOptionId},
-                     "status": {"field_name": "status",
-                                "cls": EnumOptionId},
-                     "summary_defect": {"field_name": "summaryDefectURI",
-                                        "cls": _WorkItem,
-                                        "named_arg": "uri",
-                                        "sync_field": "uri"},
-                     "template": {"field_name": "templateURI",
-                                  "named_arg": "uri", "sync_field": "uri"},
-                     "type": {"field_name": "type",
-                              "cls": EnumOptionId},
+                     "records":
+                     {"field_name": "records",
+                      "is_array": True,
+                      "cls": TestRecord,
+                      "arr_cls": ArrayOfTestRecord,
+                      "inner_field_name": "TestRecord"},
+                     "select_test_cases_by":
+                     {"field_name": "selectTestCasesBy",
+                      "cls": EnumOptionId},
+                     "status":
+                     {"field_name": "status",
+                      "cls": EnumOptionId},
+                     "summary_defect":
+                     {"field_name": "summaryDefectURI",
+                      "cls": _WorkItem,
+                      "named_arg": "uri",
+                      "sync_field": "uri"},
+                     "template":
+                     {"field_name": "templateURI",
+                      "named_arg": "uri",
+                      "sync_field": "uri"},
+                     "type":
+                     {"field_name": "type",
+                      "cls": EnumOptionId},
                      "updated": "updated",
-                     "custom_fields": {"field_name": "customFields",
-                                       "is_array": True,
-                                       "cls": Custom,
-                                       "arr_cls": ArrayOfCustom,
-                                       "inner_field_name": "Custom"},
+                     "custom_fields":
+                     {"field_name": "customFields",
+                      "is_array": True,
+                      "cls": Custom,
+                      "arr_cls": ArrayOfCustom,
+                      "inner_field_name": "Custom"},
                      "uri": "_uri",
                      "_unresolvable": "_unresolvable"}
     _id_field = "test_run_id"
@@ -375,11 +388,11 @@ class TestRun(BasePolarion):
                                    passed
                                    failed
                                    blocked
-            test_comment (str or t.Text object) - may be None
+            test_comment (str or Text object) - may be None
             executed_by (str) - user id
             executed (datetime)
             duration (float)
-            defect_work_item_id (str) - wi._WorkItem id of defect
+            defect_work_item_id (str) - _WorkItem id of defect
         Returns:
             None
         Implements:
@@ -390,7 +403,7 @@ class TestRun(BasePolarion):
                        project_id=self.project_id,
                        fields=["work_item_id"])
         if test_comment:
-            if isinstance(test_comment, str):
+            if isinstance(test_comment, basestring):
                 obj_comment = Text(obj_id=test_comment)
                 suds_comment = obj_comment._suds_object
             elif isinstance(test_comment, Text):
@@ -432,15 +445,15 @@ class TestRun(BasePolarion):
             self.uri, suds_object)
 
     def create_summary_defect(self, defect_template_id=None):
-        """method create_summary_defect, adds a new summary wi.WorkItem for the
+        """method create_summary_defect, adds a new summary _WorkItem for the
         test case based on the _WorkItem template id passed in. If not template
         is passed in, it creates it based on the default template.
 
         Args:
-            defect_template_id (str) - the wi._WorkItem template id to base the
+            defect_template_id (str) - the _WorkItem template id to base the
             new summary defect. can be null
         Returns:
-            the created wi._WorkItem
+            the created _WorkItem
         Implements:
             test_management.createSummaryDefect
         """
@@ -554,7 +567,7 @@ class TestRun(BasePolarion):
         Args:
             None
         Returns:
-            t.Text object containing the wiki content
+            Text object containing the wiki content
         Implements:
             test_management.getWikiContentForTestRun
         """
@@ -644,7 +657,7 @@ class TestRun(BasePolarion):
                                  used, the configured template will be used if
                                  None.
         Returns:
-            the created or updated wi.WorkItem
+            the created or updated _WorkItem
         Implements:
             test_management.updateSummaryDefect
         """
@@ -699,7 +712,7 @@ class TestRun(BasePolarion):
         else:
             defect_uri = suds.null()
         if test_comment:
-            if isinstance(test_comment, str):
+            if isinstance(test_comment, basestring):
                 obj_comment = Text(obj_id=test_comment)
                 suds_comment = obj_comment._suds_object
             elif isinstance(test_comment, Text):
@@ -739,7 +752,7 @@ class TestRun(BasePolarion):
         """method update_wiki_content updates the wiki for the current TestRun
 
         Args:
-            Content (str or t.Text object)
+            Content (str or Text object)
         Returns:
             None
         Implements:
@@ -747,7 +760,7 @@ class TestRun(BasePolarion):
         """
         self._verify_obj()
         if content:
-            if isinstance(content, str):
+            if isinstance(content, basestring):
                 obj_content = Text(obj_id=content)
                 suds_content = obj_content._suds_object
             elif isinstance(content, Text):

@@ -1,15 +1,17 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
-import pylarion.base_polarion as bp
-import pylarion.user as u
-import pylarion.subterra_uri as stu
-import pylarion.signature_data as sigdat
-import pylarion.text as t
-import pylarion.enum_option_id as eoi
+from pylarion.base_polarion import BasePolarion
+from pylarion.user import User
+from pylarion.subterra_uri import SubterraURI
+from pylarion.subterra_uri import ArrayOfSubterraURI
+from pylarion.signature_data import SignatureData
+from pylarion.text import Text
+from pylarion.enum_option_id import EnumOptionId
+from pylarion.enum_option_id import ArrayOfEnumOptionId
 
 
-class Comment(bp.BasePolarion):
+class Comment(BasePolarion):
     """Object to handle the Polarion WSDL tns5:Comment class
 
     Attributes (for specific details, see Polarion):
@@ -20,30 +22,38 @@ class Comment(bp.BasePolarion):
         parent_comment_uri (SubterraURI)
         resolved (boolean)
         signature_data (SignatureData)
-        tags (ArrayOfeoi.EnumOptionId)
+        tags (ArrayOfEnumOptionId)
         text (Text)
         title (string)
         visible_to (ArrayOfstring)
 """
-    _cls_suds_map = {"author": {"field_name": "author", "cls": u.User},
-                     "child_comment_uris": {"field_name": "childCommentURIs",
-                                            "is_array": True,
-                                            "cls": stu.SubterraURI,
-                                            "arr_cls": stu.ArrayOfSubterraURI,
-                                            "inner_field_name": "SubterraURI"},
+    _cls_suds_map = {"author":
+                     {"field_name": "author",
+                      "cls": User},
+                     "child_comment_uris":
+                     {"field_name": "childCommentURIs",
+                      "is_array": True,
+                      "cls": SubterraURI,
+                      "arr_cls": ArrayOfSubterraURI,
+                      "inner_field_name": "SubterraURI"},
                      "created": "created",
                      "comment_id": "id",
-                     "parent_comment_uri": {"field_name": "parentCommentURI",
-                                            "cls": stu.SubterraURI},
+                     "parent_comment_uri":
+                     {"field_name": "parentCommentURI",
+                      "cls": SubterraURI},
                      "resolved": "resolved",
-                     "signature_data": {"field_name": "signatureData",
-                                        "cls": sigdat.SignatureData},
-                     "tags": {"field_name": "tags",
-                              "is_array": True,
-                              "cls": eoi.EnumOptionId,
-                              "arr_cls": eoi.ArrayOfEnumOptionId,
-                              "inner_field_name": "eoi.EnumOptionId"},
-                     "text": {"field_name": "text", "cls": t.Text},
+                     "signature_data":
+                     {"field_name": "signatureData",
+                      "cls": SignatureData},
+                     "tags":
+                     {"field_name": "tags",
+                      "is_array": True,
+                      "cls": EnumOptionId,
+                      "arr_cls": ArrayOfEnumOptionId,
+                      "inner_field_name": "EnumOptionId"},
+                     "text":
+                     {"field_name": "text",
+                      "cls": Text},
                      "title": "title",
                      "visible_to": "visibleTo",
                      "uri": "_uri",
@@ -52,6 +62,6 @@ class Comment(bp.BasePolarion):
     _obj_struct = "tns5:Comment"
 
 
-class ArrayOfComment(bp.BasePolarion):
+class ArrayOfComment(BasePolarion):
     _obj_client = "builder_client"
     _obj_struct = "tns5:ArrayOfComment"

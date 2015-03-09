@@ -1,12 +1,12 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
-import pylarion.base_polarion as bp
-import pylarion.user as u
-import pylarion.project as p
+from pylarion.base_polarion import BasePolarion
+from pylarion.user import User
+from pylarion.project import Project
 
 
-class Baseline(bp.BasePolarion):
+class Baseline(BasePolarion):
     """Object to handle the Polarion WSDL tns3:Baseline class
 
     Attributes (for specific details, see Polarion):
@@ -17,12 +17,16 @@ class Baseline(bp.BasePolarion):
         name (string)
         project (Project)
 """
-    _cls_suds_map = {"author": {"field_name": "author", "cls": u.User},
+    _cls_suds_map = {"author":
+                     {"field_name": "author",
+                      "cls": User},
                      "base_revision": "baseRevision",
                      "description": "description",
                      "baseline_id": "id",
                      "name": "name",
-                     "project": {"field_name": "project", "cls": p.Project},
+                     "project":
+                     {"field_name": "project",
+                      "cls": Project},
                      "uri": "_uri",
                      "_unresolved": "_unresolved"}
     _obj_client = "tracker_client"

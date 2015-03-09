@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
-from . import session
+from pylarion.session import Session
 
 
 class Server(object):
@@ -19,4 +19,4 @@ class Server(object):
         self.relogin_timeout = relogin_timeout
 
     def session(self):
-        return session.Session(self)
+        return Session(self)

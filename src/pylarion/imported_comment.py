@@ -1,10 +1,10 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
-import pylarion.base_polarion as bp
+from pylarion.base_polarion import BasePolarion
 
 
-class ImportedComment(bp.BasePolarion):
+class ImportedComment(BasePolarion):
     """Object to handle the Polarion WSDL tns4:ImportedComment class
 
     Attributes (for specific details, see Polarion):

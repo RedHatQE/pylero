@@ -1,14 +1,16 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
-import pylarion.base_polarion as bp
+from pylarion.base_polarion import BasePolarion
 from pylarion.enum_option_id import EnumOptionId
 
 
-class Custom(bp.BasePolarion):
+class Custom(BasePolarion):
     '''Object to manage Polarion TestManagement WS tns4:Custom'''
     _cls_suds_map = {"key": "key",
-                     "value": {"field_name": "value", "cls": EnumOptionId}
+                     "value":
+                     {"field_name": "value",
+                      "cls": EnumOptionId}
                      }
     _obj_client = "test_management_client"
     _obj_struct = "tns4:Custom"
@@ -20,6 +22,6 @@ class Custom(bp.BasePolarion):
             self.value = value
 
 
-class ArrayOfCustom(bp.BasePolarion):
+class ArrayOfCustom(BasePolarion):
     _obj_client = "test_management_client"
     _obj_struct = "tns4:ArrayOfCustom"

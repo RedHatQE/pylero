@@ -1,16 +1,17 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
-import suds
-import pylarion.base_polarion as bp
-import pylarion.subterra_uri as stu
-import pylarion.project as p
-import pylarion.text as t
-import pylarion.user as u
-import pylarion.wiki_page_attachment as wpa
+from pylarion.base_polarion import BasePolarion
+from pylarion.subterra_uri import SubterraURI
+from pylarion.subterra_uri import ArrayOfSubterraURI
+from pylarion.project import Project
+from pylarion.text import Text
+from pylarion.user import User
+from pylarion.wiki_page_attachment import WikiPageAttachment
+from pylarion.wiki_page_attachment import ArrayOfWikiPageAttachment
 
 
-class WikiPage(bp.BasePolarion):
+class WikiPage(BasePolarion):
     """Object to handle the Polarion WSDL tns3:WikiPage class
 
     Attributes (for specific details, see Polarion):
@@ -30,30 +31,39 @@ class WikiPage(bp.BasePolarion):
         updated (dateTime)
         updated_by (User)
 """
-    _cls_suds_map = {"attachments": {"field_name": "attachments",
-                                     "is_array": True,
-                                     "cls": wpa.WikiPageAttachment,
-                                     "arr_cls": wpa.ArrayOfWikiPageAttachment,
-                                     "inner_field_name": "WikiPageAttachment"},
-                     "author": {"field_name": "author", "cls": u.User},
+    _cls_suds_map = {"attachments":
+                     {"field_name": "attachments",
+                      "is_array": True,
+                      "cls": WikiPageAttachment,
+                      "arr_cls": ArrayOfWikiPageAttachment,
+                      "inner_field_name": "WikiPageAttachment"},
+                     "author":
+                     {"field_name": "author",
+                      "cls": User},
                      "created": "created",
-                     "home_page_content": {"field_name": "homePageContent",
-                                           "cls": t.Text},
+                     "home_page_content":
+                     {"field_name": "homePageContent",
+                      "cls": Text},
                      "wiki_page_id": "id",
-                     "linked_page_uris": {"field_name": "linkedPageURIs",
-                                          "is_array": True,
-                                          "cls": stu.SubterraURI,
-                                          "arr_cls": stu.ArrayOfSubterraURI,
-                                          "inner_field_name": "SubterraURI"},
+                     "linked_page_uris":
+                     {"field_name": "linkedPageURIs",
+                      "is_array": True,
+                      "cls": SubterraURI,
+                      "arr_cls": ArrayOfSubterraURI,
+                      "inner_field_name": "SubterraURI"},
                      "location": "location",
                      "page_location": "pageLocation",
                      "page_name": "pageName",
-                     "project": {"field_name": "project", "cls": p.Project},
+                     "project":
+                     {"field_name": "project",
+                      "cls": Project},
                      "space_id": "spaceId",
                      "title": "title",
                      "type": "type",
                      "updated": "updated",
-                     "updated_by": {"field_name": "updatedBy", "cls": u.User},
+                     "updated_by":
+                     {"field_name": "updatedBy",
+                      "cls": User},
                      "uri": "_uri",
                      "_unresolved": "_unresolved"}
     _obj_client = "tracker_client"

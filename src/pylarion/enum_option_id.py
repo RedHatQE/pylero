@@ -1,10 +1,10 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
-import pylarion.base_polarion as bp
+from pylarion.base_polarion import BasePolarion
 
 
-class EnumOptionId(bp.BasePolarion):
+class EnumOptionId(BasePolarion):
     """An object to manage Polarion TestManagement tns4:EnumOptionId"""
     _cls_suds_map = {"id": "id"}
     _id_field = "id"
@@ -12,7 +12,7 @@ class EnumOptionId(bp.BasePolarion):
     _obj_struct = "tns4:EnumOptionId"
 
 
-class ArrayOfEnumOptionId(bp.BasePolarion):
+class ArrayOfEnumOptionId(BasePolarion):
     """An object to manage Polarion TestManagement tns4:ArrayOfEnumOptionId"""
     _obj_client = "test_management_client"
     _obj_struct = "tns4:ArrayOfEnumOptionId"

@@ -1,10 +1,10 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
-import pylarion.base_polarion as bp
+from pylarion.base_polarion import BasePolarion
 
 
-class PriorityOptionId(bp.BasePolarion):
+class PriorityOptionId(BasePolarion):
     """Object to handle the Polarion WSDL tns5:PriorityOptionId class
 
     Attributes (for specific details, see Polarion):
@@ -17,6 +17,6 @@ class PriorityOptionId(bp.BasePolarion):
     _obj_struct = "tns5:PriorityOptionId"
 
 
-class ArrayOfPriorityOptionId(bp.BasePolarion):
+class ArrayOfPriorityOptionId(BasePolarion):
     _obj_client = "builder_client"
     _obj_struct = "tns5:ArrayOfPriorityOptionId"

@@ -1,17 +1,17 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
-import pylarion.base_polarion as bp
-import pylarion.category as cat
-import pylarion.custom_field_type as cft
-import pylarion.text as t
-import pylarion.user as u
-import pylarion.subterra_uri as stu
+from pylarion.base_polarion import BasePolarion
+from pylarion.category import Category
+from pylarion.custom_field_type import CustomFieldType
+from pylarion.text import Text
+from pylarion.user import User
+from pylarion.subterra_uri import SubterraURI
 from pylarion.exceptions import PylarionLibException
-import pylarion.tests_configuration as tc
+from pylarion.tests_configuration import TestsConfiguration
 
 
-class Project(bp.BasePolarion):
+class Project(BasePolarion):
     """Object to handle the Polarion WSDL tns4:Project class
 
     Attributes (for specific details, see Polarion):
@@ -28,15 +28,19 @@ class Project(bp.BasePolarion):
         tracker_prefix (string)
 """
     _cls_suds_map = {"active": "active",
-                     "description": {"field_name": "description",
-                                     "cls": t.Text},
+                     "description":
+                     {"field_name": "description",
+                      "cls": Text},
                      "finish": "finish",
-                     "lead": {"field_name": "lead", "cls": u.User},
+                     "lead":
+                     {"field_name": "lead",
+                      "cls": User},
                      "location": "location",
                      "lock_work_records_date": "lockWorkRecordsDate",
                      "name": "name",
-                     "project_group_uri": {"field_name": "projectGroupURI",
-                                           "cls": stu.SubterraURI},
+                     "project_group_uri":
+                     {"field_name": "projectGroupURI",
+                      "cls": SubterraURI},
                      "project_id": "id",
                      "start": "start",
                      "tracker_prefix": "trackerPrefix",
@@ -141,7 +145,7 @@ class Project(bp.BasePolarion):
         categories = []
         for suds_cat in self.session.tracker_client.service. \
                 getCategories(self.project_id):
-            categories.append(cat.Category(suds_object=suds_cat))
+            categories.append(Category(suds_object=suds_cat))
         return categories
 
     def get_defined_custom_field_keys(self, work_item_type_id):
@@ -173,7 +177,7 @@ class Project(bp.BasePolarion):
         self._verify_obj()
         suds_custom = self.session.tracker_client.service. \
             getDefinedCustomFieldType(self._uri, work_item_type_id, key)
-        return cft.CustomFieldType(suds_object=suds_custom)
+        return CustomFieldType(suds_object=suds_custom)
 
     def get_defined_custom_field_types(self, work_item_type_id):
         """method get_defined_custom_field_type gets custom field definition
@@ -190,7 +194,7 @@ class Project(bp.BasePolarion):
         customs = []
         for suds_custom in self.session.tracker_client.service. \
                 getDefinedCustomFieldType(self._uri, work_item_type_id):
-            customs.append(cft.CustomFieldType(suds_object=suds_custom))
+            customs.append(CustomFieldType(suds_object=suds_custom))
         return customs
 
     def get_document_locations(self):
@@ -233,7 +237,7 @@ class Project(bp.BasePolarion):
         users = []
         for suds_user in self.session.project_client.service. \
                 getProjectUsers(self.project_id):
-            users.append(u.User(suds_object=suds_user))
+            users.append(User(suds_object=suds_user))
 
     def get_test_steps_configuration(self):
         """method get_test_steps_configuration retrieves a list of the
@@ -261,7 +265,7 @@ class Project(bp.BasePolarion):
         self._verify_obj()
         tests_config = self.session.test_management_client.service. \
             getTestsConfiguration(self.project_id)
-        return tc.TestsConfiguration(suds_object=tests_config)
+        return TestsConfiguration(suds_object=tests_config)
 
     def get_wiki_spaces(self):
         """Returns Wiki spaces from current project

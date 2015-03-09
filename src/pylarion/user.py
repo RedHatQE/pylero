@@ -1,13 +1,14 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
-import pylarion.base_polarion as bp
-import pylarion.text as t
-import pylarion.subterra_uri as stu
+from pylarion.base_polarion import BasePolarion
+from pylarion.text import Text
+from pylarion.subterra_uri import SubterraURI
+from pylarion.subterra_uri import ArrayOfSubterraURI
 from pylarion.exceptions import PylarionLibException
 
 
-class User(bp.BasePolarion):
+class User(BasePolarion):
     """Object to handle the Polarion WSDL tns3:User class
 
     Attributes (for specific details, see Polarion):
@@ -19,22 +20,25 @@ class User(bp.BasePolarion):
         vote_uris (ArrayOfSubterraURI)
         watche_uris (ArrayOfSubterraURI)
 """
-    _cls_suds_map = {"description": {"field_name": "description",
-                                     "cls": t.Text},
+    _cls_suds_map = {"description":
+                     {"field_name": "description",
+                      "cls": Text},
                      "disabled_notifications": "disabledNotifications",
                      "email": "email",
                      "user_id": "id",
                      "name": "name",
-                     "vote_uris": {"field_name": "voteURIs",
-                                   "is_array": True,
-                                   "cls": stu.SubterraURI,
-                                   "arr_cls": stu.ArrayOfSubterraURI,
-                                   "inner_field_name": "SubterraURI"},
-                     "watche_uris": {"field_name": "watcheURIs",
-                                     "is_array": True,
-                                     "cls": stu.SubterraURI,
-                                     "arr_cls": stu.ArrayOfSubterraURI,
-                                     "inner_field_name": "SubterraURI"},
+                     "vote_uris":
+                     {"field_name": "voteURIs",
+                      "is_array": True,
+                      "cls": SubterraURI,
+                      "arr_cls": ArrayOfSubterraURI,
+                      "inner_field_name": "SubterraURI"},
+                     "watche_uris":
+                     {"field_name": "watcheURIs",
+                      "is_array": True,
+                      "cls": SubterraURI,
+                      "arr_cls": ArrayOfSubterraURI,
+                      "inner_field_name": "SubterraURI"},
                      "uri": "_uri",
                      "_unresolved": "_unresolved"}
     _id_field = "user_id"
@@ -200,6 +204,6 @@ class User(bp.BasePolarion):
             raise PylarionLibException("The user object is empty")
 
 
-class ArrayOfUser(bp.BasePolarion):
+class ArrayOfUser(BasePolarion):
     _obj_client = "builder_client"
     _obj_struct = "tns3:ArrayOfUser"

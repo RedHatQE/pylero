@@ -1,11 +1,11 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
-import pylarion.base_polarion as bp
-import pylarion.text as t
+from pylarion.base_polarion import BasePolarion
+from pylarion.text import Text
 
 
-class Activity(bp.BasePolarion):
+class Activity(BasePolarion):
     """Object to handle the Polarion WSDL tns3:Activity class
 
     Attributes (for specific details, see Polarion):
@@ -26,7 +26,9 @@ class Activity(bp.BasePolarion):
                      "comments": "comments",  # array of ActivityComment
                      "global_id": "globalId",
                      "activity_id": "id",
-                     "info": {"field_name": "info", "cls": t.Text},
+                     "info":
+                     {"field_name": "info",
+                      "cls": Text},
                      "prefix": "prefix",
                      "resource_locations": "resourceLocations",
                      "source_id": "sourceId",

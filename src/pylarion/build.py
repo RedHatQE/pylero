@@ -1,13 +1,14 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
-import pylarion.base_polarion as bp
-import pylarion.user as u
-import pylarion.build_test_results as btr
-import pylarion.build_linked_work_item as blwi
+from pylarion.base_polarion import BasePolarion
+from pylarion.user import User
+from pylarion.build_test_results import BuildTestResults
+from pylarion.build_linked_work_item import BuildLinkedWorkItem
+from pylarion.build_linked_work_item import ArrayOfBuildLinkedWorkItem
 
 
-class Build(bp.BasePolarion):
+class Build(BasePolarion):
     """Object to handle the Polarion WSDL tns2:Build class
 
     Attributes (for specific details, see Polarion):
@@ -28,27 +29,29 @@ class Build(bp.BasePolarion):
         log_files (ArrayOfLocation)
         start_time (dateTime)
 """
-    _cls_suds_map = {"author": {"field_name": "author", "cls": u.User},
+    _cls_suds_map = {"author":
+                     {"field_name": "author",
+                      "cls": User},
                      "bir_location": "birLocation",
                      "build_descriptor_name": "buildDescriptorName",
                      "build_stamp": "buildStamp",
                      "build_status": "buildStatus",
                      "build_tag": "buildTag",
-                     "build_test_results": {"field_name": "buildTestResults",
-                                            "cls": btr.BuildTestResults},
+                     "build_test_results":
+                     {"field_name": "buildTestResults",
+                      "cls": BuildTestResults},
                      "calculation_descriptor_name":
                      "calculationDescriptorName",
                      "creation_time": "creationTime",
                      "finish_time": "finishTime",
                      "build_id": "id",
                      "job_id": "jobId",
-                     "linked_work_items": {"field_name": "linkedWorkItems",
-                                           "is_array": True,
-                                           "cls": blwi.BuildLinkedWorkItem,
-                                           "arr_cls":
-                                           blwi.ArrayOfBuildLinkedWorkItem,
-                                           "inner_field_name":
-                                           "BuildLinkedWorkItem"},
+                     "linked_work_items":
+                     {"field_name": "linkedWorkItems",
+                      "is_array": True,
+                      "cls": BuildLinkedWorkItem,
+                      "arr_cls": ArrayOfBuildLinkedWorkItem,
+                      "inner_field_name": "BuildLinkedWorkItem"},
                      "local_deployment_space_name": "localDeploymentSpaceName",
                      "log_files": "logFiles",
                      "start_time": "startTime",
