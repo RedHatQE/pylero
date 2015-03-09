@@ -217,8 +217,7 @@ class _WorkItem(BasePolarion):
     has_query = True
 
     @classmethod
-    def create(cls, project_id, work_item_id, wi_type, title, desc, status,
-               **kwargs):
+    def create(cls, project_id, wi_type, title, desc, status, **kwargs):
         """Creates a new work item with the given content. The project and the
         type have to be set for the workitem for the creation to succeed. The
         uri MUST NOT be set otherwise the creation will fail. To create a work
@@ -229,7 +228,6 @@ class _WorkItem(BasePolarion):
 
         Args:
             project_id - id of project to create work item in
-            work_item_id (string) - id of new WorkItem
             wi_type - type of work item (functionaltestcase,...)
             title - title of WorkItem
             desc - description of WorkItem
@@ -239,7 +237,6 @@ class _WorkItem(BasePolarion):
             Tracker.createWorkItem
         """
         wi = _WorkItem()
-        wi.work_item_id = work_item_id
         wi.project_id = project_id
         wi.type = wi_type
         wi.title = title
@@ -1124,7 +1121,7 @@ class _SpecificWorkItem(_WorkItem):
         return (all_fields, required_fields)
 
     @classmethod
-    def create(cls, project_id, work_item_id, title, desc, status, **kwargs):
+    def create(cls, project_id, title, desc, status, **kwargs):
         """Creates the specific type of work item, requiring the base fields to
         be passed in and all required custom fields as key word args. If not
         all required fields are passed in or key word fields that are not
@@ -1144,7 +1141,7 @@ class _SpecificWorkItem(_WorkItem):
         if fields:
             raise PylarionLibException("These parameters are unknown: {0}".
                                        format(fields))
-        _WorkItem.create(project_id, work_item_id, cls._wi_type, title, desc,
+        _WorkItem.create(project_id, cls._wi_type, title, desc,
                          status, **kwargs)
 
     def __init__(self, project_id=None, work_item_id=None, suds_object=None,
