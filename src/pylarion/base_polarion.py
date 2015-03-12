@@ -10,6 +10,12 @@ from __builtin__ import classmethod
 from ConfigParser import SafeConfigParser
 
 
+# classproperty is a property that works on the class level
+class classproperty(property):
+    def __get__(self, instance, cls):
+        return classmethod(self.fget).__get__(instance, cls)()
+
+
 class Connection(object):
     """Creates a Polarion session as a class method, so that it is used for all
     objects inherited by BasePolarion.
@@ -49,6 +55,7 @@ class Connection(object):
             cls.connected = True
             cls.session.default_project = proj
             cls.session.user_id = login
+            cls.session.password = pwd
         return cls.session
 
 
@@ -83,10 +90,23 @@ class BasePolarion(object):
     _id_field = None
     _obj_client = None
     _obj_struct = None
-    session = Connection.session()
-    default_project = session.default_project
-    user_id = session.user_id
+    _session = None
     has_query = False
+
+    @classproperty
+    def session(cls):
+        # Uses a class property for the session, so that the library doesn't
+        # connect to the server until the library is actually used.
+        if cls._session:
+            return cls._session
+        else:
+            cls._session = Connection.session()
+            cls.default_project = cls._session.default_project
+            cls.user_id = cls._session.user_id
+            # stores password in the session so it can be used for direct svn
+            # operations
+            cls.password = cls._session.password
+            return cls._session
 
     @classmethod
     def _convert_obj_fields_to_polarion(cls, fields=[]):
