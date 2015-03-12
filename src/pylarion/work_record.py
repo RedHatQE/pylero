@@ -23,7 +23,8 @@ class WorkRecord(BasePolarion):
                      "time_spent": "timeSpent",
                      "type":
                      {"field_name": "type",
-                      "cls": EnumOptionId},
+                      "cls": EnumOptionId,
+                      "enum_id": "work-record-type"},
                      "user":
                      {"field_name": "user",
                       "cls": User},

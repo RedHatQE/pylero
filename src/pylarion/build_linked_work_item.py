@@ -17,7 +17,8 @@ class BuildLinkedWorkItem(BasePolarion):
     _cls_suds_map = {"revision": "revision",
                      "role":
                      {"field_name": "role",
-                      "cls": EnumOptionId},
+                      "cls": EnumOptionId,
+                      "enum_id": "workitem-link-role"},
                      "work_item":
                      {"field_name": "workItem",
                       "cls": _WorkItem},

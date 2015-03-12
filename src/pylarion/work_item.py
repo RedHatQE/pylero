@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 import suds
 import os
 import re
+import copy
 from pylarion.exceptions import PylarionLibException
 from pylarion.base_polarion import BasePolarion
 from pylarion.approval import Approval
@@ -192,24 +193,29 @@ class _WorkItem(BasePolarion):
                       "inner_field_name": "PlanningConstraint"},
                      "previous_status":
                      {"field_name": "previousStatus",
-                      "cls": EnumOptionId},
+                      "cls": EnumOptionId,
+                      "enum_id": "status"},
                      "priority":
                      {"field_name": "priority",
-                      "cls": PriorityOptionId},
+                      "cls": PriorityOptionId,
+                      "enum_id": "priority"},
                      "project_id":
                      {"field_name": "project",
                       "cls": Project},
                      "remaining_estimate": "remainingEstimate",
                      "resolution":
                      {"field_name": "resolution",
-                      "cls": EnumOptionId},
+                      "cls": EnumOptionId,
+                      "enum_id": "resolution"},
                      "resolved_on": "resolvedOn",
                      "severity":
                      {"field_name": "severity",
-                      "cls": EnumOptionId},
+                      "cls": EnumOptionId,
+                      "enum_id": "severity"},
                      "status":
                      {"field_name": "status",
-                      "cls": EnumOptionId},
+                      "cls": EnumOptionId,
+                      "enum_id": "status"},
                      "time_point":
                      {"field_name": "timePoint",
                       "cls": TimePoint},
@@ -217,7 +223,8 @@ class _WorkItem(BasePolarion):
                      "title": "title",
                      "type":
                      {"field_name": "type",
-                      "cls": EnumOptionId},
+                      "cls": EnumOptionId,
+                      "enum_id": "workitem-type"},
                      "updated": "updated",
                      "work_item_id": "id",
                      "work_records":
@@ -254,7 +261,7 @@ class _WorkItem(BasePolarion):
         Implements:
             Tracker.createWorkItem
         """
-        wi = _WorkItem()
+        wi = cls()
         wi.project_id = project_id
         wi.type = wi_type
         wi.title = title
@@ -405,10 +412,11 @@ class _WorkItem(BasePolarion):
         # This module imports plan and plan imports this module.
         # The module references itself as a class attribute, which is not
         # allowed, so the self reference is defined here.
-        import pylarion.plan as plan
+        from pylarion.plan import Plan
+        from pylarion.plan import ArrayOfPlan
         self._cls_suds_map["planned_in"]["is_array"] = True
-        self._cls_suds_map["planned_in"]["cls"] = plan.Plan
-        self._cls_suds_map["planned_in"]["arr_cls"] = plan.ArrayOfPlan
+        self._cls_suds_map["planned_in"]["cls"] = Plan
+        self._cls_suds_map["planned_in"]["arr_cls"] = ArrayOfPlan
         self._cls_suds_map["planned_in"]["inner_field_name"] = "Plan"
 
     def add_approvee(self, approvee_id):
@@ -1116,6 +1124,38 @@ class _SpecificWorkItem(_WorkItem):
     _wi_type = ""
 
     @classmethod
+    def create(cls, project_id, title, desc, status="draft", **kwargs):
+        """Creates the specific type of work item, requiring the base fields to
+        be passed in and all required custom fields as key word args. If not
+        all required fields are passed in or key word fields that are not
+        custom, it raises an exception.
+        Args:
+            project_id - The project to create the WorkItem in
+            work_item_id - The unique id for the WorkItem
+            title - the title of the WorkItem
+            desc - the Description of the WorkItem
+            status - the initial status of the WorkItem, draft by default
+            kwargs - keyword arguments for custom fields. All required custom
+                     fields must appear as keyword arguments.
+        """
+        all_fields, reqs = cls.custom_fields(project_id)
+        fields = ""
+        for req in reqs:
+            if req not in kwargs:
+                fields += (", " if fields else "") + req
+        if fields:
+            raise PylarionLibException("These parameters are required: {0}".
+                                       format(fields))
+        for field in kwargs:
+            if field not in all_fields and field not in cls._cls_suds_map:
+                fields += (", " if fields else "") + field
+        if fields:
+            raise PylarionLibException("These parameters are unknown: {0}".
+                                       format(fields))
+        return super(_SpecificWorkItem, cls).create(
+            project_id, cls._wi_type, title, desc, status, **kwargs)
+
+    @classmethod
     def custom_fields(cls, project_id):
         """List of custom fields for the project and specific wi_type
         Args:
@@ -1140,30 +1180,6 @@ class _SpecificWorkItem(_WorkItem):
                     required_fields.append(local_name)
         return (all_fields, required_fields)
 
-    @classmethod
-    def create(cls, project_id, title, desc, status, **kwargs):
-        """Creates the specific type of work item, requiring the base fields to
-        be passed in and all required custom fields as key word args. If not
-        all required fields are passed in or key word fields that are not
-        custom, it raises an exception.
-        """
-        all_fields, reqs = cls._custom_fields(project_id)
-        fields = ""
-        for req in reqs:
-            if req not in kwargs:
-                fields += (", " if fields else "") + req
-        if fields:
-            raise PylarionLibException("These parameters are required: {0}".
-                                       format(fields))
-        for field in kwargs:
-            if field not in all_fields and field not in cls._cls_suds_map:
-                fields += (", " if fields else "") + field
-        if fields:
-            raise PylarionLibException("These parameters are unknown: {0}".
-                                       format(fields))
-        _WorkItem.create(project_id, cls._wi_type, title, desc,
-                         status, **kwargs)
-
     def __init__(self, project_id=None, work_item_id=None, suds_object=None,
                  uri=None, fields=None, revision=None):
         """In this constructor, it adds the custom fields per WorkItem type to
@@ -1171,10 +1187,11 @@ class _SpecificWorkItem(_WorkItem):
         In the property builder of the base class, it defines special behavior
         for custom fields so they are treated like regular attributes
         """
-        self.project_id = project_id if project_id else self.default_project
+        if not project_id:
+            project_id = self.default_project
         self._required_fields = []
         self._changed_fields = {}
-        cfts = self.get_defined_custom_field_types(self.project_id,
+        cfts = self.get_defined_custom_field_types(project_id,
                                                    self._wi_type)
         for cft in cfts:
             # try to convert custom field names to use the coding conventions
@@ -1191,12 +1208,13 @@ class _SpecificWorkItem(_WorkItem):
             if parse_type[0].startswith("ns"):
                 self._cls_suds_map[local_name]["cls"] = \
                     globals()[parse_type[1]]
-            self._cls_suds_map[local_name]["is_enum"] = hasattr(cft,
-                                                                "enum_id")
+            self._cls_suds_map[local_name]["enum_id"] = getattr(cft,
+                                                                "enum_id",
+                                                                None)
             self._cls_suds_map[local_name]["is_custom"] = True
             if cft.required:
                 self._required_fields.append(local_name)
-        super(_SpecificWorkItem, self).__init__(self.project_id, work_item_id,
+        super(_SpecificWorkItem, self).__init__(project_id, work_item_id,
                                                 suds_object, uri, fields,
                                                 revision)
         if self.type and self.type != self._wi_type:
@@ -1217,32 +1235,59 @@ class _SpecificWorkItem(_WorkItem):
         self._changed_fields = {}
 
 
+# each workitem class has a few special attributes in the _cls_suds_map
+# so it requires a deep copy so it doesn't interfere with the class
+# attribute.
 class FunctionalTestCase(_SpecificWorkItem):
     _wi_type = "functionaltestcase"
+    _cls_suds_map = copy.deepcopy(_SpecificWorkItem._cls_suds_map)
+    _cls_suds_map["previous_status"]["enum_id"] = "functionaltestcase-status"
+    _cls_suds_map["status"]["enum_id"] = "functionaltestcase-status"
 
 
 class NonFunctionalTestCase(_SpecificWorkItem):
     _wi_type = "nonfunctionaltestcase"
+    _cls_suds_map = copy.deepcopy(_SpecificWorkItem._cls_suds_map)
+    _cls_suds_map["previous_status"]["enum_id"] = \
+        "nonfunctionaltestcase-status"
+    _cls_suds_map["status"]["enum_id"] = "nonfunctionaltestcase-status"
 
 
 class StructuralTestCase(_SpecificWorkItem):
     _wi_type = "structuraltestcase"
+    _cls_suds_map = copy.deepcopy(_SpecificWorkItem._cls_suds_map)
+    _cls_suds_map["previous_status"]["enum_id"] = "structuraltestcase-status"
+    _cls_suds_map["status"]["enum_id"] = "structuraltestcase-status"
 
 
 class TestSuite(_SpecificWorkItem):
     _wi_type = "testsuite"
+    _cls_suds_map = copy.deepcopy(_SpecificWorkItem._cls_suds_map)
+    _cls_suds_map["previous_status"]["enum_id"] = "testsuite-status"
+    _cls_suds_map["status"]["enum_id"] = "testsuite-status"
 
 
 class UnitTestCase(_SpecificWorkItem):
     _wi_type = "unittestcase"
+    _cls_suds_map = copy.deepcopy(_SpecificWorkItem._cls_suds_map)
+    _cls_suds_map["previous_status"]["enum_id"] = "unittestcase-status"
+    _cls_suds_map["status"]["enum_id"] = "unittestcase-status"
 
 
 class BusinessCase(_SpecificWorkItem):
     _wi_type = "businesscase"
+    _cls_suds_map = copy.deepcopy(_SpecificWorkItem._cls_suds_map)
+    _cls_suds_map["previous_status"]["enum_id"] = "businesscase-status"
+    _cls_suds_map["status"]["enum_id"] = "businesscase-status"
 
 
 class Requirement(_SpecificWorkItem):
     _wi_type = "requirement"
+    _cls_suds_map = copy.deepcopy(_SpecificWorkItem._cls_suds_map)
+    _cls_suds_map["previous_status"]["enum_id"] = "requirement-status"
+    _cls_suds_map["status"]["enum_id"] = "requirement-status"
+    _cls_suds_map["resolution"]["enum_id"] = "requirement-resolution"
+    _cls_suds_map["severity"]["enum_id"] = "requirement-severity"
 
 
 class ChangeRequest(_SpecificWorkItem):
@@ -1251,15 +1296,30 @@ class ChangeRequest(_SpecificWorkItem):
 
 class Incident(_SpecificWorkItem):
     _wi_type = "incident"
+    _cls_suds_map = copy.deepcopy(_SpecificWorkItem._cls_suds_map)
+    _cls_suds_map["previous_status"]["enum_id"] = "incident-status"
+    _cls_suds_map["status"]["enum_id"] = "incident-status"
+    _cls_suds_map["resolution"]["enum_id"] = "incident-resolution"
+    _cls_suds_map["severity"]["enum_id"] = "incident-severity"
+    _cls_suds_map["priority"]["enum_id"] = "incident-priority"
 
 
 class Defect(_SpecificWorkItem):
     _wi_type = "defect"
+    _cls_suds_map = copy.deepcopy(_SpecificWorkItem._cls_suds_map)
+    _cls_suds_map["severity"]["enum_id"] = "defect-severity"
+    _cls_suds_map["priority"]["enum_id"] = "defect-priority"
 
 
 class Task(_SpecificWorkItem):
     _wi_type = "task"
+    _cls_suds_map = copy.deepcopy(_SpecificWorkItem._cls_suds_map)
+    _cls_suds_map["severity"]["enum_id"] = "task-severity"
 
 
 class Risk(_SpecificWorkItem):
     _wi_type = "risk"
+    _cls_suds_map = copy.deepcopy(_SpecificWorkItem._cls_suds_map)
+    _cls_suds_map["previous_status"]["enum_id"] = "risk-status"
+    _cls_suds_map["status"]["enum_id"] = "risk-status"
+    _cls_suds_map["resolution"]["enum_id"] = "risk-resolution"

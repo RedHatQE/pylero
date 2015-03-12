@@ -22,6 +22,7 @@ class Category(BasePolarion):
                      "_unresolved": "_unresolved"}
     _obj_client = "builder_client"
     _obj_struct = "tns5:Category"
+    _id_field = "category_id"
 
 
 class ArrayOfCategory(BasePolarion):

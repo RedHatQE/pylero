@@ -21,12 +21,12 @@ from pylarion.work_item import _WorkItem
 class Document(BasePolarion):
     '''An object to manage the TestManagement WS tns4:Module '''
     _cls_suds_map = {"allowed_wi_types":
-                     {"field_name": "AllowedWITypes",
+                     {"field_name": "allowedWITypes",
                       "is_array": True,
                       "cls": EnumOptionId,
                       "arr_cls": ArrayOfEnumOptionId,
-                      "inner_field_name":
-                      "EnumOptionId"},
+                      "inner_field_name": "EnumOptionId",
+                      "enum_id": "workitem-type"},
                      "are_links_from_parent_to_child":
                      "areLinksFromParentToChild",
                      "author":
@@ -69,14 +69,16 @@ class Document(BasePolarion):
                       "inner_field_name": "SignatureContext"},
                      "status":
                      {"field_name": "status",
-                      "cls": EnumOptionId},
+                      "cls": EnumOptionId,
+                      "enum_id": "documents/document-status"},
                      "structure_link_role":
                      {"field_name": "structureLinkRole",
                       "cls": EnumOptionId},
                      "title": "title",
                      "type":
                      {"field_name": "type",
-                      "cls": EnumOptionId},
+                      "cls": EnumOptionId,
+                      "enum_id": "documents/document-type"},
                      "updated": "updated",
                      "updated_by":
                      {"field_name": "updatedBy",
@@ -259,8 +261,8 @@ class Document(BasePolarion):
                 "the w_item parameter must be a _WorkItem")
         parent = _WorkItem(work_item_id=parent_id,
                            project_id=self.project_id)
-        wi_uri = self.session.tracker_client.service(self.uri, parent.uri,
-                                                     suds_wi)
+        wi_uri = self.session.tracker_client.service.createWorkItemInModule(
+            self.uri, parent.uri, suds_wi)
         return _WorkItem(uri=wi_uri)
 
     def delete(self):

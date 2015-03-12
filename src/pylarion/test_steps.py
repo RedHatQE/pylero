@@ -20,7 +20,8 @@ class TestSteps(BasePolarion):
                       "is_array": True,
                       "cls": EnumOptionId,
                       "arr_cls": ArrayOfEnumOptionId,
-                      "inner_field_name": "EnumOptionId"},
+                      "inner_field_name": "EnumOptionId",
+                      "enum_id": "testing/test-step-keys"},
                      "steps":
                      {"field_name": "steps",
                       "is_array": True,

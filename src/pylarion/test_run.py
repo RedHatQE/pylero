@@ -89,10 +89,12 @@ class TestRun(BasePolarion):
                       "inner_field_name": "TestRecord"},
                      "select_test_cases_by":
                      {"field_name": "selectTestCasesBy",
-                      "cls": EnumOptionId},
+                      "cls": EnumOptionId,
+                      "enum_id": "testrun-selectTestCasesBy"},
                      "status":
                      {"field_name": "status",
-                      "cls": EnumOptionId},
+                      "cls": EnumOptionId,
+                      "enum_id": "testing/testrun-status"},
                      "summary_defect":
                      {"field_name": "summaryDefectURI",
                       "cls": _WorkItem,
@@ -104,7 +106,8 @@ class TestRun(BasePolarion):
                       "sync_field": "uri"},
                      "type":
                      {"field_name": "type",
-                      "cls": EnumOptionId},
+                      "cls": EnumOptionId,
+                      "enum_id": "testing/testrun-type"},
                      "updated": "updated",
                      "custom_fields":
                      {"field_name": "customFields",
@@ -267,7 +270,7 @@ class TestRun(BasePolarion):
             self._suds_object = self.session.test_management_client.service. \
                 getTestRunByUri(uri)
         if test_run_id or uri:
-            if not getattr(self._suds_object, "_unresolvable", None):
+            if getattr(self._suds_object, "_unresolvable", True):
                 raise PylarionLibException(
                     "The Test Run {0} was not found.".format(test_run_id))
 

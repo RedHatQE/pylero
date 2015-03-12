@@ -27,7 +27,8 @@ class TestStepResult(BasePolarion):
                       "cls": Text},
                      "result":
                      {"field_name": "result",
-                      "cls": EnumOptionId},
+                      "cls": EnumOptionId,
+                      "enum_id": "testing/test-result"},
                      "uri": "_uri",
                      "_unresolved": "_unresolved"}
     _obj_client = "test_management_client"

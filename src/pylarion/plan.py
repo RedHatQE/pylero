@@ -53,7 +53,8 @@ class Plan(BasePolarion):
                       "is_array": True,
                       "cls": EnumOptionId,
                       "arr_cls": ArrayOfEnumOptionId,
-                      "inner_field_name": "EnumOptionId"},
+                      "inner_field_name": "EnumOptionId",
+                      "enum_id": "workitem-type"},
                      "author_uri":
                      {"field_name": "authorURI",
                       "cls": SubterraURI},

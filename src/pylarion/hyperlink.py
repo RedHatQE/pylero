@@ -14,8 +14,8 @@ class Hyperlink(BasePolarion):
 """
     _cls_suds_map = {"role":
                      {"field_name": "role",
-                      "cls": EnumOptionId},
-                     "uri": "uri",
+                      "cls": EnumOptionId,
+                      "enum_id": "hyperlink-role"},
                      "uri": "_uri",
                      "_unresolved": "_unresolved"}
     _obj_client = "builder_client"
