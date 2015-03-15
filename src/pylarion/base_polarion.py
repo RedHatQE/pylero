@@ -97,16 +97,19 @@ class BasePolarion(object):
     def session(cls):
         # Uses a class property for the session, so that the library doesn't
         # connect to the server until the library is actually used.
-        if cls._session:
-            return cls._session
+        if BasePolarion._session:
+            return BasePolarion._session
         else:
-            cls._session = Connection.session()
-            cls.default_project = cls._session.default_project
-            cls.user_id = cls._session.user_id
+            # For some reason, using the cls attribute makes it into a class
+            # attribute for the specific class but not for all the other
+            # Pylarion objects.
+            BasePolarion._session = Connection.session()
+            BasePolarion.default_project = cls._session.default_project
+            BasePolarion.user_id = cls._session.user_id
             # stores password in the session so it can be used for direct svn
             # operations
-            cls.password = cls._session.password
-            return cls._session
+            BasePolarion.password = cls._session.password
+            return BasePolarion._session
 
     @classmethod
     def _convert_obj_fields_to_polarion(cls, fields=[]):
@@ -357,7 +360,7 @@ class BasePolarion(object):
             obj = obj_cls(**args)
         else:
             obj = obj_cls()
-        if obj:
+        if obj._id_field:
             return getattr(obj, obj._id_field)
         else:
             return obj
