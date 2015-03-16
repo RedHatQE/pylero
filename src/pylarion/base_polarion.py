@@ -12,6 +12,10 @@ from ConfigParser import SafeConfigParser
 
 # classproperty is a property that works on the class level
 class classproperty(property):
+    """Returns a classmethod as the getter so that the property can be used as
+    a class property. This is needed so that the property can be set for all
+    child objects. This project currently has no need of a setter or deleter.
+    """
     def __get__(self, instance, cls):
         return classmethod(self.fget).__get__(instance, cls)()
 
@@ -19,8 +23,8 @@ class classproperty(property):
 class Connection(object):
     """Creates a Polarion session as a class method, so that it is used for all
     objects inherited by BasePolarion.
-    The url, user and password are read from config files, which are located
-    either the user's file at ~/.pylarion or the machine file at
+    The url, repo, user and password are read from config files, which are
+    located either the user's file at ~/.pylarion or the machine file at
     /etc/pylarion/pylarion.cfg
     """
     connected = False
@@ -42,6 +46,7 @@ class Connection(object):
                                            .format(cls.GLOBAL_CONFIG,
                                                    cls.LOCAL_CONFIG))
             server_url = config.get(cls.CONFIG_SECTION, "url")
+            repo = config.get(cls.CONFIG_SECTION, "svn_repo")
             login = config.get(cls.CONFIG_SECTION, "user")
             pwd = config.get(cls.CONFIG_SECTION, "password")
             proj = config.get(cls.CONFIG_SECTION, "default_project")
@@ -56,6 +61,7 @@ class Connection(object):
             cls.session.default_project = proj
             cls.session.user_id = login
             cls.session.password = pwd
+            cls.session.repo = repo
         return cls.session
 
 
@@ -109,6 +115,7 @@ class BasePolarion(object):
             # stores password in the session so it can be used for direct svn
             # operations
             BasePolarion.password = cls._session.password
+            BasePolarion.repo = cls._session.repo
             return BasePolarion._session
 
     @classmethod
@@ -239,6 +246,10 @@ class BasePolarion(object):
                 #        suds_field_name
                 #        Pylarion class related to property
                 #        enum_id - the name of the enum to get from the server
+                #        additional_parms - Some TestRun custom fields must
+                #            instantiate an object and this parameter is
+                #            populated if the constructor needs an additional
+                #            parameter.
                 # array object fields:
                 #    getter has parameters:
                 #        suds_field_name
@@ -277,9 +288,12 @@ class BasePolarion(object):
                                 suds_field_name=self._cls_suds_map[key]
                                     ["field_name"],
                                 obj_cls=self._cls_suds_map[key].get("cls"),
-                                enum_id=self._cls_suds_map[key].get("enum_id"):
+                                enum_id=self._cls_suds_map[key].get("enum_id"),
+                                additional_parms=self._cls_suds_map[key].get(
+                                    "additional_parms", {}):
                                     self._custom_setter(val, suds_field_name,
-                                                        obj_cls, enum_id)))
+                                                        obj_cls, enum_id,
+                                                        additional_parms)))
                     elif "is_array" in self._cls_suds_map[key]:
                         setattr(self.__class__, key, property(
                             lambda self,
@@ -476,7 +490,11 @@ class BasePolarion(object):
                 obj = self._changed_fields[suds_field_name]
         elif self.uri:
             cf = self.get_custom_field(suds_field_name)
-            if obj_cls:
+            if not cf:
+                return None
+            if isinstance(cf, basestring):
+                obj = cf
+            elif obj_cls:
                 obj = obj_cls(suds_object=cf._suds_object.value)
             else:
                 obj = cf.value
@@ -487,7 +505,8 @@ class BasePolarion(object):
         else:
             return obj
 
-    def _custom_setter(self, val, suds_field_name, obj_cls, enum_id):
+    def _custom_setter(self, val, suds_field_name, obj_cls, enum_id,
+                       additional_parms):
         """Works with custom fields that has to keep track of values and what
         changed so that on update it can also update all the custom fields at
         the same time.
@@ -496,10 +515,14 @@ class BasePolarion(object):
             suds_field_name - the field name of the Polarion object to set
             obj_cls - the Pylarion object that the field references
             enum_id - contains the name of the enum to get from the server
+            additional_parms - Some TestRun custom fields must instantiate an
+                object and this parameter is populated if the constructor needs
+                an additional parameter.
         """
         if isinstance(val, basestring):
             if enum_id:
-                self.check_valid_field_values(val, enum_id)
+                self.check_valid_field_values(val, enum_id,
+                                              additional_parms or {})
             self._changed_fields[suds_field_name] = obj_cls(val)._suds_object \
                 if obj_cls else val
         elif isinstance(val, obj_cls):
@@ -647,11 +670,21 @@ class BasePolarion(object):
         self._verify_obj()
         return self.session.security_client.service.getLocationForURI(self.uri)
 
-    def check_valid_field_values(self, val, enum_id):
-        valid_values = self.get_valid_field_values(enum_id)
-        if val not in valid_values:
-            raise PylarionLibException("Acceptable values for {0} are:"
-                                       "{1}".format(enum_id, valid_values))
+    def check_valid_field_values(self, val, enum_id, additional_parms):
+        if isinstance(enum_id, type):
+            try:
+                # try to instantiate the object with the value and additional
+                # parms. If that works, it is a valid value
+                enum_id(val, **additional_parms)
+            except Exception:
+                raise PylarionLibException(
+                    "{0} is not a valid value for {1}"
+                    .format(val, enum_id.__name__))
+        else:
+            valid_values = self.get_valid_field_values(enum_id)
+            if val not in valid_values:
+                raise PylarionLibException("Acceptable values for {0} are:"
+                                           "{1}".format(enum_id, valid_values))
 
     def get_valid_field_values(self, enum_id):
         """Gets the available enumeration options.

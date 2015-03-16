@@ -4,6 +4,8 @@ from __future__ import absolute_import, division, print_function, \
 import os
 import suds
 import datetime
+import pysvn
+from xml.dom import minidom
 from pylarion.exceptions import PylarionLibException
 from pylarion.base_polarion import BasePolarion
 from pylarion.test_run_attachment import TestRunAttachment
@@ -18,6 +20,7 @@ from pylarion.work_item import _WorkItem
 from pylarion.user import User
 from pylarion.project import Project
 from pylarion.text import Text
+from pylarion.plan import Plan
 
 
 class TestRun(BasePolarion):
@@ -120,6 +123,9 @@ class TestRun(BasePolarion):
     _id_field = "test_run_id"
     _obj_client = "test_management_client"
     _obj_struct = "tns3:TestRun"
+    CUSTOM_FIELDS_FILE = \
+        ".polarion/testing/configuration/testrun-custom-fields.xml"
+    _custom_field_cache = {}
 
     @classmethod
     def create(cls, project_id, test_run_id, template):
@@ -259,6 +265,7 @@ class TestRun(BasePolarion):
             test_management.getTestRunById
             test_management.getTestRunByUri
         """
+        self._add_custom_fields(project_id)
         super(self.__class__, self).__init__(test_run_id, suds_object)
         if test_run_id:
             if not project_id:
@@ -278,6 +285,105 @@ class TestRun(BasePolarion):
         # a class can't reference itself as a class attribute so it is
         # defined after instatiation
         self._cls_suds_map["template"]["cls"] = self.__class__
+
+    def _custom_field_types(self, field_type):
+        """There are 4 types of custom fields in test runs:
+        * built-in types (string, boolean, ...)
+        * Pylarion Text object (text)
+        * Enum of existing type (@ prefix, i.e. enum:@user = Pylarion User)
+        * Enum, based on lookup table(i.e. enum:arch)
+        The basic enums can get their valid values using the BasePolarion
+        get_valid_field_values function.
+        The existing type Enums, must validate by instantiating the object.
+
+        Args;
+            field_type - the field type passed in from the custom xml file
+        Returns:
+            None for base types, Text class for text types, the object to
+            validate the enum for Enum objects or the key to validate the enum
+            for basic enums
+        """
+        if field_type == "text":
+            return Text
+        split_type = field_type.split(":")
+        if len(split_type) == 1:
+            # a base type
+            return None
+        else:
+            # an enum
+            if split_type[1].startswith("@"):
+                # an enum based on an object
+                return [globals()[x] for x in globals()
+                        if x.lower() == split_type[1][1:].lower()][0]
+            else:
+                # a regular enum
+                return split_type[1]
+
+    def _cache_custom_fields(self, project_id):
+        """Polarion API does not provide the custom fields of a TestRun.
+        As a workaround, this function connects to the SVN repo and reads the
+        custom_fields xml file and then processes it. Because the SVN function
+        takes longer then desired, this caches the custom fields, per project
+
+        Args:
+            project_id
+        Returns
+            None
+        """
+        client = pysvn.Client()
+        client.set_default_username(self.user_id)
+        client.set_default_password(self.password)
+        client.set_store_passwords(False)
+        proj = Project(project_id)
+        proj_grp = proj.project_group.name
+        file_content = client.cat("{0}/{1}/{2}/{3}".format(
+            self.repo, proj_grp, proj.name, self.CUSTOM_FIELDS_FILE))
+        xmldoc = minidom.parseString(file_content)
+        fields = xmldoc.getElementsByTagName("field")
+        self._custom_field_cache[project_id] = {}
+        for field in fields:
+            f_type = self._custom_field_types(field.getAttribute("type"))
+            f_name = field.getAttribute("id")
+            self._custom_field_cache[project_id][f_name] = f_type
+
+    def _add_custom_fields(self, project_id):
+        """ This generates object attributes, with validation, so that custom
+        fields can be related to as regular attributes. It takes the custom
+        fields from the cache and calls the cache function if the values are
+        not already there.
+        Args:
+            project_id - Each project can have its own custom fields. This
+                function takes the custom fields for the specific project and
+                adds them to the _cls_suds_map so they will be built into
+                object attributes.
+        Returns:
+            None
+        """
+        self._required_fields = []
+        self._changed_fields = {}
+        # force the session to initialize. This is needed here because the
+        # system has not yet been initialized.
+        self.session
+        if not project_id:
+            project_id = self.default_project
+        if project_id not in self._custom_field_cache:
+            self._cache_custom_fields(project_id)
+        cache = self._custom_field_cache[project_id]
+        for field in cache:
+            self._cls_suds_map[field] = {}
+            self._cls_suds_map[field]["field_name"] = field
+            self._cls_suds_map[field]["is_custom"] = True
+            if cache[field] == Text:
+                self._cls_suds_map[field]["cls"] = Text
+            elif cache[field]:
+                self._cls_suds_map[field]["cls"] = EnumOptionId
+                self._cls_suds_map[field]["enum_id"] = cache[field]
+                if isinstance(cache[field], type) and \
+                    "project_id" in \
+                        cache[field].__init__.func_code.co_varnames[
+                        :cache[field].__init__.func_code.co_argcount]:
+                    self._cls_suds_map[field]["additional_parms"] = \
+                        {"project_id": project_id}
 
     def _get_index_of_test_record(self, test_case_id):
         # specific functions request the index of the test record within the
@@ -579,7 +685,7 @@ class TestRun(BasePolarion):
             getWikiContentForTestRun(self.uri)
         return Text(suds_object=suds_wiki)
 
-    def set_custom_field(self, field_name, value):
+    def _set_custom_field(self, field_name, value):
         """sets custom field values.
         Args:
             field_name - name of the custom field
@@ -617,6 +723,9 @@ class TestRun(BasePolarion):
             test_management.updateTestRun
         """
         self._verify_obj()
+        for field in self._changed_fields:
+            self._set_custom_field(field, self._changed_fields[field])
+        self._changed_fields = {}
         self.session.test_management_client.service.updateTestRun(
             self._suds_object)
 

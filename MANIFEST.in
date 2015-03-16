@@ -1,0 +1,2 @@
+include etc/pylarion/pylarion.cfg scripts/pylarion
+recursive-include src/pylarion

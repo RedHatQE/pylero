@@ -6,7 +6,6 @@ from pylarion.category import Category
 from pylarion.custom_field_type import CustomFieldType
 from pylarion.text import Text
 from pylarion.user import User
-from pylarion.subterra_uri import SubterraURI
 from pylarion.exceptions import PylarionLibException
 from pylarion.tests_configuration import TestsConfiguration
 
@@ -22,7 +21,7 @@ class Project(BasePolarion):
         location (str)
         lock_work_records_date (date)
         name (string)
-        project_group_uri (SubterraURI)
+        project_group (ProjectGroup)
         project_id (string)
         start (date)
         tracker_prefix (string)
@@ -38,9 +37,11 @@ class Project(BasePolarion):
                      "location": "location",
                      "lock_work_records_date": "lockWorkRecordsDate",
                      "name": "name",
-                     "project_group_uri":
+                     "project_group":
                      {"field_name": "projectGroupURI",
-                      "cls": SubterraURI},
+                      # cls is defined in _fix_circular_refs function
+                      "named_arg": "uri",
+                      "sync_field": "uri"},
                      "project_id": "id",
                      "start": "start",
                      "tracker_prefix": "trackerPrefix",
@@ -97,6 +98,12 @@ class Project(BasePolarion):
         if project_id or location or uri:
             if getattr(self._suds_object, "_unresolvable", True):
                 raise PylarionLibException("The Project was not found.")
+
+    def _fix_circular_refs(self):
+        # The module references ProjectGroup, which references this class
+        # This is not allowed, so the self reference is defined here.
+        from pylarion.project_group import ProjectGroup
+        self._cls_suds_map["project_group"]["cls"] = ProjectGroup
 
     def create_document(self, location, document_name, document_title,
                         allowed_wi_types, structure_link_role,

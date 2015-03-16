@@ -14,7 +14,8 @@ class ExternallyLinkedWorkItem(BasePolarion):
 """
     _cls_suds_map = {"role":
                      {"field_name": "role",
-                      "cls": EnumOptionId},
+                      "cls": EnumOptionId,
+                      "enum_id": "workitem-link-role"},
                      "work_item_uri": "workItemURI",
                      "uri": "_uri",
                      "_unresolved": "_unresolved"}

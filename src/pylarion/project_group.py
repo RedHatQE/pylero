@@ -64,10 +64,10 @@ class ProjectGroup(BasePolarion):
         """
         super(self.__class__, self).__init__(suds_object=suds_object)
         if uri:
-            self._suds_object = self.session.project_client. \
+            self._suds_object = self.session.project_client.service. \
                 getProjectGroup(uri)
         elif location:
-            self._suds_object = self.session.project_client. \
+            self._suds_object = self.session.project_client.service. \
                 getProjectGroupAtLocation(location)
 
     def get_contained_groups(self):
