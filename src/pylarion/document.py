@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
+import suds
 from pylarion.exceptions import PylarionLibException
 from pylarion.base_polarion import BasePolarion
 from pylarion.enum_option_id import EnumOptionId
@@ -20,85 +21,89 @@ from pylarion.work_item import _WorkItem
 
 class Document(BasePolarion):
     '''An object to manage the TestManagement WS tns4:Module '''
-    _cls_suds_map = {"allowed_wi_types":
-                     {"field_name": "allowedWITypes",
-                      "is_array": True,
-                      "cls": EnumOptionId,
-                      "arr_cls": ArrayOfEnumOptionId,
-                      "inner_field_name": "EnumOptionId",
-                      "enum_id": "workitem-type"},
-                     "are_links_from_parent_to_child":
-                     "areLinksFromParentToChild",
-                     "author":
-                     {"field_name": "author",
-                      "cls": User},
-                     "auto_suspect": "autoSuspect",
-                     "branched_from":
-                     {"field_name": "branchedFrom"},  # populated in circ refs
-                     "branched_with_query": "branchedWithQuery",
-                     "comments":
-                     {"field_name": "comments",
-                      "is_array": True,
-                      "cls": ModuleComment,
-                      "arr_cls": ArrayOfModuleComment,
-                      "inner_field_name": "ModuleComment"},
-                     "created": "created",
-                     "derived_fields": "derived_fields",  # arrayOfstring?
-                     "derived_from_uri":
-                     {"field_name": "derivedFromURI",
-                      "cls": SubterraURI},
-                     "derived_from_link_role":
-                     {"field_name": "derivedFromLinkRole",
-                      "cls": EnumOptionId},
-                     "home_page_content":
-                     {"field_name": "homePageContent",
-                      "cls": Text},
-                     "document_id": "id",
-                     "space": "location",
-                     "document_absolute_location": "moduleAbsoluteLocation",
-                     "document_folder": "moduleFolder",
-                     "document_name": "moduleName",
-                     "project_id":
-                     {"field_name": "project",
-                      "cls": Project},
-                     "signature_contexts":
-                     {"field_name": "signatureContexts",
-                      "is_array": True,
-                      "cls": SignatureContext,
-                      "arr_cls": ArrayOfSignatureContext,
-                      "inner_field_name": "SignatureContext"},
-                     "status":
-                     {"field_name": "status",
-                      "cls": EnumOptionId,
-                      "enum_id": "documents/document-status"},
-                     "structure_link_role":
-                     {"field_name": "structureLinkRole",
-                      "cls": EnumOptionId},
-                     "title": "title",
-                     "type":
-                     {"field_name": "type",
-                      "cls": EnumOptionId,
-                      "enum_id": "documents/document-type"},
-                     "updated": "updated",
-                     "updated_by":
-                     {"field_name": "updatedBy",
-                      "cls": User},
-                     "uses_outline_numbering": "usesOutlineNumbering",
-                     "custom_fields":
-                     {"field_name": "customFields",
-                      "is_array": True,
-                      "cls": Custom,
-                      "arr_cls": ArrayOfCustom,
-                      "inner_field_name": "Custom"},
-                     "uri": "_uri",
-                     "_unresolvable": "_unresolvable"}
+    _cls_suds_map = {
+        "allowed_wi_types":
+            {"field_name": "allowedWITypes",
+             "is_array": True,
+             "cls": EnumOptionId,
+             "arr_cls": ArrayOfEnumOptionId,
+             "inner_field_name": "EnumOptionId",
+             "enum_id": "workitem-type"},
+        "are_links_from_parent_to_child":
+        "areLinksFromParentToChild",
+        "author":
+            {"field_name": "author",
+             "cls": User},
+        "auto_suspect": "autoSuspect",
+        "branched_from":
+            {"field_name": "branchedFrom"},  # populated in circ refs
+        "branched_with_query": "branchedWithQuery",
+        "comments":
+            {"field_name": "comments",
+             "is_array": True,
+             "cls": ModuleComment,
+             "arr_cls": ArrayOfModuleComment,
+             "inner_field_name": "ModuleComment"},
+        "created": "created",
+        "derived_fields": "derived_fields",  # arrayOfstring?
+        "derived_from_uri":
+            {"field_name": "derivedFromURI",
+             "cls": SubterraURI},
+        "derived_from_link_role":
+            {"field_name": "derivedFromLinkRole",
+             "cls": EnumOptionId},
+        "home_page_content":
+            {"field_name": "homePageContent",
+             "cls": Text},
+        "document_id": "id",
+        "space": "location",
+        "document_absolute_location": "moduleAbsoluteLocation",
+        "document_folder": "moduleFolder",
+        "document_name": "moduleName",
+        "project_id":
+            {"field_name": "project",
+             "cls": Project},
+        "signature_contexts":
+            {"field_name": "signatureContexts",
+             "is_array": True,
+             "cls": SignatureContext,
+             "arr_cls": ArrayOfSignatureContext,
+             "inner_field_name": "SignatureContext"},
+        "status":
+            {"field_name": "status",
+             "cls": EnumOptionId,
+             "enum_id": "documents/document-status"},
+        "structure_link_role":
+            {"field_name": "structureLinkRole",
+             "cls": EnumOptionId},
+        "title": "title",
+        "type":
+            {"field_name": "type",
+             "cls": EnumOptionId,
+             "enum_id": "documents/document-type"},
+        "updated": "updated",
+        "updated_by":
+            {"field_name": "updatedBy",
+             "cls": User},
+        "uses_outline_numbering": "usesOutlineNumbering",
+        "custom_fields":
+            {"field_name": "customFields",
+             "is_array": True,
+             "cls": Custom,
+             "arr_cls": ArrayOfCustom,
+             "inner_field_name": "Custom"},
+        "uri": "_uri",
+        "_unresolvable": "_unresolvable"}
     _obj_client = "test_management_client"
     _obj_struct = "tns4:Module"
     has_query = True
 
     @classmethod
     def create(cls, project_id, space, document_name, document_title,
-               allowed_wi_types, structure_link_role, home_page_content):
+               allowed_wi_types,
+               structure_link_role="parent",
+               home_page_content="",
+               document_type="testspecification"):
                 # There is no document object.
         # don't know what to do with the URI it returns.
         """class method create Creates a document or an old-style
@@ -114,6 +119,7 @@ class Document(BasePolarion):
             structure_link_role - required, role which defines the hierarchy of
                                   work items inside the Module
             home_page_content - HTML markup for document home page
+            document_type - Type of document (i.e testspecification).
         Returns:
             None
         Implements:
@@ -124,10 +130,27 @@ class Document(BasePolarion):
         awit = [EnumOptionId(item)._suds_object
                 for item in allowed_wi_types]
         slr = EnumOptionId(structure_link_role)._suds_object
-        uri = cls.session.tracker_client.service.createDocument(
-            project_id, space, document_name, document_title, awit,
-            slr, home_page_content)
-        return Document(uri=uri)
+        try:
+            uri = cls.session.tracker_client.service.createDocument(
+                project_id, space, document_name, document_title, awit,
+                slr, home_page_content)
+        except suds.WebFault, e:
+            if "Invalid document on location Location" in e.fault.faultstring:
+                raise PylarionLibException(
+                    "Document {0}/{1} already exists".format(space,
+                                                             document_name))
+            else:
+                raise PylarionLibException(e.fault)
+        doc = Document(uri=uri)
+        doc.type = document_type
+        doc.update()
+        if not home_page_content:
+            # create heading work item for each document
+            wi_head = _WorkItem()
+            wi_head.type = "heading"
+            wi_head.title = document_title
+            doc.create_work_item(None, wi_head)
+        return doc
 
     @classmethod
     def get_documents(cls, project_id, space, fields=[]):
@@ -236,6 +259,10 @@ class Document(BasePolarion):
                 parms.append(self._convert_obj_fields_to_polarion(fields))
             self._suds_object = getattr(self.session.tracker_client.service,
                                         function_name)(*parms)
+            if getattr(self._suds_object, "_unresolvable", True):
+                raise PylarionLibException(
+                    "The Document {0} was not found.".format(doc_with_space or
+                                                             uri))
 
     def _fix_circular_refs(self):
         # a class can't reference itself as a class attribute.
@@ -253,17 +280,27 @@ class Document(BasePolarion):
         """
         self._verify_obj()
         if isinstance(w_item, _WorkItem):
+            w_item.verify_required()
             suds_wi = w_item._suds_object
-        elif isinstance(w_item, _WorkItem()._suds_object.__class__):
-            suds_wi = w_item
         else:
             raise PylarionLibException(
                 "the w_item parameter must be a _WorkItem")
-        parent = _WorkItem(work_item_id=parent_id,
-                           project_id=self.project_id)
+        if parent_id:
+            parent_uri = _WorkItem(work_item_id=parent_id,
+                                   project_id=self.project_id).uri
+        else:
+            doc_wis = self.get_work_items(None, False, None)
+            if doc_wis:
+                parent_uri = doc_wis[0].uri
+            else:
+                parent_uri = None
         wi_uri = self.session.tracker_client.service.createWorkItemInModule(
-            self.uri, parent.uri, suds_wi)
-        return _WorkItem(uri=wi_uri)
+            self.uri, parent_uri, suds_wi)
+        new_wi = w_item.__class__(uri=wi_uri)
+        new_wi._changed_fields = w_item._changed_fields
+        new_wi.update()
+        new_wi = _WorkItem(uri=wi_uri)
+        return new_wi
 
     def delete(self):
         """delete the current document
@@ -276,12 +313,13 @@ class Document(BasePolarion):
         self._verify_obj()
         self.session.tracker_client.service.deleteModule(self.uri)
 
-    def get_work_items(self, parent_work_item_id, deep, fields):
+    def get_work_items(self, parent_work_item_id, deep,
+                       fields=["work_item_id", "type"]):
         """Returns work items (with given fields set) contained in given
         Module/Document under given parent (if specified).
 
         Args:
-            parent_work_item_id (str) - Id of parent work item or null
+            parent_work_item_id (str) - Id of parent work item or None
             deep - true to return work items from the whole subtree
             fields - fields to fill. For nested structures in the lists you can
                      use following syntax to include only subset of fields:
@@ -293,15 +331,47 @@ class Document(BasePolarion):
             list of _WorkItem objects
         """
         self._verify_obj()
-        parent = _WorkItem(work_item_id=parent_work_item_id,
-                           project_id=self.project_id)
-        p_fields = self._convert_obj_fields_to_polarion(fields)
+        if parent_work_item_id:
+            parent_uri = _WorkItem(work_item_id=parent_work_item_id,
+                                   project_id=self.project_id).uri
+        else:
+            parent_uri = None
+        p_fields = _WorkItem._convert_obj_fields_to_polarion(fields)
         suds_wi = self.session.tracker_client.service. \
-            getModuleWorkItems(self.uri, parent.uri, deep, p_fields)
+            getModuleWorkItems(self.uri, parent_uri, deep, p_fields)
         work_items = []
         for w_item in suds_wi:
             work_items.append(_WorkItem(suds_object=w_item))
         return work_items
+
+    def move_work_item_here(self, work_item_id, parent_id, position=-1,
+                            retain_flow=True):
+        """Moves a work item to a specific position in a Document. If the work
+        item is not yet inside the Document it will be moved into the Document.
+
+        Args:
+            work_item_id - WorkItem id to move
+            parent_id - The parent WorkItem id, can be None
+            position - desired position in the list of children or a value < 0
+                       to insert at the end (if the old and new parent is the
+                       same then moved work item is not counted)
+            retain_flow - true to retain the position of moved work item in the
+                          document flow (even if it means to change the parent)
+                          false to keep desired parent (even if it means to
+                          move work item to different position)
+        Returns:
+            None
+        Implements:
+            Tracker.moveWorkItemToDocument
+        """
+        self._verify_obj()
+        wi = _WorkItem(self.project_id, work_item_id)
+        if parent_id:
+            parent_uri = _WorkItem(self.project_id, parent_id)
+        else:
+            parent_uri = None
+        self.session.tracker_client.service.moveWorkItemToDocument(
+            wi.uri, self.uri, parent_uri, position, retain_flow)
 
     def update(self):
         """updates the server with the current module data

@@ -15,10 +15,6 @@ class CustomField(BasePolarion):
 """
     _cls_suds_map = {"key": "key",
                      "parent_item_uri": "parentItemURI",
-                     "value":
-                     {"field_name": "value",
-                      "cls": EnumOptionId},
-                     "uri": "_uri",
-                     "_unresolved": "_unresolved"}
+                     "value": "value"}
     _obj_client = "tracker_client"
     _obj_struct = "tns3:CustomField"

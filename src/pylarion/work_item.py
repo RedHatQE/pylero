@@ -5,6 +5,7 @@ import suds
 import os
 import re
 import copy
+import datetime
 from pylarion.exceptions import PylarionLibException
 from pylarion.base_polarion import BasePolarion
 from pylarion.approval import Approval
@@ -93,151 +94,153 @@ class _WorkItem(BasePolarion):
         work_item_id (string)
         work_records (ArrayOfWorkRecord)
 """
-    _cls_suds_map = {"approvals":
-                     {"field_name": "approvals",
-                      "is_array": True,
-                      "cls": Approval,
-                      "arr_cls": ArrayOfApproval,
-                      "inner_field_name": "Approval"},
-                     "assignee":
-                     {"field_name": "assignee",
-                      "is_array": True,
-                      "cls": User,
-                      "arr_cls": ArrayOfUser,
-                      "inner_field_name": "User"},
-                     "attachments":
-                     {"field_name": "attachments",
-                      "is_array": True,
-                      "cls": Attachment,
-                      "arr_cls": ArrayOfAttachment,
-                      "inner_field_name": "Attachment"},
-                     "author":
-                     {"field_name": "author",
-                      "cls": User},
-                     "auto_suspect": "autoSuspect",
-                     "categories":
-                     {"field_name": "categories",
-                      "is_array": True,
-                      "cls": Category,
-                      "arr_cls": ArrayOfCategory,
-                      "inner_field_name": "Category"},
-                     "comments":
-                     {"field_name": "comments",
-                      "is_array": True,
-                      "cls": Comment,
-                      "arr_cls": ArrayOfComment,
-                      "inner_field_name": "Comment"},
-                     "created": "created",
-                     "custom_fields":
-                     {"field_name": "customFields",
-                      "is_array": True,
-                      "cls": Custom,
-                      "arr_cls": ArrayOfCustom,
-                      "inner_field_name": "Custom"},
-                     "description":
-                     {"field_name": "description",
-                      "cls": Text},
-                     "due_date": "dueDate",
-                     "externally_linked_work_items":
-                     {"field_name": "externallyLinkedWorkItems",
-                      "is_array": True,
-                      "cls": ExternallyLinkedWorkItem,
-                      "arr_cls": ArrayOfExternallyLinkedWorkItem,
-                      "inner_field_name": "ExternallyLinkedWorkItem"},
-                     "hyperlinks":
-                     {"field_name": "hyperlinks",
-                      "is_array": True,
-                      "cls": Hyperlink,
-                      "arr_cls": ArrayOfHyperlink,
-                      "inner_field_name": "Hyperlink"},
-                     "initial_estimate": "initialEstimate",
-                     "linked_revisions":
-                     {"field_name": "linkedRevisions",
-                      "is_array": True,
-                      "cls": Revision,
-                      "arr_cls": ArrayOfRevision,
-                      "inner_field_name": "Revision"},
-                     "linked_revisions_derived":
-                     {"field_name": "linkedRevisionsDerived",
-                      "is_array": True,
-                      "cls": Revision,
-                      "arr_cls": ArrayOfRevision,
-                      "inner_field_name": "Revision"},
-                     "linked_work_items":
-                     {"field_name": "linkedWorkItems",
-                      "is_array": True,
-                      "cls": LinkedWorkItem,
-                      "arr_cls": ArrayOfLinkedWorkItem,
-                      "inner_field_name": "LinkedWorkItem"},
-                     "linked_work_items_derived":
-                     {"field_name": "linkedWorkItemsDerived",
-                      "is_array": True,
-                      "cls": LinkedWorkItem,
-                      "arr_cls": ArrayOfLinkedWorkItem,
-                      "inner_field_name": "LinkedWorkItem"},
-                     "location": "location",
-                     "module_uri":
-                     {"field_name": "moduleURI",
-                      "cls": SubterraURI},
-                     "outline_number": "outlineNumber",
-                     "planned_end": "plannedEnd",
-                     # planned_in completed in the _fix_circular_imports func
-                     "planned_in":
-                     {"field_name": "plannedIn"},  # populated in circular refs
-                     "planned_start": "plannedStart",
-                     "planning_constraints":
-                     {"field_name": "planningConstraints",
-                      "is_array": True,
-                      "cls": PlanningConstraint,
-                      "arr_cls": ArrayOfPlanningConstraint,
-                      "inner_field_name": "PlanningConstraint"},
-                     "previous_status":
-                     {"field_name": "previousStatus",
-                      "cls": EnumOptionId,
-                      "enum_id": "status"},
-                     "priority":
-                     {"field_name": "priority",
-                      "cls": PriorityOptionId,
-                      "enum_id": "priority"},
-                     "project_id":
-                     {"field_name": "project",
-                      "cls": Project},
-                     "remaining_estimate": "remainingEstimate",
-                     "resolution":
-                     {"field_name": "resolution",
-                      "cls": EnumOptionId,
-                      "enum_id": "resolution"},
-                     "resolved_on": "resolvedOn",
-                     "severity":
-                     {"field_name": "severity",
-                      "cls": EnumOptionId,
-                      "enum_id": "severity"},
-                     "status":
-                     {"field_name": "status",
-                      "cls": EnumOptionId,
-                      "enum_id": "status"},
-                     "time_point":
-                     {"field_name": "timePoint",
-                      "cls": TimePoint},
-                     "time_spent": "timeSpent",
-                     "title": "title",
-                     "type":
-                     {"field_name": "type",
-                      "cls": EnumOptionId,
-                      "enum_id": "workitem-type"},
-                     "updated": "updated",
-                     "work_item_id": "id",
-                     "work_records":
-                     {"field_name": "workRecords",
-                      "is_array": True,
-                      "cls": WorkRecord,
-                      "arr_cls": ArrayOfWorkRecord,
-                      "inner_field_name": "WorkRecord"},
-                     "uri": "_uri",
-                     "_unresolved": "_unresolved"}
+    _cls_suds_map = {
+        "approvals":
+            {"field_name": "approvals",
+             "is_array": True,
+             "cls": Approval,
+             "arr_cls": ArrayOfApproval,
+             "inner_field_name": "Approval"},
+        "assignee":
+            {"field_name": "assignee",
+             "is_array": True,
+             "cls": User,
+             "arr_cls": ArrayOfUser,
+             "inner_field_name": "User"},
+        "attachments":
+            {"field_name": "attachments",
+             "is_array": True,
+             "cls": Attachment,
+             "arr_cls": ArrayOfAttachment,
+             "inner_field_name": "Attachment"},
+        "author":
+            {"field_name": "author",
+             "cls": User},
+        "auto_suspect": "autoSuspect",
+        "categories":
+            {"field_name": "categories",
+             "is_array": True,
+             "cls": Category,
+             "arr_cls": ArrayOfCategory,
+             "inner_field_name": "Category"},
+        "comments":
+            {"field_name": "comments",
+             "is_array": True,
+             "cls": Comment,
+             "arr_cls": ArrayOfComment,
+             "inner_field_name": "Comment"},
+        "created": "created",
+        "custom_fields":
+            {"field_name": "customFields",
+             "is_array": True,
+             "cls": Custom,
+             "arr_cls": ArrayOfCustom,
+             "inner_field_name": "Custom"},
+        "description":
+            {"field_name": "description",
+             "cls": Text},
+        "due_date": "dueDate",
+        "externally_linked_work_items":
+            {"field_name": "externallyLinkedWorkItems",
+             "is_array": True,
+             "cls": ExternallyLinkedWorkItem,
+             "arr_cls": ArrayOfExternallyLinkedWorkItem,
+             "inner_field_name": "ExternallyLinkedWorkItem"},
+        "hyperlinks":
+            {"field_name": "hyperlinks",
+             "is_array": True,
+             "cls": Hyperlink,
+             "arr_cls": ArrayOfHyperlink,
+             "inner_field_name": "Hyperlink"},
+        "initial_estimate": "initialEstimate",
+        "linked_revisions":
+            {"field_name": "linkedRevisions",
+             "is_array": True,
+             "cls": Revision,
+             "arr_cls": ArrayOfRevision,
+             "inner_field_name": "Revision"},
+        "linked_revisions_derived":
+            {"field_name": "linkedRevisionsDerived",
+             "is_array": True,
+             "cls": Revision,
+             "arr_cls": ArrayOfRevision,
+             "inner_field_name": "Revision"},
+        "linked_work_items":
+            {"field_name": "linkedWorkItems",
+             "is_array": True,
+             "cls": LinkedWorkItem,
+             "arr_cls": ArrayOfLinkedWorkItem,
+             "inner_field_name": "LinkedWorkItem"},
+        "linked_work_items_derived":
+            {"field_name": "linkedWorkItemsDerived",
+             "is_array": True,
+             "cls": LinkedWorkItem,
+             "arr_cls": ArrayOfLinkedWorkItem,
+             "inner_field_name": "LinkedWorkItem"},
+        "location": "location",
+        "module_uri":
+            {"field_name": "moduleURI",
+             "cls": SubterraURI},
+        "outline_number": "outlineNumber",
+        "planned_end": "plannedEnd",
+        # planned_in completed in the _fix_circular_imports func
+        "planned_in":
+            {"field_name": "plannedIn"},
+        "planned_start": "plannedStart",
+        "planning_constraints":
+            {"field_name": "planningConstraints",
+             "is_array": True,
+             "cls": PlanningConstraint,
+             "arr_cls": ArrayOfPlanningConstraint,
+             "inner_field_name": "PlanningConstraint"},
+        "previous_status":
+            {"field_name": "previousStatus",
+             "cls": EnumOptionId,
+             "enum_id": "status"},
+        "priority":
+            {"field_name": "priority",
+             "cls": PriorityOptionId,
+             "enum_id": "priority"},
+        "project_id":
+            {"field_name": "project",
+             "cls": Project},
+        "remaining_estimate": "remainingEstimate",
+        "resolution":
+            {"field_name": "resolution",
+             "cls": EnumOptionId,
+             "enum_id": "resolution"},
+        "resolved_on": "resolvedOn",
+        "severity":
+            {"field_name": "severity",
+             "cls": EnumOptionId,
+             "enum_id": "severity"},
+        "status":
+            {"field_name": "status",
+             "cls": EnumOptionId,
+             "enum_id": "status"},
+        "time_point":
+            {"field_name": "timePoint",
+             "cls": TimePoint},
+        "time_spent": "timeSpent",
+        "title": "title",
+        "type":
+            {"field_name": "type",
+             "cls": EnumOptionId,
+             "enum_id": "workitem-type",
+             "enum_override": ["heading"]},
+        "updated": "updated",
+        "work_item_id": "id",
+        "work_records":
+            {"field_name": "workRecords",
+             "is_array": True,
+             "cls": WorkRecord,
+             "arr_cls": ArrayOfWorkRecord,
+             "inner_field_name": "WorkRecord"},
+        "uri": "_uri",
+        "_unresolved": "_unresolved"}
     _id_field = "work_item_id"
-    _obj_client = "builder_client"
-    _obj_struct = "tns5:WorkItem"
+    _obj_client = "tracker_client"
+    _obj_struct = "tns3:WorkItem"
     has_query = True
 
     @classmethod
@@ -303,8 +306,12 @@ class _WorkItem(BasePolarion):
         Implements:
             tracker.getDefinedCustomFieldTypes
         """
-        cfts = cls.session.tracker_client.service.getDefinedCustomFieldTypes(
-            project_id, wi_type)
+        if not cls._cache["custom_field_types"]:
+            cfts = cls.session.tracker_client.service. \
+                getDefinedCustomFieldTypes(project_id, wi_type)
+            cls._cache["custom_field_types"] = cfts
+        else:
+            cfts = cls._cache.get("custom_field_types")
         results = [CustomFieldType(suds_object=item)
                    if isinstance(item,
                                  CustomFieldType()._suds_object.__class__)
@@ -383,6 +390,9 @@ class _WorkItem(BasePolarion):
             Tracker.getWorkItemByUriInRevisionWithFields
             Tracker.getWorkItemByUriWithFields
         """
+
+        self._required_fields = getattr(self, "_required_fields", [])
+        self._changed_fields = getattr(self, "_changed_fields", {})
         # because other classes inherit from this. If super uses self.__class__
         # it will be a infinite loop for the derived class.
         super(_WorkItem, self).__init__(work_item_id, suds_object)
@@ -1115,6 +1125,12 @@ class _WorkItem(BasePolarion):
         self.session.tracker_client.service. \
             updateAttachment(self.uri, attachment_id, filename, title, data)
 
+    def verify_required(self):
+        for field in self._required_fields:
+            if not getattr(self, field):
+                raise PylarionLibException(
+                    "{0} is a required field".format(field))
+
 
 class _SpecificWorkItem(_WorkItem):
     """specific work item is a class that contains the WorkItem implementation
@@ -1138,7 +1154,7 @@ class _SpecificWorkItem(_WorkItem):
             kwargs - keyword arguments for custom fields. All required custom
                      fields must appear as keyword arguments.
         """
-        all_fields, reqs = cls.custom_fields(project_id)
+        all_fields, reqs = cls.get_custom_fields(project_id)
         fields = ""
         for req in reqs:
             if req not in kwargs:
@@ -1156,7 +1172,7 @@ class _SpecificWorkItem(_WorkItem):
             project_id, cls._wi_type, title, desc, status, **kwargs)
 
     @classmethod
-    def custom_fields(cls, project_id):
+    def get_custom_fields(cls, project_id):
         """List of custom fields for the project and specific wi_type
         Args:
             project_id - project that the user is working with
@@ -1217,7 +1233,9 @@ class _SpecificWorkItem(_WorkItem):
         super(_SpecificWorkItem, self).__init__(project_id, work_item_id,
                                                 suds_object, uri, fields,
                                                 revision)
-        if self.type and self.type != self._wi_type:
+        if not self.type:
+            self.type = self._wi_type
+        if self.type != self._wi_type:
             raise PylarionLibException("This is of type {0}, not type {1}".
                                        format(self.type, self._wi_type))
 
@@ -1226,12 +1244,13 @@ class _SpecificWorkItem(_WorkItem):
         It first verifies that required fields are all set, then calls update
         on the object and then iterates the custom fields and updates each one
         """
-        for field in self._required_fields:
-            if not getattr(self, field):
-                raise PylarionLibException("{0} is a required field")
+        self.verify_required()
         super(_SpecificWorkItem, self).update()
         for field in self._changed_fields:
-            self._set_custom_field(field, self._changed_fields[field])
+            if field == "testSteps":
+                self.set_test_steps(self._changed_fields[field].steps[0])
+            else:
+                self._set_custom_field(field, self._changed_fields[field])
         self._changed_fields = {}
 
 

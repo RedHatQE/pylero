@@ -12,14 +12,13 @@ class TestStep(BasePolarion):
     Attributes (for specific details, see Polarion):
         values (ArrayOfText)
 """
-    _cls_suds_map = {"values":
-                     {"field_name": "values",
-                      "is_array": True,
-                      "cls": Text,
-                      "arr_cls": ArrayOfText,
-                      "inner_field_name": "Text"},
-                     "uri": "_uri",
-                     "_unresolved": "_unresolved"}
+    _cls_suds_map = {
+        "values":
+            {"field_name": "values",
+             "is_array": True,
+             "cls": Text,
+             "arr_cls": ArrayOfText,
+             "inner_field_name": "Text"}}
     _obj_client = "test_management_client"
     _obj_struct = "tns3:TestStep"
 

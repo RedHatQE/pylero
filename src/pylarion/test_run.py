@@ -57,69 +57,70 @@ class TestRun(BasePolarion):
         updated
         custom_fields
     """
-    _cls_suds_map = {"attachments":
-                     {"field_name": "attachments",
-                      "is_array": True,
-                      "cls": TestRunAttachment,
-                      "arr_cls": ArrayOfTestRunAttachment,
-                      "inner_field_name": "TestRunAttachment"},
-                     "author":
-                     {"field_name": "authorURI",
-                      "cls": User,
-                      "named_arg": "uri",
-                      "sync_field": "uri"},
-                     "created": "created",
-                     "document":
-                     {"field_name": "document",
-                      "cls": Document},
-                     "finished_on": "finishedOn",
-                     "group_id": "groupId",
-                     "test_run_id": "id",
-                     "is_template": "isTemplate",
-                     "keep_in_history": "keepInHistory",
-                     "location": "location",
-                     "project_id":
-                     {"field_name": "projectURI",
-                      "cls": Project,
-                      "named_arg": "uri",
-                      "sync_field": "uri"},
-                     "query": "query",
-                     "records":
-                     {"field_name": "records",
-                      "is_array": True,
-                      "cls": TestRecord,
-                      "arr_cls": ArrayOfTestRecord,
-                      "inner_field_name": "TestRecord"},
-                     "select_test_cases_by":
-                     {"field_name": "selectTestCasesBy",
-                      "cls": EnumOptionId,
-                      "enum_id": "testrun-selectTestCasesBy"},
-                     "status":
-                     {"field_name": "status",
-                      "cls": EnumOptionId,
-                      "enum_id": "testing/testrun-status"},
-                     "summary_defect":
-                     {"field_name": "summaryDefectURI",
-                      "cls": _WorkItem,
-                      "named_arg": "uri",
-                      "sync_field": "uri"},
-                     "template":
-                     {"field_name": "templateURI",
-                      "named_arg": "uri",
-                      "sync_field": "uri"},
-                     "type":
-                     {"field_name": "type",
-                      "cls": EnumOptionId,
-                      "enum_id": "testing/testrun-type"},
-                     "updated": "updated",
-                     "custom_fields":
-                     {"field_name": "customFields",
-                      "is_array": True,
-                      "cls": Custom,
-                      "arr_cls": ArrayOfCustom,
-                      "inner_field_name": "Custom"},
-                     "uri": "_uri",
-                     "_unresolvable": "_unresolvable"}
+    _cls_suds_map = {
+        "attachments":
+            {"field_name": "attachments",
+             "is_array": True,
+             "cls": TestRunAttachment,
+             "arr_cls": ArrayOfTestRunAttachment,
+             "inner_field_name": "TestRunAttachment"},
+        "author":
+            {"field_name": "authorURI",
+             "cls": User,
+             "named_arg": "uri",
+             "sync_field": "uri"},
+        "created": "created",
+        "document":
+            {"field_name": "document",
+             "cls": Document},
+        "finished_on": "finishedOn",
+        "group_id": "groupId",
+        "test_run_id": "id",
+        "is_template": "isTemplate",
+        "keep_in_history": "keepInHistory",
+        "location": "location",
+        "project_id":
+            {"field_name": "projectURI",
+             "cls": Project,
+             "named_arg": "uri",
+             "sync_field": "uri"},
+        "query": "query",
+        "records":
+            {"field_name": "records",
+             "is_array": True,
+             "cls": TestRecord,
+             "arr_cls": ArrayOfTestRecord,
+             "inner_field_name": "TestRecord"},
+        "select_test_cases_by":
+            {"field_name": "selectTestCasesBy",
+             "cls": EnumOptionId,
+             "enum_id": "testrun-selectTestCasesBy"},
+        "status":
+            {"field_name": "status",
+             "cls": EnumOptionId,
+             "enum_id": "testing/testrun-status"},
+        "summary_defect":
+            {"field_name": "summaryDefectURI",
+             "cls": _WorkItem,
+             "named_arg": "uri",
+             "sync_field": "uri"},
+        "template":
+            {"field_name": "templateURI",
+             "named_arg": "uri",
+             "sync_field": "uri"},
+        "type":
+            {"field_name": "type",
+             "cls": EnumOptionId,
+             "enum_id": "testing/testrun-type"},
+        "updated": "updated",
+        "custom_fields":
+            {"field_name": "customFields",
+             "is_array": True,
+             "cls": Custom,
+             "arr_cls": ArrayOfCustom,
+             "inner_field_name": "Custom"},
+        "uri": "_uri",
+        "_unresolvable": "_unresolvable"}
     _id_field = "test_run_id"
     _obj_client = "test_management_client"
     _obj_struct = "tns3:TestRun"
@@ -508,6 +509,9 @@ class TestRun(BasePolarion):
             test_management.addTestRecord
         """
         self._verify_obj()
+        if not executed or not test_result:
+            raise PylarionLibException(
+                "executed and test_result require values")
         tc = _WorkItem(work_item_id=test_case_id,
                        project_id=self.project_id,
                        fields=["work_item_id"])
@@ -545,6 +549,10 @@ class TestRun(BasePolarion):
             test_management.addTestRecordToTestRun
         """
         self._verify_obj()
+        for field in test_record._required:
+            if not getattr(test_record, field):
+                raise PylarionLibException(
+                    "{0} is required in the TestRecord".format(field))
         if isinstance(test_record, TestRecord):
             suds_object = test_record._suds_object
         elif isinstance(test_record, TestRecord().

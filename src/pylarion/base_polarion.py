@@ -97,7 +97,12 @@ class BasePolarion(object):
     _obj_client = None
     _obj_struct = None
     _session = None
+    _default_project = None
     has_query = False
+    _cache = {
+        "enums": {},
+        "custom_field_types": []
+    }
 
     @classproperty
     def session(cls):
@@ -110,13 +115,21 @@ class BasePolarion(object):
             # attribute for the specific class but not for all the other
             # Pylarion objects.
             BasePolarion._session = Connection.session()
-            BasePolarion.default_project = cls._session.default_project
+            BasePolarion._default_project = cls._session.default_project
             BasePolarion.user_id = cls._session.user_id
             # stores password in the session so it can be used for direct svn
             # operations
             BasePolarion.password = cls._session.password
             BasePolarion.repo = cls._session.repo
             return BasePolarion._session
+
+    @classproperty
+    def default_project(cls):
+        # Uses a class property for the session, so that the library connects
+        # when accessing it.
+        if not BasePolarion._default_project:
+            cls.session
+        return BasePolarion._default_project
 
     @classmethod
     def _convert_obj_fields_to_polarion(cls, fields=[]):
@@ -132,7 +145,7 @@ class BasePolarion(object):
             # convert given fields to Polarion fields
             p_fields = map(lambda x: cls._cls_suds_map[x]
                            if not isinstance(cls._cls_suds_map[x], dict)
-                           else cls. cls_suds_map[x]["field_name"], fields)
+                           else cls._cls_suds_map[x]["field_name"], fields)
         return p_fields
 
     @classmethod
@@ -250,6 +263,8 @@ class BasePolarion(object):
                 #            instantiate an object and this parameter is
                 #            populated if the constructor needs an additional
                 #            parameter.
+                #        enum_override - valid values that the server does not
+                #                        return in validation check
                 # array object fields:
                 #    getter has parameters:
                 #        suds_field_name
@@ -273,6 +288,8 @@ class BasePolarion(object):
                 #                     that the attribute is set to
                 #        additional_args - args needed for the obj constructor
                 #        enum_id - the name of the enum to get from the server
+                #        enum_override - valid values that the server does not
+                #                        return in validation check
                 # regular fields;
                 #    use getattr and setattr
                 if isinstance(self._cls_suds_map[key], dict):
@@ -290,10 +307,13 @@ class BasePolarion(object):
                                 obj_cls=self._cls_suds_map[key].get("cls"),
                                 enum_id=self._cls_suds_map[key].get("enum_id"),
                                 additional_parms=self._cls_suds_map[key].get(
-                                    "additional_parms", {}):
+                                    "additional_parms", {}),
+                                enum_override=self._cls_suds_map[key].get(
+                                    "enum_override", []):
                                     self._custom_setter(val, suds_field_name,
                                                         obj_cls, enum_id,
-                                                        additional_parms)))
+                                                        additional_parms,
+                                                        enum_override)))
                     elif "is_array" in self._cls_suds_map[key]:
                         setattr(self.__class__, key, property(
                             lambda self,
@@ -330,10 +350,13 @@ class BasePolarion(object):
                                     "sync_field"),
                                 additional_parms=self._cls_suds_map[key].get(
                                     "additional_parms", {}),
-                                enum_id=self._cls_suds_map[key].get("enum_id"):
-                                    self._obj_setter(
-                                        val, suds_field_name, obj_cls,
-                                        sync_field, additional_parms, enum_id))
+                                enum_id=self._cls_suds_map[key].get("enum_id"),
+                                enum_override=self._cls_suds_map[key].get(
+                                    "enum_override", []):
+                                self._obj_setter(
+                                    val, suds_field_name, obj_cls,
+                                    sync_field, additional_parms, enum_id,
+                                    enum_override))
                                 )
                 else:
                     setattr(self.__class__, key, property(
@@ -344,7 +367,7 @@ class BasePolarion(object):
                         lambda self, value, suds_key=self._cls_suds_map[key]:
                             setattr(self._suds_object, suds_key, value)))
 # after all properties are defined set the id field to the value passed in.
-        if obj_id:
+        if obj_id is not None:
             setattr(self, self._id_field, obj_id)
 
     def _get_suds_object(self):
@@ -380,7 +403,7 @@ class BasePolarion(object):
             return obj
 
     def _obj_setter(self, val, suds_field_name, obj_cls,
-                    sync_field, additional_parms, enum_id):
+                    sync_field, additional_parms, enum_id, enum_override):
         """set function for attributes that reference an object. It can accept
         a string, a Pylarion object or a raw WSDL object. If a string is given,
         it is passed in to the object as its obj_id.
@@ -391,10 +414,12 @@ class BasePolarion(object):
             sync_field - the field of the referenced object to set the property
             additional_parms - named parms to pass into the contructor
             enum_id - the name of the enum to get from the server
+            enum_override - valid values that the server does not
+                            return in validation check
         """
         if isinstance(val, basestring):
-            if enum_id:
-                self.check_valid_field_values(val, enum_id)
+            if enum_id and val not in enum_override:
+                self.check_valid_field_values(val, enum_id, {})
         if not sync_field:
             sync_field = "_suds_object"
         if isinstance(val, basestring):
@@ -463,6 +488,11 @@ class BasePolarion(object):
             setattr(self._suds_object, suds_field_name, val._suds_object)
         else:
             if isinstance(val, list):
+                # if str values are based in, try instantiating a class with
+                # the vals and then using that list. Then continue processing
+                if isinstance(val[0], basestring):
+                    val = [obj_cls(item) for item in val]
+
                 if isinstance(val[0], obj_inst._suds_object.__class__):
                     setattr(getattr(self._suds_object, suds_field_name),
                             suds_arr_inner_field_name, val)
@@ -473,6 +503,12 @@ class BasePolarion(object):
                         getattr(getattr(self._suds_object, suds_field_name),
                                 suds_arr_inner_field_name).append(
                                     item._suds_object)
+
+    def custom_obj(self):
+        # This returns a custom Polarion object. It can't use the Custom class
+        # as that is a child of this class.
+        return self.session.test_management_client.factory.create(
+            "tns4:Custom")
 
     def _custom_getter(self, suds_field_name, obj_cls):
         """Works with custom fields that has attributes stored differently
@@ -506,7 +542,7 @@ class BasePolarion(object):
             return obj
 
     def _custom_setter(self, val, suds_field_name, obj_cls, enum_id,
-                       additional_parms):
+                       additional_parms, enum_override):
         """Works with custom fields that has to keep track of values and what
         changed so that on update it can also update all the custom fields at
         the same time.
@@ -518,15 +554,19 @@ class BasePolarion(object):
             additional_parms - Some TestRun custom fields must instantiate an
                 object and this parameter is populated if the constructor needs
                 an additional parameter.
+            enum_override - valid values that the server does not
+                            return in validation check
         """
-        if isinstance(val, basestring):
-            if enum_id:
+        if not val:
+            self._changed_fields[suds_field_name] = None
+        elif isinstance(val, basestring):
+            if enum_id and val not in enum_override:
                 self.check_valid_field_values(val, enum_id,
                                               additional_parms or {})
             self._changed_fields[suds_field_name] = obj_cls(val)._suds_object \
                 if obj_cls else val
         elif isinstance(val, obj_cls):
-            self._changed_fields[suds_field_name] = obj_cls._suds_object
+            self._changed_fields[suds_field_name] = val._suds_object
         elif isinstance(val, obj_cls()._suds_object.__class__):
             self._changed_fields[suds_field_name] = val
         elif not val:
@@ -534,6 +574,25 @@ class BasePolarion(object):
         else:
             raise PylarionLibException("The value must be of type {0}.".format(
                 obj_cls.__name__))
+        # move the custom fields to within the object, otherwise each custom
+        # field is a seperate SVN commit. testSteps, does not work unless it
+        # is uploaded using the set_test_steps function.
+        if suds_field_name != "testSteps":
+            cf = self._suds_object.customFields[0]
+            cust = self.custom_obj()
+            cust.key = suds_field_name
+            cust.value = self._changed_fields[suds_field_name]
+            self._changed_fields.pop(suds_field_name, None)
+            if cf:
+                # check if the custom field already exists and modify it.
+                match = filter(lambda x: x.key == suds_field_name, cf)
+                if match:
+                    match[0].value = cust.value
+                else:
+                    cf.append(cust)
+                    self.custom_fields = cf
+            else:
+                self.custom_fields = [cust]
 
     def _get_file_data(self, path):
         """Method for getting attachment data that can be passed to the soap
@@ -688,6 +747,8 @@ class BasePolarion(object):
 
     def get_valid_field_values(self, enum_id):
         """Gets the available enumeration options.
+        Uses a cache dict because the time to get valid fields from server
+        is time prohibitive.
         Args:
             field - The field to get values for
         Returns:
@@ -695,6 +756,10 @@ class BasePolarion(object):
         Implements:
             Tracker.getEnumOptionsForId
         """
-        enums = self.session.tracker_client.service. \
-            getEnumOptionsForIdWithControl(self.project_id, enum_id)
+        project_id = getattr(self, "project_id", self.default_project)
+        enums = self._cache["enums"].get(enum_id)
+        if not enums:
+            enums = self.session.tracker_client.service. \
+                getEnumOptionsForIdWithControl(project_id, enum_id)
+            self._cache["enums"][enum_id] = enums
         return [enum.id for enum in enums]

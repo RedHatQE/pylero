@@ -4,10 +4,31 @@ from __future__ import unicode_literals
 
 import logging
 import time
-import suds.sax
+import suds.sax.element
+
+from suds.plugin import MessagePlugin
+from suds.sax.attribute import Attribute
 
 # TODO: figure out what this does
 logger = logging.getLogger(__name__)
+
+
+class SoapNull(MessagePlugin):
+    """suds plugin that is called before any suds message is sent to the remote
+    server. It adds the xsi:nil=true attribute to any element that is blank.
+    Without this plugin, a number of functions that were supposed to accept
+    null parameters did not work.
+    """
+    def marshalled(self, context):
+        # Go through every node in the document and check if it is empty and
+        # if so set the xsi:nil tag to true
+        context.envelope.walk(self.add_nil)
+
+    def add_nil(self, element):
+        """Used as a filter function with walk to add xsi:nil to blank attrs.
+        """
+        if element.isempty() and not element.isnil():
+            element.attributes.append(Attribute('xsi:nil', 'true'))
 
 
 class Session(object):
@@ -88,7 +109,10 @@ class _suds_client_wrapper:
         # has the actual WSDL client as a private _suds_client attribute so
         # that the "magic" __getattr__ function will be able to verify
         # functions called on it and after processing to call the WSDL function
-        self._suds_client = suds.client.Client(url)
+        plugin = SoapNull()
+        self._suds_client = suds.client.Client(
+            url,
+            plugins=[plugin])
         self._enclosing_session = enclosing_session
 
     def __getattr__(self, attr):

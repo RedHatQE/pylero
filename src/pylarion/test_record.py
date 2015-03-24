@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
+import datetime
 from pylarion.base_polarion import BasePolarion
 from pylarion.text import Text
 from pylarion.test_run_attachment import TestRunAttachment
@@ -16,49 +17,51 @@ class TestRecord(BasePolarion):
     '''An object to contain the'tns3:TestRecord' ''' \
         '''of the TestManagement service '''
 
-    _cls_suds_map = {"attachments":
-                     {"field_name": "attachments",
-                      "is_array": True,
-                      "cls": TestRunAttachment,
-                      "arr_cls": ArrayOfTestRunAttachment,
-                      "inner_field_name": "TestRunAttachment"},
-                     "comment":
-                     {"field_name": "comment",
-                      'cls': Text},
-                     "defect_case_id":
-                     {"field_name": "defectURI",
-                      "cls": _WorkItem,
-                      "named_arg": "uri",
-                      "sync_field": "uri"},
-                     "duration": "duration",
-                     "executed": "executed",
-                     "executed_by":
-                     {"field_name": "executedByURI",
-                      "cls": User,
-                      "named_arg": "uri",
-                      "sync_field": "uri"},
-                     "result":
-                     {"field_name": "result",
-                      "cls": EnumOptionId,
-                      "enum_id": "testing/test-result"},
-                     "test_case_id":
-                     {"field_name": "testCaseURI",
-                      "cls": _WorkItem,
-                      "named_arg": "uri",
-                      "sync_field": "uri"},
-                     "test_case_revision": "testCaseRevision",
-                     "test_step_results":
-                     {"field_name": "testStepResults",
-                      "is_array": True,
-                      "cls": TestStepResult,
-                      "arr_cls": ArrayOfTestStepResult,
-                      "inner_field_name": "TestStepResult"}}
+    _cls_suds_map = {
+        "attachments":
+            {"field_name": "attachments",
+             "is_array": True,
+             "cls": TestRunAttachment,
+             "arr_cls": ArrayOfTestRunAttachment,
+             "inner_field_name": "TestRunAttachment"},
+        "comment":
+            {"field_name": "comment",
+             "cls": Text},
+        "defect_case_id":
+            {"field_name": "defectURI",
+             "cls": _WorkItem,
+             "named_arg": "uri",
+             "sync_field": "uri"},
+        "duration": "duration",
+        "executed": "executed",
+        "executed_by":
+            {"field_name": "executedByURI",
+             "cls": User,
+             "named_arg": "uri",
+             "sync_field": "uri"},
+        "result":
+            {"field_name": "result",
+             "cls": EnumOptionId},
+        "test_case_id":
+            {"field_name": "testCaseURI",
+             "cls": _WorkItem,
+             "named_arg": "uri",
+             "sync_field": "uri"},
+        "test_case_revision": "testCaseRevision",
+        "test_step_results":
+            {"field_name": "testStepResults",
+             "is_array": True,
+             "cls": TestStepResult,
+             "arr_cls": ArrayOfTestStepResult,
+             "inner_field_name": "TestStepResult"}}
     _obj_client = "test_management_client"
     _obj_struct = "tns3:TestRecord"
 
     def __init__(self, project_id=None, test_case_id=None, suds_object=None):
         self.project_id = project_id if project_id else self.default_project
         super(self.__class__, self).__init__(None, suds_object)
+        self._required = ["executed", "result"]
+        self.executed = datetime.datetime.now()
         if test_case_id:
             self.test_case_uri = _WorkItem(test_case_id,
                                            project_id=self.project_id).uri
