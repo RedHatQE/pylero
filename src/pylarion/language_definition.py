@@ -7,7 +7,7 @@ from pylarion.base_polarion import BasePolarion
 class LanguageDefinition(BasePolarion):
     """Object to handle the Polarion WSDL tns3:LanguageDefinition class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         language_definition_id (string)
         label (string)
 """

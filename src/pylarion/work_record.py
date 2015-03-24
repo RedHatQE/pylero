@@ -9,7 +9,7 @@ from pylarion.user import User
 class WorkRecord(BasePolarion):
     """Object to handle the Polarion WSDL tns5:WorkRecord class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         comment (string)
         date (date)
         work_record_id (string)

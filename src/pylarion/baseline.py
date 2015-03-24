@@ -9,7 +9,7 @@ from pylarion.project import Project
 class Baseline(BasePolarion):
     """Object to handle the Polarion WSDL tns3:Baseline class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         author (User)
         base_revision (string)
         description (string)
@@ -39,12 +39,14 @@ class Baseline(BasePolarion):
 
         Args:
             project_id
-            name - baseline name (not None)
-            description - baseline description (can be None)
-            revision - revision or null value for head revision
+            name: baseline name (not None)
+            description: baseline description (can be None)
+            revision: revision or null value for head revision
+
         Returns:
             Baseline object
-        Implements;
+
+        References:
             Tracker.createBaseline
         """
         suds_object = cls.session.tracker_client.service.createBaseline(
@@ -54,12 +56,15 @@ class Baseline(BasePolarion):
     @classmethod
     def query(cls, query, sort="baseline_id"):
         """Queries for baselines.
+
         Args:
-            query - the lucene query to be used.
-            sort - the field to be used for sorting.
+            query: the lucene query to be used.
+            sort: the field to be used for sorting.
+
         Returns:
             list of Baselines
-        Implements:
+
+        References:
             Tracker.queryBaselines
         """
         baselines = []

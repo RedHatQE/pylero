@@ -7,7 +7,7 @@ from pylarion.base_polarion import BasePolarion
 class CustomFieldType(BasePolarion):
     """Object to handle the Polarion WSDL tns5:CustomFieldType class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         default_value (anyType)
         depends_on (string)
         description (string)
@@ -15,7 +15,7 @@ class CustomFieldType(BasePolarion):
         name (string)
         required (boolean)
         type (string)
-"""
+    """
 # id field is called id and not custom_field_type_id because it is often
 # mixed with enum_custom_field_type and they need to be accessed
 # interchangeably

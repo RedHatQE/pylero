@@ -70,27 +70,32 @@ class BasePolarion(object):
     are published. Using the _cls_suds_map, the class creates a property for
     each attribute so that any access of the object attribute, will access the
     WSDL object that is contained by it.
-    Class attributes:
-        _cls_suds_map - maps the Polarion attribute names to the Pylarion
+
+    Attributes:
+        _cls_suds_map (dict): maps the Polarion attribute names to the Pylarion
                         attribute names. Pylarion attribute names use the
                         Red Hat global CI naming conventions.
                         Attributes that reference either objects or an array of
                         objects have the properties relate to the relationship
                         meaning that accessing the property will give access to
                         the object or list of objects.
-        _id_field - the field that represents an id field, which is used in the
-                    child class's constructor. when a child's class defines the
-                    field it allows this constructor to accept an obj_id as a
-                    parameter
-        _obj_client - The Polarion client the child's WSDL object is defined by
-        _obj_struct - The data type defined by the WSDL library. The structure
-                      of the datatype is tnsX:ObjectName, the X is per datatype
-                      and has no default.
-        session - a class variable that is initialized by the Connection class
-                  variable. This attribute connects to the server one time per
-                  session, no matter how many objects are instantiated.
-        has_query - a class variable that a child class sets if it can use the
-                    parent's query method.
+        _id_field (str): the field that represents an id field, used in the
+                         child class's constructor. when a child's class
+                         defines the field it allows this constructor to accept
+                         an obj_id as a parameter
+        _obj_client (str): The Polarion client the child's WSDL object is
+                           defined by
+        _obj_struct (str): The data type defined by the WSDL library. The
+                           structure of the datatype is tnsX:ObjectName, the X
+                           is per datatype and has no default.
+        session (Session): The Polarion Session object, initialized by the
+                           Connection class. This attribute connects to the
+                           server one time per session, no matter how many
+                           objects are instantiated.
+        has_query (bool): Set by a child class if it can use the parent's query
+                          method.
+        default_project (str): The user's default project, to be used when
+                          project_id is needed and there is none given
     """
     _cls_suds_map = {}
     _id_field = None
@@ -153,21 +158,23 @@ class BasePolarion(object):
                sort=suds.null(), limit=-1, baseline_revision=None,
                has_fields=True):
         """Searches the given object using the object's query function
+
         Args:
-            base_function_name - start of the Polarion function name.
-            query - query, either Lucene or SQL
-            is_sql (bool), determines if the query is SQL or Lucene
-            fields - array of field names to fill in the returned
-                     Modules/Documents (can be null). For nested structures in
-                     the lists you can use following syntax to include only
-                     subset of fields: myList.LIST.key
-                     (e.g. linkedWorkItems.LIST.role).
-                     For custom fields you can specify which fields you want to
-                     be filled using following syntax:
-                     customFields.CUSTOM_FIELD_ID (e.g. customFields.risk).
-            sort - Lucene sort string (can be null)
-            limit - how many results to return (-1 means everything)
-            baseline_revision (str) if populated, query done in specified rev
+            base_function_name: start of the Polarion function name.
+            query: query, either Lucene or SQL
+            is_sql (bool): determines if the query is SQL or Lucene
+            fields: array of field names to fill in the returned
+                    Modules/Documents (can be null). For nested structures in
+                    the lists you can use following syntax to include only
+                    subset of fields: myList.LIST.key
+                    (e.g. linkedWorkItems.LIST.role).
+                    For custom fields you can specify which fields you want to
+                    be filled using following syntax:
+                    customFields.CUSTOM_FIELD_ID (e.g. customFields.risk).
+            sort: Lucene sort string (can be null)
+            limit: how many results to return (-1 means everything)
+            baseline_revision (str): if populated, query done in specified rev
+
         Returns:
             list of objects
         """
@@ -199,12 +206,15 @@ class BasePolarion(object):
     @classmethod
     def get_global_roles(cls):
         """Returns all global roles.
+
         Args:
             None
+
         Returns:
             list of global roles
-        Implements:
-            Security.getGlobalRoles
+
+        References:
+            Security.\ :security:`getGlobalRoles()`
         """
         return cls.session.security_client.service.getGlobalRoles()
 
@@ -213,12 +223,14 @@ class BasePolarion(object):
         """Checks if given permission is granted to the current user.
 
         Args:
-            permission - the permission to check.
-            project_id - the id of the project to check the permission in,
-                         None to check global permissions.
+            permission: the permission to check.
+            project_id: the id of the project to check the permission in,
+                        None to check global permissions.
+
         Returns:
             bool
-        Implements;
+
+        References:
             Security.hasCurrentUserPermission
         """
         return cls.session.security_client.service.hasCurrentuserPermission(
@@ -384,10 +396,11 @@ class BasePolarion(object):
         that value is given to the object as its obj_id. Classes that have an
         _id_field attribute will return only that attribute when the property
         is gotten
+
         Args:
-            suds_field_name - the field name of the Polarion object to get
-            obj_cls - the Pylarion object that the field references
-            named_arg - the named parameter to pass to the constructor
+            suds_field_name: the field name of the Polarion object to get
+            obj_cls: the Pylarion object that the field references
+            named_arg: the named parameter to pass to the constructor
         """
         if not named_arg:
                 named_arg = "suds_object"
@@ -407,15 +420,16 @@ class BasePolarion(object):
         """set function for attributes that reference an object. It can accept
         a string, a Pylarion object or a raw WSDL object. If a string is given,
         it is passed in to the object as its obj_id.
+
         Args:
-            val - the value that the property is being set to
-            suds_field_name - the field name of the Polarion object to set
-            obj_cls - the Pylarion object that the field references
-            sync_field - the field of the referenced object to set the property
-            additional_parms - named parms to pass into the contructor
-            enum_id - the name of the enum to get from the server
-            enum_override - valid values that the server does not
-                            return in validation check
+            val: the value that the property is being set to
+            suds_field_name: the field name of the Polarion object to set
+            obj_cls: the Pylarion object that the field references
+            sync_field: the field of the referenced object to set the property
+            additional_parms: named parms to pass into the contructor
+            enum_id: the name of the enum to get from the server
+            enum_override: valid values that the server does not
+                           return in validation check
         """
         if isinstance(val, basestring):
             if enum_id and val not in enum_override:
@@ -443,9 +457,10 @@ class BasePolarion(object):
         The Polarion array object always has a single Python list item which
         contains a list of the WSDL objects. This function converts each WSDL
         object to its Pylarion object and returns that list
+
         Args:
-            suds_field_name - the field name of the Polarion object to get
-            obj_cls - the Pylarion object that the field references
+            suds_field_name: the field name of the Polarion object to get
+            obj_cls: the Pylarion object that the field references
         """
         if getattr(self._suds_object, suds_field_name, None):
             obj_lst = []
@@ -465,11 +480,11 @@ class BasePolarion(object):
         Otherwise it sets the attribute the value passed in.
 
         Args:
-            val - the value that the property is set to
-            suds_field_name - the field name of the Polarion object to set
-            obj_cls - Pylarion class related to property
-            arr_cls - Pylarion Array class related to the property
-            suds_arr_inner_field_name - field name within the Pylarion array
+            val: the value that the property is set to
+            suds_field_name: the field name of the Polarion object to set
+            obj_cls: Pylarion class related to property
+            arr_cls: Pylarion Array class related to the property
+            suds_arr_inner_field_name: field name within the Pylarion array
         """
         # TODO: Still needs to be fully tested. Looks like there are some bugs.
         arr_inst = arr_cls()
@@ -516,8 +531,8 @@ class BasePolarion(object):
         if the attribute has been changed, it gets it from there.
 
         Args:
-            suds_field_name - the field name of the Polarion object to get
-            obj_cls - the Pylarion object that the field references
+            suds_field_name: the field name of the Polarion object to get
+            obj_cls: the Pylarion object that the field references
         """
         if suds_field_name in self._changed_fields:
             if obj_cls:
@@ -547,16 +562,17 @@ class BasePolarion(object):
         """Works with custom fields that has to keep track of values and what
         changed so that on update it can also update all the custom fields at
         the same time.
+
         Args:
-            val - the value that the property is being set to
-            suds_field_name - the field name of the Polarion object to set
-            obj_cls - the Pylarion object that the field references
-            enum_id - contains the name of the enum to get from the server
-            additional_parms - Some TestRun custom fields must instantiate an
-                object and this parameter is populated if the constructor needs
-                an additional parameter.
-            enum_override - valid values that the server does not
-                            return in validation check
+            val: the value that the property is being set to
+            suds_field_name: the field name of the Polarion object to set
+            obj_cls: the Pylarion object that the field references
+            enum_id: contains the name of the enum to get from the server
+            additional_parms: Some TestRun custom fields must instantiate an
+                              object and this parameter is populated if the
+                              constructor needs an additional parameter.
+            enum_override: valid values that the server does not
+                           return in validation check
         """
         if not val:
             self._changed_fields[suds_field_name] = None
@@ -600,7 +616,8 @@ class BasePolarion(object):
         library. Is used by a number of child classes.
 
         Args:
-            path - the file path
+            path: the file path
+
         Returns:
             base64 encoded binary data.
         """
@@ -623,10 +640,12 @@ class BasePolarion(object):
         given key of the current object.
 
         Args:
-            key - the key of the field that contains the collection.
+            key: the key of the field that contains the collection.
+
         Returns:
             bool
-        Implements:
+
+        References:
             Security.canAddElementToKey
         """
         self._verify_obj()
@@ -638,9 +657,11 @@ class BasePolarion(object):
 
         Args:
             None
+
         Returns:
             bool
-        Implements:
+
+        References:
             Security.canDeleteInstance
         """
         self._verify_obj()
@@ -651,9 +672,11 @@ class BasePolarion(object):
 
         Args:
             None
+
         Returns:
             bool
-        Implements:
+
+        References:
             Security.canModifyInstance
         """
         self._verify_obj()
@@ -664,10 +687,12 @@ class BasePolarion(object):
         the current object.
 
         Args:
-            key - the key of the field that contains the collection.
+            key: the key of the field that contains the collection.
+
         Returns:
             bool
-        Implements:
+
+        References:
             Security.canModifyKey
         """
         self._verify_obj()
@@ -678,9 +703,11 @@ class BasePolarion(object):
 
         Args:
             None
+
         Returns:
             bool
-        Implements:
+
+        References:
             Security.canReadInstance
         """
         self._verify_obj()
@@ -691,10 +718,12 @@ class BasePolarion(object):
         the current object.
 
         Args:
-            key - the key of the field that contains the collection.
+            key: the key of the field that contains the collection.
+
         Returns:
             bool
-        Implements:
+
+        References:
             Security.canReadKey
         """
         self._verify_obj()
@@ -705,10 +734,12 @@ class BasePolarion(object):
         at given key of the current object.
 
         Args:
-            key - the key of the field that contains the collection.
+            key: the key of the field that contains the collection.
+
         Returns:
             bool
-        Implements:
+
+        References:
             Security.canRemoveElementFromKey
         """
         self._verify_obj()
@@ -722,9 +753,11 @@ class BasePolarion(object):
 
         Args:
             None
+
         Returns:
             location (string)
-        Implements:
+
+        References:
             Security.getLocationForURI
         """
         self._verify_obj()
@@ -750,11 +783,14 @@ class BasePolarion(object):
         """Gets the available enumeration options.
         Uses a cache dict because the time to get valid fields from server
         is time prohibitive.
+
         Args:
-            field - The field to get values for
+            enum_id: The enum code to get values for
+
         Returns:
             Array of EnumOptions
-        Implements:
+
+        References:
             Tracker.getEnumOptionsForId
         """
         project_id = getattr(self, "project_id", self.default_project)

@@ -7,7 +7,7 @@ from pylarion.base_polarion import BasePolarion
 class ActivitySource(BasePolarion):
     """Object to handle the Polarion WSDL tns3:ActivitySource class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         activity_source_id (string)
         prefix (string)
         types (ArrayOf_xsd_string)

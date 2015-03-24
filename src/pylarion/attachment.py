@@ -8,7 +8,7 @@ from pylarion.user import User
 class Attachment(BasePolarion):
     """Object to handle the Polarion WSDL tns5:Attachment class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         author (User)
         file_name (string)
         attachment_id (string)

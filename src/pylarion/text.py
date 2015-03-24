@@ -12,7 +12,7 @@ class Text(BasePolarion):
     Attributes:
         content (str): the formatted text
         content_type (str): indication of how content is formatted
-            (eg. text/html)
+                            (eg. text/html)
         content_lossy (bool):
     """
     _cls_suds_map = {"content": "content",

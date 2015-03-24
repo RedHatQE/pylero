@@ -52,7 +52,7 @@ from pylarion.workflow_action import WorkflowAction
 class _WorkItem(BasePolarion):
     """Object to handle the Polarion WSDL tns5:WorkItem class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         approvals (ArrayOfApproval)
         assignee (ArrayOfUser)
         attachments (ArrayOfAttachment)
@@ -254,14 +254,16 @@ class _WorkItem(BasePolarion):
         the desired target Module/Document.
 
         Args:
-            project_id - id of project to create work item in
-            wi_type - type of work item (functionaltestcase,...)
-            title - title of WorkItem
-            desc - description of WorkItem
-            status - initial status of the WorkItem, draft by default
+            project_id: id of project to create work item in
+            wi_type: type of work item (functionaltestcase,...)
+            title: title of WorkItem
+            desc: description of WorkItem
+            status: initial status of the WorkItem, draft by default
+
         Returns:
             new _WorkItem
-        Implements:
+
+        References:
             Tracker.createWorkItem
         """
         wi = cls()
@@ -283,10 +285,12 @@ class _WorkItem(BasePolarion):
         """Counts number of workitems returned by given query.
 
         Args:
-            query - the lucene query to be used.
+            query: the lucene query to be used.
+
         Returns
             int
-        Implements:
+
+        References:
             Tracker.getWorkItemsCount
         """
         return cls.session.tracker_client.service.getWorkItemsCount(query)
@@ -299,11 +303,13 @@ class _WorkItem(BasePolarion):
         These 2 classes are mostly interchangeable.
 
         Args:
-            project_id - the project to get the custom fields from
-            wi_type - The type of work item to get the custom fields for
+            project_id: the project to get the custom fields from
+            wi_type: The type of work item to get the custom fields for
+
         Returns:
             list of all the custom fields
-        Implements:
+
+        References:
             tracker.getDefinedCustomFieldTypes
         """
         if not cls._cache["custom_field_types"]:
@@ -323,24 +329,27 @@ class _WorkItem(BasePolarion):
     def query(cls, query, is_sql=False, fields=[], sort="work_item_id",
               limit=-1, baseline_revision=None, query_uris=False):
         """Searches for Work Items.
+
         Args:
-            query - query, either Lucene or SQL
-            is_sql (bool), determines if the query is SQL or Lucene
-            fields - array of field names to fill in the returned
-                     Modules/Documents (can be null). For nested structures in
-                     the lists you can use following syntax to include only
-                     subset of fields: myList.LIST.key
-                     (e.g. linkedWorkItems.LIST.role).
-                     For custom fields you can specify which fields you want to
-                     be filled using following syntax:
-                     customFields.CUSTOM_FIELD_ID (e.g. customFields.risk).
-            sort - Lucene sort string (can be null)
-            limit - how many results to return (-1 means everything)
-            baseline_revision (str) if populated, query done in specified rev
-            query_uris (bool) - returns a list of URI of the Modules found
+            query: query, either Lucene or SQL
+            is_sql (bool): determines if the query is SQL or Lucene
+            fields: array of field names to fill in the returned
+                    Modules/Documents (can be null). For nested structures in
+                    the lists you can use following syntax to include only
+                    subset of fields: myList.LIST.key
+                    (e.g. linkedWorkItems.LIST.role).
+                    For custom fields you can specify which fields you want to
+                    be filled using following syntax:
+                    customFields.CUSTOM_FIELD_ID (e.g. customFields.risk).
+            sort: Lucene sort string (can be null)
+            limit: how many results to return (-1 means everything)
+            baseline_revision (str): if populated, query done in specified rev
+            query_uris (bool): returns a list of URI of the Modules found
+
         Returns:
             list of _WorkItem objects
-        Implements:
+
+        References:
             Tracker.queryWorkItemUris
             Tracker.queryWorkItemUrisBySQL
             Tracker.queryWorkItemUrisInBaseline
@@ -367,22 +376,24 @@ class _WorkItem(BasePolarion):
         """WorkItem constructor.
 
         Args:
-            project_id - the Polarion project that the _WorkItem is located
-                         in.
-            work_item_id - when given, the object is populated with the
-                          _WorkItem's data . Requires project_id parameter
-            suds_object - Polarion _WorkItem object. When given, the object
-                          is populated by object data.
-            uri - the uri that references the Polarion _WorkItem
-            fields - the fields that are requested to be populated.
+            project_id: the Polarion project that the _WorkItem is located
+                        in.
+            work_item_id: when given, the object is populated with the
+                         _WorkItem's data . Requires project_id parameter
+            suds_object: Polarion _WorkItem object. When given, the object
+                         is populated by object data.
+            uri: the uri that references the Polarion _WorkItem
+            fields: the fields that are requested to be populated.
                     if this is null then it will return all fields.
-            revision - if given, get the _WorkItem in the specified revision
+            revision: if given, get the _WorkItem in the specified revision
                        Is only relevant if URI is given.
+
         Notes:
             Either test_run_id and project or suds_object or uri can be passed
             in or none of them. If none of the identifying parameters are
             passed in an empty object is created
-        Implements:
+
+        References:
             Tracker.getWorkItemById
             Tracker.getWorkItemByIdsWithFields
             Tracker.getWorkItemByUri
@@ -433,10 +444,12 @@ class _WorkItem(BasePolarion):
         """method add_approvee adds an approvee to the current _WorkItem
 
         Args:
-            approvee_id (str) - user_id of approvee to add
+            approvee_id (str):er_id of approvee to add
+
         Returns:
             None
-        Implements:
+
+        References:
             Tracker.addApprovee
         """
         self._verify_obj()
@@ -446,10 +459,12 @@ class _WorkItem(BasePolarion):
         """method add_assignee adds an assignee to the current _WorkItem
 
         Args:
-            assignee_id (str) - user_id of assignee to add
+            assignee_id (str): user_id of assignee to add
+
         Returns:
             bool
-        Implements:
+
+        References:
             Tracker.addAssignee
         """
         self._verify_obj()
@@ -460,10 +475,12 @@ class _WorkItem(BasePolarion):
         """method add_category adds a category to the current _WorkItem
 
         Args:
-            category_id (str) - id of the category to add
+            category_id (str): id of the category to add
+
         Returns:
             bool
-        Implements:
+
+        References:
             Tracker.addCategoy
         """
         self._verify_obj()
@@ -475,11 +492,13 @@ class _WorkItem(BasePolarion):
         repository.
 
         Args:
-            repository_name (str) - name of external repository
-            revision_id (str) - the id of the revision to add
+            repository_name (str): name of external repository
+            revision_id (str): the id of the revision to add
+
         Returns:
             bool
-        Implements:
+
+        References:
             Tracker.addExternalLinkedRevision
         """
         self._verify_obj()
@@ -490,11 +509,13 @@ class _WorkItem(BasePolarion):
         """method add_hyperlink adds a hyperlink to a _WorkItem
 
         Args:
-            url - the url of the hyperlink to add.
-            role - the role of the hyperlink to add.
+            url: the url of the hyperlink to add.
+            role: the role of the hyperlink to add.
+
         Returns:
             bool
-        Implements:
+
+        References:
             Tracker.addHyperlink
         """
         self._verify_obj()
@@ -508,14 +529,16 @@ class _WorkItem(BasePolarion):
         Args:
             linked_work_item_id - the URI of the target work item the link
                                   points to.
-            role (str) - the role of the hyperlink to add.
-            revision (str) - optional, specific revision for linked item
-                      (None means HEAD revision)
-            suspect (bool)- true if the link should be marked with suspect flag
+            role (str): the role of the hyperlink to add.
+            revision (str): optional, specific revision for linked item
+                           (None means HEAD revision)
+            suspect (bool): true if the link should be marked with suspect flag
                       Only valid if revision is set.
+
         Returns:
             bool
-        Implements:
+
+        References:
             Tracker.addLinkedItem
             Tracker.addLinkedItemWithRev
         """
@@ -534,10 +557,12 @@ class _WorkItem(BasePolarion):
         """method add_linked_revision links a revision to the current _WorkItem
 
         Args:
-            revision - the revision to add.
+            revision: the revision to add.
+
         Returns:
             bool
-        Implements:
+
+        References:
             Tracker.addLinkedRevision
         """
         self._verify_obj()
@@ -549,10 +574,12 @@ class _WorkItem(BasePolarion):
         _WorkItem
 
         Args:
-            path - file path to upload
-            title - u.User friendly name of the file
+            path: file path to upload
+            title: u.User friendly name of the file
+
         Notes:
             Raises an error if the _WorkItem object is not populated
+
         Implements
             Tracker.createAttachment
         """
@@ -567,9 +594,11 @@ class _WorkItem(BasePolarion):
 
         Args:
             content (Text or str)
+
         Returns:
             None
-        Implements:
+
+        References:
             Tracker.createComment
         """
         self._verify_obj()
@@ -590,14 +619,17 @@ class _WorkItem(BasePolarion):
     def create_work_record(self, user_id, date_worked, time_spent,
                            record_type=None, record_comment=None):
         """Creates a work record
+
         Args:
-            user_id - the user for the work record.
-            date_worked - the date of the work record.
-            time_spent - the time spent for the work record.
-            record_type - the type of the work record
-            record-comment - work record comment
+            user_id: the user for the work record.
+            date_worked: the date of the work record.
+            time_spent: the time spent for the work record.
+            record_type: the type of the work record
+            record-comment: work record comment
+
         Returns:
             None
+
         Implements
             Tracker.createWorkRecord
             Tracker.createWorkRecordWithTypeAndComment
@@ -622,10 +654,12 @@ class _WorkItem(BasePolarion):
         current _WorkItem
 
         Args:
-            attachment_id (str) - the ID of the attachment to be removed.
-        Returns;
+            attachment_id (str): the ID of the attachment to be removed.
+
+        Returns:
             None
-        Implements:
+
+        References:
             Tracker.deleteAttachment
         """
         self._verify_obj()
@@ -636,9 +670,11 @@ class _WorkItem(BasePolarion):
 
         Args:
             None
+
         Returns:
             None
-        Implements:
+
+        References:
             Tracker.doAutoSuspect
         """
         self._verify_obj()
@@ -649,9 +685,11 @@ class _WorkItem(BasePolarion):
 
         Args:
             None
+
         Returns:
             None
-        Implements:
+
+        References:
             Tracker.doAutoAssign
         """
         self._verify_obj()
@@ -661,11 +699,13 @@ class _WorkItem(BasePolarion):
         """Changes the status of an approval.
 
         Args:
-            approveeId - the user id of the approvee.
-            status - the new status to set.
+            approveeId: the user id of the approvee.
+            status: the new status to set.
+
         Returns:
             None
-        Implements:
+
+        References:
             Tracker.editApproval
         """
         self._verify_obj()
@@ -676,9 +716,11 @@ class _WorkItem(BasePolarion):
 
         Args:
             None
-        Returns
+
+        Returns:
             list of u.Users
-        Implements:
+
+        References:
             Tracker.getAllowedApprovers
         """
         users = []
@@ -692,9 +734,11 @@ class _WorkItem(BasePolarion):
 
         Args:
             None
-        Returns
+
+        Returns:
             list of u.Users
-        Implements:
+
+        References:
             Tracker.getAllowedAssignees
         """
         users = []
@@ -710,9 +754,11 @@ class _WorkItem(BasePolarion):
 
         Args:
             None
-        Returns
+
+        Returns:
             list of WorkFlowActions
-        Implements:
+
+        References:
             Tracker.getAvailableActions
         """
         self._verify_obj()
@@ -728,9 +774,11 @@ class _WorkItem(BasePolarion):
 
         Args:
             None
-        Returns
+
+        Returns:
             list of LinkedWorkItems
-        Implements:
+
+        References:
             Tracker.getbackLinkedWorkitems
         """
         self._verify_obj()
@@ -744,10 +792,12 @@ class _WorkItem(BasePolarion):
         """method get_custom_field gets a custom field of a work item.
 
         Args:
-            key - The key of the custom field
+            key: The key of the custom field
+
         Returns:
             CustomField object
-        Implements:
+
+        References:
             Tracker.getCustomField
         """
         self._verify_obj()
@@ -761,9 +811,11 @@ class _WorkItem(BasePolarion):
 
         Args:
             None
-        Returns
+
+        Returns:
             list of keys
-        Implements:
+
+        References:
             Tracker.getCustomFieldKeys
         """
         self._verify_obj()
@@ -774,10 +826,12 @@ class _WorkItem(BasePolarion):
         work item.
 
         Args:
-            key - The key of the custom field
+            key: The key of the custom field
+
         Returns:
             CustomFieldType object
-        Implements:
+
+        References:
             Tracker.getCustomFieldType
         """
         self._verify_obj()
@@ -791,9 +845,11 @@ class _WorkItem(BasePolarion):
 
         Args:
             None
-        Returns
+
+        Returns:
             list of CustomFieldType
-        Implements:
+
+        References:
             Tracker.getCustomFieldTypes
         """
         self._verify_obj()
@@ -806,10 +862,12 @@ class _WorkItem(BasePolarion):
         """Gets the enumeration control key for the specified work item key.
 
         Args:
-            enum_id - the id of the enumeration to get the control key for.
+            enum_id: the id of the enumeration to get the control key for.
+
         Returns:
             Enumeration control key
-        Implements:
+
+        References:
             Tracker.getEnumControlKeyForId
         """
         return self.session.tracker_client.service.getEnumControlKeyForId(
@@ -819,12 +877,13 @@ class _WorkItem(BasePolarion):
         """Gets the enumeration control key for the specified work item key.
 
         Args:
-            key - the key of the field containing the enumeration to get the
-            control key for
+            key: the key of the field containing the enumeration to get the
+                 control key for
 
         Returns:
             Enumeration control key
-        Implements:
+
+        References:
             Tracker.getEnumControlKeyForId
         """
         return self.session.tracker_client.service.getEnumControlKeyForId(
@@ -835,11 +894,12 @@ class _WorkItem(BasePolarion):
         null if there is no initial action for the corresponding workflow.
 
         Args:
-            work_item_type - the type of the work item to get the
+            work_item_type: the type of the work item to get the
                              available actions from. can be null
         Returns:
             WorkFlowAction object
-        Implements:
+
+        References:
             Tracker.getInitialWorkflowAction
             Tracker.getInitialWorkflowActionForProjectAndType
         """
@@ -858,9 +918,11 @@ class _WorkItem(BasePolarion):
         WorkItem. If the _WorkItem is not populated, it returns an exception.
         Args:
             None
+
         Returns:
             a TestSteps object
-        Implements:
+
+        References:
             Tracker.getTestSteps
         """
         self._verify_obj()
@@ -877,9 +939,11 @@ class _WorkItem(BasePolarion):
 
         Args:
             None
+
         Returns:
             list of WorkflowAction objects
-        Implements:
+
+        References:
             Tracker.getUnavailableActions
         """
         self._verify_obj()
@@ -894,10 +958,12 @@ class _WorkItem(BasePolarion):
         received by _WorkItem.getAvailableActions(java.lang.String).
 
         Args:
-            actionId - the id of the action to execute.
+            action_id: the id of the action to execute.
+
         Retuns:
             None
-        Implements:
+
+        References:
             Tracker.performWorkflowAction
         """
         self._verify_obj()
@@ -906,11 +972,14 @@ class _WorkItem(BasePolarion):
 
     def remove_assignee(self, assignee_id):
         """removes an assignee from the _WorkItem.
+
         Args:
-            assignee_id - user id of the assignee to remove
-        Returns
+            assignee_id: user id of the assignee to remove
+
+        Returns:
             bool
-        Implements:
+
+        References:
             Tracker.removeAssignee
         """
         self._verify_obj()
@@ -919,11 +988,14 @@ class _WorkItem(BasePolarion):
 
     def remove_category(self, category_id):
         """removes a category from the _WorkItem.
+
         Args:
-            assignee_id - user id of the assignee to remove
-        Returns
+            category_id: id of category to remove
+
+        Returns:
             bool
-        Implements:
+
+        References:
             Tracker.removeCategory
         """
         self._verify_obj()
@@ -934,11 +1006,13 @@ class _WorkItem(BasePolarion):
         """Removes a revision from external repository.
 
         Args:
-            repository_name - the ID of the external repository.
-            revision_id - the ID of the revision to remove.
-        Returns
+            repository_name: the ID of the external repository.
+            revision_id: the ID of the revision to remove.
+
+        Returns:
             bool
-        Implements:
+
+        References:
             Tracker.removeExternalLinkedRevision
         """
         self._verify_obj()
@@ -950,11 +1024,13 @@ class _WorkItem(BasePolarion):
         """Removes an externally linked work item.
 
         Args:
-            linked_external_workitem_id - the ID of the linked item to remove
-            role - the role of the linked item to remove
-        Returns
+            linked_external_workitem_id: the ID of the linked item to remove
+            role: the role of the linked item to remove
+
+        Returns:
             bool
-        Implements:
+
+        References:
             Tracker.removeExternallyLinkedItem
         """
         self._verify_obj()
@@ -966,10 +1042,12 @@ class _WorkItem(BasePolarion):
         """Removes a hyperlink from the _WorkItem
 
         Args:
-            url - the url of the hyperlink to remove
-        Returns
+            url: the url of the hyperlink to remove
+
+        Returns:
             bool
-        Implements:
+
+        References:
             Tracker.removeHyperlink
         """
         self._verify_obj()
@@ -980,11 +1058,13 @@ class _WorkItem(BasePolarion):
         """Removes a linked work item.
 
         Args:
-            linked_item_id - the ID of the linked item to remove
-            role - the role of the linked item to remove
-        Returns
+            linked_item_id: the ID of the linked item to remove
+            role: the role of the linked item to remove
+
+        Returns:
             bool
-        Implements:
+
+        References:
             Tracker.removeLinkedItem
         """
         self._verify_obj()
@@ -996,10 +1076,12 @@ class _WorkItem(BasePolarion):
         """Removes a revision
 
         Args:
-            revision_id - The ID of the revision to remove
+            revision_id: The ID of the revision to remove
+
         Returns:
             bool
-        Implements:
+
+        References:
             Tracker.removeLinkedRevision
         """
         self._verify_obj()
@@ -1010,11 +1092,13 @@ class _WorkItem(BasePolarion):
         """Removes a planning constraint
 
         Args:
-            constraint_date  - the date of the planning constraint to remove.
-            constraint - the type of constraint to remove.
+            constraint_date: the date of the planning constraint to remove.
+            constraint: the type of constraint to remove.
+
         Returns:
             bool
-        Implements:
+
+        References:
             Tracker.removePlaningConstraint
         """
         self._verify_obj()
@@ -1027,9 +1111,11 @@ class _WorkItem(BasePolarion):
 
         Args:
             None
+
         Returns:
             None
-        Implements:
+
+        References:
             Tracker.resetWorkflow
         """
         self._verify_obj()
@@ -1037,11 +1123,15 @@ class _WorkItem(BasePolarion):
 
     def _set_custom_field(self, key, value):
         """sends the custom field value to the server
+
         Args:
-            key - the suds field name
+            key: the suds field name
+            value:
+
         Returns:
             None
-        Implements:
+
+        References:
             Tracker.setCustomField
         """
         c = CustomField()
@@ -1054,10 +1144,12 @@ class _WorkItem(BasePolarion):
         """sets the specified fields to Null.
 
         Args:
-            fields - list of fields to set to null
+            fields: list of fields to set to null
+
         Returns:
             None
-        Implements:
+
+        References:
             Tracker.setFieldsNull
         """
         self._verify_obj()
@@ -1071,10 +1163,12 @@ class _WorkItem(BasePolarion):
         content of the Test Steps field will be emptied (delete operation).
 
         Args:
-            test_steps - a list of TestStep objects.
+            test_steps: a list of TestStep objects.
+
         Returns:
             None
-         Implements:
+
+         References:
             Test_Management.setTestSteps
         """
         self._verify_obj()
@@ -1094,11 +1188,14 @@ class _WorkItem(BasePolarion):
 
     def update(self):
         """Update the server with the current _WorkItem data
+
         Args:
             None
+
         Returns:
             None
-        Implements:
+
+        References:
             Tracker.updateWorkItem
         """
         self._verify_obj()
@@ -1109,14 +1206,17 @@ class _WorkItem(BasePolarion):
         current _WorkItem
 
         Args:
-            attachment_id - the ID of the attachment to be updated
-            path - file path to upload
-            title - u.User friendly name of the file
+            attachment_id: the ID of the attachment to be updated
+            path: file path to upload
+            title: u.User friendly name of the file
+
         Returns:
             None
+
         Notes:
             Raises an error if the test run object is not populated.
-        Implements:
+
+        References:
             Tracker.updateAttachment
         """
         self._verify_obj()
@@ -1145,14 +1245,15 @@ class _SpecificWorkItem(_WorkItem):
         be passed in and all required custom fields as key word args. If not
         all required fields are passed in or key word fields that are not
         custom, it raises an exception.
+
         Args:
-            project_id - The project to create the WorkItem in
-            work_item_id - The unique id for the WorkItem
-            title - the title of the WorkItem
-            desc - the Description of the WorkItem
-            status - the initial status of the WorkItem, draft by default
-            kwargs - keyword arguments for custom fields. All required custom
-                     fields must appear as keyword arguments.
+            project_id: The project to create the WorkItem in
+            work_item_id: The unique id for the WorkItem
+            title: the title of the WorkItem
+            desc: the Description of the WorkItem
+            status: the initial status of the WorkItem, draft by default
+            kwargs: keyword arguments for custom fields. All required custom
+                    fields must appear as keyword arguments.
         """
         all_fields, reqs = cls.get_custom_fields(project_id)
         fields = ""
@@ -1174,8 +1275,10 @@ class _SpecificWorkItem(_WorkItem):
     @classmethod
     def get_custom_fields(cls, project_id):
         """List of custom fields for the project and specific wi_type
+
         Args:
-            project_id - project that the user is working with
+            project_id: project that the user is working with
+
         Returns:
             tuple containing:
                 a) list of all custom fields

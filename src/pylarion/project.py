@@ -13,7 +13,7 @@ from pylarion.tests_configuration import TestsConfiguration
 class Project(BasePolarion):
     """Object to handle the Polarion WSDL tns4:Project class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         active (boolean)
         description (Text)
         finish (date)
@@ -56,10 +56,12 @@ class Project(BasePolarion):
         """Returns the context (project) roles for the given location.
 
         Args:
-            location - the location of the context (project/project group)
+            location: the location of the context (project/project group)
+
         Returns:
             list of roles
-        Implements:
+
+        References:
             Security.getContextRoles
         """
         return cls.session.security_client.service.getContextRoles(location)
@@ -69,18 +71,19 @@ class Project(BasePolarion):
         """Project constructor.
 
         Args:
-            Optional
-                project_id - when given, the object is populated with the
-                             Project data.
-                suds_object - PolarionProject object. When given, the object
-                              is populated by object data.
-                location - the location of the Polarion project
-                uri - the uri that references the PolarionProject
+            project_id: when given, the object is populated with the
+                         Project data.
+            suds_object: PolarionProject object. When given, the object
+                          is populated by object data.
+            location: the location of the Polarion project
+            uri: the uri that references the PolarionProject
+
         Notes:
             Either project_id or suds_object or location or uri can be passed
             in or none of them. If none of the identifying parameters are
             passed in an empty object is created
-        Implements:
+
+        References:
             Project.getProject
             Project.getProjectatLocation
             Project.getProjectByURI
@@ -114,19 +117,20 @@ class Project(BasePolarion):
         the location specified.
 
         Args:
-            location - document space location with one component or null for
-                       default space (can be null)
-            document_name - Document name (not null)
-            document_title - Document title (can be null)
-            allowed_wi_types - one type can be specified (can be null)
-            structure_link_role - role which defines the hierarchy of work
-                                  items inside the Document (not null)
-            home_page_content - HTML markup for document home page
-                                (can be null)
+            location: document space location with one component or null for
+                      default space (can be null)
+            document_name: Document name (not null)
+            document_title: Document title (can be null)
+            allowed_wi_types: one type can be specified (can be null)
+            structure_link_role: role which defines the hierarchy of work
+                                 items inside the Document (not null)
+            home_page_content: HTML markup for document home page
+                               (can be null)
 
         Returns
             None
-        Implements:
+
+        References:
             Tracker.createDocument
         """
         self._verify_obj()
@@ -143,9 +147,11 @@ class Project(BasePolarion):
 
         Args:
             None
+
         Returns:
             list of Category objects
-        Implements:
+
+        References:
             Tracker.getCategories
         """
         self._verify_obj()
@@ -159,10 +165,12 @@ class Project(BasePolarion):
         """Gets all custom field keys defined for a workitem type in a project.
 
         Args:
-            work_item_type_id - the workitem type ID.
+            work_item_type_id: the workitem type ID.
+
         Returns:
             list of key for the project for the given workitem type
-        Implements:
+
+        References:
             Tracker.getDefinedCustomFieldkeys
         """
         self._verify_obj()
@@ -174,11 +182,13 @@ class Project(BasePolarion):
         of a work item type for the given key.
 
         Args:
-            work_item_type_id - the workitem type ID.
-            key - The key of the custom field
+            work_item_type_id: the workitem type ID.
+            key: The key of the custom field
+
         Returns:
             CustomFieldType object
-        Implements:
+
+        References:
             Tracker.getDefinedCustomFieldType
         """
         self._verify_obj()
@@ -191,10 +201,12 @@ class Project(BasePolarion):
         of a work item type all keys.
 
         Args:
-            work_item_type_id - the workitem type ID.
+            work_item_type_id: the workitem type ID.
+
         Returns:
             list of CustomFieldType object
-        Implements:
+
+        References:
             Tracker.getDefinedCustomFieldType
         """
         self._verify_obj()
@@ -209,9 +221,11 @@ class Project(BasePolarion):
 
         Args:
             None
+
         Returns:
             list of (string) document locations
-        Implements:
+
+        References:
             Tracker.getDocumentLocations
         """
         self._verify_obj()
@@ -223,9 +237,11 @@ class Project(BasePolarion):
 
         Args:
             None
+
         Returns:
             list of (string) document spaces
-        Implements:
+
+        References:
             Tracker.getDocumentSpaces
         """
         self._verify_obj()
@@ -234,10 +250,14 @@ class Project(BasePolarion):
 
     def get_project_users(self):
         """Gets users of the project
-        Args: None
+
+        Args:
+            None
+
         Returns:
             list of u.User objects
-        Implements:
+
+        References:
             Project.getProjectUsers
         """
         self._verify_obj()
@@ -250,9 +270,13 @@ class Project(BasePolarion):
         """method get_test_steps_configuration retrieves a list of the
         Test Steps configuration for the project
 
+        Args:
+            None
+
         Returns:
             list of configuration of the Test Steps custom field.
-        Implements:
+
+        References:
             TestManagement.getTestStepsConfiguration
         """
         self._verify_obj()
@@ -264,9 +288,13 @@ class Project(BasePolarion):
         """method get_tests_configuration retrieves the test management
         configuration for the project
 
+        Args:
+            None
+
         Returns:
             TestsConfiguration object
-        Implements:
+
+        References:
             TestManagement.getTestsConfiguration
         """
         self._verify_obj()
@@ -279,9 +307,11 @@ class Project(BasePolarion):
 
         Args:
             None
+
         Returns:
             Array of string
-        Implements:
+
+        References:
             Tracker.getWikiSpaces
         """
         self._verify_obj()

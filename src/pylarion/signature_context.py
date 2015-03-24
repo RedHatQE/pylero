@@ -8,6 +8,14 @@ from pylarion.user import User
 
 
 class SignatureContext(BasePolarion):
+    """Object to handle the Polarion WSDL tns4:SignatureContext class
+
+    Attributes:
+        signatures (ArrayOfSignature)
+        target_status_id (string)
+        transition_data_revision (string)
+        user (User)
+"""
     _cls_suds_map = {"transition_data_revision": "transitionDataRevision",
                      "signatures":
                      {"field_name": "signatures",

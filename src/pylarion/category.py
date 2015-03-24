@@ -8,7 +8,7 @@ from pylarion.text import Text
 class Category(BasePolarion):
     """Object to handle the Polarion WSDL tns5:Category class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         description (Text)
         category_id (string)
         name (string)

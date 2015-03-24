@@ -11,7 +11,7 @@ from pylarion.build_linked_work_item import ArrayOfBuildLinkedWorkItem
 class Build(BasePolarion):
     """Object to handle the Polarion WSDL tns2:Build class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         author (User)
         bir_location (Location)
         build_descriptor_name (string)

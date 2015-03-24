@@ -7,6 +7,15 @@ from pylarion.user import User
 
 
 class Signature(BasePolarion):
+    """Object to handle the Polarion WSDL tns4:Signature class
+
+    Attributes:
+        signed_by (User)
+        signed_revision (string)
+        signer_role (string)
+        verdict (EnumOptionId)
+        verdict_time (dateTime)
+"""
     _cls_suds_map = {"verdict":
                      {"field_name": "verdict",
                       "cls": EnumOptionId},

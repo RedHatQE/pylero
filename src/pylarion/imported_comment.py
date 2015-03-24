@@ -7,7 +7,7 @@ from pylarion.base_polarion import BasePolarion
 class ImportedComment(BasePolarion):
     """Object to handle the Polarion WSDL tns4:ImportedComment class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         author (string)
         created (dateTime)
         initials (string)

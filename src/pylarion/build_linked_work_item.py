@@ -9,7 +9,7 @@ from pylarion.work_item import _WorkItem
 class BuildLinkedWorkItem(BasePolarion):
     """Object to handle the Polarion WSDL tns2:BuildLinkedWorkItem class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         revision (string)
         role (EnumOptionId)
         work_item (WorkItem)

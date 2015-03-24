@@ -7,7 +7,7 @@ from pylarion.base_polarion import BasePolarion
 class Change(BasePolarion):
     """Object to handle the Polarion WSDL tns3:Change class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         creation (boolean)
         date (dateTime)
         diffs (ArrayOf_tns3_FieldDiff)
@@ -15,7 +15,7 @@ class Change(BasePolarion):
         invalid (boolean)
         revision (string)
         user (string)
-"""
+    """
     _cls_suds_map = {"creation": "creation",
                      "date": "date",
                      "diffs": "diffs",

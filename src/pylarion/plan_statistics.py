@@ -7,7 +7,7 @@ from pylarion.base_polarion import BasePolarion
 class PlanStatistics(BasePolarion):
     """Object to handle the Polarion WSDL tns3:PlanStatistics class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         done (float)
         done_as_string (string)
         ideal_progress (float)

@@ -8,7 +8,7 @@ from pylarion.user import User
 class WikiPageAttachment(BasePolarion):
     """Object to handle the Polarion WSDL tns3:WikiPageAttachment class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         author (User)
         file_name (string)
         wiki_page_attachment_id (string)

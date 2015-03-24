@@ -19,7 +19,7 @@ from pylarion.work_item import _WorkItem
 class Plan(BasePolarion):
     """Object to handle the Polarion WSDL tns6:Plan class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         allowed_types (ArrayOfEnumOptionId)
         author_uri (SubterraURI)
         calculation_type (EnumOptionId)
@@ -115,14 +115,16 @@ class Plan(BasePolarion):
         """Creates a new plan
 
         Args:
-            plan_id (str) - The id of the new plan
-            plan_name - The name of the new plan
-            project_id (str)- The project the plan will be created in
-            parent_id - The id of the parent plan (can be null)
-            template_id - The id of the template used for this plan
+            plan_id (str): The id of the new plan
+            plan_name: The name of the new plan
+            project_id (str): The project the plan will be created in
+            parent_id: The id of the parent plan (can be null)
+            template_id: The id of the template used for this plan
+
         Returns:
             Plan Object
-        Implements
+
+        References:
             Planning.createPlan
         """
         uri = cls.session.planning_client.service.createPlan(project_id,
@@ -138,14 +140,16 @@ class Plan(BasePolarion):
         """Creates a new plan template
 
         Args:
-            template_id (str) - The id of the new template
-            template_name - The name of the new template
-            project_id (str)- The project the plan will be created in
-            parent_id - The id of the template the new template is based on
+            template_id (str): The id of the new template
+            template_name: The name of the new template
+            project_id (str): The project the plan will be created in
+            parent_id: The id of the template the new template is based on
                         (can be null)
+
         Returns:
             Plan Object
-        Implements:
+
+        References:
             Planning.createPlanTemplate
         """
         uri = cls.session.planning_client.service.createPlanTemplate(
@@ -157,11 +161,13 @@ class Plan(BasePolarion):
         """Delete specified plans
 
         Args:
-            project_id - the project the plans will be deleted in
-            plan_ids - list of plan ids to delete.
+            project_id: the project the plans will be deleted in
+            plan_ids: list of plan ids to delete.
+
         Returns:
             None
-        Implements:
+
+        References:
             Planning.deletePlans
         """
         cls.session.planning_client.service.deletePlans(project_id, plan_ids)
@@ -174,12 +180,14 @@ class Plan(BasePolarion):
         Args
             query
             sort
-            limit - the maximum number of records to be returned,
-                    -1 for no limit.
-            fields - list of the fields requested.
+            limit: the maximum number of records to be returned,
+                   -1 for no limit.
+            fields: list of the fields requested.
+
         Returns:
             list of Plan objects
-        Implements:
+
+        References:
             Planning.searchPlanTemplates
             Planning.searchPlanTemplatesWithFields
             Planning.searchPlans
@@ -206,14 +214,16 @@ class Plan(BasePolarion):
         """Plan Constructor
 
         Args:
-            plan_id - ID of the plan
-            project_id - ID of the project that contains the specific plan
-                         required when plan_id is given
-            uri - the SubterraURI of the plan to load
-            suds_object - the Polarion Plan object
+            plan_id: ID of the plan
+            project_id: ID of the project that contains the specific plan
+                        required when plan_id is given
+            uri: the SubterraURI of the plan to load
+            suds_object: the Polarion Plan object
+
         Returns:
             None
-        Implements:
+
+        References:
             Planning.getPlanById
             Planning.getPlanByUri
         """
@@ -242,10 +252,12 @@ class Plan(BasePolarion):
         """Add plan records to the plan.
 
         Args:
-            items - list of work_item_ids
+            items: list of work_item_ids
+
         Returns:
             None
-        Implements:
+
+        References:
             Planning.addPlanItems
         """
         self._verify_obj()
@@ -266,9 +278,11 @@ class Plan(BasePolarion):
 
         Args:
             None
+
         Returns:
             PlanStatistics object
-        Implements:
+
+        References:
             Planning.getPlanStatistics
         """
         self._verify_obj()
@@ -281,9 +295,11 @@ class Plan(BasePolarion):
 
         Args:
             None
+
         Returns:
             Text object
-        Implements:
+
+        References:
             Planning.getPlanWikiContent
         """
         self._verify_obj()
@@ -295,10 +311,12 @@ class Plan(BasePolarion):
         """Remove plan records to the plan.
 
         Args:
-            items - list of work_item_ids
+            items: list of work_item_ids
+
         Returns:
             None
-        Implements:
+
+        References:
             Planning.removePlanItems
         """
         self._verify_obj()
@@ -319,9 +337,11 @@ class Plan(BasePolarion):
 
         Args:
             Content (str or Text object)
+
         Returns:
             None
-        Implements:
+
+        References:
             Planning.setPlanWikiContent
         """
         self._verify_obj()
@@ -343,9 +363,11 @@ class Plan(BasePolarion):
 
         Args:
             None
+
         Returns:
             None
-        Implements:
+
+        References:
             Planning.updatePlan
         """
         self._verify_obj()
@@ -356,9 +378,11 @@ class Plan(BasePolarion):
 
         Args:
             None
+
         Returns:
             bool
-        Implements:
+
+        References:
             Planning.wasPlanStarted
         """
         self._verify_obj()

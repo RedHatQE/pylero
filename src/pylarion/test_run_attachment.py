@@ -6,7 +6,18 @@ from pylarion.user import User
 
 
 class TestRunAttachment(BasePolarion):
-    '''Object to manage Polarion TestManagement WS tns4:TestRunAttachment'''
+    """Object to handle the Polarion WSDL tns4:TestRunAttachment class
+
+    Attributes:
+        author (User)
+        file_name (string)
+        id (string)
+        length (long)
+        test_run_uri (SubterraURI)
+        title (string)
+        updated (dateTime)
+        url (string)
+"""
     _cls_suds_map = {"author":
                      {"field_name": "author",
                       "cls": User},

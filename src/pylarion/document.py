@@ -20,7 +20,39 @@ from pylarion.work_item import _WorkItem
 
 
 class Document(BasePolarion):
-    '''An object to manage the TestManagement WS tns4:Module '''
+    """An object to manage the TestManagement WS tns4:Module
+
+    Attributes:
+        allowed_wi_types (ArrayOfEnumOptionId)
+        are_links_from_parent_to_child (boolean)
+        author (User)
+        auto_suspect (boolean)
+        branched_from (Module)
+        branched_with_query (string)
+        comments (ArrayOfModuleComment)
+        created (dateTime)
+        custom_fields (ArrayOfCustom)
+        derived_fields (ArrayOfstring)
+        derived_from_link_role (EnumOptionId)
+        derived_from_uri (SubterraURI)
+        home_page_content (Text)
+        id (string)
+        location (Location)
+        module_absolute_location (Location)
+        module_folder (string)
+        module_location (Location)
+        module_name (string)
+        project (Project)
+        signature_contexts (ArrayOfSignatureContext)
+        status (EnumOptionId)
+        structure_link_role (EnumOptionId)
+        title (string)
+        type (EnumOptionId)
+        updated (dateTime)
+        updated_by (User)
+        uses_outline_numbering (boolean)
+"""
+
     _cls_suds_map = {
         "allowed_wi_types":
             {"field_name": "allowedWITypes",
@@ -110,19 +142,21 @@ class Document(BasePolarion):
         Module/Document in given location with given parameters.
 
         Args:
-            project_id - project to create module in
-            space - document space location with one component or None for
-                    default space
-            document_name - Document name (required)
-            document_title - Document title (required)
-            allowed_wi_types - list of types, at least one must be specified
-            structure_link_role - required, role which defines the hierarchy of
-                                  work items inside the Module
-            home_page_content - HTML markup for document home page
-            document_type - Type of document (i.e testspecification).
+            project_id: project to create module in
+            space: document space location with one component or None for
+                   default space
+            document_name: Document name (required)
+            document_title: Document title (required)
+            allowed_wi_types: list of types, at least one must be specified
+            structure_link_role: required, role which defines the hierarchy of
+                                 work items inside the Module
+            home_page_content: HTML markup for document home page
+            document_type: Type of document (i.e testspecification).
+
         Returns:
             None
-        Implements:
+
+        References:
             Tracker.createDocument
         """
         if isinstance(allowed_wi_types, basestring):
@@ -155,14 +189,17 @@ class Document(BasePolarion):
     @classmethod
     def get_documents(cls, project_id, space, fields=[]):
         """returns a list of Document objects
+
         Args:
-            project_id - the project where the modules are located
-            space - specific location of the repository
-            fields - optional list of fields that should be contained in the
-                     returned objects.
+            project_id: the project where the modules are located
+            space: specific location of the repository
+            fields: optional list of fields that should be contained in the
+                    returned objects.
+
         Returns:
             list of Document Objects
-        Implements:
+
+        References:
             Tracker.getModules
             Tracker.getModulesWithFields
         """
@@ -184,24 +221,27 @@ class Document(BasePolarion):
     def query(cls, query, is_sql=False, fields=[], sort="document_id",
               limit=-1, baseline_revision=None, query_uris=False):
         """Searches for Modules/Documents.
+
         Args:
-            query - query, either Lucene or SQL
-            is_sql (bool), determines if the query is SQL or Lucene
-            fields - array of field names to fill in the returned
-                     Modules/Documents (can be null). For nested structures in
-                     the lists you can use following syntax to include only
-                     subset of fields: myList.LIST.key
-                     (e.g. linkedWorkItems.LIST.role).
-                     For custom fields you can specify which fields you want to
-                     be filled using following syntax:
-                     customFields.CUSTOM_FIELD_ID (e.g. customFields.risk).
-            sort - Lucene sort string (can be null)
-            limit - how many results to return (-1 means everything)
-            baseline_revision (str) if populated, query done in specified rev
-            query_uris - returns a list of URI of the Modules found
+            query: query, either Lucene or SQL
+            is_sql (bool): determines if the query is SQL or Lucene
+            fields: array of field names to fill in the returned
+                    Modules/Documents (can be null). For nested structures in
+                    the lists you can use following syntax to include only
+                    subset of fields: myList.LIST.key
+                    (e.g. linkedWorkItems.LIST.role).
+                    For custom fields you can specify which fields you want to
+                    be filled using following syntax:
+                    customFields.CUSTOM_FIELD_ID (e.g. customFields.risk).
+            sort: Lucene sort string (can be null)
+            limit: how many results to return (-1 means everything)
+            baseline_revision (str): if populated, query done in specified rev
+            query_uris: returns a list of URI of the Modules found
+
         Returns:
             list of modules
-        Implements:
+
+        References:
             queryModuleUris
             queryModuleUrisBySQL
             queryModuleUrisInBaseline
@@ -226,17 +266,21 @@ class Document(BasePolarion):
                  uri=None, suds_object=None):
         """constructor for the Module object. Gets the module object from the
         Polarion server based on parameters passed in.
+
         Args:
-            project_id - the project where the module is located
-            doc_with_space - specific space/doc_name of the repository,
-                    required if project_id is given (Testing, Development, ...)
-            fields - optional list of fields that should be contained in the
+            project_id: the project where the module is located
+            doc_with_space: specific space/doc_name of the repository,
+                            required if project_id is given
+                            (Testing, Development, ...)
+            fields: optional list of fields that should be contained in the
                      returned object.
-            uri - The Polarion specific uri of the module object
-            suds_object - the WSDL Module object
+            uri: The Polarion specific uri of the module object
+            suds_object: the WSDL Module object
+
         Returns:
             None
-        Implements:
+
+        References:
             Tracker.getModuleByLocation
             Tracker.getModuleByLocationWithFields
             Tracker.getModuleByUri
@@ -273,10 +317,14 @@ class Document(BasePolarion):
         """create a work item in the current document
 
         Args:
-            parent_id - The work_item_id of the parent _WorkItem
-            wi - The Work Item object to create.
-        returns
+            parent_id: The work_item_id of the parent _WorkItem
+            wi: The Work Item object to create.
+
+        Returns:
             The created _WorkItem
+
+        References:
+            Tracker.createWorkItemInModule
         """
         self._verify_obj()
         if isinstance(w_item, _WorkItem):
@@ -307,6 +355,7 @@ class Document(BasePolarion):
 
         Args:
             None
+
         Returns:
             None
         """
@@ -319,16 +368,20 @@ class Document(BasePolarion):
         Module/Document under given parent (if specified).
 
         Args:
-            parent_work_item_id (str) - Id of parent work item or None
-            deep - true to return work items from the whole subtree
-            fields - fields to fill. For nested structures in the lists you can
-                     use following syntax to include only subset of fields:
-                     myList.LIST.key (e.g. linkedWorkItems.LIST.role).
-                     For custom fields you can specify which fields you want to
-                     be filled using following syntax:
-                     customFields.CUSTOM_FIELD_ID (e.g. customFields.risk).
+            parent_work_item_id (str): Id of parent work item or None
+            deep: true to return work items from the whole subtree
+            fields: fields to fill. For nested structures in the lists you can
+                    use following syntax to include only subset of fields:
+                    myList.LIST.key (e.g. linkedWorkItems.LIST.role).
+                    For custom fields you can specify which fields you want to
+                    be filled using following syntax:
+                    customFields.CUSTOM_FIELD_ID (e.g. customFields.risk).
+
         Returns:
             list of _WorkItem objects
+
+        References:
+            Tracker.getModuleWorkItems
         """
         self._verify_obj()
         if parent_work_item_id:
@@ -350,18 +403,22 @@ class Document(BasePolarion):
         item is not yet inside the Document it will be moved into the Document.
 
         Args:
-            work_item_id - WorkItem id to move
-            parent_id - The parent WorkItem id, can be None
-            position - desired position in the list of children or a value < 0
-                       to insert at the end (if the old and new parent is the
-                       same then moved work item is not counted)
-            retain_flow - true to retain the position of moved work item in the
-                          document flow (even if it means to change the parent)
-                          false to keep desired parent (even if it means to
-                          move work item to different position)
+            work_item_id: WorkItem id to move
+            parent_id: The parent WorkItem id, can be None
+            position (int): desired position in the list of children or a
+                            value < 0 to insert at the end (if the old and new
+                            parent is the same then moved work item is not
+                            counted)
+            retain_flow (bool): true to retain the position of moved work item
+                                in the document flow (even if it means to
+                                change the parent).
+                                false to keep desired parent (even if it means
+                                to move work item to different position)
+
         Returns:
             None
-        Implements:
+
+        References:
             Tracker.moveWorkItemToDocument
         """
         self._verify_obj()
@@ -375,8 +432,14 @@ class Document(BasePolarion):
 
     def update(self):
         """updates the server with the current module data
-        Args: None
-        Returns: None
-        Implements: updateModule
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        References:
+            Tracker.updateModule
         """
         self.session.tracker_client.service.updateModule(self._suds_object)

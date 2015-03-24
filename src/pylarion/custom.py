@@ -6,7 +6,12 @@ from pylarion.enum_option_id import EnumOptionId
 
 
 class Custom(BasePolarion):
-    '''Object to manage Polarion TestManagement WS tns4:Custom'''
+    """Object to manage Polarion TestManagement WS tns4:Custom
+
+    Attributes:
+        key (string)
+        value (EnumOptionId)
+"""
     _cls_suds_map = {"key": "key",
                      "value":
                      {"field_name": "value",

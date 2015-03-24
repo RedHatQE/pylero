@@ -11,7 +11,7 @@ from pylarion.exceptions import PylarionLibException
 class User(BasePolarion):
     """Object to handle the Polarion WSDL tns3:User class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         description (Text)
         disabled_notifications (boolean)
         email (string)
@@ -50,11 +50,13 @@ class User(BasePolarion):
         """class method create_user that creates a Polarion user.
 
         Args:
-            user_id - the id of the user to create (login name)
+            user_id: the id of the user to create (login name)
+
         Returns
             new User object
-        Implements:
-            p.Project.createUser
+
+        References:
+            Project.\ :project:`createUser(java.lang.String)`
         """
         suds_object = cls.session.project_client.service.createUser(user_id)
         user = User()
@@ -64,11 +66,14 @@ class User(BasePolarion):
     @classmethod
     def get_user_from_token(cls, token):
         """Returns the username of the user that has the assigned token.
+
         Args:
             token
+
         Returns:
             user_id
-        Implements:
+
+        References:
             Security.getUserFromToken
         """
         return cls.session.security_client.service.getuserFromToken(token)
@@ -82,8 +87,9 @@ class User(BasePolarion):
 
         Returns:
             list containing User objects for all users.
-        Implements:
-            p.Project.getUsers
+
+        References:
+            Project.getUsers
         """
         users = []
         suds_objects = cls.session.project_client.service.getUsers()
@@ -97,15 +103,17 @@ class User(BasePolarion):
         """User constructor.
 
         Args:
-            user_id - when given, the object is populated with user's data
-            suds_object - Polarion User object. When given, the object is
+            user_id: when given, the object is populated with user's data
+            suds_object: Polarion User object. When given, the object is
                           populated by object data.
-            uri - when given, the object is populated with user's data
+            uri: when given, the object is populated with user's data
+
         Notes:
             Either user_id, suds_object or uri can be passed in, not multiple
-        Implements:
-            p.Project.getUser
-            p.Project.getUserByUri
+
+        References:
+            Project.getUser
+            Project.getUserByUri
         """
         super(self.__class__, self).__init__(user_id, suds_object)
 # user_id will be null if called from the get_users class function
@@ -124,10 +132,12 @@ class User(BasePolarion):
         """Returns the context (project) roles for the user at given location.
 
         Args:
-            location - the location of the context (project/project group)
+            location: the location of the context (project/project group)
+
         Returns:
             list of roles
-        Implements:
+
+        References:
             Security.getContextRolesForUser
         """
         self._verify_obj()
@@ -140,9 +150,11 @@ class User(BasePolarion):
 
         Args:
             location
+
         Returns:
             list of roles
-        Implements:
+
+        References:
             Security.getRolesForUser
         """
         self._verify_obj()
@@ -159,8 +171,9 @@ class User(BasePolarion):
 
         Notes:
             Raises an error if the User is not populated.
-        Implements:
-            p.Project.getUserAvatarURL
+
+        References:
+            Project.getUserAvatarURL
         """
         if self.user_id:
             return self.session.project_client.service.getUserAvatarURL(
@@ -172,12 +185,14 @@ class User(BasePolarion):
         """Checks if given permission is granted to the user.
 
         Args:
-            permission - the permission to check.
-            projectId - the id of the project to check the permission in,
+            permission: the permission to check.
+            project_id: the id of the project to check the permission in,
                         None to check global permissions.
+
         Returns:
             bool
-        Implements:
+
+        References:
             Security.hasPermission
         """
         self._verify_obj()
@@ -193,7 +208,8 @@ class User(BasePolarion):
 
         Notes:
             Raises an error if the User is not populated.
-        Implements:
+
+        References:
             p.Project.updateUser
         """
         if self.user_id:

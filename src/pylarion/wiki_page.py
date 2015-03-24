@@ -14,7 +14,7 @@ from pylarion.wiki_page_attachment import ArrayOfWikiPageAttachment
 class WikiPage(BasePolarion):
     """Object to handle the Polarion WSDL tns3:WikiPage class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         attachments (ArrayOfWikiPageAttachment)
         author (User)
         created (dateTime)
@@ -75,8 +75,9 @@ class WikiPage(BasePolarion):
         """Returns Wiki Pages from given project and space.
 
         Args:
-            projectId - project id (not null)
-            spaceId - space id (not null)
+            project_id: project id (not null)
+            space_id: space id (not null)
+
         Returns:
             list of WikiPage objects
         """
@@ -95,10 +96,11 @@ class WikiPage(BasePolarion):
     def query(cls, query, is_sql=False, fields=[], sort="wiki_page_id",
               limit=-1, baseline_revision=None, query_uris=False):
         """Searches for Modules/Documents.
+
         Args:
-            query - query, either Lucene or SQL
-            is_sql (bool), determines if the query is SQL or Lucene
-            fields - array of field names to fill in the returned
+            query: query, either Lucene or SQL
+            is_sql (bool): determines if the query is SQL or Lucene
+            fields: array of field names to fill in the returned
                      Modules/Documents (can be null). For nested structures in
                      the lists you can use following syntax to include only
                      subset of fields: myList.LIST.key
@@ -106,13 +108,15 @@ class WikiPage(BasePolarion):
                      For custom fields you can specify which fields you want to
                      be filled using following syntax:
                      customFields.CUSTOM_FIELD_ID (e.g. customFields.risk).
-            sort - Lucene sort string (can be null)
-            limit - how many results to return (-1 means everything)
-            baseline_revision (str) if populated, query done in specified rev
-            query_uris - returns a list of URI of the Modules found
+            sort: Lucene sort string (can be null)
+            limit: how many results to return (-1 means everything)
+            baseline_revision (str): if populated, query done in specified rev
+            query_uris: returns a list of URI of the Modules found
+
         Returns:
             list of modules
-        Implements:
+
+        References:
             queryWikiPageUris
             queryWikiPageUrisBySQL
             queryWikiPageUrisInBaseline
@@ -133,10 +137,12 @@ class WikiPage(BasePolarion):
     def __init__(self, fields=None, uri=None, suds_object=None):
         """
             Args:
-                fields - list of object fields to be returned in the object
+                fields: list of object fields to be returned in the object
+
             Returns:
                 None
-            Implements:
+
+            References:
                 Tracker.getWikiPageByUri
                 tracker.getWikiPageByUriWithFields
         """

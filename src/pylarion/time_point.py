@@ -8,7 +8,7 @@ from pylarion.text import Text
 class TimePoint(BasePolarion):
     """Object to handle the Polarion WSDL tns5:TimePoint class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         closed (boolean)
         description (Text)
         earliest_planned_start (date)

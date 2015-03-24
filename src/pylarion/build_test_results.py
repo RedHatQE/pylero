@@ -7,7 +7,7 @@ from pylarion.base_polarion import BasePolarion
 class BuildTestResults(BasePolarion):
     """Object to handle the Polarion WSDL tns2:BuildTestResults class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         error_count (int)
         failure_count (int)
         skipped_count (int)

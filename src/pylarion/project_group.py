@@ -10,7 +10,7 @@ from pylarion.project import Project
 class ProjectGroup(BasePolarion):
     """Object to handle the Polarion WSDL tns2:ProjectGroup class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         group_uris (ArrayOfSubterraURI)
         location (Location)
         name (string)
@@ -37,11 +37,15 @@ class ProjectGroup(BasePolarion):
     @classmethod
     def get_root_project_group(cls):
         """Gets the root project group.
-        Args: None
+
+        Args:
+            None
+
         Returns:
-            p.ProjectGroup object
-        Impements:
-            p.Project.getRootProjectGroup
+            ProjectGroup object
+
+        References:
+            Project.getRootProjectGroup
         """
         return cls(suds_object=cls.session.project_client.service.
                    getRootProjectGroup())
@@ -50,15 +54,17 @@ class ProjectGroup(BasePolarion):
         """ProjectGroup constructor.
 
         Args:
-            uri - the uri that references the Polarion ProjectGroup
-            location - the location of the Polarion ProjectGroup
-            suds_object - Polarion ProjectGroup object. When given, the object
-                          is populated by object data.
+            uri: the uri that references the Polarion ProjectGroup
+            location: the location of the Polarion ProjectGroup
+            suds_object: Polarion ProjectGroup object. When given, the object
+                         is populated by object data.
+
         Notes:
             Either uri or suds_object or location in or none of them.
             If none of the identifying parameters are
             passed in an empty object is created
-        Implements:
+
+        References:
             p.Project.getProjectGroup
             p.Project.getProjectGroupAtLocation
         """
@@ -72,11 +78,14 @@ class ProjectGroup(BasePolarion):
 
     def get_contained_groups(self):
         """Gets all project groups located directly below the project group.
+
         Args:
             None
+
         Returns:
             list of p.ProjectGroup objects
-        Implements:
+
+        References:
             p.Project.getContainedGroups
         """
         self._verify_obj()
@@ -88,11 +97,14 @@ class ProjectGroup(BasePolarion):
 
     def get_contained_projects(self):
         """Gets all projects located directly below the project group.
+
         Args:
             None
+
         Returns:
             list of p.Project objects
-        Implements:
+
+        References:
             p.Project.getContainedProjects
         """
         self._verify_obj()
@@ -104,11 +116,14 @@ class ProjectGroup(BasePolarion):
 
     def get_deep_contained_projects(self):
         """Gets all projects located below the project group.
+
         Args:
             None
+
         Returns:
             list of p.Project objects
-        Implements:
+
+        References:
             p.Project.getDeepContainedProjects
         """
         self._verify_obj()

@@ -7,7 +7,7 @@ from pylarion.base_polarion import BasePolarion
 class LicenseInfo(BasePolarion):
     """Object to handle the Polarion WSDL tns3:LicenseInfo class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         license (string)
         slots (int)
 """

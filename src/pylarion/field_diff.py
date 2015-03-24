@@ -7,7 +7,7 @@ from pylarion.base_polarion import BasePolarion
 class FieldDiff(BasePolarion):
     """Object to handle the Polarion WSDL tns3:FieldDiff class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         added (ArrayOf_xsd_anyType)
         after (anyType)
         before (anyType)

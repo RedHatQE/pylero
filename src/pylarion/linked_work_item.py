@@ -9,7 +9,7 @@ from pylarion.subterra_uri import SubterraURI
 class LinkedWorkItem(BasePolarion):
     """Object to handle the Polarion WSDL tns5:LinkedWorkItem class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         revision (string)
         role (EnumOptionId)
         suspect (boolean)

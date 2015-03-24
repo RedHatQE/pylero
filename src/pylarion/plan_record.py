@@ -8,7 +8,7 @@ from pylarion.work_item import _WorkItem
 class PlanRecord(BasePolarion):
     """Object to handle the Polarion WSDL tns6:PlanRecord class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         item (_WorkItem)
 """
     _cls_suds_map = {"item":

@@ -6,7 +6,12 @@ from pylarion.enum_option_id import EnumOptionId
 
 
 class SignatureData(BasePolarion):
-    '''Container for the "tns4:SignatureData type'''
+    """Object to handle the Polarion WSDL tns5:SignatureData class
+
+    Attributes:
+        target_status_id (string)
+        verdict (EnumOptionId)
+"""
     _cls_suds_map = {"target_status_id": "targetStatusId",
                      "verdict":
                      {"field_name": "verdict",

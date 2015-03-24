@@ -8,7 +8,7 @@ from pylarion.enum_option_id import EnumOptionId
 class ExternallyLinkedWorkItem(BasePolarion):
     """Object to handle the Polarion WSDL tns5:ExternallyLinkedWorkItem class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         role (EnumOptionId)
         work_item_uri (string)
 """

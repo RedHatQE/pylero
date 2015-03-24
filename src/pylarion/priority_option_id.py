@@ -7,7 +7,7 @@ from pylarion.base_polarion import BasePolarion
 class PriorityOptionId(BasePolarion):
     """Object to handle the Polarion WSDL tns5:PriorityOptionId class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         id (string)
 """
     _cls_suds_map = {"id": "id",

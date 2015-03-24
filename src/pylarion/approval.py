@@ -9,7 +9,7 @@ from pylarion.user import User
 class Approval(BasePolarion):
     """Object to handle the Polarion WSDL tns5:Approval class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         status (EnumOptionId)
         user (User)
 """

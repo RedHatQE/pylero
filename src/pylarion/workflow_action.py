@@ -8,7 +8,7 @@ from pylarion.enum_option_id import EnumOptionId
 class WorkflowAction(BasePolarion):
     """Object to handle the Polarion WSDL tns3:WorkflowAction class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         action_id (int)
         action_name (string)
         cleaned_features (ArrayOf_xsd_string)

@@ -7,7 +7,7 @@ from pylarion.base_polarion import BasePolarion
 class Properties(BasePolarion):
     """Object to handle the Polarion WSDL tns4:Properties class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         property (property)
 """
     _cls_suds_map = {"property": "property",

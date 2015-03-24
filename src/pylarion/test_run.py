@@ -28,18 +28,18 @@ class TestRun(BasePolarion):
 
     Attributes:
         attachments (list of TestRunAttachments)
-        author (User) - user object of the Test Run Author
+        author (User): user object of the Test Run Author
         created (datetime)
         document (Module)
         finished_on (datetime)
         group_id
-        is_template (bool) - indicates if the TestRun object is a Template
+        is_template (bool): indicates if the TestRun object is a Template
         keep_in_history (bool)
         location
         project (Project)
-        query (str) - The Polarion query that the TestRun objects are based on.
+        query (str): The Polarion query that the TestRun objects are based on.
         records (list of TestRecord objects)
-        select_test_cases_by (EnumSelectCasesBy):
+        select_test_cases_by (EnumOptionId):
             The test cases can be:
                 AUTOMATED_PROCESS
                 DYNAMIC_QUERY
@@ -50,9 +50,9 @@ class TestRun(BasePolarion):
 
         status
         summary_defect (_WorkItem)
-        template (TestRun) - template that the TestRun is based on.
-        test_run_id (str) - Unique identifier of the test run within the
-                            project
+        template (TestRun): template that the TestRun is based on.
+        test_run_id (str): Unique identifier of the test run within the
+                           project
         type
         updated
         custom_fields
@@ -133,14 +133,15 @@ class TestRun(BasePolarion):
         """class method create for creating a new test run in Polarion
 
         Args:
-            project_id (string) - the Polarion project to create the test run
-                                  in
-            test_run_id (string) - the unique identifier for the test run
-            template (string) - the id of the template to base the test run on.
+            project_id (string): the Polarion project to create the test run
+                                 in
+            test_run_id (string): the unique identifier for the test run
+            template (string): the id of the template to base the test run on.
 
         Returns:
             The created TestRun object
-        Implements:
+
+        References:
             test_management.createTestRun
         """
         uri = cls.session.test_management_client.service.createTestRun(
@@ -159,19 +160,20 @@ class TestRun(BasePolarion):
         """class method create_template for creating a new template in Polarion
 
         Args:
-            project_id (string) - the Polarion project to create the test run
-                                  in
-            template_id (string) - the unique identifier for the template
-            parent_template_id - the template that this is based onthe ba
-            select_test_cases_by - the method used to choose test cases
-                                   NOTE: It is currently not possible to select
-                                         test cases manually via the API
-            query - the Lucene query, for query methods
-            doc_with_space - the space/doc_name, for document methods
+            project_id (string): the Polarion project to create the test run
+                                 in
+            template_id (string): the unique identifier for the template
+            parent_template_id: the template that this is based onthe ba
+            select_test_cases_by: the method used to choose test cases
+                                  NOTE: It is currently not possible to select
+                                  test cases manually via the API
+            query: the Lucene query, for query methods
+            doc_with_space: the space/doc_name, for document methods
 
         Returns:
             The created TestRun Template object
-        Implements:
+
+        References:
             test_management.createTestRun
         """
         tr = cls.create(project_id, template_id, parent_template_id)
@@ -196,20 +198,20 @@ class TestRun(BasePolarion):
         """class method search executes the given query and returns the results
 
         Args:
-            query - the Polarion query used to find test runs
-            Optional:
-                fields -  test run fields that should be initialized,
-                          all other fields will be null.
-                          Field names are from the object's attributes and not
-                          the Polarion field names
-                sort - the field used to sort results, default is test_run_id
-                limit (int) - the maximum number of records to be returned, -1
-                              for no limit.
-                search_templates (bool) - if set, searches the templates
-                                          instead of the test runs
+            query: the Polarion query used to find test runs
+            fields:  test run fields that should be initialized,
+                     all other fields will be null.
+                     Field names are from the object's attributes and not
+                     the Polarion field names
+            sort: the field used to sort results, default is test_run_id
+            limit (int): the maximum number of records to be returned, -1
+                         for no limit.
+            search_templates (bool): if set, searches the templates
+                                     instead of the test runs
         Returns:
             list of TestRun objects
-        Implements:
+
+        References:
             test_management.searchTestRunTemplates
             test_management.searchTestRunTemplatesLimited
             test_management.searchTestRunTemplatesWithFields
@@ -249,20 +251,20 @@ class TestRun(BasePolarion):
         """TestRun constructor.
 
         Args:
-            Optional
-                test_run_id - when given, the object is populated with the
-                              TestRuns. Requires project_id parameter
-                suds_object - Polarion TestRun object. When given, the object
-                              is populated by object data.
-                project_id - the Polarion project that the Test Run is located
-                             in.
-                        Required if test_run_id is passed in
-                uri - the uri that references the Polarion TestRun
+            test_run_id: when given, the object is populated with the
+                         TestRuns. Requires project_id parameter
+            suds_object: Polarion TestRun object. When given, the object
+                         is populated by object data.
+            project_id: the Polarion project that the Test Run is located
+                        in. Required if test_run_id is passed in
+            uri: the uri that references the Polarion TestRun
+
         Notes:
             Either test_run_id and project or suds_object or uri can be passed
             in or none of them. If none of the identifying parameters are
             passed in an empty object is created
-        Implements:
+
+        References:
             test_management.getTestRunById
             test_management.getTestRunByUri
         """
@@ -421,15 +423,18 @@ class TestRun(BasePolarion):
         the specified test record
 
         Args:
-            test_case_id (str) - The id of the test case
-            path - file path to upload
-            title - u.User friendly name of the file
+            test_case_id (str): The id of the test case
+            path: file path to upload
+            title: u.User friendly name of the file
+
         Returns:
             None
+
         Notes:
             Raises an error if the test case given is not in the TestRun or has
             not been executed yet.
-        Implements:
+
+        References:
             test_management.addAttachmentToTestRecord
         """
         record_index = self._get_index_of_test_record(test_case_id)
@@ -445,13 +450,16 @@ class TestRun(BasePolarion):
         test run
 
         Args:
-            path - file path to upload
-            title - u.User friendly name of the file
+            path: file path to upload
+            title: u.User friendly name of the file
+
         Returns:
             None
+
         Notes:
             Raises an error if the test run object is not populated
-        Implements:
+
+        References:
             test_management.addAttachmentToTestRun
         """
         self._verify_obj()
@@ -466,17 +474,20 @@ class TestRun(BasePolarion):
         the specified test step of the specified test record
 
         Args:
-            test_case_id (str) - The id of the test case to the step is in
-            test_step_index (int) - The 0 based index of the test step
-            path - file path to upload
-            title - u.User friendly name of the file
+            test_case_id (str): The id of the test case to the step is in
+            test_step_index (int): The 0 based index of the test step
+            path: file path to upload
+            title: u.User friendly name of the file
+
         Returns:
             none
+
         Notes:
             Raises an error if the record_index given is higher then the number
             of test records. or if the test_step_index is higher then the
             number of steps.
-        Implements:
+
+        References:
             test_management.addAttachmentToTestStep
         """
         record_index = self._get_index_of_test_record(test_case_id)
@@ -493,19 +504,21 @@ class TestRun(BasePolarion):
         test case based on the result fields passed in
 
         Args:
-            test_case_id (str) - The id of the test case that was executed
-            test_result (str) - Must be one of the following values:
-                                   passed
-                                   failed
-                                   blocked
-            test_comment (str or Text object) - may be None
-            executed_by (str) - user id
-            executed (datetime)
-            duration (float)
-            defect_work_item_id (str) - _WorkItem id of defect
+            test_case_id (str): The id of the test case that was executed
+            test_result (str): Must be one of the following values:
+                                  passed
+                                  failed
+                                  blocked
+            test_comment (str or Text object): may be None
+            executed_by (str): user id
+            executed (datetime):
+            duration (float):
+            defect_work_item_id (str): _WorkItem id of defect
+
         Returns:
             None
-        Implements:
+
+        References:
             test_management.addTestRecord
         """
         self._verify_obj()
@@ -542,13 +555,19 @@ class TestRun(BasePolarion):
         test case based on the TestRecord object passed in
 
         Args:
-            test_record (TestRecord or Polarion TestRecord)
+            test_record (TestRecord or Polarion TestRecord):
+
         Returns:
             None
-        Implements:
+
+        References:
             test_management.addTestRecordToTestRun
         """
         self._verify_obj()
+        for field in test_record._required:
+            if not getattr(test_record, field):
+                raise PylarionLibException(
+                    "{0} is required in the TestRecord".format(field))
         if isinstance(test_record, TestRecord):
             suds_object = test_record._suds_object
         elif isinstance(test_record, TestRecord().
@@ -563,11 +582,13 @@ class TestRun(BasePolarion):
         is passed in, it creates it based on the default template.
 
         Args:
-            defect_template_id (str) - the _WorkItem template id to base the
+            defect_template_id (str): the _WorkItem template id to base the
             new summary defect. can be null
+
         Returns:
             the created _WorkItem
-        Implements:
+
+        References:
             test_management.createSummaryDefect
         """
 
@@ -582,12 +603,15 @@ class TestRun(BasePolarion):
     def delete_attachment_from_test_record(self, test_case_id, filename):
         """Deletes Test Record Attachment of specified record and
         attachment's file name.
+
         Args:
-            test_case_id - The test case to delete the attachment from
-            filename - name of the file to delete
+            test_case_id: The test case to delete the attachment from
+            filename: name of the file to delete
+
         Returns:
             None
-        Implements:
+
+        References:
             test_management.deleteAttachmentFromTestRecord
         """
         record_index = self._get_index_of_test_record(test_case_id)
@@ -599,12 +623,15 @@ class TestRun(BasePolarion):
                                          filename):
         """Deletes Test Step Attachment of the specified step in the specified
         test record.
+
         Args:
-            test_case_id - The test case to delete the attachment from
-            filename - name of the file to delete
+            test_case_id: The test case to delete the attachment from
+            filename: name of the file to delete
+
         Returns:
             None
-        Implements:
+
+        References:
             test_management.deleteAttachmentFromTestRecord
         """
         record_index = self._get_index_of_test_record(test_case_id)
@@ -616,11 +643,14 @@ class TestRun(BasePolarion):
     def delete_attachment(self, filename):
         """Deletes Test Run Attachment specified by attachment's
         file name. Method is applicable also on Test Run Template.
+
         Args:
-            filename - filename to delete
+            filename: filename to delete
+
         Returns:
             None
-        Implements:
+
+        References:
             test_management.deleteTestRunAttachment
         """
         self._verify_obj()
@@ -630,11 +660,14 @@ class TestRun(BasePolarion):
     def get_attachment(self, filename):
         """Gets Test Run Attachment specified by attachment's
         file name. Method is applicable also on Test Run Template.
+
         Args:
-            filename - filename to delete
+            filename: filename to delete
+
         Returns:
             TestRunAttachment object
-        Implements:
+
+        References:
             test_management.getTestRunAttachment
         """
         self._verify_obj()
@@ -644,11 +677,14 @@ class TestRun(BasePolarion):
 
     def get_attachments(self):
         """method get_attachments returns all the attachments for the TestRun
+
         Args:
             None
+
         Returns:
             ArrayOfTestRunAttachments object
-        Implements:
+
+        References:
             test_management.getTestRunAttachments
         """
         self._verify_obj()
@@ -659,10 +695,13 @@ class TestRun(BasePolarion):
 
     def get_custom_field(self, field_name):
         """gets custom field values.
+
         Args:
-            field_name - name of the custom field
+            field_name: name of the custom field
+
         Returns:
             value of the custom field.
+
         Note: Polarion WSDL currently does not publish the list of custom
               fields, so this function cannot do any verification if the field
               is valid.
@@ -677,11 +716,14 @@ class TestRun(BasePolarion):
 
     def get_wiki_content(self):
         """method get_wiki_content returns the wiki content for the Test Run
+
         Args:
             None
+
         Returns:
             Text object containing the wiki content
-        Implements:
+
+        References:
             test_management.getWikiContentForTestRun
         """
         self._verify_obj()
@@ -691,10 +733,13 @@ class TestRun(BasePolarion):
 
     def _set_custom_field(self, field_name, value):
         """sets custom field values.
+
         Args:
-            field_name - name of the custom field
+            field_name: name of the custom field
+
         Returns:
             value of the custom field.
+
         Note: Polarion WSDL currently does not publish the list of custom
               fields, so this function cannot do any verification if the field
               or value is valid.
@@ -721,9 +766,11 @@ class TestRun(BasePolarion):
 
         Args:
             None
+
         Returns
             None
-        Implements:
+
+        References:
             test_management.updateTestRun
         """
         self._verify_obj()
@@ -738,15 +785,18 @@ class TestRun(BasePolarion):
         current test run
 
         Args:
-            path - file path to upload
-            original_filename - The file that we want to overwrite with the new
-                                file
-            title - u.User friendly name of the file
+            path: file path to upload
+            original_filename: The file that we want to overwrite with the new
+                               file
+            title: u.User friendly name of the file
+
         Returns:
             None
+
         Notes:
             Raises an error if the test run object is not populated.
-        Implements:
+
+        References:
             test_management.updateTestRunAttachment
         """
         self._verify_obj()
@@ -761,20 +811,22 @@ class TestRun(BasePolarion):
         Work Item of a test run.
 
         Args:
-            source (string) - source of the summary defect, used to generate
+            source (string): source of the summary defect, used to generate
                               the description content.
-            total_failures (int) - amount of total failures in the test run,
-                                   used to generate the description content.
-            total_errors (int) - amount of total errors in the test run,
-                                 used to generate the description content.
-            total_tests (int) - amount of total tests in the test run,
+            total_failures (int): amount of total failures in the test run,
+                                  used to generate the description content.
+            total_errors (int): amount of total errors in the test run,
                                 used to generate the description content.
-            defect_template_id - ID of the defect template Work Item to be
-                                 used, the configured template will be used if
-                                 None.
+            total_tests (int): amount of total tests in the test run,
+                               used to generate the description content.
+            defect_template_id: ID of the defect template Work Item to be
+                                used, the configured template will be used if
+                                None.
+
         Returns:
             the created or updated _WorkItem
-        Implements:
+
+        References:
             test_management.updateSummaryDefect
         """
         self._verify_obj()
@@ -796,26 +848,28 @@ class TestRun(BasePolarion):
         """method update_test_record_by_fields updates a test record.
 
         Args:
-            test_case_id - id of the test case to update.
-            test_result - Must be one of the following values:
+            test_case_id: id of the test case to update.
+            test_result: Must be one of the following values:
                                    passed
                                    failed
                                    blocked
-            test_comment - (str or Text object) - may be None
-            executed_by (str) - user id
-            executed - date when the test case has been executed,
-                       default is now.
-            duration - duration of the test case execution, any negative value
-                       is treated as None.
-            defect_work_item_id - _WorkItem id of defect, can be None
+            test_comment: (str or Text object) - may be None
+            executed_by (str): user id
+            executed: date when the test case has been executed,
+                      default is now.
+            duration: duration of the test case execution, any negative value
+                      is treated as None.
+            defect_work_item_id: _WorkItem id of defect, can be None
 
         Returns:
             None
+
         Notes:
             Only a test case that has already been executed may be updated
             using this function. To execute a test record use the
             add_test_record_by_fields function
-        Implements:
+
+        References:
             test_management.updateTestRecord
         """
         self._verify_obj()
@@ -847,11 +901,13 @@ class TestRun(BasePolarion):
         given test case based on the TestRecord object passed in
 
         Args:
-            test_case_id (str), the test case id that the record is related to.
+            test_case_id (str): the test case id that the record is related to.
             test_record (TestRecord or Polarion TestRecord)
+
         Returns:
             None
-        Implements:
+
+        References:
             test_management.updateTestRecordAtIndex
         """
         self._verify_obj()
@@ -869,9 +925,11 @@ class TestRun(BasePolarion):
 
         Args:
             Content (str or Text object)
+
         Returns:
             None
-        Implements:
+
+        References:
             test_management.updateWikiContentForTestRun
         """
         self._verify_obj()

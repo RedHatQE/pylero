@@ -8,7 +8,7 @@ from pylarion.properties import Properties
 class PriorityOpt(BasePolarion):
     """Object to handle the Polarion WSDL tns5:PriorityOpt class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         default (boolean)
         enum_id (string)
         float (float)

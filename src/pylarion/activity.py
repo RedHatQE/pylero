@@ -8,7 +8,7 @@ from pylarion.text import Text
 class Activity(BasePolarion):
     """Object to handle the Polarion WSDL tns3:Activity class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         activity_custom_values (list of ActivityCustomValueEntry)
         comments (list of ActivityComment)
         context_id (ContextId)

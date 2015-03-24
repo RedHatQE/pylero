@@ -8,7 +8,7 @@ from pylarion.enum_option_id import EnumOptionId
 class PlanningConstraint(BasePolarion):
     """Object to handle the Polarion WSDL tns5:PlanningConstraint class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         constraint (EnumOptionId)
         date (dateTime)
 """

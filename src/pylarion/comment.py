@@ -14,7 +14,7 @@ from pylarion.enum_option_id import ArrayOfEnumOptionId
 class Comment(BasePolarion):
     """Object to handle the Polarion WSDL tns5:Comment class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         author (User)
         child_comment_uris (ArrayOfSubterraURI)
         created (dateTime)
@@ -26,7 +26,7 @@ class Comment(BasePolarion):
         text (Text)
         title (string)
         visible_to (ArrayOfstring)
-"""
+    """
     _cls_suds_map = {"author":
                      {"field_name": "author",
                       "cls": User},

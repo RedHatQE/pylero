@@ -8,7 +8,7 @@ from pylarion.enum_option_id import EnumOptionId
 class Hyperlink(BasePolarion):
     """Object to handle the Polarion WSDL tns5:Hyperlink class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         role (EnumOptionId)
         uri (string)
 """

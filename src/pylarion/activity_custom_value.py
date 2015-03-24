@@ -7,7 +7,7 @@ from pylarion.base_polarion import BasePolarion
 class ActivityCustomValue(BasePolarion):
     """Object to handle the Polarion WSDL tns3:ActivityCustomValue class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         values (ArrayOf_xsd_string)
 """
     _cls_suds_map = {"values": "values",

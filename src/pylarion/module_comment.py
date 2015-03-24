@@ -15,7 +15,7 @@ from pylarion.text import Text
 class ModuleComment(BasePolarion):
     """Object to handle the Polarion WSDL tns4:ModuleComment class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         author (User)
         child_comment_uris (ArrayOfSubterraURI)
         created (dateTime)

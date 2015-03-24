@@ -8,7 +8,7 @@ from pylarion.base_polarion import BasePolarion
 class ProductLicense(BasePolarion):
     """Object to handle the Polarion WSDL tns3:ProductLicense class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         concurrent_license_data (ArrayOf_tns3_LicenseInfo)
         customer_company (string)
         customer_email (string)

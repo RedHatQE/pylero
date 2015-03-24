@@ -11,7 +11,7 @@ from pylarion.enum_option_id import EnumOptionId
 class TestStepResult(BasePolarion):
     """Object to handle the Polarion WSDL tns3:TestStepResult class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         attachments (ArrayOfTestRunAttachment)
         comment (Text)
         result (EnumOptionId)

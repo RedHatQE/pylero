@@ -8,7 +8,7 @@ from pylarion.activity_custom_value import ActivityCustomValue
 class ActivityCustomValueEntry(BasePolarion):
     """Object to handle the Polarion WSDL tns3:ActivityCustomValueEntry class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         custom_values (ActivityCustomValue)
         key (string)
 """

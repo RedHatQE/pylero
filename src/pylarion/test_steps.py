@@ -11,7 +11,7 @@ from pylarion.test_step import ArrayOfTestStep
 class TestSteps(BasePolarion):
     """Object to handle the Polarion WSDL tns3:TestSteps class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         keys (ArrayOfEnumOptionId)
         steps (ArrayOfTestStep)
 """

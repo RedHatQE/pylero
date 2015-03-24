@@ -8,7 +8,7 @@ from pylarion.properties import Properties
 class TestsConfiguration(BasePolarion):
     """Object to handle the Polarion WSDL tns3:TestsConfiguration class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         defect_auto_assignement_enabled (boolean)
         defect_reuse_type (string)
         defect_template (string)

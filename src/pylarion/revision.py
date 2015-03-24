@@ -9,7 +9,7 @@ from pylarion.subterra_uri import ArrayOfSubterraURI
 class Revision(BasePolarion):
     """Object to handle the Polarion WSDL tns4:Revision class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         author (string)
         created (dateTime)
         internal_commit (boolean)
@@ -41,19 +41,21 @@ class Revision(BasePolarion):
         """Searches revisions
 
         Args:
-            query - query, Lucene
-            sort - Lucene sort string (can be null)
-            fields - array of field names to fill in the returned
-                     Revision (can be null). For nested structures in
-                     the lists you can use following syntax to include only
-                     subset of fields: myList.LIST.key
-                     (e.g. linkedWorkItems.LIST.role).
-                     For custom fields you can specify which fields you want to
-                     be filled using following syntax:
-                     customFields.CUSTOM_FIELD_ID (e.g. customFields.risk).
+            query: query, Lucene
+            sort: Lucene sort string (can be null)
+            fields: array of field names to fill in the returned
+                    Revision (can be null). For nested structures in
+                    the lists you can use following syntax to include only
+                    subset of fields: myList.LIST.key
+                    (e.g. linkedWorkItems.LIST.role).
+                    For custom fields you can specify which fields you want to
+                    be filled using following syntax:
+                    customFields.CUSTOM_FIELD_ID (e.g. customFields.risk).
+
         Returns:
             list of Revisions
-        Implements:
+
+        References:
             Tracker.queryRevisions
         """
         return super(cls.__class__, cls)._query("queryRevisions", query,

@@ -7,7 +7,7 @@ from pylarion.base_polarion import BasePolarion
 class EnumCustomFieldType(BasePolarion):
     """Object to handle the Polarion WSDL tns5:EnumCustomFieldType class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         default_value (anyType)
         depends_on (string)
         description (string)

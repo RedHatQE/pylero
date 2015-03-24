@@ -9,7 +9,7 @@ from pylarion.text import ArrayOfText
 class TestStep(BasePolarion):
     """Object to handle the Polarion WSDL tns3:TestStep class
 
-    Attributes (for specific details, see Polarion):
+    Attributes:
         values (ArrayOfText)
 """
     _cls_suds_map = {
