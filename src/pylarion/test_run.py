@@ -549,10 +549,6 @@ class TestRun(BasePolarion):
             test_management.addTestRecordToTestRun
         """
         self._verify_obj()
-        for field in test_record._required:
-            if not getattr(test_record, field):
-                raise PylarionLibException(
-                    "{0} is required in the TestRecord".format(field))
         if isinstance(test_record, TestRecord):
             suds_object = test_record._suds_object
         elif isinstance(test_record, TestRecord().

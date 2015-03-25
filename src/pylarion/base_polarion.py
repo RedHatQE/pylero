@@ -423,7 +423,8 @@ class BasePolarion(object):
         if not sync_field:
             sync_field = "_suds_object"
         if isinstance(val, basestring):
-            obj = obj_cls(val, **additional_parms)
+            additional_parms[obj_cls._id_field] = val
+            obj = obj_cls(**additional_parms)
             setattr(self._suds_object, suds_field_name,
                     getattr(obj, sync_field))
         elif isinstance(val, obj_cls):
