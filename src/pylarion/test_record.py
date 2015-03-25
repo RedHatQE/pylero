@@ -60,8 +60,6 @@ class TestRecord(BasePolarion):
     def __init__(self, project_id=None, test_case_id=None, suds_object=None):
         self.project_id = project_id if project_id else self.default_project
         super(self.__class__, self).__init__(None, suds_object)
-        self._required = ["executed", "result"]
-        self.executed = datetime.datetime.now()
         if test_case_id:
             self.test_case_uri = _WorkItem(test_case_id,
                                            project_id=self.project_id).uri
