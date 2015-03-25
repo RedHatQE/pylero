@@ -1,92 +1,73 @@
-Pylarion: Wannabe Python wrapper for Polarion
+Welcome to Pylarion, the Python wrapper for the Polarion WSDL API. The
+Pylarion wrapper enables native python access to Polarion objects and
+functionality using object oriented structure and functionality. This
+allows the devlopers to use Pylarion in a natural fashion without being
+concerned about the Polarion details.
 
-------------------------------------------------------------------------------
-Intro
-------------------------------------------------------------------------------
+All Pylarion objects inherit from BasePolarion. The objects used in the
+library are all generated from the SOAP factory class, using the python-suds
+library. The Pylarion class attributes are generated dynamically as
+properties, based on a mapping dict between the pylarion naming convention
+and the Polarion attribute names.
 
-For a simple introduction and specification, see src/pylarionlib/interface.py.
+The use of properties allows the pylarion object attributes to be virtual with
+no need for syncing between them and the Polarion objects they are based on.
 
-As a task, this mini-project is tracked at [2].
+The Polarion WSDL API does not implement validation/verification of data
+passed in, so the Pylarion library takes care of this itself. All enums are
+validated before being sent to the server and raise an error if not using a
+valid value. A number of workflow implementations are also included, for
+example when creating a Document, it automatically creates the Heading work
+item at the same time.
 
+Download and Installation:
+**************************
+Pylarion is located in a git repository and can be cloned from::
 
-------------------------------------------------------------------------------
-Directory structure
-------------------------------------------------------------------------------
+    $ git clone https://code.engineering.redhat.com/gerrit/pylarion
 
-README.txt - this file
-src/ - sources
-src/pylarionlib/ - sources of the Pylarion library
-src/cli/ - sources for CLI tools above the Pylarion library
-test/ - unittest sources; in general, they should follow the structure of
-        src/
-.* - various dot files in the root directory are metadata for Eclipse+PyDev
+From the root of the project, run::
 
+    $ python setup.py install
 
-------------------------------------------------------------------------------
-Status
-------------------------------------------------------------------------------
+If you want to make an rpm out of it::
 
-- Low level internals of the Pylarion library should work, though they need
-  more unittest code. Especially, the CRUD operations are ready.
-- Some parts of the upper level (the public interface) of the Pylarion library
-  are done, too, but again, more testing code needed.
-- The rest of the public interface is not implemented but it should not be
-  much tricky. More in TODO below.
-- No CLI yet
-- As of 2014-12-04, dormant. In other words:
-  - Use this as a library of tricks and howtos, or:
-  - DEVELOPER/MAINTAINER WANTED! Just clone and take the leadership! 
+    $ python setup.py bdist_rpm
 
+Pylarion must be configured (see next section) before it can be used.
 
-------------------------------------------------------------------------------
-Problems
-------------------------------------------------------------------------------
+Configuration:
+**************
+A configuration file must be filled out, which must be located either at
+**/etc/pylarion/pylarion.cfg** or in the user's home dir **~/.pylarion.cfg**
+with the following values::
 
-- Underdone, but I have no big plans for the nearest future (ENOTIME)
-- In the code, you can find TODOs related to Polarion bugs or ambiguities,
-  they need proper investigation and bug reporting.
-- Our Polarion implementation is a moving target. Pylarion tries to be
-  as simple as possible but some design choices had to be done in spite of
-  being just provisional measures. More on that in interface.py.
+    [webservice]
+    url=https://polarion.engineering.redhat.com/polarion
+    svn_repo=https://polarion.engineering.redhat.com/repo
+    user={your username}
+    password={your password}
+    default_project={your default project}
 
+Usage:
+******
+There is a pylarion script installed that opens a python shell with all the
+objects in the library already loaded::
 
-------------------------------------------------------------------------------
-TODO
-------------------------------------------------------------------------------
+    $ pylarion
+    >>> tr = TestRun("example", project_id="project_name")
 
-- Tidy the test code (now, just horrible spaghetti, forgive me). It's not
-  sustainable at all.
-  
-- Tidy the src/ code, too. Specifically:
-  - Write docstrings
-  - Split the source files (and maybe create subpackages), the sheer size
-    of the files is not much user/hacker-friendly.
+Alternatively, you can open a python shell and import the objects that you
+want to use::
 
-- Finish the public API. It is already drafted, see the methods listed in the
-  file interface.py: on Session and on some persistent objects. I think the 
-  implementation should be pretty straight-forward, just by getting/setting
-  attributes of the persistent objects and performing CRUD on them. In case
-  a direct access to Polarion SOAP API would be needed, the existing code
-  (including unittests) should provide guidance. As a last resort, see my
-  simple demo code [1].
+    $ python
+    Python 2.6.6 (r266:84292, Nov 21 2013, 10:50:32)
+    [GCC 4.4.7 20120313 (Red Hat 4.4.7-4)] on linux2
+    Type "help", "copyright", "credits" or "license" for more information.
+    >>> from pylarion.test_run import TestRun
+    >>> tr = TestRun("example", project_id="project_name")
 
-- Wrap the "upper" API to be easy-to-import-and-use. That's more or less
-  Python-fu, a skilled Pythonist (not me now) should hack it easily. 
+Examples:
+**********
+    Please see https://mojo.redhat.com/docs/DOC-1016728/ for examples
 
-- Clean remaining TODOs scattered directly in the code.
-
-- Add more test code (now it goes just through the most basic code paths).
-
-- Design and write CLI; now there are just placeholders there. Anyway,
-  the TCMS-related scripts provide excellent patterns. I hope we can start
-  with the most often use cases and implement them by simple scripts above
-  the Pylarion public API. Note: Some of the work may be avoided thanks
-  to other automation tools in development.
-
-
-------------------------------------------------------------------------------
-References:
-------------------------------------------------------------------------------
-
-[1] http://wiki.test/vkadlcik/Polarion/SOAP_API_Notes/Python
-[2] http://projects.engineering.redhat.com/browse/POLARION-28
