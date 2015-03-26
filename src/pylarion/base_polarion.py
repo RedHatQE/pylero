@@ -106,7 +106,8 @@ class BasePolarion(object):
     has_query = False
     _cache = {
         "enums": {},
-        "custom_field_types": []
+        "custom_field_types": [],
+        "projects": {}
     }
 
     @classproperty

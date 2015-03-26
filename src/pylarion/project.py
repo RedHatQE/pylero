@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
+import copy
 from pylarion.base_polarion import BasePolarion
 from pylarion.category import Category
 from pylarion.custom_field_type import CustomFieldType
@@ -90,8 +91,15 @@ class Project(BasePolarion):
         """
         super(self.__class__, self).__init__(project_id, suds_object)
         if project_id:
-            self._suds_object = self.session.project_client.service. \
-                getProject(project_id)
+            # if the project is already cached, make a deep copy and use it.
+            # If not, get it and add it to the cache.
+            project = self._cache["projects"].get(project_id)
+            if project:
+                self._suds_object = copy.deepcopy(project)
+            else:
+                self._suds_object = self.session.project_client.service. \
+                    getProject(project_id)
+                self._cache["projects"][project_id] = self._suds_object
         elif location:
             self._suds_object = self.session.project_client.service. \
                 getProjectatLocation(location)
