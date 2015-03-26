@@ -1,7 +1,6 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
-import datetime
 from pylarion.base_polarion import BasePolarion
 from pylarion.text import Text
 from pylarion.test_run_attachment import TestRunAttachment

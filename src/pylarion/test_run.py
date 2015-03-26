@@ -20,6 +20,7 @@ from pylarion.work_item import _WorkItem
 from pylarion.user import User
 from pylarion.project import Project
 from pylarion.text import Text
+# Plan is used in custom fields.
 from pylarion.plan import Plan
 
 
@@ -334,6 +335,8 @@ class TestRun(BasePolarion):
             None
         """
         client = pysvn.Client()
+        client.callback_ssl_server_trust_prompt = \
+            lambda trust: (True, trust["failures"], True)
         client.set_default_username(self.user_id)
         client.set_default_password(self.password)
         client.set_store_passwords(False)

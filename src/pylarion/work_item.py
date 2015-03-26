@@ -5,7 +5,6 @@ import suds
 import os
 import re
 import copy
-import datetime
 from pylarion.exceptions import PylarionLibException
 from pylarion.base_polarion import BasePolarion
 from pylarion.approval import Approval
