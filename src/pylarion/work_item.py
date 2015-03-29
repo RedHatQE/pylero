@@ -1231,6 +1231,20 @@ class _WorkItem(BasePolarion):
                 raise PylarionLibException(
                     "{0} is a required field".format(field))
 
+    def which_test_runs(self):
+        """Gives the user a list of TestRun objects that the current WorkItem
+        instance is contained in.
+
+        Args:
+            None
+
+        Returns:
+            list of TestRun objects
+        """
+        # import done in the function so as not to cause circular refs
+        from pylarion.test_run import TestRun
+        return TestRun.search(self.work_item_id)
+
 
 class _SpecificWorkItem(_WorkItem):
     """specific work item is a class that contains the WorkItem implementation
