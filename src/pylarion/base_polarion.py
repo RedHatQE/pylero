@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 import os
 import base64
 import suds
+import copy
 from pylarion.exceptions import PylarionLibException
 from pylarion.server import Server
 from __builtin__ import classmethod
@@ -238,6 +239,11 @@ class BasePolarion(object):
             permission, project_id)
 
     def __init__(self, obj_id=None, suds_object=None):
+        # cls_suds_map must be available for some parameters on the class
+        # level, but gets changed on the instance level and those changes
+        # should not be accessible to other instances. This is the reason
+        # for overwriting it as an instance attribute.
+        self._cls_suds_map = copy.deepcopy(self._cls_suds_map)
         # _fix_circular_refs is a function that allows objects to contain
         # circular references by applying the reference only after the class
         # has been instantiated. Some objects contain references to themselves,
@@ -265,112 +271,43 @@ class BasePolarion(object):
                 # Property Builder, parses _cls_suds_map to build properties:
                 # custom fields:
                 #    getter has parameters:
-                #        suds_field_name
-                #        Pylarion class related to property
+                #        field_name
                 #    setter has parameters:
-                #        val - the value that the property is set to
-                #        suds_field_name
-                #        Pylarion class related to property
-                #        enum_id - the name of the enum to get from the server
-                #        additional_parms - Some TestRun custom fields must
-                #            instantiate an object and this parameter is
-                #            populated if the constructor needs an additional
-                #            parameter.
-                #        enum_override - valid values that the server does not
-                #                        return in validation check
+                #        val: the value that the property is set to
+                #        field_name
                 # array object fields:
                 #    getter has parameters:
-                #        suds_field_name
-                #        Pylarion class related to property
+                #        field_name
                 #    setter has parameters:
-                #        val - the value that the property is set to
-                #        suds_field_name
-                #        Pylarion class related to property
-                #        Pylarion Array class related to the property
-                #        inner_field_name - the field within the Pylarion array
+                #        val: the value that the property is set to
+                #        field_name
                 # object fields:
                 #    getter has parameters:
-                #        suds_field_name
-                #        Pylarion class related to property
-                #        named_arg - argument name to pas to the constructor
+                #        field_name
                 #    setter has parameters:
-                #        val - the value that the property is set to
-                #        suds_field_name
-                #        Pylarion class related to property
-                #        sync_field - the field from the instantiated class
-                #                     that the attribute is set to
-                #        additional_args - args needed for the obj constructor
-                #        enum_id - the name of the enum to get from the server
-                #        enum_override - valid values that the server does not
-                #                        return in validation check
+                #        val: the value that the property is set to
+                #        field_name
                 # regular fields;
                 #    use getattr and setattr
                 if isinstance(self._cls_suds_map[key], dict):
                     if "is_custom" in self._cls_suds_map[key]:
                         setattr(self.__class__, key, property(
-                            lambda self,
-                            suds_field_name=self._cls_suds_map[key]
-                                ["field_name"],
-                                obj_cls=self._cls_suds_map[key].get("cls"):
-                                    self._custom_getter(
-                                        suds_field_name, obj_cls),
-                                lambda self, val,
-                                suds_field_name=self._cls_suds_map[key]
-                                    ["field_name"],
-                                obj_cls=self._cls_suds_map[key].get("cls"),
-                                enum_id=self._cls_suds_map[key].get("enum_id"),
-                                additional_parms=self._cls_suds_map[key].get(
-                                    "additional_parms", {}),
-                                enum_override=self._cls_suds_map[key].get(
-                                    "enum_override", []):
-                                    self._custom_setter(val, suds_field_name,
-                                                        obj_cls, enum_id,
-                                                        additional_parms,
-                                                        enum_override)))
+                            lambda self, field_name=key:
+                                self._custom_getter(field_name),
+                            lambda self, val, field_name=key:
+                                self._custom_setter(val, field_name)))
                     elif "is_array" in self._cls_suds_map[key]:
                         setattr(self.__class__, key, property(
-                            lambda self,
-                            suds_field_name=self._cls_suds_map[key]
-                                ["field_name"],
-                                obj_cls=self._cls_suds_map[key]["cls"]:
-                                    self._arr_obj_getter(
-                                        suds_field_name, obj_cls),
-                                lambda self, val,
-                                suds_field_name=self._cls_suds_map[key]
-                                    ["field_name"],
-                                obj_cls=self._cls_suds_map[key]["cls"],
-                                arr_cls=self._cls_suds_map[key]["arr_cls"],
-                                suds_arr_inner_field_name=self._cls_suds_map
-                                    [key]["inner_field_name"]:
-                                    self._arr_obj_setter(
-                                        val, suds_field_name, obj_cls, arr_cls,
-                                        suds_arr_inner_field_name)))
+                            lambda self, field_name=key:
+                                self._arr_obj_getter(field_name),
+                            lambda self, val, field_name=key:
+                                self._arr_obj_setter(val, field_name)))
                     else:
                         setattr(self.__class__, key, property(
-                            lambda self,
-                            suds_field_name=self._cls_suds_map[key]
-                                ["field_name"],
-                                obj_cls=self._cls_suds_map[key]["cls"],
-                                named_arg=self._cls_suds_map[key].get(
-                                    "named_arg"):
-                                self._obj_getter(suds_field_name, obj_cls,
-                                                 named_arg),
-                                lambda self, val,
-                                suds_field_name=self._cls_suds_map[key]
-                                ["field_name"],
-                                obj_cls=self._cls_suds_map[key]["cls"],
-                                sync_field=self._cls_suds_map[key].get(
-                                    "sync_field"),
-                                additional_parms=self._cls_suds_map[key].get(
-                                    "additional_parms", {}),
-                                enum_id=self._cls_suds_map[key].get("enum_id"),
-                                enum_override=self._cls_suds_map[key].get(
-                                    "enum_override", []):
-                                self._obj_setter(
-                                    val, suds_field_name, obj_cls,
-                                    sync_field, additional_parms, enum_id,
-                                    enum_override))
-                                )
+                            lambda self, field_name=key:
+                                self._obj_getter(field_name),
+                            lambda self, val, field_name=key:
+                                self._obj_setter(val, field_name)))
                 else:
                     setattr(self.__class__, key, property(
                         # if the attribute doesn't exist in the current object
@@ -391,7 +328,7 @@ class BasePolarion(object):
         else:
             self._suds_object = None
 
-    def _obj_getter(self, suds_field_name, obj_cls, named_arg):
+    def _obj_getter(self, field_name):
         """get function for attributes that reference an object.
         Returns the referenced object. If the WSDL attribute contains a value
         that value is given to the object as its obj_id. Classes that have an
@@ -399,47 +336,46 @@ class BasePolarion(object):
         is gotten
 
         Args:
-            suds_field_name: the field name of the Polarion object to get
-            obj_cls: the Pylarion object that the field references
-            named_arg: the named parameter to pass to the constructor
+            field_name: the field name of the Polarion object to get
         """
-        if not named_arg:
-                named_arg = "suds_object"
-        if hasattr(self._suds_object, suds_field_name):
+        csm = self._cls_suds_map[field_name]
+        named_arg = csm.get("named_arg", "suds_object")
+        if hasattr(self._suds_object, csm.get("field_name")):
             args = {}
-            args[named_arg] = getattr(self._suds_object, suds_field_name, None)
-            obj = obj_cls(**args)
+            args[named_arg] = getattr(self._suds_object, csm.get("field_name"))
+            obj = csm.get("cls")(**args)
         else:
-            obj = obj_cls()
+            obj = csm.get("cls")()
         if obj._id_field:
             return getattr(obj, obj._id_field)
         else:
             return obj
 
-    def _obj_setter(self, val, suds_field_name, obj_cls,
-                    sync_field, additional_parms, enum_id, enum_override):
+    def _obj_setter(self, val, field_name):
         """set function for attributes that reference an object. It can accept
         a string, a Pylarion object or a raw WSDL object. If a string is given,
         it is passed in to the object as its obj_id.
 
         Args:
             val: the value that the property is being set to
-            suds_field_name: the field name of the Polarion object to set
-            obj_cls: the Pylarion object that the field references
-            sync_field: the field of the referenced object to set the property
-            additional_parms: named parms to pass into the contructor
-            enum_id: the name of the enum to get from the server
-            enum_override: valid values that the server does not
-                           return in validation check
+            field_name: the field name of the Polarion object to set
         """
+        csm = self._cls_suds_map[field_name]
+        suds_field_name = csm["field_name"]
+        enum_id = csm.get("enum_id")
+        enum_override = csm.get("enum_override")
+        sync_field = csm.get("sync_field")
+        obj_cls = csm.get("cls")
+        # deepcopy so that changes do not stick
+        add_parms = copy.deepcopy(csm.get("additional_parms", {}))
         if isinstance(val, basestring):
             if enum_id and val not in enum_override:
                 self.check_valid_field_values(val, enum_id, {})
         if not sync_field:
             sync_field = "_suds_object"
         if isinstance(val, basestring):
-            additional_parms[obj_cls._id_field] = val
-            obj = obj_cls(**additional_parms)
+            add_parms[obj_cls._id_field] = val
+            obj = obj_cls(**add_parms)
             setattr(self._suds_object, suds_field_name,
                     getattr(obj, sync_field))
         elif isinstance(val, obj_cls):
@@ -453,27 +389,26 @@ class BasePolarion(object):
                 val = getattr(val, suds_sync_field)
             setattr(self._suds_object, suds_field_name, val)
 
-    def _arr_obj_getter(self, suds_field_name, obj_cls):
+    def _arr_obj_getter(self, field_name):
         """get function for attributes that reference an array of objects.
         The Polarion array object always has a single Python list item which
         contains a list of the WSDL objects. This function converts each WSDL
         object to its Pylarion object and returns that list
 
         Args:
-            suds_field_name: the field name of the Polarion object to get
-            obj_cls: the Pylarion object that the field references
+            field_name: the field name of the Polarion object to get
         """
-        if getattr(self._suds_object, suds_field_name, None):
+        csm = self._cls_suds_map[field_name]
+        if getattr(self._suds_object, csm["field_name"], None):
             obj_lst = []
             # ArrayOf Polarion objects have a double list.
-            for inst in getattr(self._suds_object, suds_field_name)[0]:
-                obj_lst.append(obj_cls(suds_object=inst))
+            for inst in getattr(self._suds_object, csm["field_name"])[0]:
+                obj_lst.append(csm["cls"](suds_object=inst))
             return obj_lst
         else:
             return []
 
-    def _arr_obj_setter(self, val, suds_field_name, obj_cls, arr_cls,
-                        suds_arr_inner_field_name):
+    def _arr_obj_setter(self, val, field_name):
         """set function for attributes that reference an array of objects. It
         requires a single instance or list of either Pylarion or WSDL objects
         or an empty list.
@@ -482,43 +417,42 @@ class BasePolarion(object):
 
         Args:
             val: the value that the property is set to
-            suds_field_name: the field name of the Polarion object to set
-            obj_cls: Pylarion class related to property
-            arr_cls: Pylarion Array class related to the property
-            suds_arr_inner_field_name: field name within the Pylarion array
+            field_name: the field name of the Polarion object to set
         """
         # TODO: Still needs to be fully tested. Looks like there are some bugs.
-        arr_inst = arr_cls()
-        obj_inst = obj_cls()
+        csm = self._cls_suds_map[field_name]
+        arr_inst = csm.get("arr_cls")()
+        obj_inst = csm.get("cls")()
         # obj_attach =
         if not isinstance(val,
                           (list, arr_inst.__class__,
                            arr_inst._suds_object.__class__)):
             raise PylarionLibException(
                 "{0}s must be a list of {1}").format(
-                    suds_field_name, obj_inst.__class__.__name__)
+                    csm["field_name"], obj_inst.__class__.__name__)
         elif not val:
-            setattr(self._suds_object, suds_field_name, arr_inst._suds_object)
+            setattr(
+                self._suds_object, csm["field_name"], arr_inst._suds_object)
         elif isinstance(val, arr_inst._suds_object.__class__):
-            setattr(self._suds_object, suds_field_name, val)
+            setattr(self._suds_object, csm["field_name"], val)
         elif isinstance(val, arr_inst.__class__):
-            setattr(self._suds_object, suds_field_name, val._suds_object)
+            setattr(self._suds_object, csm["field_name"], val._suds_object)
         else:
             if isinstance(val, list):
                 # if str values are based in, try instantiating a class with
                 # the vals and then using that list. Then continue processing
                 if isinstance(val[0], basestring):
-                    val = [obj_cls(item) for item in val]
+                    val = [csm["cls"](item) for item in val]
 
                 if isinstance(val[0], obj_inst._suds_object.__class__):
-                    setattr(getattr(self._suds_object, suds_field_name),
-                            suds_arr_inner_field_name, val)
+                    setattr(getattr(self._suds_object, csm["field_name"]),
+                            csm["inner_field_name"], val)
                 else:
-                    setattr(self._suds_object, suds_field_name,
+                    setattr(self._suds_object, csm["field_name"],
                             arr_inst._suds_object)
                     for item in val:
-                        getattr(getattr(self._suds_object, suds_field_name),
-                                suds_arr_inner_field_name).append(
+                        getattr(getattr(self._suds_object, csm["field_name"]),
+                                csm["inner_field_name"]).append(
                                     item._suds_object)
 
     def custom_obj(self):
@@ -527,28 +461,28 @@ class BasePolarion(object):
         return self.session.test_management_client.factory.create(
             "tns4:Custom")
 
-    def _custom_getter(self, suds_field_name, obj_cls):
+    def _custom_getter(self, field_name):
         """Works with custom fields that has attributes stored differently
         if the attribute has been changed, it gets it from there.
 
         Args:
-            suds_field_name: the field name of the Polarion object to get
-            obj_cls: the Pylarion object that the field references
+            field_name: the field name of the Polarion object to get
         """
-        if suds_field_name in self._changed_fields:
-            if obj_cls:
-                obj = obj_cls(suds_object=self._changed_fields
-                              [suds_field_name])
+        csm = self._cls_suds_map
+        if csm["field_name"] in self._changed_fields:
+            if csm.get("cls"):
+                obj = csm["cls"](suds_object=self._changed_fields
+                                 [csm["field_name"]])
             else:
-                obj = self._changed_fields[suds_field_name]
+                obj = self._changed_fields[csm["field_name"]]
         elif self.uri:
-            cf = self.get_custom_field(suds_field_name)
+            cf = self.get_custom_field(csm["field_name"])
             if not cf:
                 return None
             if isinstance(cf, basestring):
                 obj = cf
-            elif obj_cls:
-                obj = obj_cls(suds_object=cf._suds_object.value)
+            elif csm.get("cls"):
+                obj = csm["cls"](suds_object=cf._suds_object.value)
             else:
                 obj = cf.value
         else:
@@ -558,52 +492,46 @@ class BasePolarion(object):
         else:
             return obj
 
-    def _custom_setter(self, val, suds_field_name, obj_cls, enum_id,
-                       additional_parms, enum_override):
+    def _custom_setter(self, val, field_name):
         """Works with custom fields that has to keep track of values and what
         changed so that on update it can also update all the custom fields at
         the same time.
 
         Args:
             val: the value that the property is being set to
-            suds_field_name: the field name of the Polarion object to set
-            obj_cls: the Pylarion object that the field references
-            enum_id: contains the name of the enum to get from the server
-            additional_parms: Some TestRun custom fields must instantiate an
-                              object and this parameter is populated if the
-                              constructor needs an additional parameter.
-            enum_override: valid values that the server does not
-                           return in validation check
+            field_name: the field name of the Polarion object to set
         """
+        csm = self._cls_suds_map
+        additional_parms = copy.deepcopy(csm.get("additional_parms", {}))
         if not val:
-            self._changed_fields[suds_field_name] = None
+            self._changed_fields[csm["field_name"]] = None
         elif isinstance(val, basestring):
-            if enum_id and val not in enum_override:
-                self.check_valid_field_values(val, enum_id,
-                                              additional_parms or {})
-            self._changed_fields[suds_field_name] = obj_cls(val)._suds_object \
-                if obj_cls else val
-        elif isinstance(val, obj_cls):
-            self._changed_fields[suds_field_name] = val._suds_object
-        elif isinstance(val, obj_cls()._suds_object.__class__):
-            self._changed_fields[suds_field_name] = val
+            if csm.get("enum_id") and val not in csm.get("enum_override", []):
+                self.check_valid_field_values(val, csm.get("enum_id"),
+                                              additional_parms)
+            self._changed_fields[csm["field_name"]] = \
+                csm["cls"](val)._suds_object if csm["cls"] else val
+        elif isinstance(val, csm["cls"]):
+            self._changed_fields[csm["field_name"]] = val._suds_object
+        elif isinstance(val, csm["cls"]()._suds_object.__class__):
+            self._changed_fields[csm["field_name"]] = val
         elif not val:
-            self._changed_fields[suds_field_name] = None
+            self._changed_fields[csm["field_name"]] = None
         else:
             raise PylarionLibException("The value must be of type {0}.".format(
-                obj_cls.__name__))
+                csm["cls"].__name__))
         # move the custom fields to within the object, otherwise each custom
         # field is a seperate SVN commit. testSteps, does not work unless it
         # is uploaded using the set_test_steps function.
-        if suds_field_name != "testSteps":
+        if csm["field_name"] != "testSteps":
             cf = self._suds_object.customFields[0]
             cust = self.custom_obj()
-            cust.key = suds_field_name
-            cust.value = self._changed_fields[suds_field_name]
-            self._changed_fields.pop(suds_field_name, None)
+            cust.key = csm["field_name"]
+            cust.value = self._changed_fields[csm["field_name"]]
+            self._changed_fields.pop(csm["field_name"], None)
             if cf:
                 # check if the custom field already exists and modify it.
-                match = filter(lambda x: x.key == suds_field_name, cf)
+                match = filter(lambda x: x.key == csm["field_name"], cf)
                 if match:
                     match[0].value = cust.value
                 else:
