@@ -12,15 +12,32 @@ class ExternallyLinkedWorkItem(BasePolarion):
         role (EnumOptionId)
         work_item_uri (string)
 """
-    _cls_suds_map = {"role":
-                     {"field_name": "role",
-                      "cls": EnumOptionId,
-                      "enum_id": "workitem-link-role"},
-                     "work_item_uri": "workItemURI",
-                     "uri": "_uri",
-                     "_unresolved": "_unresolved"}
+    _cls_suds_map = {
+        "role":
+            {"field_name": "role",
+             "cls": EnumOptionId,
+             "enum_id": "workitem-link-role"},
+        "work_item_id":  # cls is added in _fix_circular_refs function
+            {"field_name": "workItemURI",
+             "named_arg": "uri",
+             "sync_field": "uri"}
+    }
     _obj_client = "builder_client"
     _obj_struct = "tns5:ExternallyLinkedWorkItem"
+    _id_field = "work_item_id"
+
+    def __init__(self, project_id=None, work_item_id=None, suds_object=None):
+        self.project_id = project_id if project_id else self.default_project
+        super(self.__class__, self).__init__(work_item_id, suds_object)
+
+    def _fix_circular_refs(self):
+        # need to import WorkItem, but this module is used by WorkItem.
+        # need to pass in the project_id parm to the Work Item,
+        # but it is not given before instantiation
+        from pylarion.work_item import _WorkItem
+        self._cls_suds_map["work_item_id"]["cls"] = _WorkItem
+        self._cls_suds_map["work_item_id"]["additional_parms"] = \
+            {"project_id": self.project_id}
 
 
 class ArrayOfExternallyLinkedWorkItem(BasePolarion):

@@ -527,6 +527,10 @@ class _WorkItem(BasePolarion):
     def add_linked_item(self, linked_work_item_id, role,
                         revision=None, suspect=None):
         """method add_linked_item adds a linked _WorkItem to current _WorkItem
+        The linking is done to the "child" object. For example, if you have a
+        Functional Test Case that verifies a requirement, you would add the
+        linked item to the Functional Test case with the "verifies" role and
+        not the Requirement.
 
         Args:
             linked_work_item_id - the URI of the target work item the link
@@ -545,10 +549,14 @@ class _WorkItem(BasePolarion):
             Tracker.addLinkedItemWithRev
         """
         self._verify_obj()
+        lwi = LinkedWorkItem()
+        # validates the role. Will raise PylarionLibException if invalid
+        lwi.role = role
         wi_linked = _WorkItem(work_item_id=linked_work_item_id,
                               project_id=self.project_id)
+        enum_role = EnumOptionId(role)._suds_object
         function_name = "addLinkedItem"
-        parms = [self.uri, wi_linked.uri, role]
+        parms = [self.uri, wi_linked.uri, enum_role]
         if revision:
             function_name += "WithRev"
             parms += [revision, suspect]
@@ -582,7 +590,7 @@ class _WorkItem(BasePolarion):
         Notes:
             Raises an error if the _WorkItem object is not populated
 
-        Implements
+        References:
             Tracker.createAttachment
         """
         self._verify_obj()
@@ -632,7 +640,7 @@ class _WorkItem(BasePolarion):
         Returns:
             None
 
-        Implements
+        References:
             Tracker.createWorkRecord
             Tracker.createWorkRecordWithTypeAndComment
         """
@@ -1070,9 +1078,11 @@ class _WorkItem(BasePolarion):
             Tracker.removeLinkedItem
         """
         self._verify_obj()
-        linked_wi = _WorkItem(uri=linked_item_id)
+        wi_linked = _WorkItem(work_item_id=linked_item_id,
+                              project_id=self.project_id)
+        enum_role = EnumOptionId(role)._suds_object
         return self.session.tracker_client.service. \
-            removeLinkedItem(self.uri, linked_wi.uri, role)
+            removeLinkedItem(self.uri, wi_linked.uri, enum_role)
 
     def remove_linked_revision(self, revision_id):
         """Removes a revision
