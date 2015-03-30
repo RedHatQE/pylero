@@ -717,6 +717,34 @@ class TestRun(BasePolarion):
         else:
             return None
 
+    def get_records(self):
+        """ function to return all the test records of a TestRun.
+        The records array for dynamic queries/documents only includes executed
+        records. This returns the unexecuted ones as well.
+
+        Args:
+            None
+
+        Returns:
+            list of TestRecords
+        """
+        self._verify_obj()
+        if "static" in self.select_test_cases_by:
+            return self.records
+        if "Doc" in self.select_test_cases_by:
+            cases = self.document.get_work_items(None, True)
+        elif "Query" in self.select_test_cases_by:
+            cases = _WorkItem.query(
+                self.query + " AND project.id:" + self.project_id)
+        executed_ids = [rec.test_case_id for rec in self.records]
+        test_recs = self.records
+        for case in cases:
+            if case.work_item_id not in executed_ids \
+                    and case.type != "heading":
+                test_recs.append(
+                    TestRecord(self.project_id, case.work_item_id))
+        return test_recs
+
     def get_wiki_content(self):
         """method get_wiki_content returns the wiki content for the Test Run
 

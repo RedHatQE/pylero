@@ -71,11 +71,7 @@ class TestRecord(BasePolarion):
 
     def __init__(self, project_id=None, test_case_id=None, suds_object=None):
         self.project_id = project_id if project_id else self.default_project
-        super(self.__class__, self).__init__(None, suds_object)
-        self._required = ["executed", "result"]
-        self.executed = datetime.datetime.now()
-        if test_case_id:
-            self.test_case_id = test_case_id
+        super(self.__class__, self).__init__(test_case_id, suds_object)
 
     def _fix_circular_refs(self):
         # need to pass in the project_id parm to the Work Item,
