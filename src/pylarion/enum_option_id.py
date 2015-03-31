@@ -6,50 +6,16 @@ from pylarion.base_polarion import BasePolarion
 
 class EnumOptionId(BasePolarion):
     """An object to manage Polarion TestManagement tns4:EnumOptionId"""
-    _cls_suds_map = {"id": "id"}
-    _id_field = "id"
+    _cls_suds_map = {"enum_id": "id"}
+    _id_field = "enum_id"
     _obj_client = "test_management_client"
     _obj_struct = "tns4:EnumOptionId"
+
+    def __init__(self, enum_id=None, suds_object=None):
+        super(EnumOptionId, self).__init__(enum_id, suds_object)
 
 
 class ArrayOfEnumOptionId(BasePolarion):
     """An object to manage Polarion TestManagement tns4:ArrayOfEnumOptionId"""
     _obj_client = "test_management_client"
     _obj_struct = "tns4:ArrayOfEnumOptionId"
-
-
-# TODO undestand if all below subclasses can be used as a form of enum so that
-# only valid valuescan be passed in for their EnumOptionId field.
-# Look at Polarion documentation for functions that return specific options to
-# determine if these classes should be self-generated or other way to implement
-class EnumTestResult(EnumOptionId):
-    ''' Values for a TestRecord's result '''
-    PASSED = 'passed'
-    FAILED = 'failed'
-    BLOCKED = 'blocked'
-
-
-class EnumTestRunStatus(EnumOptionId):
-    ''' Values for a TestRun's status '''
-    NOT_RUN = "notrun"
-    IN_PROGRESS = "inprogress"
-    FINISHED = "finished"
-
-
-class EnumTestRunTypes(EnumOptionId):
-    """Possible values for a TestRun type"""
-    MANUAL = "manual"
-    AUTOMATED = "automated"
-
-
-class EnumSelectTestCasesBy(EnumOptionId):
-    AUTOMATED_PROCESS = "automatedProcess"
-    DYNAMIC_QUERY = "dynamicQueryResult"
-    DYNAMIC_LIVEDOC = "dynamicLiveDoc"
-    MANUAL_SELECTION = "manualSelection"
-    STATIC_QUERY = "staticQueryResult"
-    STATIC_LIVEDOC = "staticLiveDoc"
-
-
-class TestType(EnumOptionId):
-    REGRESSION = "regression"

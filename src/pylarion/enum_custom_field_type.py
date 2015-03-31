@@ -17,13 +17,14 @@ class EnumCustomFieldType(BasePolarion):
         required (boolean)
         type (string)
 """
-# id field is called id and not enum_custom_field_type_id because it is often
-# mixed with custom_field_type and they need to be accessed interchangeably
+# id field is called cft_id and not enum_custom_field_type_id because it is
+# often mixed with custom_field_type and they need to be accessed
+# interchangeably
     _cls_suds_map = {"default_value": "defaultValue",
                      "depends_on": "dependsOn",
                      "description": "description",
                      "enum_id": "enumId",
-                     "id": "id",
+                     "cft_id": "id",
                      "name": "name",
                      "required": "required",
                      "type": "type",

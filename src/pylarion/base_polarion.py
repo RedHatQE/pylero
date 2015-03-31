@@ -728,4 +728,5 @@ class BasePolarion(object):
             enums = self.session.tracker_client.service. \
                 getEnumOptionsForIdWithControl(project_id, enum_id)
             self._cache["enums"][enum_id] = enums
+        # the _cache contains _suds_object, so the id attribute is used.
         return [enum.id for enum in enums]

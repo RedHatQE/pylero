@@ -1307,7 +1307,7 @@ class _SpecificWorkItem(_WorkItem):
         for cft in cfts:
                 # convert the custom field name to use code convention, where
                 # possible
-                split_name = re.findall('[a-zA-Z][^A-Z]*', cft.id)
+                split_name = re.findall('[a-zA-Z][^A-Z]*', cft.cft_id)
                 local_name = "_".join(split_name).replace("U_R_I", "uri"). \
                     replace("W_I", "wi").lower()
                 all_fields.append(local_name)
@@ -1330,11 +1330,11 @@ class _SpecificWorkItem(_WorkItem):
                                                    self._wi_type)
         for cft in cfts:
             # try to convert custom field names to use the coding conventions
-            split_name = re.findall('[a-zA-Z][^A-Z]*', cft.id)
+            split_name = re.findall('[a-zA-Z][^A-Z]*', cft.cft_id)
             local_name = "_".join(split_name).replace("U_R_I", "uri"). \
                 replace("W_I", "wi").lower()
             self._cls_suds_map[local_name] = {}
-            self._cls_suds_map[local_name]["field_name"] = cft.id
+            self._cls_suds_map[local_name]["field_name"] = cft.cft_id
             # types are returned in format:
             # * nsX:obj_type for objects and
             # * xsd:string for native types
