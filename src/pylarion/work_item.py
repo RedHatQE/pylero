@@ -325,8 +325,9 @@ class _WorkItem(BasePolarion):
         return results
 
     @classmethod
-    def query(cls, query, is_sql=False, fields=[], sort="work_item_id",
-              limit=-1, baseline_revision=None, query_uris=False):
+    def query(cls, query, is_sql=False, fields=["work_item_id"],
+              sort="work_item_id", limit=-1, baseline_revision=None,
+              query_uris=False):
         """Searches for Work Items.
 
         Args:
@@ -340,6 +341,8 @@ class _WorkItem(BasePolarion):
                     For custom fields you can specify which fields you want to
                     be filled using following syntax:
                     customFields.CUSTOM_FIELD_ID (e.g. customFields.risk).
+                    Default work_item_id. Without this, it only returns the uri
+                        of the object
             sort: Lucene sort string (can be null)
             limit: how many results to return (-1 means everything)
             baseline_revision (str): if populated, query done in specified rev
@@ -366,7 +369,7 @@ class _WorkItem(BasePolarion):
             base_name = "queryWorkItems"
         else:
             base_name = "queryWorkItemUris"
-        return BasePolarion._query(
+        return cls._query(
             base_name, query, is_sql, fields=fields, sort=sort, limit=limit,
             baseline_revision=baseline_revision, has_fields=not query_uris)
 
