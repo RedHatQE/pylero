@@ -128,7 +128,6 @@ class Document(BasePolarion):
         "_unresolvable": "_unresolvable"}
     _obj_client = "test_management_client"
     _obj_struct = "tns4:Module"
-    has_query = True
 
     @classmethod
     def create(cls, project_id, space, document_name, document_title,
@@ -149,7 +148,7 @@ class Document(BasePolarion):
             document_title: Document title (required)
             allowed_wi_types: list of types, at least one must be specified
             structure_link_role: required, role which defines the hierarchy of
-                                 work items inside the Module
+                                 work items inside the Module, default: parent
             home_page_content: HTML markup for document home page
             document_type: Type of document (i.e testspecification).
 
@@ -218,14 +217,15 @@ class Document(BasePolarion):
         return docs
 
     @classmethod
-    def query(cls, query, is_sql=False, fields=[], sort="document_id",
-              limit=-1, baseline_revision=None, query_uris=False):
+    def query(cls, query, is_sql=False, fields=["document_id"],
+              sort="document_id", limit=-1, baseline_revision=None,
+              query_uris=False):
         """Searches for Modules/Documents.
 
         Args:
             query: query, either Lucene or SQL
             is_sql (bool): determines if the query is SQL or Lucene
-            fields: array of field names to fill in the returned
+            fields: list of field names to fill in the returned
                     Modules/Documents (can be null). For nested structures in
                     the lists you can use following syntax to include only
                     subset of fields: myList.LIST.key
@@ -233,10 +233,13 @@ class Document(BasePolarion):
                     For custom fields you can specify which fields you want to
                     be filled using following syntax:
                     customFields.CUSTOM_FIELD_ID (e.g. customFields.risk).
-            sort: Lucene sort string (can be null)
-            limit: how many results to return (-1 means everything)
+                    default: list containing "document_id"
+            sort: Lucene sort string, default: document_id
+            limit: how many results to return (-1 means everything (default))
             baseline_revision (str): if populated, query done in specified rev
-            query_uris: returns a list of URI of the Modules found
+                                     default - None
+            query_uris: returns a list of URI of the Modules found, instead of
+                        a list of Documents. default - False.
 
         Returns:
             list of modules
@@ -251,16 +254,33 @@ class Document(BasePolarion):
             queryModulesInBaseline
             queryModulesInBaselineBySQL
         """
+        parms = [query]
+        # The parameters have to be listed in the specific order, based on the
+        # specific function called. That's why there are 2 if not is_sql
+        # conditions.
+        if not is_sql:
+            parms.append(sort)
+        if baseline_revision:
+            parms.append(baseline_revision)
+        if not query_uris:
+            p_fields = cls._convert_obj_fields_to_polarion(fields)
+            parms.append(p_fields)
+        if not is_sql:
+            parms.append(limit)
         if not query_uris:
             base_name = "queryModules"
         else:
             base_name = "queryModuleUris"
-        # calls the parent query function which will build all the required
-        # function names and parameter lists generated dynamically based on
-        # parameters passed in.
-        return super(cls.__class__, cls)._query(
-            base_name, query, is_sql, fields=fields, sort=sort, limit=limit,
-            baseline_revision=baseline_revision, has_fields=not query_uris)
+        if baseline_revision:
+            base_name += "InBaseline"
+        if is_sql:
+            base_name += "BySQL"
+        docs = getattr(cls.session.tracker_client.service, base_name)(*parms)
+        if query_uris:
+            return docs
+        else:
+            lst_doc = [Document(suds_object=doc) for doc in docs]
+            return lst_doc
 
     def __init__(self, project_id=None, doc_with_space=None, fields=None,
                  uri=None, suds_object=None):

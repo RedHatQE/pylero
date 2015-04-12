@@ -37,7 +37,7 @@ from pylarion.planning_constraint import PlanningConstraint
 from pylarion.planning_constraint import ArrayOfPlanningConstraint
 from pylarion.enum_option_id import EnumOptionId
 # ArrayOfEnumOptionId is used in dynamic code for custom fields
-from pylarion.enum_option_id import ArrayOfEnumOptionId
+from pylarion.enum_option_id import ArrayOfEnumOptionId  # NOQA
 from pylarion.priority_option_id import PriorityOptionId
 from pylarion.project import Project
 from pylarion.test_steps import TestSteps
@@ -240,7 +240,6 @@ class _WorkItem(BasePolarion):
     _id_field = "work_item_id"
     _obj_client = "tracker_client"
     _obj_struct = "tns3:WorkItem"
-    has_query = True
 
     @classmethod
     def create(cls, project_id, wi_type, title, desc, status, **kwargs):
@@ -334,19 +333,20 @@ class _WorkItem(BasePolarion):
             query: query, either Lucene or SQL
             is_sql (bool): determines if the query is SQL or Lucene
             fields: array of field names to fill in the returned
-                    Modules/Documents (can be null). For nested structures in
+                    WorkItems (can be null). For nested structures in
                     the lists you can use following syntax to include only
                     subset of fields: myList.LIST.key
                     (e.g. linkedWorkItems.LIST.role).
                     For custom fields you can specify which fields you want to
                     be filled using following syntax:
                     customFields.CUSTOM_FIELD_ID (e.g. customFields.risk).
-                    Default work_item_id. Without this, it only returns the uri
-                        of the object
-            sort: Lucene sort string (can be null)
-            limit: how many results to return (-1 means everything)
+                    Default: list containing "work_item_id".
+            sort: Lucene sort string (can be null), default: work_item_id
+            limit: how many results to return (-1 means everything, default)
             baseline_revision (str): if populated, query done in specified rev
-            query_uris (bool): returns a list of URI of the Modules found
+                                     default: None
+            query_uris (bool): returns a list of URI of the WorkItems found,
+                               default: False
 
         Returns:
             list of _WorkItem objects
@@ -365,13 +365,33 @@ class _WorkItem(BasePolarion):
             Tracker.queryWorkItemsInBaselineLimited
             Tracker.queryWorkItemsLimited
         """
+        parms = [query]
+        if not is_sql:
+            parms.append(sort)
+        if baseline_revision:
+            parms.append(baseline_revision)
+        if not query_uris:
+            p_fields = cls._convert_obj_fields_to_polarion(fields)
+            parms.append(p_fields)
+        if not is_sql and limit != -1:
+            parms.append(limit)
         if not query_uris:
             base_name = "queryWorkItems"
         else:
             base_name = "queryWorkItemUris"
-        return cls._query(
-            base_name, query, is_sql, fields=fields, sort=sort, limit=limit,
-            baseline_revision=baseline_revision, has_fields=not query_uris)
+        if baseline_revision:
+            base_name += "InBaseline"
+        if is_sql:
+            base_name += "BySQL"
+        elif limit != -1:
+            # You can't have both SQL and limited.
+            base_name += "Limited"
+        wis = getattr(cls.session.tracker_client.service, base_name)(*parms)
+        if query_uris:
+            return wis
+        else:
+            lst_wi = [_WorkItem(suds_object=wi) for wi in wis]
+            return lst_wi
 
     def __init__(self, project_id=None, work_item_id=None, suds_object=None,
                  uri=None, fields=None, revision=None):
@@ -428,7 +448,8 @@ class _WorkItem(BasePolarion):
             if getattr(self._suds_object, "_unresolvable", True):
                 raise PylarionLibException(
                     "The WorkItem {0} was not found.".format(work_item_id))
-        if not self.project_id:
+        # if it is a suds object, only relevant fields are passed in.
+        if not self.project_id and not suds_object:
             self.project_id = self.default_project
 
     def _fix_circular_refs(self):

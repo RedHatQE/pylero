@@ -21,7 +21,7 @@ from pylarion.user import User
 from pylarion.project import Project
 from pylarion.text import Text
 # Plan is used in custom fields.
-from pylarion.plan import Plan
+from pylarion.plan import Plan  # NOQA
 
 
 class TestRun(BasePolarion):

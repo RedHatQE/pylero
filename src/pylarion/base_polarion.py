@@ -3,7 +3,6 @@ from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
 import os
 import base64
-import suds
 import copy
 from pylarion.exceptions import PylarionLibException
 from pylarion.server import Server
@@ -93,8 +92,6 @@ class BasePolarion(object):
                            Connection class. This attribute connects to the
                            server one time per session, no matter how many
                            objects are instantiated.
-        has_query (bool): Set by a child class if it can use the parent's query
-                          method.
         default_project (str): The user's default project, to be used when
                           project_id is needed and there is none given
     """
@@ -104,7 +101,6 @@ class BasePolarion(object):
     _obj_struct = None
     _session = None
     _default_project = None
-    has_query = False
     _cache = {
         "enums": {},
         "custom_field_types": [],
@@ -154,56 +150,6 @@ class BasePolarion(object):
                            if not isinstance(cls._cls_suds_map[x], dict)
                            else cls._cls_suds_map[x]["field_name"], fields)
         return p_fields
-
-    @classmethod
-    def _query(cls, base_function_name, query, is_sql=False, fields=[],
-               sort=suds.null(), limit=-1, baseline_revision=None,
-               has_fields=True):
-        """Searches the given object using the object's query function
-
-        Args:
-            base_function_name: start of the Polarion function name.
-            query: query, either Lucene or SQL
-            is_sql (bool): determines if the query is SQL or Lucene
-            fields: array of field names to fill in the returned
-                    Modules/Documents (can be null). For nested structures in
-                    the lists you can use following syntax to include only
-                    subset of fields: myList.LIST.key
-                    (e.g. linkedWorkItems.LIST.role).
-                    For custom fields you can specify which fields you want to
-                    be filled using following syntax:
-                    customFields.CUSTOM_FIELD_ID (e.g. customFields.risk).
-            sort: Lucene sort string (can be null)
-            limit: how many results to return (-1 means everything)
-            baseline_revision (str): if populated, query done in specified rev
-
-        Returns:
-            list of objects
-        """
-        function_name = base_function_name
-        p_fields = cls._convert_obj_fields_to_polarion(fields)
-        if baseline_revision:
-            function_name += "InBaseline"
-        if is_sql:
-            function_name += "BySQL"
-            parms = [query]
-        else:
-            # unsure of the sort format. Probably need to convert to Polarion.
-            parms = [query, sort]
-        if baseline_revision:
-            parms += [baseline_revision]
-        parms += ([p_fields] if has_fields else []) + \
-                 ([limit] if not is_sql and limit is not None else [])
-        suds_objs = getattr(cls.session.tracker_client.service,
-                            function_name)(*parms)
-        # some functions return list of strings and not objects.
-        if suds_objs and isinstance(suds_objs[0], basestring):
-            return suds_objs
-        else:
-            objs = []
-            for suds_obj in suds_objs:
-                objs.append(cls(suds_object=suds_obj))
-            return objs
 
     @classmethod
     def get_global_roles(cls):

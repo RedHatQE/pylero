@@ -68,7 +68,6 @@ class WikiPage(BasePolarion):
                      "_unresolved": "_unresolved"}
     _obj_client = "tracker_client"
     _obj_struct = "tns3:WikiPage"
-    has_query = True
 
     @classmethod
     def get_wiki_pages(cls, project_id, space_id, fields):
@@ -93,14 +92,15 @@ class WikiPage(BasePolarion):
         return wikis
 
     @classmethod
-    def query(cls, query, is_sql=False, fields=[], sort="wiki_page_id",
-              limit=-1, baseline_revision=None, query_uris=False):
-        """Searches for Modules/Documents.
+    def query(cls, query, is_sql=False, fields=["wiki_page_id"],
+              sort="wiki_page_id", limit=-1, baseline_revision=None,
+              query_uris=False):
+        """Searches for Wiki Pages .
 
         Args:
             query: query, either Lucene or SQL
             is_sql (bool): determines if the query is SQL or Lucene
-            fields: array of field names to fill in the returned
+            fields: list of field names to fill in the returned
                      Modules/Documents (can be null). For nested structures in
                      the lists you can use following syntax to include only
                      subset of fields: myList.LIST.key
@@ -108,10 +108,13 @@ class WikiPage(BasePolarion):
                      For custom fields you can specify which fields you want to
                      be filled using following syntax:
                      customFields.CUSTOM_FIELD_ID (e.g. customFields.risk).
-            sort: Lucene sort string (can be null)
-            limit: how many results to return (-1 means everything)
+                     default - list containing "wiki_page_id"
+            sort: Lucene sort string, default wiki_page_id
+            limit: how many results to return (-1 means everything (default))
             baseline_revision (str): if populated, query done in specified rev
-            query_uris: returns a list of URI of the Modules found
+                                     default - None
+            query_uris: returns a list of URI of the Modules found, instead of
+                        a list of WikiPage objects. default - False
 
         Returns:
             list of modules
@@ -126,13 +129,33 @@ class WikiPage(BasePolarion):
             queryWikiPagesInBaseline
             queryWikiPagesInBaselineBySQL
         """
+        parms = [query]
+        # The parameters have to be listed in the specific order, based on the
+        # specific function called. That's why there are 2 if not is_sql
+        # conditions.
+        if not is_sql:
+            parms.append(sort)
+        if baseline_revision:
+            parms.append(baseline_revision)
+        if not query_uris:
+            p_fields = cls._convert_obj_fields_to_polarion(fields)
+            parms.append(p_fields)
+        if not is_sql:
+            parms.append(limit)
         if not query_uris:
             base_name = "queryWikiPages"
         else:
             base_name = "queryWikiPageUris"
-        return super(cls.__class__, cls)._query(
-            base_name, query, is_sql, fields=fields, sort=sort, limit=limit,
-            baseline_revision=baseline_revision, has_fields=not query_uris)
+        if baseline_revision:
+            base_name += "InBaseline"
+        if is_sql:
+            base_name += "BySQL"
+        wps = getattr(cls.session.tracker_client.service, base_name)(*parms)
+        if query_uris:
+            return wps
+        else:
+            lst_wp = [WikiPage(suds_object=wp) for wp in wps]
+            return lst_wp
 
     def __init__(self, fields=None, uri=None, suds_object=None):
         """
