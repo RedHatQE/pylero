@@ -468,7 +468,7 @@ class BasePolarion(object):
         Args:
             field_name: the field name of the Polarion object to get
         """
-        csm = self._cls_suds_map
+        csm = self._cls_suds_map[field_name]
         if csm["field_name"] in self._changed_fields:
             if csm.get("cls"):
                 obj = csm["cls"](suds_object=self._changed_fields
@@ -501,7 +501,7 @@ class BasePolarion(object):
             val: the value that the property is being set to
             field_name: the field name of the Polarion object to set
         """
-        csm = self._cls_suds_map
+        csm = self._cls_suds_map[field_name]
         additional_parms = copy.deepcopy(csm.get("additional_parms", {}))
         if not val:
             self._changed_fields[csm["field_name"]] = None
