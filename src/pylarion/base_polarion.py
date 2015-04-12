@@ -363,7 +363,7 @@ class BasePolarion(object):
         csm = self._cls_suds_map[field_name]
         suds_field_name = csm["field_name"]
         enum_id = csm.get("enum_id")
-        enum_override = csm.get("enum_override")
+        enum_override = csm.get("enum_override", [])
         sync_field = csm.get("sync_field")
         obj_cls = csm.get("cls")
         # deepcopy so that changes do not stick
