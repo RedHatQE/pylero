@@ -22,6 +22,9 @@ class Text(BasePolarion):
     _obj_client = "test_management_client"
     _obj_struct = "tns2:Text"
 
+    def __init__(self, content=None, suds_object=None):
+        super(self.__class__, self).__init__(content, suds_object)
+
     def _get_suds_object(self):
         super(self.__class__, self)._get_suds_object()
         # default values
