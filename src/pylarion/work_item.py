@@ -257,6 +257,9 @@ class _WorkItem(BasePolarion):
             title: title of WorkItem
             desc: description of WorkItem
             status: initial status of the WorkItem, draft by default
+            kwargs: named parameters that are added to the object and updated
+                    after the object is created. Required custom fields must be
+                    passed in.
 
         Returns:
             new _WorkItem
@@ -272,7 +275,7 @@ class _WorkItem(BasePolarion):
         wi.status = status
         wi_uri = cls.session.tracker_client.service.createWorkItem(
             wi._suds_object)
-        new_wi = _WorkItem(uri=wi_uri)
+        new_wi = cls(uri=wi_uri)
         for field in kwargs:
             setattr(new_wi, field, kwargs[field])
         new_wi.update()
@@ -464,7 +467,8 @@ class _WorkItem(BasePolarion):
         self._cls_suds_map["planned_in"]["inner_field_name"] = "Plan"
 
     def add_approvee(self, approvee_id):
-        """method add_approvee adds an approvee to the current _WorkItem
+        """method add_approvee adds an approvee to the current _WorkItem.
+        The approvee passed in must be an allowed approver
 
         Args:
             approvee_id (str):er_id of approvee to add
@@ -476,11 +480,17 @@ class _WorkItem(BasePolarion):
             Tracker.addApprovee
         """
         self._verify_obj()
+        # verify that the user is allowed to be an approver.
+        allowed = self.get_allowed_approvers()
+        allowed_ids = [u.user_id for u in allowed]
+        if approvee_id not in (allowed_ids):
+            raise PylarionLibException("%s is not an allowed assignee" %
+                                       approvee_id)
         self.session.tracker_client.service.addApprovee(self.uri, approvee_id)
 
     def add_assignee(self, assignee_id):
         """method add_assignee adds an assignee to the current _WorkItem
-
+        The assignee passed in must be an allowed assignee
         Args:
             assignee_id (str): user_id of assignee to add
 
@@ -491,11 +501,18 @@ class _WorkItem(BasePolarion):
             Tracker.addAssignee
         """
         self._verify_obj()
+        # verify that the user is allowed to be an assignee.
+        allowed = self.get_allowed_assignees()
+        allowed_ids = [u.user_id for u in allowed]
+        if assignee_id not in (allowed_ids):
+            raise PylarionLibException("%s is not an allowed assignee" %
+                                       assignee_id)
         return self.session.tracker_client.service.addAssignee(self.uri,
                                                                assignee_id)
 
     def add_category(self, category_id):
         """method add_category adds a category to the current _WorkItem
+    The category passed in must be a defined category in the current project
 
         Args:
             category_id (str): id of the category to add
@@ -507,6 +524,12 @@ class _WorkItem(BasePolarion):
             Tracker.addCategoy
         """
         self._verify_obj()
+        proj = Project(self.project_id)
+        cats = proj.get_categories()
+        cat_ids = [cat.category_id for cat in cats]
+        if category_id not in cat_ids:
+            raise PylarionLibException("the category_id must be one of: %s" %
+                                       cat_ids)
         return self.session.tracker_client.service.addCategory(self.uri,
                                                                category_id)
 
@@ -542,8 +565,10 @@ class _WorkItem(BasePolarion):
             Tracker.addHyperlink
         """
         self._verify_obj()
-        return self.session.tracker_client.service.addHyperlink(self.uri, url,
-                                                                role)
+        self.check_valid_field_values(role, "hyperlink-role", {})
+        suds_role = EnumOptionId(role)._suds_object
+        return self.session.tracker_client.service.addHyperlink(
+            self.uri, url, suds_role)
 
     def add_linked_item(self, linked_work_item_id, role,
                         revision=None, suspect=None):
@@ -559,8 +584,10 @@ class _WorkItem(BasePolarion):
             role (str): the role of the hyperlink to add.
             revision (str): optional, specific revision for linked item
                            (None means HEAD revision)
+                           default: None
             suspect (bool): true if the link should be marked with suspect flag
                       Only valid if revision is set.
+                      default: None
 
         Returns:
             bool
@@ -570,9 +597,8 @@ class _WorkItem(BasePolarion):
             Tracker.addLinkedItemWithRev
         """
         self._verify_obj()
-        lwi = LinkedWorkItem()
         # validates the role. Will raise PylarionLibException if invalid
-        lwi.role = role
+        self.check_valid_field_values(role, "workitem-link-role", {})
         wi_linked = _WorkItem(work_item_id=linked_work_item_id,
                               project_id=self.project_id)
         enum_role = EnumOptionId(role)._suds_object
@@ -635,7 +661,7 @@ class _WorkItem(BasePolarion):
         self._verify_obj()
         if content:
             if isinstance(content, basestring):
-                obj_content = Text(obj_id=content)
+                obj_content = Text(content)
                 suds_content = obj_content._suds_object
             elif isinstance(content, Text):
                 suds_content = content._suds_object
@@ -655,8 +681,8 @@ class _WorkItem(BasePolarion):
             user_id: the user for the work record.
             date_worked: the date of the work record.
             time_spent: the time spent for the work record.
-            record_type: the type of the work record
-            record-comment: work record comment
+            record_type: the type of the work record, default: None
+            record-comment: work record comment, default: None
 
         Returns:
             None
@@ -694,7 +720,8 @@ class _WorkItem(BasePolarion):
             Tracker.deleteAttachment
         """
         self._verify_obj()
-        self.session.tracker_client.deleteAttachment(self.uri, attachment_id)
+        self.session.tracker_client.service.deleteAttachment(
+            self.uri, attachment_id)
 
     def do_auto_suspect(self):
         """Triggers auto suspect.
@@ -709,7 +736,7 @@ class _WorkItem(BasePolarion):
             Tracker.doAutoSuspect
         """
         self._verify_obj()
-        self.session.tracker_client.doAutoSuspect(self.uri)
+        self.session.tracker_client.service.doAutoSuspect(self.uri)
 
     def do_auto_assign(self):
         """Triggers auto assignment.
@@ -724,7 +751,7 @@ class _WorkItem(BasePolarion):
             Tracker.doAutoAssign
         """
         self._verify_obj()
-        self.session.tracker_client.doAutoAssign(self.uri)
+        self.session.tracker_client.service.doAutoAssign(self.uri)
 
     def edit_approval(self, approvee_id, status):
         """Changes the status of an approval.
@@ -740,7 +767,12 @@ class _WorkItem(BasePolarion):
             Tracker.editApproval
         """
         self._verify_obj()
-        self.session.tracker_client.editApproval(self.uri, approvee_id, status)
+        # verify that the user exists.
+        User(approvee_id)
+        self.check_valid_field_values(status, "approval-status", {})
+        suds_status = EnumOptionId(status)._suds_object
+        self.session.tracker_client.service.editApproval(
+            self.uri, approvee_id, suds_status)
 
     def get_allowed_approvers(self):
         """Gets all allowed approvers"
@@ -815,7 +847,7 @@ class _WorkItem(BasePolarion):
         self._verify_obj()
         linked_work_items = []
         for suds_lwi in self.session.tracker_client.service. \
-                getbackLinkedWorkitems(self.uri):
+                getBackLinkedWorkitems(self.uri):
             linked_work_items.append(LinkedWorkItem(suds_object=suds_lwi))
         return linked_work_items
 
@@ -922,11 +954,12 @@ class _WorkItem(BasePolarion):
 
     def get_initial_workflow_action(self, work_item_type=None):
         """Gets the initial workflow action for the specified object, returns
-        null if there is no initial action for the corresponding workflow.
+        None if there is no initial action for the corresponding workflow.
 
         Args:
             work_item_type: the type of the work item to get the
-                             available actions from. can be null
+                             available actions from. can be None
+                             default: None
         Returns:
             WorkFlowAction object
 
@@ -1196,7 +1229,7 @@ class _WorkItem(BasePolarion):
         content of the Test Steps field will be emptied (delete operation).
 
         Args:
-            test_steps: a list of TestStep objects.
+            test_steps: a list of TestStep objects. Default: None
 
         Returns:
             None
@@ -1399,8 +1432,6 @@ class _SpecificWorkItem(_WorkItem):
         for field in self._changed_fields:
             if field == "testSteps":
                 self.set_test_steps(self._changed_fields[field].steps[0])
-            else:
-                self._set_custom_field(field, self._changed_fields[field])
         self._changed_fields = {}
 
 

@@ -119,7 +119,7 @@ class BasePolarion(object):
             # Pylarion objects.
             BasePolarion._session = Connection.session()
             BasePolarion._default_project = cls._session.default_project
-            BasePolarion.user_id = cls._session.user_id
+            BasePolarion.logged_in_user_id = cls._session.user_id
             # stores password in the session so it can be used for direct svn
             # operations
             BasePolarion.password = cls._session.password
@@ -140,6 +140,10 @@ class BasePolarion(object):
         array and it converts it to the Polarion attribute name using the
         _cls_suds_map. It uses the python map function over the fields list to
         return the list of its Polarion attribute name.
+
+        Args:
+            fields - list of fields to convert. If it is not a list, it
+            converts it to one first. default: []
         """
         p_fields = []
         if fields:
@@ -409,34 +413,49 @@ class BasePolarion(object):
 
     def _custom_getter(self, field_name):
         """Works with custom fields that has attributes stored differently
-        if the attribute has been changed, it gets it from there.
+        then regular attributes. It first checks if there is a value in the
+        local copy, which may have already been modified by the user. If not,
+        it checks the server for a value.
+
+        test_steps do not work like all other custom fields, and therefore
+        require specific code. Its values are not saved in the local object.
 
         Args:
             field_name: the field name of the Polarion object to get
         """
         csm = self._cls_suds_map[field_name]
-        if csm["field_name"] in self._changed_fields:
-            if csm.get("cls"):
-                obj = csm["cls"](suds_object=self._changed_fields
-                                 [csm["field_name"]])
+        if field_name == "test_steps":
+            if self._changed_fields.get("testSteps"):
+                return csm["cls"](
+                    suds_object=self._changed_fields.get("testSteps"))
             else:
-                obj = self._changed_fields[csm["field_name"]]
-        elif self.uri:
-            cf = self.get_custom_field(csm["field_name"])
-            if not cf:
+                suds_object = self.get_test_steps()
+                if suds_object:
+                    return csm["cls"](suds_object=suds_object)
+        else:
+            cf = self._suds_object.customFields[0]
+            custom_fld = None
+            if cf:
+                # check if the custom field already exists and modify it.
+                match = filter(lambda x: x.key == csm["field_name"], cf)
+                if match:
+                    custom_fld = match[0]
+            if not custom_fld and self.uri:
+                custom_fld = self.get_custom_field(
+                    csm["field_name"])._suds_object
+            if custom_fld:
+                if isinstance(custom_fld, basestring):
+                    obj = custom_fld
+                elif csm.get("cls"):
+                    obj = csm["cls"](suds_object=custom_fld.value)
+                else:
+                    obj = custom_fld.value
+                if getattr(obj, "_id_field", None):
+                    return getattr(obj, obj._id_field)
+                else:
+                    return obj
+            else:
                 return None
-            if isinstance(cf, basestring):
-                obj = cf
-            elif csm.get("cls"):
-                obj = csm["cls"](suds_object=cf._suds_object.value)
-            else:
-                obj = cf.value
-        else:
-            obj = None
-        if getattr(obj, "_id_field", None):
-            return getattr(obj, obj._id_field)
-        else:
-            return obj
 
     def _custom_setter(self, val, field_name):
         """Works with custom fields that has to keep track of values and what
@@ -448,33 +467,45 @@ class BasePolarion(object):
             field_name: the field name of the Polarion object to set
         """
         csm = self._cls_suds_map[field_name]
-        additional_parms = copy.deepcopy(csm.get("additional_parms", {}))
-        if not val:
-            self._changed_fields[csm["field_name"]] = None
-        elif isinstance(val, basestring):
-            if csm.get("enum_id") and val not in csm.get("enum_override", []):
-                self.check_valid_field_values(val, csm.get("enum_id"),
-                                              additional_parms)
-            self._changed_fields[csm["field_name"]] = \
-                csm["cls"](val)._suds_object if csm["cls"] else val
-        elif isinstance(val, csm["cls"]):
-            self._changed_fields[csm["field_name"]] = val._suds_object
-        elif isinstance(val, csm["cls"]()._suds_object.__class__):
-            self._changed_fields[csm["field_name"]] = val
-        elif not val:
-            self._changed_fields[csm["field_name"]] = None
-        else:
-            raise PylarionLibException("The value must be of type {0}.".format(
-                csm["cls"].__name__))
+        if field_name == "test_steps":
+            if not val:
+                self._changed_fields[csm["field_name"]] = None
+            elif isinstance(val, csm["cls"]):
+                self._changed_fields[csm["field_name"]] = val._suds_object
+            elif isinstance(val, csm["cls"]()._suds_object.__class__):
+                self._changed_fields[csm["field_name"]] = val
+            else:
+                raise PylarionLibException(
+                    "The value must be a {0}".format(csm["cls"].__name__))
         # move the custom fields to within the object, otherwise each custom
         # field is a seperate SVN commit. testSteps, does not work unless it
         # is uploaded using the set_test_steps function.
-        if csm["field_name"] != "testSteps":
-            cf = self._suds_object.customFields[0]
+        else:
             cust = self.custom_obj()
             cust.key = csm["field_name"]
-            cust.value = self._changed_fields[csm["field_name"]]
-            self._changed_fields.pop(csm["field_name"], None)
+            if val is None:
+                cust.value = None
+            elif isinstance(val, csm["cls"]):
+                cust.value = val._suds_object
+            elif isinstance(val, csm["cls"]()._suds_object.__class__):
+                cust.value = val
+            elif not csm.get("cls") or isinstance(val, basestring):
+                # if there is no cls specified, val can be a bool, int, ...
+                # if val is a string, it may be used to instantiate the class
+                if csm.get("enum_id") and \
+                        val not in csm.get("enum_override", []):
+                    # uses deepcopy, to not affect other instances of the class
+                    additional_parms = copy.deepcopy(
+                        csm.get("additional_parms", {}))
+                    self.check_valid_field_values(val, csm.get("enum_id"),
+                                                  additional_parms)
+                cust.value = csm["cls"](val)._suds_object if csm.get("cls") \
+                    else val
+            else:
+                raise PylarionLibException(
+                    "The value must be of type {0}."
+                    .format(csm["cls"].__name__))
+            cf = self._suds_object.customFields[0]
             if cf:
                 # check if the custom field already exists and modify it.
                 match = filter(lambda x: x.key == csm["field_name"], cf)

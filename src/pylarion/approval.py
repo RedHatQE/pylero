@@ -13,14 +13,16 @@ class Approval(BasePolarion):
         status (EnumOptionId)
         user (User)
 """
-    _cls_suds_map = {"status":
-                     {"field_name": "status",
-                      "cls": EnumOptionId},
-                     "user_id":
-                     {"field_name": "user",
-                      "cls": User},
-                     "uri": "_uri",
-                     "_unresolved": "_unresolved"}
+    _cls_suds_map = {
+        "status":
+            {"field_name": "status",
+             "cls": EnumOptionId,
+             "enum_id": "approval-status"},
+        "user_id":
+            {"field_name": "user",
+             "cls": User},
+        "uri": "_uri",
+        "_unresolved": "_unresolved"}
     _obj_client = "builder_client"
     _obj_struct = "tns5:Approval"
 

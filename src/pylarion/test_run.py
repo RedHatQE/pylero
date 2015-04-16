@@ -164,12 +164,15 @@ class TestRun(BasePolarion):
             project_id (string): the Polarion project to create the test run
                                  in
             template_id (string): the unique identifier for the template
-            parent_template_id: the template that this is based onthe ba
+            parent_template_id: the template that this is based on
+                                Default: "Empty"
             select_test_cases_by: the method used to choose test cases
                                   NOTE: It is currently not possible to select
-                                  test cases manually via the API
-            query: the Lucene query, for query methods
+                                  test cases manually via the API.
+                                  Default: staticQueryResult
+            query: the Lucene query, for query methods, default None
             doc_with_space: the space/doc_name, for document methods
+                            default: None
 
         Returns:
             The created TestRun Template object
@@ -203,12 +206,12 @@ class TestRun(BasePolarion):
             fields:  test run fields that should be initialized,
                      all other fields will be null.
                      Field names are from the object's attributes and not
-                     the Polarion field names
+                     the Polarion field names, default []
             sort: the field used to sort results, default is test_run_id
             limit (int): the maximum number of records to be returned, -1
-                         for no limit.
+                         for no limit, default -1.
             search_templates (bool): if set, searches the templates
-                                     instead of the test runs
+                                     instead of the test runs, default False
         Returns:
             list of TestRun objects
 
@@ -337,7 +340,7 @@ class TestRun(BasePolarion):
         client = pysvn.Client()
         client.callback_ssl_server_trust_prompt = \
             lambda trust: (True, trust["failures"], True)
-        client.set_default_username(self.user_id)
+        client.set_default_username(self.logged_in_user_id)
         client.set_default_password(self.password)
         client.set_store_passwords(False)
         proj = Project(project_id)
@@ -516,7 +519,7 @@ class TestRun(BasePolarion):
             executed_by (str): user id
             executed (datetime):
             duration (float):
-            defect_work_item_id (str): _WorkItem id of defect
+            defect_work_item_id (str): _WorkItem id of defect, default: None
 
         Returns:
             None
@@ -586,7 +589,7 @@ class TestRun(BasePolarion):
 
         Args:
             defect_template_id (str): the _WorkItem template id to base the
-            new summary defect. can be null
+            new summary defect. can be null. default: None
 
         Returns:
             the created _WorkItem
@@ -884,13 +887,15 @@ class TestRun(BasePolarion):
                                    passed
                                    failed
                                    blocked
-            test_comment: (str or Text object) - may be None
-            executed_by (str): user id
+                        default: suds.null()
+            test_comment: (str or Text object) - may be None, default: None
+            executed_by (str): user id, default: suds.null()
             executed: date when the test case has been executed,
                       default is now.
             duration: duration of the test case execution, any negative value
-                      is treated as None.
+                      is treated as None. default: suds.null()
             defect_work_item_id: _WorkItem id of defect, can be None
+                                default: None
 
         Returns:
             None
