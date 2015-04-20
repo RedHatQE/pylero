@@ -56,6 +56,11 @@ with the following values::
     password={your password}
     default_project={your default project}
 
+Requirements:
+*************
+python-suds
+pysvn
+
 Usage:
 ******
 There is a pylarion script installed that opens a python shell with all the
