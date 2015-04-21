@@ -52,7 +52,8 @@ class TestRecord(BasePolarion):
              "sync_field": "uri"},
         "result":
             {"field_name": "result",
-             "cls": EnumOptionId},
+             "cls": EnumOptionId,
+             "enum_id": "result"},
         "test_case_id":
             {"field_name": "testCaseURI",
              "cls": _WorkItem,

@@ -292,7 +292,8 @@ class BasePolarion(object):
         named_arg = csm.get("named_arg", "suds_object")
         if hasattr(self._suds_object, csm.get("field_name")):
             args = {}
-            args[named_arg] = getattr(self._suds_object, csm.get("field_name"))
+            args[named_arg] = getattr(self._suds_object,
+                                      csm.get("field_name", ""), None)
             obj = csm.get("cls")(**args)
         else:
             obj = csm.get("cls")()
@@ -707,3 +708,20 @@ class BasePolarion(object):
             self._cache["enums"][enum_id] = enums
         # the _cache contains _suds_object, so the id attribute is used.
         return [enum.id for enum in enums]
+
+    def reload(self):
+        """Reloads the object with data from the server.
+        This function is useful if the data on the server changed or if a
+        data changing function was called (such as TestRun.add_attachment)
+
+        Notes:
+            This will overwrite any unsaved data in the object.
+        Args:
+            None
+        Returns:
+            None
+        """
+
+        if getattr(self, "uri", None):
+            obj = self.__class__(uri=self.uri)
+            self._suds_object = obj._suds_object
