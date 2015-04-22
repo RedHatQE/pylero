@@ -128,6 +128,13 @@ class Document(BasePolarion):
         "_unresolvable": "_unresolvable"}
     _obj_client = "test_management_client"
     _obj_struct = "tns4:Module"
+    # The uri struct of a module is different then others because of extra
+    # moduleFolder element. Also requires a substitution from # to / and back
+    URI_STRUCT = "subterra:data-service:objects:/default/" \
+                 "%(project)s${%(obj)s}{moduleFolder}%(id)s"
+    # must wrap lambda with classmethod so it can be used as such
+    URI_ID_GET_REPLACE = classmethod(lambda cls, x: x.replace("#", "/"))
+    URI_ID_SET_REPLACE = classmethod(lambda cls, x: x.replace("/", "#"))
 
     @classmethod
     def create(cls, project_id, space, document_name, document_title,

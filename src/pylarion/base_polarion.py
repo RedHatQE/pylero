@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 import os
 import base64
 import copy
+import re
 from pylarion.exceptions import PylarionLibException
 from pylarion.server import Server
 from __builtin__ import classmethod
@@ -106,6 +107,17 @@ class BasePolarion(object):
         "custom_field_types": [],
         "projects": {}
     }
+    REGEX_PROJ = "/default/(.*)\$"
+    # The id in the uri is always after the last }, at times there are multiple
+    REGEX_ID = ".+}(.*)$"
+    # The URI_STRUCT can be overridden in a child class when needed (for
+    # example, Documents). Also if there is need for a replace in the child
+    # class the URI_ID lambda attributes should be overridden
+    URI_STRUCT = "subterra:data-service:objects:/default/" \
+                 "%(project)s${%(obj)s}%(id)s"
+    # must wrap lambda with classmethod so it can be used as such
+    URI_ID_GET_REPLACE = classmethod(lambda cls, x: x)
+    URI_ID_SET_REPLACE = classmethod(lambda cls, x: x)
 
     @classproperty
     def session(cls):
@@ -290,14 +302,22 @@ class BasePolarion(object):
         """
         csm = self._cls_suds_map[field_name]
         named_arg = csm.get("named_arg", "suds_object")
-        if hasattr(self._suds_object, csm.get("field_name")):
-            args = {}
-            args[named_arg] = getattr(self._suds_object,
-                                      csm.get("field_name", ""), None)
-            obj = csm.get("cls")(**args)
+        suds_field_val = getattr(
+            self._suds_object, csm.get("field_name", ""), None)
+        cls_obj = csm["cls"]
+        if suds_field_val:
+            if named_arg == "uri" and cls_obj._id_field:
+                if suds_field_val:
+                    id_re = re.search(self.REGEX_ID, suds_field_val)
+                    if id_re:
+                        return cls_obj.URI_ID_GET_REPLACE(id_re.group(1))
+            else:
+                args = {}
+                args[named_arg] = suds_field_val
+                obj = cls_obj(**args)
         else:
-            obj = csm.get("cls")()
-        if obj._id_field:
+            obj = cls_obj()
+        if cls_obj._id_field:
             return getattr(obj, obj._id_field)
         else:
             return obj

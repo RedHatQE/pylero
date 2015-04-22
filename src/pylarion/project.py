@@ -52,6 +52,9 @@ class Project(BasePolarion):
     _obj_client = "project_client"
     _obj_struct = "tns2:Project"
 
+    URI_STRUCT = "subterra:data-service:objects:/default/" \
+                 "%(id)s${%(obj)s}%(id)s"
+
     @classmethod
     def get_context_roles(cls, location):
         """Returns the context (project) roles for the given location.
