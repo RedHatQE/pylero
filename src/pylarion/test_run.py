@@ -86,7 +86,7 @@ class TestRun(BasePolarion):
              "named_arg": "uri",
              "sync_field": "uri"},
         "query": "query",
-        "records":
+        "_records":
             {"field_name": "records",
              "is_array": True,
              "cls": TestRecord,
@@ -128,6 +128,39 @@ class TestRun(BasePolarion):
     CUSTOM_FIELDS_FILE = \
         ".polarion/testing/configuration/testrun-custom-fields.xml"
     _custom_field_cache = {}
+
+    @property
+    def records(self):
+        """ function to return all the test records of a TestRun.
+        The records array for dynamic queries/documents only includes executed
+        records. This returns the unexecuted ones as well.
+
+        Args:
+            None
+
+        Returns:
+            list of TestRecords
+        """
+        self._verify_obj()
+        if "static" in self.select_test_cases_by:
+            return self._records
+        if "Doc" in self.select_test_cases_by:
+            cases = self.document.get_work_items(None, True)
+        elif "Query" in self.select_test_cases_by:
+            cases = _WorkItem.query(
+                self.query + " AND project.id:" + self.project_id)
+        executed_ids = [rec.test_case_id for rec in self._records]
+        test_recs = self._records
+        for case in cases:
+            if case.work_item_id not in executed_ids \
+                    and case.type != "heading":
+                test_recs.append(
+                    TestRecord(self.project_id, case.work_item_id))
+        return test_recs
+
+    @records.setter
+    def records(self, val):
+        self._records = val
 
     @classmethod
     def create(cls, project_id, test_run_id, template):
@@ -368,7 +401,6 @@ class TestRun(BasePolarion):
         Returns:
             None
         """
-        self._required_fields = []
         self._changed_fields = {}
         # force the session to initialize. This is needed here because the
         # system has not yet been initialized.
@@ -399,15 +431,36 @@ class TestRun(BasePolarion):
         # test run. However, the user doesn't know what the index is.
         # Therefore the user passes in the test case id and this function
         # figures out the index.
+        # However, this function does not work for update_test_record_by_object
+        # as that function requires the actual index of the record and not the
+        # index of only executed records.
         index = -1
-        for test_record in self.records:
+        for test_record in self._records:
             if test_record.executed:
                 index += 1
-                if test_case_id in test_record.test_case_uri:
+                if test_case_id in test_record._suds_object.testCaseURI:
                     return index
         if index == -1:
             raise PylarionLibException("The Test Case is either not part of"
                                        "this TestRun or has not been executed")
+
+    def _status_change(self):
+        # load a new object to test if the status should be changed.
+        # can't use existing object because it doesn't include the new test rec
+        # if the status needs changing, change it in the new object, so it
+        # doesn't update any user made changes in the existing object.
+        check_tr = TestRun(uri=self.uri)
+        results = [rec.result for rec in check_tr.records if rec.result]
+        if not results:
+            status = "notrun"
+        elif len(results) == len(self.records):
+            status = "finished"
+            check_tr.finished_on = datetime.datetime.now()
+        else:
+            status = "inprogress"
+        if status != check_tr.status:
+            check_tr.status = status
+            check_tr.update()
 
     def _verify_record_count(self, record_index):
         # verifies the number of records is not less then the index given.
@@ -507,7 +560,10 @@ class TestRun(BasePolarion):
                                   test_comment, executed_by, executed,
                                   duration, defect_work_item_id=None):
         """method add_test_record_by_fields, adds a test record for the given
-        test case based on the result fields passed in
+        test case based on the result fields passed in.
+        When a test record is added, it changes the test run status to
+        "inprogress" and when the last test record is run, it changes the
+        status to done.
 
         Args:
             test_case_id (str): The id of the test case that was executed
@@ -531,12 +587,16 @@ class TestRun(BasePolarion):
         if not executed or not test_result:
             raise PylarionLibException(
                 "executed and test_result require values")
+        if test_case_id in [rec.test_case_id for rec in self.records]:
+            raise PylarionLibException(
+                "This test case is already part of the test run")
+        self.check_valid_field_values(test_result, "result", {})
         tc = _WorkItem(work_item_id=test_case_id,
                        project_id=self.project_id,
                        fields=["work_item_id"])
         if test_comment:
             if isinstance(test_comment, basestring):
-                obj_comment = Text(obj_id=test_comment)
+                obj_comment = Text(test_comment)
                 suds_comment = obj_comment._suds_object
             elif isinstance(test_comment, Text):
                 suds_comment = test_comment._suds_object
@@ -555,6 +615,7 @@ class TestRun(BasePolarion):
         self.session.test_management_client.service.addTestRecord(
             self.uri, tc.uri, test_result, suds_comment,
             user.uri, executed, duration, defect_uri)
+        self._status_change()
 
     def add_test_record_by_object(self, test_record):
         """method add_test_record_by_object, adds a test record for the given
@@ -570,10 +631,10 @@ class TestRun(BasePolarion):
             test_management.addTestRecordToTestRun
         """
         self._verify_obj()
-        for field in test_record._required:
-            if not getattr(test_record, field):
-                raise PylarionLibException(
-                    "{0} is required in the TestRecord".format(field))
+        if test_record.test_case_id in [rec.test_case_id
+                                        for rec in self.records]:
+            raise PylarionLibException(
+                "This test case is already part of the test run")
         if isinstance(test_record, TestRecord):
             suds_object = test_record._suds_object
         elif isinstance(test_record, TestRecord().
@@ -581,6 +642,7 @@ class TestRun(BasePolarion):
             suds_object = test_record
         self.session.test_management_client.service.addTestRecordToTestRun(
             self.uri, suds_object)
+        self._status_change()
 
     def create_summary_defect(self, defect_template_id=None):
         """method create_summary_defect, adds a new summary _WorkItem for the
@@ -599,9 +661,11 @@ class TestRun(BasePolarion):
         """
 
         self._verify_obj()
-        suds_defect_template = _WorkItem(work_item_id=defect_template_id,
-                                         project_id=self.project_id)
-        defect_template_uri = suds_defect_template._uri
+        defect_template_uri = None
+        if defect_template_id:
+            suds_defect_template = _WorkItem(work_item_id=defect_template_id,
+                                             project_id=self.project_id)
+            defect_template_uri = suds_defect_template._uri
         wi_uri = self.session.test_management_client.service. \
             createSummaryDefect(self.uri, defect_template_uri)
         return _WorkItem(uri=wi_uri)
@@ -694,10 +758,11 @@ class TestRun(BasePolarion):
             test_management.getTestRunAttachments
         """
         self._verify_obj()
-        suds_attach = self.session.test_management_client.service. \
+        lst_suds_attach = self.session.test_management_client.service. \
             getTestRunAttachments(self.uri)
-        obj_attach = ArrayOfTestRunAttachment(suds_object=suds_attach)
-        return obj_attach
+        lst_attach = [TestRunAttachment(suds_object=suds_attach)
+                      for suds_attach in lst_suds_attach]
+        return lst_attach
 
     def get_custom_field(self, field_name):
         """gets custom field values.
@@ -719,34 +784,6 @@ class TestRun(BasePolarion):
             return match[0].value
         else:
             return None
-
-    def get_records(self):
-        """ function to return all the test records of a TestRun.
-        The records array for dynamic queries/documents only includes executed
-        records. This returns the unexecuted ones as well.
-
-        Args:
-            None
-
-        Returns:
-            list of TestRecords
-        """
-        self._verify_obj()
-        if "static" in self.select_test_cases_by:
-            return self.records
-        if "Doc" in self.select_test_cases_by:
-            cases = self.document.get_work_items(None, True)
-        elif "Query" in self.select_test_cases_by:
-            cases = _WorkItem.query(
-                self.query + " AND project.id:" + self.project_id)
-        executed_ids = [rec.test_case_id for rec in self.records]
-        test_recs = self.records
-        for case in cases:
-            if case.work_item_id not in executed_ids \
-                    and case.type != "heading":
-                test_recs.append(
-                    TestRecord(self.project_id, case.work_item_id))
-        return test_recs
 
     def get_wiki_content(self):
         """method get_wiki_content returns the wiki content for the Test Run
@@ -873,11 +910,11 @@ class TestRun(BasePolarion):
         return _WorkItem(uri=wi_uri)
 
     def update_test_record_by_fields(self, test_case_id,
-                                     test_result=suds.null(),
-                                     test_comment=None,
-                                     executed_by=suds.null(),
-                                     executed=datetime.datetime.now(),
-                                     duration=suds.null(),
+                                     test_result,
+                                     test_comment,
+                                     executed_by,
+                                     executed,
+                                     duration,
                                      defect_work_item_id=None):
         """method update_test_record_by_fields updates a test record.
 
@@ -887,15 +924,13 @@ class TestRun(BasePolarion):
                                    passed
                                    failed
                                    blocked
-                        default: suds.null()
-            test_comment: (str or Text object) - may be None, default: None
-            executed_by (str): user id, default: suds.null()
-            executed: date when the test case has been executed,
-                      default is now.
+            test_comment: (str or Text object) - may be None
+            executed_by (str): user id
+            executed: date when the test case has been executed
             duration: duration of the test case execution, any negative value
-                      is treated as None. default: suds.null()
+                      is treated as None.
             defect_work_item_id: _WorkItem id of defect, can be None
-                                default: None
+                                Default: None
 
         Returns:
             None
@@ -919,7 +954,7 @@ class TestRun(BasePolarion):
             defect_uri = suds.null()
         if test_comment:
             if isinstance(test_comment, basestring):
-                obj_comment = Text(obj_id=test_comment)
+                obj_comment = Text(test_comment)
                 suds_comment = obj_comment._suds_object
             elif isinstance(test_comment, Text):
                 suds_comment = test_comment._suds_object
@@ -931,6 +966,7 @@ class TestRun(BasePolarion):
         self.session.test_management_client.service. \
             updateTestRecord(self.uri, index, test_result, suds_comment,
                              user.uri, executed, duration, defect_uri)
+        self._status_change()
 
     def update_test_record_by_object(self, test_case_id, test_record):
         """method update_test_record_by_object, adds a test record for the
@@ -947,7 +983,12 @@ class TestRun(BasePolarion):
             test_management.updateTestRecordAtIndex
         """
         self._verify_obj()
-        index = self._get_index_of_test_record(test_case_id)
+        # this function cannot use the _get_index_of_test_record function
+        # because this function (specifically and not documented) uses the
+        # actual index of the test records and not the index of all
+        # executed records.
+        test_case_ids = [rec.test_case_id for rec in self._records]
+        index = test_case_ids.index(test_case_id)
         if isinstance(test_record, TestRecord):
             suds_object = test_record._suds_object
         elif isinstance(test_record, TestRecord().
@@ -955,6 +996,7 @@ class TestRun(BasePolarion):
             suds_object = test_record
         self.session.test_management_client.service.updateTestRecordAtIndex(
             self.uri, index, suds_object)
+        self._status_change()
 
     def update_wiki_content(self, content):
         """method update_wiki_content updates the wiki for the current TestRun
