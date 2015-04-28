@@ -142,7 +142,8 @@ class TestRun(BasePolarion):
             list of TestRecords
         """
         self._verify_obj()
-        if "static" in self.select_test_cases_by:
+        contained_cases = ["static", "manual"]
+        if any(s in self.select_test_cases_by for s in contained_cases):
             return self._records
         if "Doc" in self.select_test_cases_by:
             cases = self.document.get_work_items(None, True)
