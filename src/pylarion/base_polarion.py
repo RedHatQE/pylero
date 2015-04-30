@@ -104,7 +104,7 @@ class BasePolarion(object):
     _default_project = None
     _cache = {
         "enums": {},
-        "custom_field_types": [],
+        "custom_field_types": {},
         "projects": {}
     }
     REGEX_PROJ = "/default/(.*)\$"
@@ -341,7 +341,8 @@ class BasePolarion(object):
         add_parms = copy.deepcopy(csm.get("additional_parms", {}))
         if isinstance(val, basestring):
             if enum_id and val not in enum_override:
-                self.check_valid_field_values(val, enum_id, {})
+                self.check_valid_field_values(val, enum_id, {},
+                                              csm.get("control"))
         if not sync_field:
             sync_field = "_suds_object"
         if isinstance(val, basestring):
@@ -519,7 +520,8 @@ class BasePolarion(object):
                     additional_parms = copy.deepcopy(
                         csm.get("additional_parms", {}))
                     self.check_valid_field_values(val, csm.get("enum_id"),
-                                                  additional_parms)
+                                                  additional_parms,
+                                                  csm.get("control"))
                 cust.value = csm["cls"](val)._suds_object if csm.get("cls") \
                     else val
             else:
@@ -690,7 +692,20 @@ class BasePolarion(object):
         self._verify_obj()
         return self.session.security_client.service.getLocationForURI(self.uri)
 
-    def check_valid_field_values(self, val, enum_id, additional_parms):
+    def check_valid_field_values(self, val, enum_id, additional_parms,
+                                 control=None):
+        """verifies id the value passed in is valid for the enum or object
+        passed in. for example, if we want to see if a valid user is given,
+        this will try to instantiate the User class with the given parameter
+        and additional parms. If it fails, it is not a valid value.
+
+        Args:
+            val: the value you want to set it to.
+            enum_id: the enumeration or object to validate against
+            additional_parms (dict): parms needed to instantiate class passed
+                                    in as enum_id
+            control: the control key for the enumeration. default:None
+        """
         if isinstance(enum_id, type):
             try:
                 # try to instantiate the object with the value and additional
@@ -701,18 +716,19 @@ class BasePolarion(object):
                     "{0} is not a valid value for {1}"
                     .format(val, enum_id.__name__))
         else:
-            valid_values = self.get_valid_field_values(enum_id)
+            valid_values = self.get_valid_field_values(enum_id, control)
             if val not in valid_values:
                 raise PylarionLibException("Acceptable values for {0} are:"
                                            "{1}".format(enum_id, valid_values))
 
-    def get_valid_field_values(self, enum_id):
+    def get_valid_field_values(self, enum_id, control=None):
         """Gets the available enumeration options.
         Uses a cache dict because the time to get valid fields from server
         is time prohibitive.
 
         Args:
             enum_id: The enum code to get values for
+            control: the control key for the enumeration. default:None
 
         Returns:
             Array of EnumOptions
@@ -720,11 +736,11 @@ class BasePolarion(object):
         References:
             Tracker.getEnumOptionsForId
         """
-        project_id = getattr(self, "project_id", self.default_project)
+        project_id = getattr(self, "project_id", None) or self.default_project
         enums = self._cache["enums"].get(enum_id)
         if not enums:
             enums = self.session.tracker_client.service. \
-                getEnumOptionsForIdWithControl(project_id, enum_id)
+                getEnumOptionsForIdWithControl(project_id, enum_id, control)
             self._cache["enums"][enum_id] = enums
         # the _cache contains _suds_object, so the id attribute is used.
         return [enum.id for enum in enums]

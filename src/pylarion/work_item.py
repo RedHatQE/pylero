@@ -313,12 +313,12 @@ class _WorkItem(BasePolarion):
         References:
             tracker.getDefinedCustomFieldTypes
         """
-        if not cls._cache["custom_field_types"]:
+        if not cls._cache["custom_field_types"].get(wi_type):
             cfts = cls.session.tracker_client.service. \
                 getDefinedCustomFieldTypes(project_id, wi_type)
-            cls._cache["custom_field_types"] = cfts
+            cls._cache["custom_field_types"][wi_type] = cfts
         else:
-            cfts = cls._cache.get("custom_field_types")
+            cfts = cls._cache["custom_field_types"].get(wi_type)
         results = [CustomFieldType(suds_object=item)
                    if isinstance(item,
                                  CustomFieldType()._suds_object.__class__)
@@ -1411,6 +1411,7 @@ class _SpecificWorkItem(_WorkItem):
                                                                 "enum_id",
                                                                 None)
             self._cls_suds_map[local_name]["is_custom"] = True
+            self._cls_suds_map[local_name]["control"] = self._wi_type
             if cft.required:
                 self._required_fields.append(local_name)
         super(_SpecificWorkItem, self).__init__(project_id, work_item_id,
