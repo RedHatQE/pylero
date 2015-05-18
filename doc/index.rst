@@ -45,8 +45,10 @@ Pylarion must be configured (see next section) before it can be used.
 
 Configuration:
 **************
-A configuration file must be filled out, which must be located either at
-**/etc/pylarion/pylarion.cfg** or in the user's home dir **~/.pylarion.cfg**
+A configuration file must be filled out, which must be located either in the
+current dir (the dir where the script is executed from) **.pylarion**, in the
+user's home dir **~/.pylarion.cfg** or in the system config dir
+**/etc/pylarion/pylarion.cfg**
 with the following values::
 
     [webservice]

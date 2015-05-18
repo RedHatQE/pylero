@@ -273,12 +273,11 @@ class _WorkItem(BasePolarion):
         wi.title = title
         wi.description = desc
         wi.status = status
+        for field in kwargs:
+            setattr(wi, field, kwargs[field])
         wi_uri = cls.session.tracker_client.service.createWorkItem(
             wi._suds_object)
         new_wi = cls(uri=wi_uri)
-        for field in kwargs:
-            setattr(new_wi, field, kwargs[field])
-        new_wi.update()
         return new_wi
 
     @classmethod

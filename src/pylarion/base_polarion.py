@@ -25,13 +25,14 @@ class Connection(object):
     """Creates a Polarion session as a class method, so that it is used for all
     objects inherited by BasePolarion.
     The url, repo, user and password are read from config files, which are
-    located either the user's file at ~/.pylarion or the machine file at
-    /etc/pylarion/pylarion.cfg
+    located either the current directory ./pylarion, the user's dir ~/.pylarion
+    or the machine dir /etc/pylarion/pylarion.cfg
     """
     connected = False
     session = None
     GLOBAL_CONFIG = "/etc/pylarion/pylarion.cfg"
     LOCAL_CONFIG = os.path.expanduser("~") + "/.pylarion"
+    CURDIR_CONFIG = ".pylarion"
     CONFIG_SECTION = "webservice"
 # Look at ConfigParser - https://docs.python.org/2.6/library/configparser.html
 
@@ -39,13 +40,15 @@ class Connection(object):
     def session(cls):
         if not cls.connected:
             config = SafeConfigParser()
-            if not config.read([cls.GLOBAL_CONFIG, cls.LOCAL_CONFIG]) or \
+            if not config.read([cls.GLOBAL_CONFIG, cls.LOCAL_CONFIG,
+                                cls.CURDIR_CONFIG]) or \
                     not config.has_section(cls.CONFIG_SECTION):
                 raise PylarionLibException("The config files do not exist or"
                                            " are not of the correct format."
-                                           " Valid files are: {0} or {1}"
+                                           " Valid files are: {0}, {1} or {2}"
                                            .format(cls.GLOBAL_CONFIG,
-                                                   cls.LOCAL_CONFIG))
+                                                   cls.LOCAL_CONFIG,
+                                                   cls.CURDIR_CONFIG))
             server_url = config.get(cls.CONFIG_SECTION, "url")
             repo = config.get(cls.CONFIG_SECTION, "svn_repo")
             login = config.get(cls.CONFIG_SECTION, "user")
