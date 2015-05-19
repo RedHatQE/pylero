@@ -1439,6 +1439,13 @@ class _SpecificWorkItem(_WorkItem):
 # each workitem class has a few special attributes in the _cls_suds_map
 # so it requires a deep copy so it doesn't interfere with the class
 # attribute.
+class TestCase(_SpecificWorkItem):
+    _wi_type = "testcase"
+    _cls_suds_map = copy.deepcopy(_SpecificWorkItem._cls_suds_map)
+    _cls_suds_map["previous_status"]["enum_id"] = "testcase-status"
+    _cls_suds_map["status"]["enum_id"] = "testcase-status"
+
+
 class FunctionalTestCase(_SpecificWorkItem):
     _wi_type = "functionaltestcase"
     _cls_suds_map = copy.deepcopy(_SpecificWorkItem._cls_suds_map)
