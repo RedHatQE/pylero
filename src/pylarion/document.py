@@ -451,7 +451,7 @@ class Document(BasePolarion):
         self._verify_obj()
         wi = _WorkItem(self.project_id, work_item_id)
         if parent_id:
-            parent_uri = _WorkItem(self.project_id, parent_id)
+            parent_uri = _WorkItem(self.project_id, parent_id).uri
         else:
             parent_uri = None
         self.session.tracker_client.service.moveWorkItemToDocument(
