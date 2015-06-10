@@ -40,7 +40,7 @@ Configuration:
 **************
 A configuration file must be filled out, which must be located either in the
 current dir (the dir where the script is executed from) **.pylarion**, in the
-user's home dir **~/.pylarion.cfg** or in the system config dir
+user's home dir **~/.pylarion** or in the system config dir
 **/etc/pylarion/pylarion.cfg**
 with the following values::
 
