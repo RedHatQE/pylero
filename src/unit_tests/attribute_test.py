@@ -6,7 +6,7 @@ from pylarion.user import User
 from pylarion.test_run import TestRun
 from pylarion.project import Project
 from pylarion.test_record import TestRecord
-from pylarion.work_item import FunctionalTestCase, Requirement
+from pylarion.work_item import TestCase, Requirement
 
 USER = "szacks"
 ALT_USER = "oramraz"
@@ -21,16 +21,16 @@ class AttributeTest(unittest2.TestCase):
     def setUpClass(cls):
         cls.doc = Document.create(
             DEFAULT_PROJ, "Testing", "Attribute_Test",
-            "Attribute_Test", ["functionaltestcase"])
+            "Attribute_Test", ["testcase"])
         cls.testrun = TestRun.create(DEFAULT_PROJ, TEST_RUN_ID, "example")
-        cls.ftc = FunctionalTestCase.create(DEFAULT_PROJ,
-                                            "regression",
-                                            "regression",
-                                            caseimportance="high",
-                                            caselevel="component",
-                                            caseautomation="notautomated",
-                                            caseposneg="positive")
-        cls.TEST_CASE_ID = cls.ftc.work_item_id
+        cls.tc = TestCase.create(DEFAULT_PROJ,
+                                 "regression",
+                                 "regression",
+                                 caseimportance="high",
+                                 caselevel="component",
+                                 caseautomation="notautomated",
+                                 caseposneg="positive")
+        cls.TEST_CASE_ID = cls.tc.work_item_id
 
     @classmethod
     def tearDownClass(cls):
@@ -115,14 +115,14 @@ class AttributeTest(unittest2.TestCase):
         self.assertEqual(valid_values[0], testrun.arch)
 
     def test_custom_workitem(self):
-        ftc2 = FunctionalTestCase(project_id=DEFAULT_PROJ,
-                                  work_item_id=self.TEST_CASE_ID)
-        self.assertIsNotNone(ftc2.caseautomation)
+        tc2 = TestCase(project_id=DEFAULT_PROJ,
+                       work_item_id=self.TEST_CASE_ID)
+        self.assertIsNotNone(tc2.caseautomation)
         with self.assertRaises(PylarionLibException):
-            ftc2.caseautomation = "bad"
-        ftc2.caseautomation = "automated"
+            tc2.caseautomation = "bad"
+        tc2.caseautomation = "automated"
         # check for shared memory issue
-        self.assertNotEqual(self.ftc.caseautomation, ftc2.caseautomation)
+        self.assertNotEqual(self.tc.caseautomation, tc2.caseautomation)
         req = Requirement()
         with self.assertRaises(PylarionLibException):
             req.reqtype = "bad"

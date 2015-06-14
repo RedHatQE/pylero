@@ -5,7 +5,7 @@ Created on Apr 13, 2015
 '''
 import unittest2
 from pylarion.document import Document
-from pylarion.work_item import FunctionalTestCase
+from pylarion.work_item import TestCase
 
 
 class DocumentTest(unittest2.TestCase):
@@ -14,7 +14,7 @@ class DocumentTest(unittest2.TestCase):
     def setUpClass(cls):
         cls.doc_create = Document.create(
             Document.default_project, "Testing", "Document_Test",
-            "Document_Test", ["functionaltestcase"])
+            "Document_Test", ["testcase"])
 
     @classmethod
     def tearDownClass(cls):
@@ -42,16 +42,16 @@ class DocumentTest(unittest2.TestCase):
         self.assertIsInstance(self.doc_get2, Document)
 
     def test_006_create_work_item(self):
-        ftc = FunctionalTestCase()
-        ftc.title = "regression"
-        ftc.description = "regression document test"
-        ftc.status = "draft"
-        ftc.caseimportance = "high"
-        ftc.caselevel = "component"
-        ftc.caseautomation = "notautomated"
-        ftc.caseposneg = "positive"
+        tc = TestCase()
+        tc.title = "regression"
+        tc.description = "regression document test"
+        tc.status = "draft"
+        tc.caseimportance = "high"
+        tc.caselevel = "component"
+        tc.caseautomation = "notautomated"
+        tc.caseposneg = "positive"
         doc = Document(uri=self.doc_create.uri)
-        wi = doc.create_work_item(None, ftc)
+        wi = doc.create_work_item(None, tc)
         doc_wis = doc.get_work_items(None, True)
         doc_wi_ids = [doc_wi.work_item_id for doc_wi in doc_wis]
         self.assertIn(wi.work_item_id, doc_wi_ids)

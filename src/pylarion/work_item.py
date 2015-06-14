@@ -253,7 +253,7 @@ class _WorkItem(BasePolarion):
 
         Args:
             project_id: id of project to create work item in
-            wi_type: type of work item (functionaltestcase,...)
+            wi_type: type of work item (testcase,...)
             title: title of WorkItem
             desc: description of WorkItem
             status: initial status of the WorkItem, draft by default
@@ -573,8 +573,8 @@ class _WorkItem(BasePolarion):
                         revision=None, suspect=None):
         """method add_linked_item adds a linked _WorkItem to current _WorkItem
         The linking is done to the "child" object. For example, if you have a
-        Functional Test Case that verifies a requirement, you would add the
-        linked item to the Functional Test case with the "verifies" role and
+        Test Case that verifies a requirement, you would add the
+        linked item to the Test Case with the "verifies" role and
         not the Requirement.
 
         Args:
@@ -1443,28 +1443,6 @@ class TestCase(_SpecificWorkItem):
     _cls_suds_map = copy.deepcopy(_SpecificWorkItem._cls_suds_map)
     _cls_suds_map["previous_status"]["enum_id"] = "testcase-status"
     _cls_suds_map["status"]["enum_id"] = "testcase-status"
-
-
-class FunctionalTestCase(_SpecificWorkItem):
-    _wi_type = "functionaltestcase"
-    _cls_suds_map = copy.deepcopy(_SpecificWorkItem._cls_suds_map)
-    _cls_suds_map["previous_status"]["enum_id"] = "functionaltestcase-status"
-    _cls_suds_map["status"]["enum_id"] = "functionaltestcase-status"
-
-
-class NonFunctionalTestCase(_SpecificWorkItem):
-    _wi_type = "nonfunctionaltestcase"
-    _cls_suds_map = copy.deepcopy(_SpecificWorkItem._cls_suds_map)
-    _cls_suds_map["previous_status"]["enum_id"] = \
-        "nonfunctionaltestcase-status"
-    _cls_suds_map["status"]["enum_id"] = "nonfunctionaltestcase-status"
-
-
-class StructuralTestCase(_SpecificWorkItem):
-    _wi_type = "structuraltestcase"
-    _cls_suds_map = copy.deepcopy(_SpecificWorkItem._cls_suds_map)
-    _cls_suds_map["previous_status"]["enum_id"] = "structuraltestcase-status"
-    _cls_suds_map["status"]["enum_id"] = "structuraltestcase-status"
 
 
 class TestSuite(_SpecificWorkItem):
