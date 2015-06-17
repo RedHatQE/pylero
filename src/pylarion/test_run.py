@@ -189,7 +189,7 @@ class TestRun(BasePolarion):
     @classmethod
     def create_template(cls, project_id, template_id,
                         parent_template_id="Empty",
-                        select_test_cases_by="staticQueryResult", query=None,
+                        select_test_cases_by=None, query=None,
                         doc_with_space=None):  # , test_case_ids=[]):
         # see comment below regarding test_case)ids.
         """class method create_template for creating a new template in Polarion
@@ -203,7 +203,7 @@ class TestRun(BasePolarion):
             select_test_cases_by: the method used to choose test cases
                                   NOTE: It is currently not possible to select
                                   test cases manually via the API.
-                                  Default: staticQueryResult
+                                  Default: None
             query: the Lucene query, for query methods, default None
             doc_with_space: the space/doc_name, for document methods
                             default: None
@@ -216,7 +216,8 @@ class TestRun(BasePolarion):
         """
         tr = cls.create(project_id, template_id, parent_template_id)
         tr.is_template = True
-        tr.select_test_cases_by = select_test_cases_by
+        if select_test_cases_by:
+            tr.select_test_cases_by = select_test_cases_by
         if query:
             tr.query = query
         elif doc_with_space:
@@ -378,9 +379,10 @@ class TestRun(BasePolarion):
         client.set_default_password(self.password)
         client.set_store_passwords(False)
         proj = Project(project_id)
-        proj_grp = proj.project_group.name
-        file_content = client.cat("{0}/{1}/{2}/{3}".format(
-            self.repo, proj_grp, proj.name, self.CUSTOM_FIELDS_FILE))
+        # proj.location[8:-30] removes the default: at the beginning and
+        # .polarion/polarion-project.xml
+        file_content = client.cat("{0}{1}{2}".format(
+            self.repo, proj.location[8:-30], self.CUSTOM_FIELDS_FILE))
         xmldoc = minidom.parseString(file_content)
         fields = xmldoc.getElementsByTagName("field")
         self._custom_field_cache[project_id] = {}
@@ -454,11 +456,13 @@ class TestRun(BasePolarion):
         results = [rec.result for rec in check_tr.records if rec.result]
         if not results:
             status = "notrun"
-        elif len(results) == len(self.records):
+            check_tr.finished_on = None
+        elif len(results) == len(check_tr.records):
             status = "finished"
             check_tr.finished_on = datetime.datetime.now()
         else:
             status = "inprogress"
+            check_tr.finished_on = None
         if status != check_tr.status:
             check_tr.status = status
             check_tr.update()
