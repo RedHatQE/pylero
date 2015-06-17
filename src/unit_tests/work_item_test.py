@@ -25,7 +25,9 @@ class WorkItemTest(unittest2.TestCase):
                              caseimportance="high",
                              caselevel="component",
                              caseautomation="notautomated",
-                             caseposneg="positive")
+                             caseposneg="positive",
+                             testtype="functional",
+                             subtype1="-")
         req = Requirement.create(DEFAULT_PROJ,
                                  "regression _link",
                                  "regression link",
@@ -165,9 +167,9 @@ class WorkItemTest(unittest2.TestCase):
         self.assertEqual(approval.user_id, tc.logged_in_user_id)
 
     def test_get_back_linked_work_items(self):
-        ftc = Requirement(project_id=DEFAULT_PROJ,
+        req = Requirement(project_id=DEFAULT_PROJ,
                           work_item_id=self.work_item_id_2)
-        items = ftc.get_back_linked_work_items()
+        items = req.get_back_linked_work_items()
         self.assertTrue(len(items) == 1)
         wi = items[0]
         self.assertEqual(wi.work_item_id, self.work_item_id)

@@ -9,12 +9,11 @@ import os
 from pylarion.test_run import TestRun
 from pylarion.exceptions import PylarionLibException
 from pylarion.test_record import TestRecord
+from pylarion.work_item import TestCase
 
 DEFAULT_PROJ = TestRun.default_project
 TEMPLATE_ID = "tmp_regr-%s" % datetime.datetime.now().strftime("%Y%m%d%H%M%s")
 TEST_RUN_ID = "tr_regr-%s" % datetime.datetime.now().strftime("%Y%m%d%H%M%s")
-NEW_TEST_CASE = "PYREG-82"
-NEW_TEST_CASE2 = "PYREG-89"
 CUR_PATH = os.path.dirname(os.path.abspath(__file__))
 ATTACH_PATH = CUR_PATH + "/refs/red_box.png"
 ATTACH_TITLE = "File"
@@ -22,13 +21,36 @@ ATTACH_TITLE = "File"
 
 class TestRunTest(unittest2.TestCase):
 
+    @classmethod
+    def setUpClass(cls):
+        tc1 = TestCase.create(DEFAULT_PROJ,
+                              "regression",
+                              "regression",
+                              caseimportance="high",
+                              caselevel="component",
+                              caseautomation="notautomated",
+                              caseposneg="positive",
+                              testtype="functional",
+                              subtype1="-")
+        cls.NEW_TEST_CASE = tc1.work_item_id
+        tc2 = TestCase.create(DEFAULT_PROJ,
+                              "regression",
+                              "regression",
+                              caseimportance="high",
+                              caselevel="component",
+                              caseautomation="notautomated",
+                              caseposneg="positive",
+                              testtype="functional",
+                              subtype1="-")
+        cls.NEW_TEST_CASE2 = tc2.work_item_id
+
     def test_001_create_template(self):
         """This test does the following:
-        * Creates a TestRun template based on the "Example" template
+        * Creates a TestRun template based on the "Empty" template
         * Verifies that the returned object exists and is a template
         """
         template = TestRun.create_template(
-            DEFAULT_PROJ, TEMPLATE_ID, "Example")
+            DEFAULT_PROJ, TEMPLATE_ID, "Empty")
         self.assertIsNotNone(template.test_run_id)
         self.assertTrue(template.is_template)
 
@@ -78,18 +100,18 @@ class TestRunTest(unittest2.TestCase):
         tr = TestRun(project_id=DEFAULT_PROJ, test_run_id=TEST_RUN_ID)
         with self.assertRaises(PylarionLibException):
             tr.add_test_record_by_fields(
-                NEW_TEST_CASE, "invalid", "No Comment", tr.logged_in_user_id,
-                datetime.datetime.now(), "50.5")
+                self.NEW_TEST_CASE, "invalid", "No Comment",
+                tr.logged_in_user_id, datetime.datetime.now(), "50.5")
         tr.add_test_record_by_fields(
-            NEW_TEST_CASE, "passed", "No Comment", tr.logged_in_user_id,
+            self.NEW_TEST_CASE, "passed", "No Comment", tr.logged_in_user_id,
             datetime.datetime.now(), "50.5")
         tr.reload()
-        self.assertEqual(tr.status, "inprogress")
+        self.assertEqual(tr.status, "finished")
         # test that the same case cannot be added multiple times.
         with self.assertRaises(PylarionLibException):
             tr.add_test_record_by_fields(
-                NEW_TEST_CASE, "passed", "No Comment", tr.logged_in_user_id,
-                datetime.datetime.now(), "50.5")
+                self.NEW_TEST_CASE, "passed", "No Comment",
+                tr.logged_in_user_id, datetime.datetime.now(), "50.5")
         tr.reload()
         rec = tr.records[-1]
         tr.add_attachment_to_test_record(
@@ -128,24 +150,26 @@ class TestRunTest(unittest2.TestCase):
         """
         tr = TestRun(project_id=DEFAULT_PROJ, test_run_id=TEST_RUN_ID)
         rec = TestRecord()
-        rec.test_case_id = NEW_TEST_CASE
-        rec.executed = datetime.datetime.now()
-        rec.executed_by = tr.logged_in_user_id
-        rec.result = "failed"
+        rec.test_case_id = self.NEW_TEST_CASE
         rec.comment = "No Comment"
         rec.duration = "50.5"
         # verify that it does not allow duplicate records.
         # (same record was added in previous test)
         with self.assertRaises(PylarionLibException):
             tr.add_test_record_by_object(rec)
-        rec.test_case_id = NEW_TEST_CASE2
+        rec.test_case_id = self.NEW_TEST_CASE2
         tr.add_test_record_by_object(rec)
         tr.reload()
         check_rec = tr.records[-1]
-        self.assertEqual(check_rec.test_case_id, NEW_TEST_CASE2)
+        self.assertEqual(tr.status, "inprogress")
+        self.assertEqual(check_rec.test_case_id, self.NEW_TEST_CASE2)
         rec.result = "blocked"
-        tr.update_test_record_by_object(NEW_TEST_CASE2, rec)
+        rec.executed_by = tr.logged_in_user_id
+        rec.executed = datetime.datetime.now()
+        tr.update_test_record_by_object(self.NEW_TEST_CASE2, rec)
         tr.reload()
+        self.assertEqual(tr.status, "finished")
+
         check_rec = tr.records[-1]
         self.assertEqual(check_rec.result, "blocked")
 
@@ -184,18 +208,6 @@ class TestRunTest(unittest2.TestCase):
         tr.update()
         tr.reload()
         self.assertEqual(tr.type, "featureverification")
-
-    def test_009_finished(self):
-        tr = TestRun(project_id=DEFAULT_PROJ, test_run_id=TEST_RUN_ID)
-        self.assertNotEqual(tr.status, "finished")
-        for rec in tr.records:
-            rec.executed = datetime.datetime.now()
-            rec.executed_by = rec.logged_in_user_id
-            rec.result = "passed"
-            rec.duration = "0.005"
-            tr.update_test_record_by_object(rec.test_case_id, rec)
-        tr.reload()
-        self.assertEqual(tr.status, "finished")
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']

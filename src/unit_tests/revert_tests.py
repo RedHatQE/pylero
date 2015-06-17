@@ -2,14 +2,17 @@ import pysvn
 from pylarion.project import Project
 from pylarion.test_run import TestRun
 
-REVERT_TO = 1162
+REVERT_TO = 2590
+# this is the svn revision that the project should be reverted to for a clean
+# environment. If anything required by the tests is added to the project, it
+# must be manually cleaned and this number must be updated.
 
 
 def revert_svn():
     proj = Project(Project.default_project)
     proj_grp = proj.project_group.name
-    svn_url = "%s/%s/%s" % (proj.repo, proj_grp, proj.name)
-    LOCAL_DIR = "/tmp/%s" % proj.name
+    svn_url = "%s/%s/%s" % (proj.repo, proj_grp, proj.project_id)
+    LOCAL_DIR = "/tmp/%s" % proj.project_id
     USER = proj.logged_in_user_id
     PASS = proj.session.password
     svn = pysvn.Client()
@@ -29,7 +32,7 @@ def revert_svn():
     svn.checkin(LOCAL_DIR, "revert to original version")
     # The original Example template query has an extra colon.
     # After revert, must fix that.
-    tmpl = TestRun(project_id=proj.name, test_run_id="Example")
+    tmpl = TestRun(project_id=proj.project_id, test_run_id="Example")
     tmpl.query = tmpl.query.replace("::", ":")
     tmpl.update()
 

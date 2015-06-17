@@ -23,13 +23,24 @@ class AttributeTest(unittest2.TestCase):
             DEFAULT_PROJ, "Testing", "Attribute_Test",
             "Attribute_Test", ["testcase"])
         cls.testrun = TestRun.create(DEFAULT_PROJ, TEST_RUN_ID, "example")
+        # arch is a custom field defined by global admins for test runs.
+        # It is set here for a test on custom fields that requires at least two
+        # valid values. If in the future, this custom field is removed, or the
+        # number of valid values is lowered to 1, a different custom field will
+        # have to be used.
+        valid_values = cls.testrun.get_valid_field_values("arch")
+        cls.testrun.arch = valid_values[1]
+        cls.testrun.update()
+
         cls.tc = TestCase.create(DEFAULT_PROJ,
                                  "regression",
                                  "regression",
                                  caseimportance="high",
                                  caselevel="component",
                                  caseautomation="notautomated",
-                                 caseposneg="positive")
+                                 caseposneg="positive",
+                                 testtype="functional",
+                                 subtype1="-")
         cls.TEST_CASE_ID = cls.tc.work_item_id
 
     @classmethod

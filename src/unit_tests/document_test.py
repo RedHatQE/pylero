@@ -50,6 +50,8 @@ class DocumentTest(unittest2.TestCase):
         tc.caselevel = "component"
         tc.caseautomation = "notautomated"
         tc.caseposneg = "positive"
+        tc.testtype = "functional"
+        tc.subtype1 = "-"
         doc = Document(uri=self.doc_create.uri)
         wi = doc.create_work_item(None, tc)
         doc_wis = doc.get_work_items(None, True)
