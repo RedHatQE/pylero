@@ -14,6 +14,8 @@ from pylarion.plan_record import PlanRecord
 from pylarion.plan_statistics import PlanStatistics
 from pylarion.plan_record import ArrayOfPlanRecord
 from pylarion.work_item import _WorkItem
+from pylarion.user import User
+from pylarion.project import Project
 
 
 class Plan(BasePolarion):
@@ -48,64 +50,74 @@ class Plan(BasePolarion):
         template_uri (SubterraURI)
         updated (dateTime)
 """
-    _cls_suds_map = {"allowed_types":
-                     {"field_name": "allowedTypes",
-                      "is_array": True,
-                      "cls": EnumOptionId,
-                      "arr_cls": ArrayOfEnumOptionId,
-                      "inner_field_name": "EnumOptionId",
-                      "enum_id": "workitem-type"},
-                     "author_uri":
-                     {"field_name": "authorURI",
-                      "cls": SubterraURI},
-                     "calculation_type":
-                     {"field_name": "calculationType",
-                      "cls": EnumOptionId},
-                     "capacity": "capacity",
-                     "color": "color",
-                     "created": "created",
-                     "custom_fields":
-                     {"field_name": "customFields",
-                      "is_array": True,
-                      "cls": Custom,
-                      "arr_cls": ArrayOfCustom,
-                      "inner_field_name": "Custom"},
-                     "default_estimate": "defaultEstimate",
-                     "description":
-                     {"field_name": "description",
-                      "cls": Text},
-                     "due_date": "dueDate",
-                     "estimation_field": "estimationField",
-                     "finished_on": "finishedOn",
-                     "is_template": "isTemplate",
-                     "location": "location",
-                     "name": "name",
-                     "parent":
-                     {"field_name": "parent"},  # populated in circ refs
-                     "plan_id": "id",
-                     "previous_time_spent": "previousTimeSpent",
-                     "prioritization_field": "prioritizationField",
-                     "project_uri":
-                     {"field_name": "projectURI",
-                      "cls": SubterraURI},
-                     "records":
-                     {"field_name": "records",
-                      "is_array": True,
-                      "cls": PlanRecord,
-                      "arr_cls": ArrayOfPlanRecord,
-                      "inner_field_name": "PlanRecord"},
-                     "sort_order": "sortOrder",
-                     "start_date": "startDate",
-                     "started_on": "startedOn",
-                     "status":
-                     {"field_name": "status",
-                      "cls": EnumOptionId},
-                     "template_uri":
-                     {"field_name": "templateURI",
-                      "cls": SubterraURI},
-                     "updated": "updated",
-                     "uri": "_uri",
-                     "_unresolved": "_unresolved"}
+    _cls_suds_map = {
+        "allowed_types":
+            {"field_name": "allowedTypes",
+             "is_array": True,
+             "cls": EnumOptionId,
+             "arr_cls": ArrayOfEnumOptionId,
+             "inner_field_name": "EnumOptionId",
+             "enum_id": "workitem-type"},
+        "author":
+            {"field_name": "authorURI",
+             "cls": User,
+             "named_arg": "uri",
+             "sync_field": "uri"},
+        "calculation_type":
+            {"field_name": "calculationType",
+             "cls": EnumOptionId},
+        "capacity": "capacity",
+        "color": "color",
+        "created": "created",
+        "custom_fields":
+            {"field_name": "customFields",
+             "is_array": True,
+             "cls": Custom,
+             "arr_cls": ArrayOfCustom,
+             "inner_field_name": "Custom"},
+        "default_estimate": "defaultEstimate",
+        "description":
+            {"field_name": "description",
+             "cls": Text},
+        "due_date": "dueDate",
+        "estimation_field": "estimationField",
+        "finished_on": "finishedOn",
+        "is_template": "isTemplate",
+        "location": "location",
+        "name": "name",
+        # the parent field exists when creating an object Plan(), however the
+        # field is not returned in a get or search operation. Because of this,
+        # the attribute should not be accessible. the _fix_circular_refs is
+        # also commented out for the same reason. If this attribute become
+        # relevant in the future, that funciton should be activated.
+        # "parent":
+        #    {"field_name": "parent"},  # populated in circ refs
+        "plan_id": "id",
+        "previous_time_spent": "previousTimeSpent",
+        "prioritization_field": "prioritizationField",
+        "project_id":
+            {"field_name": "projectURI",
+             "cls": Project,
+             "named_arg": "uri",
+             "sync_field": "uri"},
+        "records":
+            {"field_name": "records",
+             "is_array": True,
+             "cls": PlanRecord,
+             "arr_cls": ArrayOfPlanRecord,
+             "inner_field_name": "PlanRecord"},
+        "sort_order": "sortOrder",
+        "start_date": "startDate",
+        "started_on": "startedOn",
+        "status":
+            {"field_name": "status",
+             "cls": EnumOptionId},
+        "template_uri":
+            {"field_name": "templateURI",
+             "cls": SubterraURI},
+        "updated": "updated",
+        "uri": "_uri",
+        "_unresolved": "_unresolved"}
     _obj_client = "builder_client"
     _obj_struct = "tns6:Plan"
     _id_field = "plan_id"
@@ -196,13 +208,17 @@ class Plan(BasePolarion):
         # function names and parameter lists generated dynamically based on
         # parameters passed in.
         if search_templates:
-            function_name = "SearchPlanTemplates"
+            function_name = "searchPlanTemplates"
         else:
-            function_name = "SearchPlans"
+            function_name = "searchPlans"
         if fields:
             function_name += "WithFields"
-        parms = [query, sort, limit] + \
-                [cls._convert_obj_fields_to_polarion(fields)] if fields else []
+        p_sort = cls._cls_suds_map[sort] if not isinstance(
+            cls._cls_suds_map[sort], dict) else \
+            cls._cls_suds_map[sort]["field_name"]
+        parms = [query, p_sort, limit] + \
+            ([cls._convert_obj_fields_to_polarion(fields)]
+             if fields else [])
         plans = []
         for sud_plan in getattr(cls.session.planning_client.service,
                                 function_name)(*parms):
@@ -243,10 +259,13 @@ class Plan(BasePolarion):
                 raise PylarionLibException(
                     "The Plan {0} was not found.".format(plan_id))
 
-    def _fix_circular_refs(self):
-        # The module references itself as a class attribute, which is not
-        # allowed, so the self reference is defined here.
-        self._cls_suds_map["parent"]["cls"] = self.__class__
+# The parent variable is commented out, see above for explanation.
+# in the event that the parent atrtribute becomes relevant, this function will
+# need to be uncommented out as well
+#    def _fix_circular_refs(self):
+#        # The module references itself as a class attribute, which is not
+#        # allowed, so the self reference is defined here.
+#        self._cls_suds_map["parent"]["cls"] = self.__class__
 
     def add_plan_items(self, work_items):
         """Add plan records to the plan.
@@ -267,10 +286,8 @@ class Plan(BasePolarion):
                     "work_items must be a list of _WorkItem objects")
         p_items = []
         for item in work_items:
-            if isinstance(item, _WorkItem):
-                p_items.append(item._suds_object)
-            elif isinstance(item, _WorkItem()._suds_object.__class__):
-                p_items.append(item)
+            wi = _WorkItem(self.project_id, work_item_id=item)
+            p_items.append(wi.uri)
         self.session.planning_client.service.addPlanItems(self.uri, p_items)
 
     def get_statistics(self):
@@ -326,10 +343,8 @@ class Plan(BasePolarion):
                     "work_items must be a list of _WorkItem objects")
         p_items = []
         for item in work_items:
-            if isinstance(item, _WorkItem):
-                p_items.append(item._suds_object)
-            elif isinstance(item, _WorkItem()._suds_object.__class__):
-                p_items.append(item)
+            wi = _WorkItem(self.project_id, work_item_id=item)
+            p_items.append(wi.uri)
         self.session.planning_client.service.removePlanItems(self.uri, p_items)
 
     def set_wiki_content(self, content):
@@ -347,7 +362,7 @@ class Plan(BasePolarion):
         self._verify_obj()
         if content:
             if isinstance(content, basestring):
-                obj_content = Text(obj_id=content)
+                obj_content = Text(content=content)
                 suds_content = obj_content._suds_object
             elif isinstance(content, Text):
                 suds_content = content._suds_object
