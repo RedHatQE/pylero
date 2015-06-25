@@ -38,7 +38,7 @@ class WorkItemTest(unittest2.TestCase):
         cls.work_item_id_2 = req.work_item_id
         cls.work_item_uri_2 = req.uri
 
-    def test_aa_query(self):
+    def test_001_query(self):
         results = TestCase.query(
             "project.id:%s AND title:regression" % (DEFAULT_PROJ))
         tc = results[0]
@@ -49,12 +49,12 @@ class WorkItemTest(unittest2.TestCase):
         tc = results2[0]
         self.assertIsNotNone(tc.title)
 
-    def test_ab_get_item(self):
+    def test_002_get_item(self):
         tc = TestCase(project_id=DEFAULT_PROJ,
                       work_item_id=self.work_item_id)
         self.assertIsNotNone(tc.uri)
 
-    def test_add_assignee(self):
+    def test_003_add_assignee(self):
         tc = TestCase(project_id=DEFAULT_PROJ,
                       work_item_id=self.work_item_id)
         with self.assertRaises(PylarionLibException):
@@ -65,7 +65,7 @@ class WorkItemTest(unittest2.TestCase):
         self.assertTrue(tc2.assignee)
         self.assertEqual(tc2.assignee[0].user_id, tc2.logged_in_user_id)
 
-    def test_add_approvee(self):
+    def test_004_add_approvee(self):
         tc = TestCase(project_id=DEFAULT_PROJ,
                       work_item_id=self.work_item_id)
         with self.assertRaises(PylarionLibException):
@@ -78,7 +78,7 @@ class WorkItemTest(unittest2.TestCase):
         self.assertEqual(approval.status, "waiting")
         self.assertEqual(approval.user_id, tc.logged_in_user_id)
 
-    def test_add_category(self):
+    def test_005_add_category(self):
         tc = TestCase(project_id=DEFAULT_PROJ,
                       work_item_id=self.work_item_id)
         with self.assertRaises(PylarionLibException):
@@ -90,7 +90,7 @@ class WorkItemTest(unittest2.TestCase):
         cat = tc2.categories[0]
         self.assertEqual(cat.category_id, "filesystems")
 
-    def test_add_hyperlink(self):
+    def test_006_add_hyperlink(self):
         # TODO: check if an invalid hyperlink can be passed in.
         tc = TestCase(project_id=DEFAULT_PROJ,
                       work_item_id=self.work_item_id)
@@ -104,7 +104,7 @@ class WorkItemTest(unittest2.TestCase):
         self.assertEqual(link.uri, HYPERLINK)
         self.assertEqual(link.role, "ref_ext")
 
-    def test_add_linked_work_item(self):
+    def test_007_add_linked_work_item(self):
         tc = TestCase(project_id=DEFAULT_PROJ,
                       work_item_id=self.work_item_id)
         self.assertTrue(tc.add_linked_item(self.work_item_id_2, "verifies"))
@@ -121,7 +121,7 @@ class WorkItemTest(unittest2.TestCase):
         self.assertEqual(link.work_item_id, self.work_item_id)
         self.assertEqual(link.role, "verifies")
 
-    def test_create_attachment(self):
+    def test_008_create_attachment(self):
         tc = TestCase(project_id=DEFAULT_PROJ,
                       work_item_id=self.work_item_id)
         tc.create_attachment(ATTACH_PATH, "Attached File")
@@ -132,7 +132,7 @@ class WorkItemTest(unittest2.TestCase):
         self.assertEqual(attach.author, tc2.logged_in_user_id)
         self.assertEqual(attach.title, "Attached File")
 
-    def test_create_comment(self):
+    def test_009_create_comment(self):
         tc = TestCase(project_id=DEFAULT_PROJ,
                       work_item_id=self.work_item_id)
         tc.create_comment("This is a comment")
@@ -142,7 +142,7 @@ class WorkItemTest(unittest2.TestCase):
         comment = tc2.comments[0]
         self.assertEqual(comment.text, "This is a comment")
 
-    def test_delete_attachment(self):
+    def test_010_delete_attachment(self):
         tc = TestCase(project_id=DEFAULT_PROJ,
                       work_item_id=self.work_item_id)
         attach = tc.attachments[0]
@@ -151,7 +151,7 @@ class WorkItemTest(unittest2.TestCase):
                        work_item_id=self.work_item_id)
         self.assertEqual(tc2.attachments, [])
 
-    def test_edit_approval(self):
+    def test_011_edit_approval(self):
         tc = TestCase(project_id=DEFAULT_PROJ,
                       work_item_id=self.work_item_id)
         with self.assertRaises(PylarionLibException):
@@ -166,7 +166,7 @@ class WorkItemTest(unittest2.TestCase):
         self.assertEqual(approval.status, "approved")
         self.assertEqual(approval.user_id, tc.logged_in_user_id)
 
-    def test_get_back_linked_work_items(self):
+    def test_012_get_back_linked_work_items(self):
         req = Requirement(project_id=DEFAULT_PROJ,
                           work_item_id=self.work_item_id_2)
         items = req.get_back_linked_work_items()
@@ -174,7 +174,7 @@ class WorkItemTest(unittest2.TestCase):
         wi = items[0]
         self.assertEqual(wi.work_item_id, self.work_item_id)
 
-    def test_multiple_types(self):
+    def test_013_multiple_types(self):
         req = Requirement()
         tc = TestCase()
         with self.assertRaises(AttributeError):
@@ -185,7 +185,7 @@ class WorkItemTest(unittest2.TestCase):
         tc.title = "tc1"
         self.assertNotEqual(req.title, tc.title)
 
-    def test_steps(self):
+    def test_014_steps(self):
         test1 = ["Test 1", "Result 1"]
         test2 = ["Test 2", "Result 2"]
         test3 = ["Test 3", "Result 3"]
@@ -215,32 +215,32 @@ class WorkItemTest(unittest2.TestCase):
         self.assertEqual(get_steps.steps[2].values[1].content,
                          ts3.values[1].content)
 
-    def test_remove_assignee(self):
+    def test_015_remove_assignee(self):
         tc = TestCase(project_id=DEFAULT_PROJ,
                       work_item_id=self.work_item_id)
         self.assertFalse(tc.remove_assignee("invalid user"))
         self.assertFalse(tc.remove_assignee("oramraz"))
         self.assertTrue(tc.remove_assignee(tc.logged_in_user_id))
 
-    def test_remove_category(self):
+    def test_016_remove_category(self):
         tc = TestCase(project_id=DEFAULT_PROJ,
                       work_item_id=self.work_item_id)
         self.assertFalse(tc.remove_category("invalid cat"))
         self.assertFalse(tc.remove_category("clustering"))
         self.assertTrue(tc.remove_category("filesystems"))
 
-    def test_remove_hyperlink(self):
+    def test_017_remove_hyperlink(self):
         tc = TestCase(project_id=DEFAULT_PROJ,
                       work_item_id=self.work_item_id)
         self.assertTrue(tc.remove_hyperlink(HYPERLINK))
 
-    def test_remove_linked_item(self):
+    def test_018_remove_linked_item(self):
         tc = TestCase(project_id=DEFAULT_PROJ,
                       work_item_id=self.work_item_id)
         self.assertTrue(tc.remove_linked_item(self.work_item_id_2,
                                               "verifies"))
 
-    def test_update(self):
+    def test_019_update(self):
         tc = TestCase(project_id=DEFAULT_PROJ,
                       work_item_id=self.work_item_id)
         tc.status = "approved"

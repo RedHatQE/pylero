@@ -6,7 +6,9 @@ Created on Apr 13, 2015
 import unittest2
 from pylarion.document import Document
 from pylarion.work_item import TestCase
+from pylarion.test_run import TestRun
 
+WI_ID = ""
 
 class DocumentTest(unittest2.TestCase):
 
@@ -57,11 +59,26 @@ class DocumentTest(unittest2.TestCase):
         doc_wis = doc.get_work_items(None, True)
         doc_wi_ids = [doc_wi.work_item_id for doc_wi in doc_wis]
         self.assertIn(wi.work_item_id, doc_wi_ids)
+        global WI_ID
+        WI_ID = wi.work_item_id
 
     def test_007_update(self):
         doc = Document(uri=self.doc_create.uri)
         doc.status = "published"
         doc.update()
+
+    def test_008_doc_test_run_template(self):
+        doc_with_space = self.doc_create.space
+        self.doc_create.session.tx_begin()
+        tmp_tr = TestRun.create_template(project_id=Document.default_project,
+                                         template_id="doc_tmp_test",
+                                         doc_with_space=doc_with_space)
+        tr = TestRun.create(project_id=Document.default_project,
+                            test_run_id="doc_test",
+                            template="doc_tmp_test")
+        self.assertEquals(len(tr.records), 1)
+        self.assertEquals(tr.records[0].test_case_id, WI_ID)
+        self.doc_create.session.tx_commit()
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']

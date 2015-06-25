@@ -187,6 +187,7 @@ class TestRun(BasePolarion):
             raise PylarionLibException("Test Run was not created")
 
     @classmethod
+    @BasePolarion.tx_wrapper
     def create_template(cls, project_id, template_id,
                         parent_template_id="Empty",
                         select_test_cases_by=None, query=None,
@@ -218,6 +219,11 @@ class TestRun(BasePolarion):
         tr.is_template = True
         if select_test_cases_by:
             tr.select_test_cases_by = select_test_cases_by
+        elif doc_with_space:
+            tr.select_test_cases_by = "dynamicLiveDoc"
+        elif query:
+            tr.select_test_cases_by = "dynamicQueryResult"
+
         if query:
             tr.query = query
         elif doc_with_space:
@@ -232,7 +238,7 @@ class TestRun(BasePolarion):
         return TestRun(template_id, project_id=project_id)
 
     @classmethod
-    def search(self, query, fields=[], sort="test_run_id", limit=-1,
+    def search(cls, query, fields=[], sort="test_run_id", limit=-1,
                search_templates=False):
         """class method search executes the given query and returns the results
 
@@ -264,21 +270,21 @@ class TestRun(BasePolarion):
 #    when -1 is passed in as limit. Because of this, the wrapper will not
 #    implement the functions without limited.
         function_name = "search"
-        p_sort = self._cls_suds_map[sort] if not isinstance(
-            self._cls_suds_map[sort], dict) else \
-            self._cls_suds_map[sort]["field_name"]
+        p_sort = cls._cls_suds_map[sort] if not isinstance(
+            cls._cls_suds_map[sort], dict) else \
+            cls._cls_suds_map[sort]["field_name"]
         parms = [query, p_sort]
         if search_templates:
             function_name += "TestRunTemplates"
         else:
             function_name += "TestRuns"
-        p_fields = self._convert_obj_fields_to_polarion(fields)
+        p_fields = cls._convert_obj_fields_to_polarion(fields)
         if p_fields:
             function_name += "WithFieldsLimited"
             parms.append(p_fields)
         parms.append(limit)
         test_runs = []
-        results = getattr(self.session.test_management_client.service,
+        results = getattr(cls.session.test_management_client.service,
                           function_name)(*parms)
         for suds_obj in results:
             tr = TestRun(suds_object=suds_obj)
@@ -561,6 +567,7 @@ class TestRun(BasePolarion):
         self.session.test_management_client.service.addAttachmentToTestStep(
             self.uri, record_index, test_step_index, filename, title, data)
 
+    @BasePolarion.tx_wrapper
     def add_test_record_by_fields(self, test_case_id, test_result,
                                   test_comment, executed_by, executed,
                                   duration, defect_work_item_id=None):
@@ -622,6 +629,7 @@ class TestRun(BasePolarion):
             user.uri, executed, duration, defect_uri)
         self._status_change()
 
+    @BasePolarion.tx_wrapper
     def add_test_record_by_object(self, test_record):
         """method add_test_record_by_object, adds a test record for the given
         test case based on the TestRecord object passed in
@@ -914,6 +922,7 @@ class TestRun(BasePolarion):
                                 total_tests, defect_template_uri)
         return _WorkItem(uri=wi_uri)
 
+    @BasePolarion.tx_wrapper
     def update_test_record_by_fields(self, test_case_id,
                                      test_result,
                                      test_comment,
@@ -973,6 +982,7 @@ class TestRun(BasePolarion):
                              user.uri, executed, duration, defect_uri)
         self._status_change()
 
+    @BasePolarion.tx_wrapper
     def update_test_record_by_object(self, test_case_id, test_record):
         """method update_test_record_by_object, adds a test record for the
         given test case based on the TestRecord object passed in
@@ -1018,7 +1028,7 @@ class TestRun(BasePolarion):
         self._verify_obj()
         if content:
             if isinstance(content, basestring):
-                obj_content = Text(obj_id=content)
+                obj_content = Text(content=content)
                 suds_content = obj_content._suds_object
             elif isinstance(content, Text):
                 suds_content = content._suds_object

@@ -119,40 +119,6 @@ class Project(BasePolarion):
         from pylarion.project_group import ProjectGroup
         self._cls_suds_map["project_group"]["cls"] = ProjectGroup
 
-    def create_document(self, location, document_name, document_title,
-                        allowed_wi_types, structure_link_role,
-                        home_page_content):
-        # There is no document object.
-        # don't know what to do with the URI it returns.
-        """method create_document creates a document in the current project in
-        the location specified.
-
-        Args:
-            location: document space location with one component or null for
-                      default space (can be null)
-            document_name: Document name (not null)
-            document_title: Document title (can be null)
-            allowed_wi_types: one type can be specified (can be null)
-            structure_link_role: role which defines the hierarchy of work
-                                 items inside the Document (not null)
-            home_page_content: HTML markup for document home page
-                               (can be null)
-
-        Returns
-            None
-
-        References:
-            Tracker.createDocument
-        """
-        self._verify_obj()
-        self.session.tracker_client.service.createDocument(self.project_id,
-                                                           location,
-                                                           document_name,
-                                                           document_title,
-                                                           allowed_wi_types,
-                                                           structure_link_role,
-                                                           home_page_content)
-
     def get_categories(self):
         """ method get_categories retrieves a list of Category objects
 

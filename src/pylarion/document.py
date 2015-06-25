@@ -88,7 +88,7 @@ class Document(BasePolarion):
             {"field_name": "homePageContent",
              "cls": Text},
         "document_id": "id",
-        "space": "location",
+        "space": "moduleLocation",
         "document_absolute_location": "moduleAbsoluteLocation",
         "document_folder": "moduleFolder",
         "document_name": "moduleName",
@@ -137,6 +137,7 @@ class Document(BasePolarion):
     URI_ID_SET_REPLACE = classmethod(lambda cls, x: x.replace("/", "#"))
 
     @classmethod
+    @BasePolarion.tx_wrapper
     def create(cls, project_id, space, document_name, document_title,
                allowed_wi_types,
                structure_link_role="parent",
@@ -174,6 +175,23 @@ class Document(BasePolarion):
             uri = cls.session.tracker_client.service.createDocument(
                 project_id, space, document_name, document_title, awit,
                 slr, home_page_content)
+            doc = Document(uri=uri)
+            doc.type = document_type
+            # for some reason, when in a tx (@BasePolarion.tx_wrapper), the
+            # returned doc does not include the home_page_content attribute
+            # so it must be reset before the update. If it is not set, an
+            # exception is raised:
+            # "java.lang.IllegalArgumentException: Content can't be null"
+            if not doc.home_page_content:
+                doc.home_page_content = home_page_content
+            doc.update()
+            if not home_page_content:
+                # create heading work item for each document
+                wi_head = _WorkItem()
+                wi_head.type = "heading"
+                wi_head.title = document_title
+                doc.create_work_item(None, wi_head)
+            return doc
         except suds.WebFault, e:
             if "Invalid document on location Location" in e.fault.faultstring:
                 raise PylarionLibException(
@@ -181,16 +199,6 @@ class Document(BasePolarion):
                                                              document_name))
             else:
                 raise PylarionLibException(e.fault)
-        doc = Document(uri=uri)
-        doc.type = document_type
-        doc.update()
-        if not home_page_content:
-            # create heading work item for each document
-            wi_head = _WorkItem()
-            wi_head.type = "heading"
-            wi_head.title = document_title
-            doc.create_work_item(None, wi_head)
-        return doc
 
     @classmethod
     def get_documents(cls, project_id, space, fields=[]):
@@ -340,6 +348,7 @@ class Document(BasePolarion):
         # defined after instatiation
         self._cls_suds_map["branched_from"]["cls"] = self.__class__
 
+    @BasePolarion.tx_wrapper
     def create_work_item(self, parent_id, w_item):
         """create a work item in the current document
 
@@ -369,13 +378,13 @@ class Document(BasePolarion):
                 parent_uri = doc_wis[0].uri
             else:
                 parent_uri = None
-        wi_uri = self.session.tracker_client.service.createWorkItemInModule(
-            self.uri, parent_uri, suds_wi)
-        new_wi = w_item.__class__(uri=wi_uri)
-        new_wi._changed_fields = w_item._changed_fields
-        new_wi.update()
-        new_wi = _WorkItem(uri=wi_uri)
-        return new_wi
+            wi_uri = self.session.tracker_client.service.createWorkItemInModule(
+                self.uri, parent_uri, suds_wi)
+            new_wi = w_item.__class__(uri=wi_uri)
+            new_wi._changed_fields = w_item._changed_fields
+            new_wi.update()
+            new_wi = _WorkItem(uri=wi_uri)
+            return new_wi
 
     def delete(self):
         """delete the current document

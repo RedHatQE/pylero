@@ -101,6 +101,17 @@ class Session(object):
         if self._session_client.service.transactionExists():
             self.tx_rollback()
 
+    def tx_in(self):
+        """Function checks if a transaction is in progress. You can not have a
+        transaction within another transaction. This function helps the system
+        determine if it should start a new transaction or if it is already in
+        the middle of one.
+
+        Returns:
+            bool
+        """
+        return self._session_client.service.transactionExists()
+
 
 class _suds_client_wrapper:
     """class that manages the WSDL clients"""

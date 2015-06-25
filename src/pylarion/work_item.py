@@ -1422,6 +1422,7 @@ class _SpecificWorkItem(_WorkItem):
             raise PylarionLibException("This is of type {0}, not type {1}".
                                        format(self.type, self._wi_type))
 
+    @BasePolarion.tx_wrapper
     def update(self):
         """calls update on changes to the work item.
         It first verifies that required fields are all set, then calls update

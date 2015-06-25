@@ -5,6 +5,7 @@ import os
 import base64
 import copy
 import re
+import suds
 from pylarion.exceptions import PylarionLibException
 from pylarion.server import Server
 from __builtin__ import classmethod
@@ -169,6 +170,28 @@ class BasePolarion(object):
                            if not isinstance(cls._cls_suds_map[x], dict)
                            else cls._cls_suds_map[x]["field_name"], fields)
         return p_fields
+
+    @classmethod
+    def tx_wrapper(cls, func):
+        # decorator function to run specific functions in.
+        # Because they have multiple modifying stmts, they should be run
+        # in a transaction. It first checks if it is already in a tx and if
+        # not, it starts one itself.
+        def inner(*args, **kwargs):
+            new_tx = False
+            try:
+                if not cls.session.tx_in():
+                    cls.session.tx_begin()
+                    new_tx = True
+                res = func(*args, **kwargs)
+                if new_tx:
+                    cls.session.tx_commit()
+                return res
+            except (suds.WebFault, PylarionLibException, Exception):
+                if new_tx and cls.session.tx_in():
+                    cls.session.tx_rollback()
+                raise
+        return inner
 
     @classmethod
     def get_global_roles(cls):
