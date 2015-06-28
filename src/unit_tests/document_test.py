@@ -10,6 +10,7 @@ from pylarion.test_run import TestRun
 
 WI_ID = ""
 
+
 class DocumentTest(unittest2.TestCase):
 
     @classmethod

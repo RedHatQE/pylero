@@ -447,11 +447,10 @@ class TestRun(BasePolarion):
         for test_record in self._records:
             if test_record.executed:
                 index += 1
-                if test_case_id in test_record._suds_object.testCaseURI:
-                    return index
-        if index == -1:
-            raise PylarionLibException("The Test Case is either not part of"
-                                       "this TestRun or has not been executed")
+            if test_case_id in test_record._suds_object.testCaseURI:
+                return index
+        raise PylarionLibException("The Test Case is either not part of "
+                                   "this TestRun or has not been executed")
 
     def _status_change(self):
         # load a new object to test if the status should be changed.
@@ -599,7 +598,7 @@ class TestRun(BasePolarion):
         if not executed or not test_result:
             raise PylarionLibException(
                 "executed and test_result require values")
-        if test_case_id in [rec.test_case_id for rec in self.records]:
+        if test_case_id in [rec.test_case_id for rec in self._records]:
             raise PylarionLibException(
                 "This test case is already part of the test run")
         self.check_valid_field_values(test_result, "result", {})
@@ -645,7 +644,7 @@ class TestRun(BasePolarion):
         """
         self._verify_obj()
         if test_record.test_case_id in [rec.test_case_id
-                                        for rec in self.records]:
+                                        for rec in self._records]:
             raise PylarionLibException(
                 "This test case is already part of the test run")
         if isinstance(test_record, TestRecord):
@@ -958,29 +957,15 @@ class TestRun(BasePolarion):
             test_management.updateTestRecord
         """
         self._verify_obj()
-        index = self._get_index_of_test_record(test_case_id)
+        testrec = TestRecord(self.project_id, test_case_id)
+        testrec.result = test_result
+        testrec.comment = test_comment
+        testrec.executed_by = executed_by
+        testrec.executed = executed
+        testrec.duration = duration
         if defect_work_item_id:
-            defect = _WorkItem(work_item_id=defect_work_item_id,
-                               project_id=self.project_id,
-                               fields=["work_item_id"])
-            defect_uri = defect.uri
-        else:
-            defect_uri = suds.null()
-        if test_comment:
-            if isinstance(test_comment, basestring):
-                obj_comment = Text(test_comment)
-                suds_comment = obj_comment._suds_object
-            elif isinstance(test_comment, Text):
-                suds_comment = test_comment._suds_object
-            else:  # is a suds object
-                suds_comment = test_comment
-        else:
-            suds_comment = suds.null()
-        user = User(user_id=executed_by)
-        self.session.test_management_client.service. \
-            updateTestRecord(self.uri, index, test_result, suds_comment,
-                             user.uri, executed, duration, defect_uri)
-        self._status_change()
+            testrec.defect_case_id = defect_work_item_id
+        self.update_test_record_by_object(test_case_id, testrec)
 
     @BasePolarion.tx_wrapper
     def update_test_record_by_object(self, test_case_id, test_record):
@@ -1003,15 +988,18 @@ class TestRun(BasePolarion):
         # actual index of the test records and not the index of all
         # executed records.
         test_case_ids = [rec.test_case_id for rec in self._records]
-        index = test_case_ids.index(test_case_id)
-        if isinstance(test_record, TestRecord):
-            suds_object = test_record._suds_object
-        elif isinstance(test_record, TestRecord().
-                        _suds_object.__class__):
-            suds_object = test_record
-        self.session.test_management_client.service.updateTestRecordAtIndex(
-            self.uri, index, suds_object)
-        self._status_change()
+        if test_case_id not in test_case_ids:
+            self.add_test_record_by_object(test_record)
+        else:
+            index = test_case_ids.index(test_case_id)
+            if isinstance(test_record, TestRecord):
+                suds_object = test_record._suds_object
+            elif isinstance(test_record, TestRecord().
+                            _suds_object.__class__):
+                suds_object = test_record
+            self.session.test_management_client.service. \
+                updateTestRecordAtIndex(self.uri, index, suds_object)
+            self._status_change()
 
     def update_wiki_content(self, content):
         """method update_wiki_content updates the wiki for the current TestRun

@@ -209,6 +209,26 @@ class TestRunTest(unittest2.TestCase):
         tr.reload()
         self.assertEqual(tr.type, "featureverification")
 
+    def test_009_dynamic_records(self):
+        """This test does the following:
+        * creates a TestRun based on the Example template (Dynamic query)
+        * verifies that it is a dynamic query
+        * updates an test record.
+        * reloads
+        * verifies that the record has been added
+        """
+        tr = TestRun.create("pylarion", "querytest", "Example")
+        self.assertEquals(tr.select_test_cases_by, "dynamicQueryResult")
+        num_recs = len(tr.records)
+        test_case_id = tr.records[0].test_case_id
+        tr.update_test_record_by_fields(test_case_id, "blocked", "comment",
+                                        tr.logged_in_user_id,
+                                        datetime.datetime.now(), 0)
+        tr.reload()
+        self.assertEquals(num_recs, len(tr.records))
+        self.assertEquals(test_case_id, tr.records[0].test_case_id)
+        self.assertEquals(tr.records[0].result, "blocked")
+
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
     unittest2.main()
