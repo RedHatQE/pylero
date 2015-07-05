@@ -17,8 +17,6 @@ from pylarion.category import Category
 from pylarion.category import ArrayOfCategory
 from pylarion.comment import Comment
 from pylarion.comment import ArrayOfComment
-from pylarion.custom import Custom
-from pylarion.custom import ArrayOfCustom
 from pylarion.custom_field import CustomField
 from pylarion.custom_field_type import CustomFieldType
 from pylarion.enum_custom_field_type import EnumCustomFieldType
@@ -129,12 +127,15 @@ class _WorkItem(BasePolarion):
              "arr_cls": ArrayOfComment,
              "inner_field_name": "Comment"},
         "created": "created",
-        "custom_fields":
-            {"field_name": "customFields",
-             "is_array": True,
-             "cls": Custom,
-             "arr_cls": ArrayOfCustom,
-             "inner_field_name": "Custom"},
+        # the custom field attribute has been removed from the object.
+        # All interaction with custom fields should be done directly with the
+        # derived attribute.
+        # "custom_fields":
+        #    {"field_name": "customFields",
+        #     "is_array": True,
+        #     "cls": Custom,
+        #     "arr_cls": ArrayOfCustom,
+        #     "inner_field_name": "Custom"},
         "description":
             {"field_name": "description",
              "cls": Text},
@@ -1371,8 +1372,8 @@ class _SpecificWorkItem(_WorkItem):
                 # convert the custom field name to use code convention, where
                 # possible
                 split_name = re.findall('[a-zA-Z][^A-Z]*', cft.cft_id)
-                local_name = "_".join(split_name).replace("U_R_I", "uri"). \
-                    replace("W_I", "wi").lower()
+                local_name = "_".join(split_name).replace("_U_R_I", "_uri"). \
+                    replace("_W_I", "_wi").replace("_I_D", "_id").lower()
                 all_fields.append(local_name)
                 if cft.required:
                     required_fields.append(local_name)
@@ -1394,8 +1395,8 @@ class _SpecificWorkItem(_WorkItem):
         for cft in cfts:
             # try to convert custom field names to use the coding conventions
             split_name = re.findall('[a-zA-Z][^A-Z]*', cft.cft_id)
-            local_name = "_".join(split_name).replace("U_R_I", "uri"). \
-                replace("W_I", "wi").lower()
+            local_name = "_".join(split_name).replace("_U_R_I", "_uri"). \
+                replace("_W_I", "_wi").replace("_I_D", "_id").lower()
             self._cls_suds_map[local_name] = {}
             self._cls_suds_map[local_name]["field_name"] = cft.cft_id
             # types are returned in format:
