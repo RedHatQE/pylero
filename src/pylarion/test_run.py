@@ -353,7 +353,9 @@ class TestRun(BasePolarion):
         """
         if field_type == "text":
             return Text
-        split_type = field_type.split(":")
+        # some custom types have a [] segment. Still unsure of how to handle
+        # those specific attributes, but for now, this will ignore them
+        split_type = field_type.split("[")[0].split(":")
         if len(split_type) == 1:
             # a base type
             return None
@@ -795,7 +797,7 @@ class TestRun(BasePolarion):
         if match:
             return match[0].value
         else:
-            return None
+            return Custom(field_name, None)
 
     def get_wiki_content(self):
         """method get_wiki_content returns the wiki content for the Test Run
