@@ -533,10 +533,6 @@ class BasePolarion(object):
             cust.key = csm["field_name"]
             if val is None:
                 cust.value = None
-            elif isinstance(val, csm["cls"]):
-                cust.value = val._suds_object
-            elif isinstance(val, csm["cls"]()._suds_object.__class__):
-                cust.value = val
             elif not csm.get("cls") or isinstance(val, basestring):
                 # if there is no cls specified, val can be a bool, int, ...
                 # if val is a string, it may be used to instantiate the class
@@ -550,6 +546,10 @@ class BasePolarion(object):
                                                   csm.get("control"))
                 cust.value = csm["cls"](val)._suds_object if csm.get("cls") \
                     else val
+            elif isinstance(val, csm["cls"]):
+                cust.value = val._suds_object
+            elif isinstance(val, csm["cls"]()._suds_object.__class__):
+                cust.value = val
             else:
                 raise PylarionLibException(
                     "The value must be of type {0}."
@@ -562,9 +562,9 @@ class BasePolarion(object):
                     match[0].value = cust.value
                 else:
                     cf.append(cust)
-                    self.custom_fields = cf
+                    self._suds_object.customFields[0] = cf
             else:
-                self.custom_fields = [cust]
+                self._suds_object.customFields[0] = [cust]
 
     def _get_file_data(self, path):
         """Method for getting attachment data that can be passed to the soap
