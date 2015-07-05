@@ -571,6 +571,27 @@ class TestRun(BasePolarion):
         self.session.test_management_client.service.addAttachmentToTestStep(
             self.uri, record_index, test_step_index, filename, title, data)
 
+    def _check_test_record_exists(self, test_case_id):
+        """Grabs a copy of the test run to verify if the test case is already
+        contained in it. It uses a copy to get an updated version so that if
+        it was added during the session, it will still appear.
+        If it appears, it will raise an exception.
+
+        Args:
+            test_case_id (str): the id of the test case to check
+
+        Returns:
+            None
+        """
+        """
+        :param test_case_id:
+        :return:
+        """
+        check_tr = TestRun(uri=self.uri)
+        if test_case_id in [rec.test_case_id for rec in check_tr._records]:
+            raise PylarionLibException(
+                "This test case is already part of the test run")
+
     @BasePolarion.tx_wrapper
     def add_test_record_by_fields(self, test_case_id, test_result,
                                   test_comment, executed_by, executed,
@@ -603,9 +624,7 @@ class TestRun(BasePolarion):
         if not executed or not test_result:
             raise PylarionLibException(
                 "executed and test_result require values")
-        if test_case_id in [rec.test_case_id for rec in self._records]:
-            raise PylarionLibException(
-                "This test case is already part of the test run")
+        self._check_test_record_exists(test_case_id)
         self.check_valid_field_values(test_result, "result", {})
         tc = _WorkItem(work_item_id=test_case_id,
                        project_id=self.project_id,
@@ -648,10 +667,7 @@ class TestRun(BasePolarion):
             test_management.addTestRecordToTestRun
         """
         self._verify_obj()
-        if test_record.test_case_id in [rec.test_case_id
-                                        for rec in self._records]:
-            raise PylarionLibException(
-                "This test case is already part of the test run")
+        self._check_test_record_exists(test_record.test_case_id)
         if isinstance(test_record, TestRecord):
             suds_object = test_record._suds_object
         elif isinstance(test_record, TestRecord().
