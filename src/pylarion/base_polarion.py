@@ -379,13 +379,16 @@ class BasePolarion(object):
         elif isinstance(val, obj_cls):
             setattr(self._suds_object, suds_field_name,
                     getattr(val, sync_field))
-        else:  # suds_object
+        elif isinstance(val, obj_cls()._suds_object.__class__):
             obj = obj_cls()
             if sync_field in obj._cls_suds_map:
                 suds_sync_field = obj._cls_suds_map[sync_field]
                 # if sync_field is given, the attribute will be simple
                 val = getattr(val, suds_sync_field)
             setattr(self._suds_object, suds_field_name, val)
+        else:
+            raise PylarionLibException("the value {0} is not a valid type".
+                                       format(val))
 
     def _arr_obj_getter(self, field_name):
         """get function for attributes that reference an array of objects.
