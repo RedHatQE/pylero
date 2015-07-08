@@ -562,9 +562,9 @@ class BasePolarion(object):
                     match[0].value = cust.value
                 else:
                     cf.append(cust)
-                    self._suds_object.customFields[0] = cf
+                    self._custom_fields = cf
             else:
-                self._suds_object.customFields[0] = [cust]
+                self._custom_fields = [cust]
 
     def _get_file_data(self, path):
         """Method for getting attachment data that can be passed to the soap

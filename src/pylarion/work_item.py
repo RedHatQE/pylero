@@ -17,6 +17,8 @@ from pylarion.category import Category
 from pylarion.category import ArrayOfCategory
 from pylarion.comment import Comment
 from pylarion.comment import ArrayOfComment
+from pylarion.custom import Custom
+from pylarion.custom import ArrayOfCustom
 from pylarion.custom_field import CustomField
 from pylarion.custom_field_type import CustomFieldType
 from pylarion.enum_custom_field_type import EnumCustomFieldType
@@ -127,15 +129,15 @@ class _WorkItem(BasePolarion):
              "arr_cls": ArrayOfComment,
              "inner_field_name": "Comment"},
         "created": "created",
-        # the custom field attribute has been removed from the object.
+        # the custom field attribute has been changed to be a protected attr.
         # All interaction with custom fields should be done directly with the
         # derived attribute.
-        # "custom_fields":
-        #    {"field_name": "customFields",
-        #     "is_array": True,
-        #     "cls": Custom,
-        #     "arr_cls": ArrayOfCustom,
-        #     "inner_field_name": "Custom"},
+        "_custom_fields":
+            {"field_name": "customFields",
+             "is_array": True,
+             "cls": Custom,
+             "arr_cls": ArrayOfCustom,
+             "inner_field_name": "Custom"},
         "description":
             {"field_name": "description",
              "cls": Text},

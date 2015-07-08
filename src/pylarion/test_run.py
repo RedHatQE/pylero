@@ -114,7 +114,10 @@ class TestRun(BasePolarion):
              "cls": EnumOptionId,
              "enum_id": "testing/testrun-type"},
         "updated": "updated",
-        "custom_fields":
+        # the custom field attribute has been changed to be a protected attr.
+        # All interaction with custom fields should be done directly with the
+        # derived attribute.
+        "_custom_fields":
             {"field_name": "customFields",
              "is_array": True,
              "cls": Custom,
@@ -792,7 +795,7 @@ class TestRun(BasePolarion):
               is valid.
         """
         self._verify_obj()
-        cf = self.custom_fields
+        cf = self._custom_fields
         match = filter(lambda x: x.key == field_name, cf)
         if match:
             return match[0].value
@@ -830,7 +833,7 @@ class TestRun(BasePolarion):
               or value is valid.
         """
         self._verify_obj()
-        cf = self.custom_fields
+        cf = self._custom_fields
         cust = Custom()
         cust.key = field_name
         cust.value = value
@@ -843,7 +846,7 @@ class TestRun(BasePolarion):
                 cf.append(cust)
         else:
             cf = [cust]
-        self.custom_fields = cf
+        self._custom_fields = cf
 
     def update(self):
         """method update updates the testRun object with the attribute values
