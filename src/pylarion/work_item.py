@@ -395,7 +395,7 @@ class _WorkItem(BasePolarion):
         if query_uris:
             return wis
         else:
-            lst_wi = [_WorkItem(suds_object=wi) for wi in wis]
+            lst_wi = [cls(suds_object=wi) for wi in wis]
             return lst_wi
 
     def __init__(self, project_id=None, work_item_id=None, suds_object=None,
@@ -1380,6 +1380,46 @@ class _SpecificWorkItem(_WorkItem):
                 if cft.required:
                     required_fields.append(local_name)
         return (all_fields, required_fields)
+
+    @classmethod
+    def query(cls, query, fields=["work_item_id"],
+              sort="work_item_id", limit=-1, baseline_revision=None,
+              query_uris=False, project_id=None):
+        """Function overrides the query function in the _WorkItem class. It
+        only accepts Lucene queries, specifically queries the specific type of
+        work item and the default project. To search other projects, there is a
+        project_id parameter.
+
+        Args:
+            query: query, Lucene
+            fields: array of field names to fill in the returned
+                    WorkItems (can be null). For nested structures in
+                    the lists you can use following syntax to include only
+                    subset of fields: myList.LIST.key
+                    (e.g. linkedWorkItems.LIST.role).
+                    For custom fields you can specify which fields you want to
+                    be filled using following syntax:
+                    customFields.CUSTOM_FIELD_ID (e.g. customFields.risk).
+                    Default: list containing "work_item_id".
+            sort: Lucene sort string (can be null), default: work_item_id
+            limit: how many results to return (-1 means everything, default)
+            baseline_revision (str): if populated, query done in specified rev
+                                     default: None
+            query_uris (bool): returns a list of URI of the WorkItems found,
+                               default: False
+            project_id (str): is used to pass in a specific project_id instead
+                              of using the default. Default: None
+
+        Returns:
+            list of the specific WorkItem objects that were found.
+        """
+
+        if query:
+            query += " AND "
+        query += "type:%s AND project.id:%s" % \
+            (cls._wi_type, project_id or cls.default_project)
+        return super(_SpecificWorkItem, cls).query(
+            query, False, fields, sort, limit, baseline_revision, query_uris)
 
     def __init__(self, project_id=None, work_item_id=None, suds_object=None,
                  uri=None, fields=None, revision=None):
