@@ -17,7 +17,7 @@ class DocumentTest(unittest2.TestCase):
     def setUpClass(cls):
         cls.doc_create = Document.create(
             Document.default_project, "Testing", "Document_Test",
-            "Document_Test", ["testcase"])
+            "Document_Test", ["testcase"], "testspecification")
 
     @classmethod
     def tearDownClass(cls):

@@ -21,7 +21,7 @@ class AttributeTest(unittest2.TestCase):
     def setUpClass(cls):
         cls.doc = Document.create(
             DEFAULT_PROJ, "Testing", "Attribute_Test",
-            "Attribute_Test", ["testcase"])
+            "Attribute_Test", ["testcase"], "testspecification")
         cls.testrun = TestRun.create(DEFAULT_PROJ, TEST_RUN_ID, "example")
         # arch is a custom field defined by global admins for test runs.
         # It is set here for a test on custom fields that requires at least two
