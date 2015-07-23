@@ -140,9 +140,9 @@ class Document(BasePolarion):
     @BasePolarion.tx_wrapper
     def create(cls, project_id, space, document_name, document_title,
                allowed_wi_types,
+               document_type,
                structure_link_role="parent",
-               home_page_content="",
-               document_type="testspecification"):
+               home_page_content=""):
                 # There is no document object.
         # don't know what to do with the URI it returns.
         """class method create Creates a document or an old-style
@@ -155,10 +155,10 @@ class Document(BasePolarion):
             document_name: Document name (required)
             document_title: Document title (required)
             allowed_wi_types: list of types, at least one must be specified
+            document_type: Type of document (required i.e testspecification).
             structure_link_role: required, role which defines the hierarchy of
                                  work items inside the Module, default: parent
-            home_page_content: HTML markup for document home page
-            document_type: Type of document (i.e testspecification).
+            home_page_content: HTML markup for document home page, default ""
 
         Returns:
             None
