@@ -22,6 +22,7 @@ from pylarion.project import Project
 from pylarion.text import Text
 # Plan is used in custom fields.
 from pylarion.plan import Plan  # NOQA
+from pylarion.base_polarion import tx_wrapper
 
 
 class TestRun(BasePolarion):
@@ -190,7 +191,7 @@ class TestRun(BasePolarion):
             raise PylarionLibException("Test Run was not created")
 
     @classmethod
-    @BasePolarion.tx_wrapper
+    @tx_wrapper
     def create_template(cls, project_id, template_id,
                         parent_template_id="Empty",
                         select_test_cases_by=None, query=None,
@@ -592,7 +593,7 @@ class TestRun(BasePolarion):
             raise PylarionLibException(
                 "This test case is already part of the test run")
 
-    @BasePolarion.tx_wrapper
+    @tx_wrapper
     def add_test_record_by_fields(self, test_case_id, test_result,
                                   test_comment, executed_by, executed,
                                   duration, defect_work_item_id=None):
@@ -652,7 +653,7 @@ class TestRun(BasePolarion):
             user.uri, executed, duration, defect_uri)
         self._status_change()
 
-    @BasePolarion.tx_wrapper
+    @tx_wrapper
     def add_test_record_by_object(self, test_record):
         """method add_test_record_by_object, adds a test record for the given
         test case based on the TestRecord object passed in
@@ -942,7 +943,7 @@ class TestRun(BasePolarion):
                                 total_tests, defect_template_uri)
         return _WorkItem(uri=wi_uri)
 
-    @BasePolarion.tx_wrapper
+    @tx_wrapper
     def update_test_record_by_fields(self, test_case_id,
                                      test_result,
                                      test_comment,
@@ -988,7 +989,7 @@ class TestRun(BasePolarion):
             testrec.defect_case_id = defect_work_item_id
         self.update_test_record_by_object(test_case_id, testrec)
 
-    @BasePolarion.tx_wrapper
+    @tx_wrapper
     def update_test_record_by_object(self, test_case_id, test_record):
         """method update_test_record_by_object, adds a test record for the
         given test case based on the TestRecord object passed in

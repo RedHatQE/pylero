@@ -46,6 +46,7 @@ from pylarion.time_point import TimePoint
 from pylarion.work_record import WorkRecord
 from pylarion.work_record import ArrayOfWorkRecord
 from pylarion.workflow_action import WorkflowAction
+from pylarion.base_polarion import tx_wrapper
 
 
 class _WorkItem(BasePolarion):
@@ -1465,7 +1466,7 @@ class _SpecificWorkItem(_WorkItem):
             raise PylarionLibException("This is of type {0}, not type {1}".
                                        format(self.type, self._wi_type))
 
-    @BasePolarion.tx_wrapper
+    @tx_wrapper
     def update(self):
         """calls update on changes to the work item.
         It first verifies that required fields are all set, then calls update

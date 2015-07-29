@@ -17,6 +17,7 @@ from pylarion.custom import ArrayOfCustom
 from pylarion.signature_context import SignatureContext
 from pylarion.signature_context import ArrayOfSignatureContext
 from pylarion.work_item import _WorkItem
+from pylarion.base_polarion import tx_wrapper
 
 
 class Document(BasePolarion):
@@ -137,7 +138,7 @@ class Document(BasePolarion):
     URI_ID_SET_REPLACE = classmethod(lambda cls, x: x.replace("/", "#"))
 
     @classmethod
-    @BasePolarion.tx_wrapper
+    @tx_wrapper
     def create(cls, project_id, space, document_name, document_title,
                allowed_wi_types,
                document_type,
@@ -177,7 +178,7 @@ class Document(BasePolarion):
                 slr, home_page_content)
             doc = Document(uri=uri)
             doc.type = document_type
-            # for some reason, when in a tx (@BasePolarion.tx_wrapper), the
+            # for some reason, when in a tx (@tx_wrapper), the
             # returned doc does not include the home_page_content attribute
             # so it must be reset before the update. If it is not set, an
             # exception is raised:
@@ -348,7 +349,7 @@ class Document(BasePolarion):
         # defined after instatiation
         self._cls_suds_map["branched_from"]["cls"] = self.__class__
 
-    @BasePolarion.tx_wrapper
+    @tx_wrapper
     def create_work_item(self, parent_id, w_item):
         """create a work item in the current document
 

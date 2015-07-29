@@ -10,6 +10,7 @@ from pylarion.exceptions import PylarionLibException
 from pylarion.server import Server
 from __builtin__ import classmethod
 from ConfigParser import SafeConfigParser
+from functools import wraps
 
 
 # classproperty is a property that works on the class level
@@ -68,6 +69,31 @@ class Connection(object):
             cls.session.password = pwd
             cls.session.repo = repo
         return cls.session
+
+
+def tx_wrapper(func):
+    # decorator function to run specific functions in.
+    # Because they have multiple modifying stmts, they should be run
+    # in a transaction. It first checks if it is already in a tx and if
+    # not, it starts one itself.
+    @wraps(func)
+    def inner(*args, **kwargs):
+        # the first object is the instance or class object.
+        self = args[0]
+        new_tx = False
+        try:
+            if not self.session.tx_in():
+                self.session.tx_begin()
+                new_tx = True
+            res = func(*args, **kwargs)
+            if new_tx:
+                self.session.tx_commit()
+            return res
+        except (suds.WebFault, PylarionLibException, Exception):
+            if new_tx and self.session.tx_in():
+                self.session.tx_rollback()
+            raise
+    return inner
 
 
 class BasePolarion(object):
@@ -170,28 +196,6 @@ class BasePolarion(object):
                            if not isinstance(cls._cls_suds_map[x], dict)
                            else cls._cls_suds_map[x]["field_name"], fields)
         return p_fields
-
-    @classmethod
-    def tx_wrapper(cls, func):
-        # decorator function to run specific functions in.
-        # Because they have multiple modifying stmts, they should be run
-        # in a transaction. It first checks if it is already in a tx and if
-        # not, it starts one itself.
-        def inner(*args, **kwargs):
-            new_tx = False
-            try:
-                if not cls.session.tx_in():
-                    cls.session.tx_begin()
-                    new_tx = True
-                res = func(*args, **kwargs)
-                if new_tx:
-                    cls.session.tx_commit()
-                return res
-            except (suds.WebFault, PylarionLibException, Exception):
-                if new_tx and cls.session.tx_in():
-                    cls.session.tx_rollback()
-                raise
-        return inner
 
     @classmethod
     def get_global_roles(cls):
