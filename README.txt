@@ -50,10 +50,14 @@ with the following values::
     user={your username}
     password={your password}
     default_project={your default project}
+    logstash_url = ops-qe-logstash-2.rhev-ci-vms.eng.rdu2.redhat.com
+    logstash_port = 9911
 
 Requirements:
 *************
 python-suds
+python-logstash
+requests
 
 Usage:
 ******

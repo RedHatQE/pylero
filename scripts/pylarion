@@ -10,9 +10,10 @@ import readline
 # any functions. This enables the arrow keys. Without this
 # import, pressing the arrow keys shows ctrl chars.
 
+
 def main():
-    EXCLUDE_MODULES = ['test_classes','embedding', 'interface', 'server',
-        'session']
+    EXCLUDE_MODULES = ['test_classes', 'embedding', 'interface', 'server',
+                       'session']
     _class_names = []
     for lstmods in pkgutil.iter_modules([pylarion.__path__[0]]):
         the_mod = lstmods[1]
