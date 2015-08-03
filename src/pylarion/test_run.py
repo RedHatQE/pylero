@@ -4,7 +4,6 @@ from __future__ import absolute_import, division, print_function, \
 import os
 import suds
 import datetime
-import pysvn
 from xml.dom import minidom
 from pylarion.exceptions import PylarionLibException
 from pylarion.base_polarion import BasePolarion
@@ -23,6 +22,8 @@ from pylarion.text import Text
 # Plan is used in custom fields.
 from pylarion.plan import Plan  # NOQA
 from pylarion.base_polarion import tx_wrapper
+import requests
+from requests.auth import HTTPBasicAuth
 
 
 class TestRun(BasePolarion):
@@ -384,17 +385,14 @@ class TestRun(BasePolarion):
         Returns
             None
         """
-        client = pysvn.Client()
-        client.callback_ssl_server_trust_prompt = \
-            lambda trust: (True, trust["failures"], True)
-        client.set_default_username(self.logged_in_user_id)
-        client.set_default_password(self.password)
-        client.set_store_passwords(False)
         proj = Project(project_id)
         # proj.location[8:-30] removes the default: at the beginning and
         # .polarion/polarion-project.xml
-        file_content = client.cat("{0}{1}{2}".format(
-            self.repo, proj.location[8:-30], self.CUSTOM_FIELDS_FILE))
+        file_download = requests.get("{0}{1}{2}".format(
+            self.repo, proj.location[8:-30], self.CUSTOM_FIELDS_FILE),
+            auth=HTTPBasicAuth(self.logged_in_user_id, self.session.password),
+            verify=False)
+        file_content = file_download.text
         xmldoc = minidom.parseString(file_content)
         fields = xmldoc.getElementsByTagName("field")
         self._custom_field_cache[project_id] = {}

@@ -54,7 +54,6 @@ with the following values::
 Requirements:
 *************
 python-suds
-pysvn
 
 Usage:
 ******

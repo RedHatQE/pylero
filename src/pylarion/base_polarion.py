@@ -164,7 +164,6 @@ class BasePolarion(object):
             BasePolarion.logged_in_user_id = cls._session.user_id
             # stores password in the session so it can be used for direct svn
             # operations
-            BasePolarion.password = cls._session.password
             BasePolarion.repo = cls._session.repo
             return BasePolarion._session
 
