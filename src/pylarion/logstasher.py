@@ -108,8 +108,11 @@ def log_wrapper(func):
                 data["v_cls"] = class_name
                 data["v_method"] = {}
                 data["v_method"]["raw"] = "%s.%s" % (class_name, func.__name__)
-                data["v_args"] = args
-                data["v_kwargs"] = kwargs
+                data["v_args"] = [str(arg) for arg in args]
+                strdict = {}
+                for key in kwargs:
+                    strdict[key] = str(kwargs[key])
+                data["v_kwargs"] = strdict
                 data["v_pyver"] = sys.version.split(" ")[0]
                 for item in _class_elements:
                     # when a class method is used, some of its attributes
@@ -119,7 +122,9 @@ def log_wrapper(func):
                         data[item[0]] = getattr(self, item[1], None)
                 _logger.info(SYSTEM_NAME, extra=data)
             except Exception, e:
-                print(e)
+                data["v_error"] = traceback.format_exc()
+                data["v_errormsg"] = e
+                _logger.error(SYSTEM_NAME, extra=data)
             try:
                 res = func(*args, **kwargs)
             except Exception, e:

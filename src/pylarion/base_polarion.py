@@ -79,8 +79,13 @@ class Connection(object):
             cls.session.user_id = login
             cls.session.password = pwd
             cls.session.repo = repo
-            cls.session.logstash_url = logstash_url
-            cls.session.logstash_port = int(logstash_port)
+            cls.session.logstash_url = logstash_url or defaults["logstash_url"]
+            # must use try/except instead of or because the config file
+            # may return a non empty value, such as " "
+            try:
+                cls.session.logstash_port = int(logstash_port)
+            except ValueError:
+                cls.session.logstash_port = int(defaults["logstash_port"])
         return cls.session
 
 
