@@ -53,6 +53,9 @@ with the following values::
     logstash_url = ops-qe-logstash-2.rhev-ci-vms.eng.rdu2.redhat.com
     logstash_port = 9911
 
+If the password value is blank, it will prompt you for a password when you try
+to access any of the pylarion objects.
+
 Requirements:
 *************
 python-suds

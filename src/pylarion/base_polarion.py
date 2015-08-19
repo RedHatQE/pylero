@@ -12,6 +12,7 @@ from __builtin__ import classmethod
 from ConfigParser import SafeConfigParser
 from functools import wraps
 from pylarion.logstasher import LoggingMeta, init_logger
+from getpass import getpass
 
 
 # classproperty is a property that works on the class level
@@ -59,6 +60,10 @@ class Connection(object):
             repo = config.get(cls.CONFIG_SECTION, "svn_repo")
             login = config.get(cls.CONFIG_SECTION, "user")
             pwd = config.get(cls.CONFIG_SECTION, "password")
+            # if the password is not supplkied in the config file, ask the user
+            # for it
+            if not pwd:
+                pwd = getpass("Password not in config file.\nEnter Password:")
             proj = config.get(cls.CONFIG_SECTION, "default_project")
             logstash_url = config.get(cls.CONFIG_SECTION, "logstash_url")
             logstash_port = config.get(cls.CONFIG_SECTION, "logstash_port")
