@@ -467,6 +467,24 @@ class Document(BasePolarion):
         self.session.tracker_client.service.moveWorkItemToDocument(
             wi.uri, self.uri, parent_uri, position, retain_flow)
 
+    def add_referenced_work_item(self, work_item_id):
+        """Adds a work item to the document as a referenced work_item to the
+        end of the current document.
+
+        Args:
+            work_item_id (str): the id of a work item in the same project as
+            the current document
+
+        Returns:
+            None
+        """
+        self._verify_obj()
+        wi = _WorkItem(project_id=self.project_id, work_item_id=work_item_id)
+        ref_wi_template = """<div id="polarion_wiki macro name=""" \
+            """module-workitem;params=id=%s|external=true">"""
+        self.home_page_content += ref_wi_template % work_item_id
+        self.update()
+
     def update(self):
         """updates the server with the current module data
 
