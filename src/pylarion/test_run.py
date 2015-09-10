@@ -587,7 +587,7 @@ class TestRun(BasePolarion):
         :return:
         """
         check_tr = TestRun(uri=self.uri)
-        if test_case_id in [rec.test_case_id for rec in check_tr._records]:
+        if any(test_case_id == rec.test_case_id for rec in check_tr._records):
             raise PylarionLibException(
                 "This test case is already part of the test run")
 
