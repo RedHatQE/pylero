@@ -69,6 +69,10 @@ python-suds
 python-logstash
 requests
 
+There is a requirements.txt file in the root directory. All requirements can
+be installed by:
+pip install -r requirements.txt
+
 Usage:
 ******
 There is a pylarion script installed that opens a python shell with all the
