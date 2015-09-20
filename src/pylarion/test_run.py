@@ -147,14 +147,18 @@ class TestRun(BasePolarion):
             list of TestRecords
         """
         self._verify_obj()
-        contained_cases = ["static", "manual"]
-        if any(s in self.select_test_cases_by for s in contained_cases):
+        # if the type is not dynamic then all the cases are in the _records
+        # attribute. If they are dynamic, they have to be gotten
+        if "dynamic" not in self.select_test_cases_by:
             return self._records
         if "Doc" in self.select_test_cases_by:
             cases = self.document.get_work_items(None, True)
         elif "Query" in self.select_test_cases_by:
             cases = _WorkItem.query(
                 self.query + " AND project.id:" + self.project_id)
+        else:
+            raise PylarionLibException("Only Test Runs based on Docs or"
+                                       " Queries can be dynamic")
         executed_ids = [rec.test_case_id for rec in self._records]
         test_recs = self._records
         for case in cases:
