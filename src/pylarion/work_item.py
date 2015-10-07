@@ -335,6 +335,27 @@ class _WorkItem(BasePolarion):
               query_uris=False):
         """Searches for Work Items.
 
+        Notes:
+            The query function only returns a partially populated object with
+            the fields passed in (by default work_item_id) and the uri field.
+            The uri field is the Polarion unique object identifier which can
+             be used (among other things) to instantiate objects. Because not
+             all fields are returned in the object, this can cause problems
+             when trying to update an object that was returned by the query
+             function. Another issue is that certain fields are references and
+             are not retrieved by using their standard field names.
+             Examples of problems are:
+              * trying to use custom fields
+              * updating an object that has required fields that were not
+                retrieved
+              * trying to retrieve the project_id field.
+            Because of these issues, recommended usage is as follows:
+            {WI_TYPE} is TestCase, Requirement, ...
+                >>> query_results = {WI_TYPE}.query("query string")
+                >>> for item in query_results:
+                >>>     wi = {WI_TYPE}(uri=item.uri)
+                >>>     ... # do what you want with the object
+
         Args:
             query: query, either Lucene or SQL
             is_sql (bool): determines if the query is SQL or Lucene
@@ -1390,6 +1411,27 @@ class _SpecificWorkItem(_WorkItem):
         only accepts Lucene queries, specifically queries the specific type of
         work item and the default project. To search other projects, there is a
         project_id parameter.
+
+        Notes:
+            The query function only returns a partially populated object with
+            the fields passed in (by default work_item_id) and the uri field.
+            The uri field is the Polarion unique object identifier which can
+             be used (among other things) to instantiate objects. Because not
+             all fields are returned in the object, this can cause problems
+             when trying to update an object that was returned by the query
+             function. Another issue is that certain fields are references and
+             are not retrieved by using their standard field names.
+             Examples of problems are:
+              * trying to use custom fields
+              * updating an object that has required fields that were not
+                retrieved
+              * trying to retrieve the project_id field.
+            Because of these issues, recommended usage is as follows:
+            {WI_TYPE} is TestCase, Requirement, ...
+                >>> query_results = {WI_TYPE}.query("query string")
+                >>> for item in query_results:
+                >>>     wi = {WI_TYPE}(uri=item.uri)
+                >>>     ... # do what you want with the object
 
         Args:
             query: query, Lucene
