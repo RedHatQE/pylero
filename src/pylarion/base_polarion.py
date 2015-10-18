@@ -16,6 +16,8 @@ from getpass import getpass
 
 
 # classproperty is a property that works on the class level
+
+
 class classproperty(property):
     """Returns a classmethod as the getter so that the property can be used as
     a class property. This is needed so that the property can be set for all
@@ -339,7 +341,7 @@ class BasePolarion(object):
                         lambda self, suds_key=self._cls_suds_map[key]:
                             getattr(self._suds_object, suds_key, None),
                         lambda self, value, suds_key=self._cls_suds_map[key]:
-                            setattr(self._suds_object, suds_key, value)))
+                            self._regular_setter(value, suds_key)))
 # after all properties are defined set the id field to the value passed in.
         if obj_id is not None:
             setattr(self, self._id_field, obj_id)
@@ -402,6 +404,7 @@ class BasePolarion(object):
         # deepcopy so that changes do not stick
         add_parms = copy.deepcopy(csm.get("additional_parms", {}))
         if isinstance(val, basestring):
+            self._check_encode(val)
             if enum_id and val not in enum_override:
                 self.check_valid_field_values(val, enum_id, {},
                                               csm.get("control"))
@@ -479,6 +482,7 @@ class BasePolarion(object):
                 # if str values are based in, try instantiating a class with
                 # the vals and then using that list. Then continue processing
                 if isinstance(val[0], basestring):
+                    self._check_encode(val[0])
                     val = [csm["cls"](item) for item in val]
 
                 if isinstance(val[0], obj_inst._suds_object.__class__):
@@ -575,6 +579,8 @@ class BasePolarion(object):
             elif not csm.get("cls") or isinstance(val, basestring):
                 # if there is no cls specified, val can be a bool, int, ...
                 # if val is a string, it may be used to instantiate the class
+                if(isinstance(val, basestring)):
+                    self._check_encode(val)
                 if csm.get("enum_id") and \
                         val not in csm.get("enum_override", []):
                     # uses deepcopy, to not affect other instances of the class
@@ -604,6 +610,33 @@ class BasePolarion(object):
                     self._custom_fields = cf
             else:
                 self._custom_fields = [cust]
+
+    def _regular_setter(self, value, field_name):
+        """This setter is used for any attributes that are not Polarion object
+        data types. If the attribute type is a string, then it validates it
+        using the check_encode function
+
+        Args:
+            value (string): the value that the property is being set to
+            field_name: the field name of the Polarion object to set
+        """
+        if (isinstance(value, basestring)):
+            self._check_encode(value)
+        setattr(self._suds_object, field_name, value)
+
+    def _check_encode(self, val):
+            """Validate @val is a UTF-8 because Polarion doesn't support not
+            UTF-8 characters. The only use case that is not taken into account
+            is when an attribute is set directly with a SUDS object. The users
+            have no way of calling this function in this case.
+
+            Args:
+            val (string): the value that the property is being set to
+            """
+            try:
+                val.decode('utf-8')
+            except UnicodeError:
+                raise PylarionLibException("string must be UTF-8")
 
     def _get_file_data(self, path):
         """Method for getting attachment data that can be passed to the soap

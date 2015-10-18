@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import unittest2
 import datetime
 from pylarion.document import Document
@@ -7,6 +8,7 @@ from pylarion.test_run import TestRun
 from pylarion.project import Project
 from pylarion.test_record import TestRecord
 from pylarion.work_item import TestCase, Requirement
+from pylarion.test_steps import TestSteps
 
 USER = "szacks"
 ALT_USER = "oramraz"
@@ -150,6 +152,20 @@ class AttributeTest(unittest2.TestCase):
         testrun2.project_id = DEFAULT_PROJ
         self.assertNotEqual(testrun2.project_id,
                             proj.project_id)
+
+    def test_bad_character(self):
+        """this test validates that non UTF-8 characters will cause an error
+        """
+        test_case = TestCase()
+        steps = TestSteps()
+        with self.assertRaises(PylarionLibException):  # check _obj_setter
+            test_case.status = u"é"
+        with self.assertRaises(PylarionLibException):  # check _custom_setter
+            test_case.tcmscaseid = u"é"
+        with self.assertRaises(PylarionLibException):  # check _regular_setter
+            test_case.title = u"é"
+        with self.assertRaises(PylarionLibException):  # check _arr_obj_setter
+            steps.keys = [u"é"]
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
