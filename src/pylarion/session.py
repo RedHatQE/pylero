@@ -5,12 +5,35 @@ from __future__ import unicode_literals
 import logging
 import time
 import suds.sax.element
+import ssl
+import os
 
 from suds.plugin import MessagePlugin
 from suds.sax.attribute import Attribute
 
+
 # TODO: figure out what this does
 logger = logging.getLogger(__name__)
+
+
+# the reason why this function definition is at the top is because it is
+# assigned to "ssl._create_default_https_context", few lines below
+def create_redhat_ssl_context():
+    """this function creates a custom ssl context which is required for ssl
+    connection in python-version >=2.7.10. this ssl context is customize to use
+    redhat certificate which is located in 'cert_path'.
+    """
+    cert_path = os.path.abspath(os.path.dirname(__file__)) + "/newca.crt"
+    context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+    context.verify_mode = ssl.CERT_REQUIRED
+    context.check_hostname = True
+    context.load_verify_locations(cert_path)
+    return context
+
+
+# this line tells python >= 2.7.10 to use 'redhat_ssl_context' when using ssl
+# if we are using python < 2.7.10, 'create_default_https_context' is never used
+ssl._create_default_https_context = create_redhat_ssl_context
 
 
 class SoapNull(MessagePlugin):
