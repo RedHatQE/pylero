@@ -146,7 +146,8 @@ class _suds_client_wrapper:
         plugin = SoapNull()
         self._suds_client = suds.client.Client(
             url,
-            plugins=[plugin])
+            plugins=[plugin],
+            cachingpolicy=1)
         self._enclosing_session = enclosing_session
 
     def __getattr__(self, attr):
