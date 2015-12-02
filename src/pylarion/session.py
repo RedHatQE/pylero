@@ -23,7 +23,7 @@ def create_redhat_ssl_context():
     connection in python-version >=2.7.10. this ssl context is customize to use
     redhat certificate which is located in 'cert_path'.
     """
-    cert_path = os.path.abspath(os.path.dirname(__file__)) + "/newca.crt"
+    cert_path = os.path.join('/etc', 'pylarion', 'newca.crt')
     context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
     context.verify_mode = ssl.CERT_REQUIRED
     context.check_hostname = True

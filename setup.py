@@ -24,6 +24,7 @@ if __name__ == "__main__":
             'scripts/pylarion',
         ],
         data_files=[
-            (get_settings_dir(), ['etc/pylarion/pylarion.cfg']),
+            (get_settings_dir(), ['etc/pylarion/pylarion.cfg',
+                                  'etc/pylarion/newca.crt']),
         ],
     )
