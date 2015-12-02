@@ -82,8 +82,13 @@ class Connection(object):
                     cls.session = srv.session()
                     cls.session._login()
                     cls.connected = True
-                except suds.WebFault:
-                    pwd = getpass("Invalid Password.\nEnter Password:")
+                except suds.WebFault, e:
+                    if "com.polarion.platform.security." \
+                            "AuthenticationFailedException" \
+                            in e.fault.faultstring:
+                        pwd = getpass("Invalid Password.\nEnter Password:")
+                    else:
+                        raise
             cls.session.default_project = proj
             cls.session.user_id = login
             cls.session.password = pwd
@@ -199,13 +204,7 @@ class BasePolarion(object):
             # For some reason, using the cls attribute makes it into a class
             # attribute for the specific class but not for all the other
             # Pylarion objects.
-            connected = False
-            while not connected:
-                try:
-                    BasePolarion._session = Connection.session()
-                    connected = True
-                except Exception:
-                    pass
+            BasePolarion._session = Connection.session()
             BasePolarion._default_project = cls._session.default_project
             BasePolarion.logged_in_user_id = cls._session.user_id
             # stores password in the session so it can be used for direct svn
