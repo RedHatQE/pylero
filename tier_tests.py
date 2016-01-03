@@ -12,7 +12,7 @@ def get_command(x):
         'tier0': 'attribute_test',
         'tier1': 'test_run_test document_test work_item_test plan_test',
         'all': 'attribute_test test_run_test document_test'
-               'work_item_test plan_test'
+               ' work_item_test plan_test'
     }.get(x)
 
 if __name__ == "__main__":
