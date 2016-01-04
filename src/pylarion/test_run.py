@@ -436,8 +436,7 @@ class TestRun(BasePolarion):
             elif cache[field]:
                 self._cls_suds_map[field]["cls"] = EnumOptionId
                 self._cls_suds_map[field]["enum_id"] = cache[field]
-                if isinstance(cache[field], type) and \
-                    "project_id" in \
+                if isinstance(cache[field], type) and "project_id" in \
                         cache[field].__init__.func_code.co_varnames[
                         :cache[field].__init__.func_code.co_argcount]:
                     self._cls_suds_map[field]["additional_parms"] = \
@@ -483,15 +482,15 @@ class TestRun(BasePolarion):
     def _verify_record_count(self, record_index):
         # verifies the number of records is not less then the index given.
         self._verify_obj()
-        if record_index > len(self.records)-1:
+        if record_index > (len(self.records) - 1):
             raise PylarionLibException("There are only {0} test records".
                                        format(len(self.records)))
 
     def _verify_test_step_count(self, record_index, test_step_index):
         # verifies the number of test steps is not less then the index given.
         self._verify_record_count(record_index)
-        if test_step_index > len(self.records[record_index].
-                                 test_step_results)-1:
+        if test_step_index > (
+                len(self.records[record_index].test_step_results) - 1):
             raise PylarionLibException("There are only {0} test records".
                                        format(len(self.records)))
 
@@ -575,10 +574,16 @@ class TestRun(BasePolarion):
             self.uri, record_index, test_step_index, filename, title, data)
 
     def _check_test_record_exists(self, test_case_id):
-        """Grabs a copy of the test run to verify if the test case is already
-        contained in it. It uses a copy to get an updated version so that if
-        it was added during the session, it will still appear.
-        If it appears, it will raise an exception.
+        """Searches the test run to see if the case is already a member of it
+        and if so raises an exception. It should only receive one result set
+        and if it returns more then that it raises a different exception.
+        It searches the server for the test record in case, the record was
+        added by another process.
+
+        Notes:
+            This is the best that can be done and there is no method of knowing
+            if another process added the same record in between this check and
+            the actual add.
 
         Args:
             test_case_id (str): the id of the test case to check
@@ -586,14 +591,17 @@ class TestRun(BasePolarion):
         Returns:
             None
         """
-        """
-        :param test_case_id:
-        :return:
-        """
-        check_tr = TestRun(uri=self.uri)
-        if any(test_case_id == rec.test_case_id for rec in check_tr._records):
+        check_tr = TestRun.search(
+            'project.id:%s AND id:"%s" AND %s' %
+            (self.project_id, self.test_run_id, test_case_id))
+        if len(check_tr) not in [0, 1]:
+            raise PylarionLibException(
+                "The search function did not work as expected. Please report.")
+        elif len(check_tr) == 1:
             raise PylarionLibException(
                 "This test case is already part of the test run")
+        else:
+            return None
 
     @tx_wrapper
     def add_test_record_by_fields(self, test_case_id, test_result,
@@ -673,8 +681,7 @@ class TestRun(BasePolarion):
         self._check_test_record_exists(test_record.test_case_id)
         if isinstance(test_record, TestRecord):
             suds_object = test_record._suds_object
-        elif isinstance(test_record, TestRecord().
-                        _suds_object.__class__):
+        elif isinstance(test_record, TestRecord()._suds_object.__class__):
             suds_object = test_record
         self.session.test_management_client.service.addTestRecordToTestRun(
             self.uri, suds_object)
@@ -1018,8 +1025,7 @@ class TestRun(BasePolarion):
             index = test_case_ids.index(test_case_id)
             if isinstance(test_record, TestRecord):
                 suds_object = test_record._suds_object
-            elif isinstance(test_record, TestRecord().
-                            _suds_object.__class__):
+            elif isinstance(test_record, TestRecord()._suds_object.__class__):
                 suds_object = test_record
             self.session.test_management_client.service. \
                 updateTestRecordAtIndex(self.uri, index, suds_object)
