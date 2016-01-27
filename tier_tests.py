@@ -16,14 +16,15 @@ def get_command(x):
     }.get(x)
 
 if __name__ == "__main__":
-    nose = 'nose2 -s src/unit_tests '
+    nose = 'nose2 --plugin nose2.plugins.junitxml --junit-xml'
+    src = ' -s src/unit_tests '
     tests = None
 
     if len(sys.argv) == 2:
         tests = get_command(sys.argv[1])
 
     if tests:
-        command = nose + tests
+        command = nose + src + tests
         print("Execute " + tests + ":")
         sys.exit(subprocess.call(command.split()))
     else:
