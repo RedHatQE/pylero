@@ -227,7 +227,9 @@ class BasePolarion(object):
         """All child methods that take a fields parameter should pass the field
         array and it converts it to the Polarion attribute name using the
         _cls_suds_map. It uses the python map function over the fields list to
-        return the list of its Polarion attribute name.
+        return the list of its Polarion attribute name. If the field is a
+        custom field, it adds the customFields. qualifier before the fieldname
+        as is required for searching custom fields.
 
         Args:
             fields - list of fields to convert. If it is not a list, it
@@ -238,9 +240,16 @@ class BasePolarion(object):
             if not isinstance(fields, list):
                 fields = [fields]
             # convert given fields to Polarion fields
-            p_fields = map(lambda x: cls._cls_suds_map[x]
-                           if not isinstance(cls._cls_suds_map[x], dict)
-                           else cls._cls_suds_map[x]["field_name"], fields)
+            p_fields = map(
+                lambda x: "%s%s" % (
+                    "customFields."
+                    if isinstance(cls._cls_suds_map[x], dict)
+                    and cls._cls_suds_map[x].get("is_custom", False)
+                    else "",
+                    cls._cls_suds_map[x]
+                    if not isinstance(cls._cls_suds_map[x], dict)
+                    else cls._cls_suds_map[x]["field_name"]),
+                fields)
         return p_fields
 
     @classmethod

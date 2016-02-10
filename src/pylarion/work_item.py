@@ -351,10 +351,10 @@ class _WorkItem(BasePolarion):
               * trying to retrieve the project_id field.
             Because of these issues, recommended usage is as follows:
             {WI_TYPE} is TestCase, Requirement, ...
-                >>> query_results = {WI_TYPE}.query("query string")
-                >>> for item in query_results:
-                >>>     wi = {WI_TYPE}(uri=item.uri)
-                >>>     ... # do what you want with the object
+                query_results = {WI_TYPE}.query("query string")
+                for item in query_results:
+                    wi = {WI_TYPE}(uri=item.uri)
+                    ... # do what you want with the object
 
         Args:
             query: query, either Lucene or SQL
@@ -1342,6 +1342,9 @@ class _SpecificWorkItem(_WorkItem):
     must define the _wi_type class attribute as a minimum.
     """
     _wi_type = ""
+    _got_custom_fields = False
+    _required_fields = []
+    _all_custom_fields = []
 
     @classmethod
     def create(cls, project_id, title, desc, status="draft", **kwargs):
@@ -1359,16 +1362,17 @@ class _SpecificWorkItem(_WorkItem):
             kwargs: keyword arguments for custom fields. All required custom
                     fields must appear as keyword arguments.
         """
-        all_fields, reqs = cls.get_custom_fields(project_id)
+        cls.get_custom_fields(project_id)
         fields = ""
-        for req in reqs:
+        for req in cls._required_fields:
             if req not in kwargs:
                 fields += (", " if fields else "") + req
         if fields:
             raise PylarionLibException("These parameters are required: {0}".
                                        format(fields))
         for field in kwargs:
-            if field not in all_fields and field not in cls._cls_suds_map:
+            if field not in cls._all_custom_fields and \
+                    field not in cls._cls_suds_map:
                 fields += (", " if fields else "") + field
         if fields:
             raise PylarionLibException("These parameters are unknown: {0}".
@@ -1388,20 +1392,36 @@ class _SpecificWorkItem(_WorkItem):
                 a) list of all custom fields
                 b) list of all required fields
         """
+        cls._required_fields = []
+        cls._all_custom_fields = []
         cfts = cls.get_defined_custom_field_types(project_id,
                                                   cls._wi_type)
-        all_fields = []
-        required_fields = []
         for cft in cfts:
                 # convert the custom field name to use code convention, where
                 # possible
                 split_name = re.findall('[a-zA-Z][^A-Z]*', cft.cft_id)
                 local_name = "_".join(split_name).replace("_U_R_I", "_uri"). \
                     replace("_W_I", "_wi").replace("_I_D", "_id").lower()
-                all_fields.append(local_name)
+                cls._all_custom_fields.append(local_name)
+                cls._cls_suds_map[local_name] = {}
+                cls._cls_suds_map[local_name]["field_name"] = cft.cft_id
+                # types are returned in format:
+                # * nsX:obj_type for objects and
+                # * xsd:string for native types
+                # for all object types, I need special processing.
+                parse_type = cft.type.split(":")
+                if parse_type[0].startswith("ns"):
+                    cls._cls_suds_map[local_name]["cls"] = \
+                        globals()[parse_type[1]]
+                cls._cls_suds_map[local_name]["enum_id"] = getattr(cft,
+                                                                   "enum_id",
+                                                                   None)
+                cls._cls_suds_map[local_name]["is_custom"] = True
+                cls._cls_suds_map[local_name]["control"] = cls._wi_type
                 if cft.required:
-                    required_fields.append(local_name)
-        return (all_fields, required_fields)
+                    cls._required_fields.append(local_name)
+        cls._got_custom_fields = True
+        return None
 
     @classmethod
     def query(cls, query, fields=["work_item_id"],
@@ -1428,10 +1448,10 @@ class _SpecificWorkItem(_WorkItem):
               * trying to retrieve the project_id field.
             Because of these issues, recommended usage is as follows:
             {WI_TYPE} is TestCase, Requirement, ...
-                >>> query_results = {WI_TYPE}.query("query string")
-                >>> for item in query_results:
-                >>>     wi = {WI_TYPE}(uri=item.uri)
-                >>>     ... # do what you want with the object
+                query_results = {WI_TYPE}.query("query string")
+                for item in query_results:
+                    wi = {WI_TYPE}(uri=item.uri)
+                    ... # do what you want with the object
 
         Args:
             query: query, Lucene
@@ -1456,7 +1476,8 @@ class _SpecificWorkItem(_WorkItem):
         Returns:
             list of the specific WorkItem objects that were found.
         """
-
+        if not cls._got_custom_fields:
+            cls.get_custom_fields(project_id or cls.default_project)
         if query:
             query += " AND "
         query += "type:%s AND project.id:%s" % \
@@ -1473,32 +1494,8 @@ class _SpecificWorkItem(_WorkItem):
         """
         if not project_id:
             project_id = self.default_project
-        self._required_fields = []
         self._changed_fields = {}
-        cfts = self.get_defined_custom_field_types(project_id,
-                                                   self._wi_type)
-        for cft in cfts:
-            # try to convert custom field names to use the coding conventions
-            split_name = re.findall('[a-zA-Z][^A-Z]*', cft.cft_id)
-            local_name = "_".join(split_name).replace("_U_R_I", "_uri"). \
-                replace("_W_I", "_wi").replace("_I_D", "_id").lower()
-            self._cls_suds_map[local_name] = {}
-            self._cls_suds_map[local_name]["field_name"] = cft.cft_id
-            # types are returned in format:
-            # * nsX:obj_type for objects and
-            # * xsd:string for native types
-            # for all object types, I need special processing.
-            parse_type = cft.type.split(":")
-            if parse_type[0].startswith("ns"):
-                self._cls_suds_map[local_name]["cls"] = \
-                    globals()[parse_type[1]]
-            self._cls_suds_map[local_name]["enum_id"] = getattr(cft,
-                                                                "enum_id",
-                                                                None)
-            self._cls_suds_map[local_name]["is_custom"] = True
-            self._cls_suds_map[local_name]["control"] = self._wi_type
-            if cft.required:
-                self._required_fields.append(local_name)
+        self.get_custom_fields(project_id)
         super(_SpecificWorkItem, self).__init__(project_id, work_item_id,
                                                 suds_object, uri, fields,
                                                 revision)
