@@ -48,6 +48,11 @@ class WorkItemTest(unittest2.TestCase):
             fields=["work_item_id", "title"])
         tc = results2[0]
         self.assertIsNotNone(tc.title)
+        results3 = TestCase.query(
+            "project.id:%s AND title:regression" % (DEFAULT_PROJ),
+            fields=["work_item_id", "caseautomation"])
+        tc = results3[0]
+        self.assertEquals(tc.caseautomation, "notautomated")
 
     def test_002_get_item(self):
         tc = TestCase(project_id=DEFAULT_PROJ,
