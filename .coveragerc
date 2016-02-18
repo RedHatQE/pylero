@@ -1,0 +1,4 @@
+[run]
+branch = True
+include = .tox/*/pylarion/*
+timid = True
