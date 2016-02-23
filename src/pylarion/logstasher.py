@@ -6,13 +6,19 @@ import logstash
 import traceback
 import types
 import sys
-from functools import wraps
+try:
+    from decorator import decorate
+except ImportError:
+    raise ImportError("decorator>=4.0.9 is required. "
+                      "You may need to execute:\n"
+                      "pip install decorator>=4.0.9")
 
 """Logstash python class plugin, that will automagically send usage logs of all
 function calls to a logstash server.
 
 Requirements:
 * python-logstash
+* decorator>=4.0.9
 
 Usage:
 * install python-logstash (pip install python-logstash)
@@ -85,58 +91,60 @@ def init_logger(logstash_url, logstash_port=9300):
     LOGSTASH_INITIALIZED = True
 
 
-def log_wrapper(func):
-    # decorator function to log function usage.
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        # This is supposed to act as a plugin, so it must be self-contained
-        global _logging
-        global _class_elements
-        self = args[0]
-        # Only log the initial call. any inner calls should not be logged.
-        # if the logstash was not initialized above, ignore plugin.
-        if _logging or not LOGSTASH_INITIALIZED:
-            return func(*args, **kwargs)
+# decorator function to log function usage.
+def wrapper(func, *args, **kwargs):
+
+    # This is supposed to act as a plugin, so it must be self-contained
+    global _logging
+    global _class_elements
+    self = args[0]
+    # Only log the initial call. any inner calls should not be logged.
+    # if the logstash was not initialized above, ignore plugin.
+    if _logging or not LOGSTASH_INITIALIZED:
+        return func(*args, **kwargs)
+    else:
+        _logging = True
+        data = {}
+        if isinstance(self, (types.ClassType, LoggingMeta)):
+            class_name = self.__name__
         else:
-            _logging = True
-            data = {}
-            if isinstance(self, (types.ClassType, LoggingMeta)):
-                class_name = self.__name__
-            else:
-                class_name = self.__class__.__name__
-            try:
-                data["v_cls"] = class_name
-                data["v_method"] = {}
-                data["v_method"]["raw"] = "%s.%s" % (class_name, func.__name__)
-                data["v_args"] = [str(arg) for arg in args]
-                strdict = {}
-                for key in kwargs:
-                    strdict[key] = str(kwargs[key])
-                data["v_kwargs"] = strdict
-                data["v_pyver"] = sys.version.split(" ")[0]
-                for item in _class_elements:
-                    # when a class method is used, some of its attributes
-                    # are not available because they are uninstantiated
-                    # properties.
-                    if not isinstance(getattr(self, item[1], None), property):
-                        data[item[0]] = getattr(self, item[1], None)
-                _logger.info(SYSTEM_NAME, extra=data)
-            except Exception, e:
-                data["v_error"] = traceback.format_exc()
-                data["v_errormsg"] = e
-                _logger.error(SYSTEM_NAME, extra=data)
-            try:
-                res = func(*args, **kwargs)
-            except Exception, e:
-                res = None
-                data["v_error"] = traceback.format_exc()
-                data["v_errormsg"] = e
-                _logger.error(SYSTEM_NAME, extra=data)
-                raise
-            finally:
-                _logging = False
-            return res
-    return wrapper
+            class_name = self.__class__.__name__
+        try:
+            data["v_cls"] = class_name
+            data["v_method"] = {}
+            data["v_method"]["raw"] = "%s.%s" % (class_name, func.__name__)
+            data["v_args"] = [str(arg) for arg in args]
+            strdict = {}
+            for key in kwargs:
+                strdict[key] = str(kwargs[key])
+            data["v_kwargs"] = strdict
+            data["v_pyver"] = sys.version.split(" ")[0]
+            for item in _class_elements:
+                # when a class method is used, some of its attributes
+                # are not available because they are uninstantiated
+                # properties.
+                if not isinstance(getattr(self, item[1], None), property):
+                    data[item[0]] = getattr(self, item[1], None)
+            _logger.info(SYSTEM_NAME, extra=data)
+        except Exception, e:
+            data["v_error"] = traceback.format_exc()
+            data["v_errormsg"] = e
+            _logger.error(SYSTEM_NAME, extra=data)
+        try:
+            res = func(*args, **kwargs)
+        except Exception, e:
+            res = None
+            data["v_error"] = traceback.format_exc()
+            data["v_errormsg"] = e
+            _logger.error(SYSTEM_NAME, extra=data)
+            raise
+        finally:
+            _logging = False
+        return res
+
+
+def log_wrapper(func):
+    return decorate(func, wrapper)
 
 
 class LoggingMeta(type):

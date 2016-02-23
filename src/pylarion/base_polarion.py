@@ -438,7 +438,7 @@ class BasePolarion(object):
                                               csm.get("control"))
         if not sync_field:
             sync_field = "_suds_object"
-        if isinstance(val, basestring):
+        if isinstance(val, basestring) or val is None:
             add_parms[obj_cls._id_field] = val
             obj = obj_cls(**add_parms)
             setattr(self._suds_object, suds_field_name,

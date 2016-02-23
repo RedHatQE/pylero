@@ -10,10 +10,12 @@ from pylarion.test_run import TestRun
 from pylarion.exceptions import PylarionLibException
 from pylarion.test_record import TestRecord
 from pylarion.work_item import TestCase
+from pylarion.plan import Plan
 
 DEFAULT_PROJ = TestRun.default_project
 TEMPLATE_ID = "tmp_regr-%s" % datetime.datetime.now().strftime("%Y%m%d%H%M%s")
 TEST_RUN_ID = "tr_regr-%s" % datetime.datetime.now().strftime("%Y%m%d%H%M%s")
+PLAN_ID = "plan_regr-%s" % datetime.datetime.now().strftime("%Y%m%d%H%M%s")
 CUR_PATH = os.path.dirname(os.path.abspath(__file__))
 ATTACH_PATH = CUR_PATH + "/refs/red_box.png"
 ATTACH_TITLE = "File"
@@ -43,6 +45,12 @@ class TestRunTest(unittest2.TestCase):
                               testtype="functional",
                               subtype1="-")
         cls.NEW_TEST_CASE2 = tc2.work_item_id
+        Plan.create(plan_id=PLAN_ID,
+                    plan_name="regression",
+                    project_id=DEFAULT_PROJ,
+                    parent_id=None,
+                    template_id="release")
+        cls.NEW_PLAN = PLAN_ID
 
     def test_001_create_template(self):
         """This test does the following:
@@ -228,6 +236,20 @@ class TestRunTest(unittest2.TestCase):
         self.assertEquals(num_recs, len(tr.records))
         self.assertEquals(test_case_id, tr.records[0].test_case_id)
         self.assertEquals(tr.records[0].result, "blocked")
+
+    def test_010_customfield_object(self):
+        """This test does the following:
+        * gets a TestRun
+        * Adds a Plan to it
+        * Verifies that the plan was added
+        * Verifies that a non valid plan cant be added
+        """
+        tr = TestRun(project_id=DEFAULT_PROJ, test_run_id=TEST_RUN_ID)
+        with self.assertRaises(PylarionLibException):
+            tr.plannedin = "not_valid"
+        tr.plannedin = self.NEW_PLAN
+        self.assertEquals(tr.plannedin, self.NEW_PLAN)
+        tr.update()
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
