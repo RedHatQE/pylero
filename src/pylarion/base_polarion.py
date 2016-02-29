@@ -47,7 +47,9 @@ class Connection(object):
         if not cls.connected:
             defaults = {"logstash_url":
                         "ops-qe-logstash-2.rhev-ci-vms.eng.rdu2.redhat.com",
-                        "logstash_port": "9911"}
+                        "logstash_port": "9911",
+                        "cachingpolicy": "0",
+                        "timeout": "120"}
             config = SafeConfigParser(defaults)
             if not config.read([cls.GLOBAL_CONFIG, cls.LOCAL_CONFIG,
                                 cls.CURDIR_CONFIG]) or \
@@ -62,6 +64,10 @@ class Connection(object):
             repo = config.get(cls.CONFIG_SECTION, "svn_repo")
             login = config.get(cls.CONFIG_SECTION, "user")
             pwd = config.get(cls.CONFIG_SECTION, "password")
+            # see comment on cachingpolicy in the session module,
+            # _suds_client_wrapper class
+            caching_policy = config.get(cls.CONFIG_SECTION, "cachingpolicy")
+            timeout = config.get(cls.CONFIG_SECTION, "timeout")
             # if the password is not supplkied in the config file, ask the user
             # for it
             if not pwd:
@@ -78,7 +84,8 @@ class Connection(object):
             # connected
             while not cls.connected:
                 try:
-                    srv = Server(server_url, login, pwd)
+                    srv = Server(
+                        server_url, login, pwd, caching_policy, timeout)
                     cls.session = srv.session()
                     cls.session._login()
                     cls.connected = True

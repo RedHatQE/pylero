@@ -10,13 +10,27 @@ class Server(object):
     """
 
     def __init__(self, url, login, password, default_project=None,
-                 default_namespace=None, relogin_timeout=60):
+                 relogin_timeout=60, caching_policy=0, timeout=120):
+        """An object that defines the properties of the Polarion server to
+        connect to.
+
+        Args:
+            url: url of the Polarion server
+            login: username
+            password: password
+            default_project: default project to use to for configuarations
+            relogin_timeout: timeout after which the session will try to login
+                             again
+            cachingpolicy: cachingpolicy of the session
+            timeout: http tiemout
+        """
         self.url = url
         self.login = login
         self.password = password
         self.default_project = default_project
-        self.default_namespace = default_namespace
         self.relogin_timeout = relogin_timeout
+        self.caching_policy = caching_policy
+        self.timeout = timeout
 
     def session(self):
-        return Session(self)
+        return Session(self, self.caching_policy, self.timeout)

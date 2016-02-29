@@ -61,25 +61,32 @@ class Session(object):
         return '{0}/ws/services/{1}WebService?wsdl'.format(self._server.url,
                                                            service_name)
 
-    def __init__(self, server):
-        """Session constructor, initialize the WSDL clients"""
+    def __init__(self, server, caching_policy, timeout):
+        """Session constructor, initialize the WSDL clients
+
+           Args:
+                server: server object that the session connects to
+                caching_policy: determines the caching policy of the SUDS conn
+                timeout: HTTP timeout for the connection
+        """
         self._server = server
         self._last_request_at = None
         self._session_id_header = None
         self._session_client = _suds_client_wrapper(
-            self._url_for_name('Session'), None)
+            self._url_for_name('Session'), None, caching_policy, timeout)
         self.builder_client = _suds_client_wrapper(
-            self._url_for_name('Builder'), self)
+            self._url_for_name('Builder'), self, caching_policy, timeout)
         self.planning_client = _suds_client_wrapper(
-            self._url_for_name('Planning'), self)
+            self._url_for_name('Planning'), self, caching_policy, timeout)
         self.project_client = _suds_client_wrapper(
-            self._url_for_name('Project'), self)
+            self._url_for_name('Project'), self, caching_policy, timeout)
         self.security_client = _suds_client_wrapper(
-            self._url_for_name('Security'), self)
+            self._url_for_name('Security'), self, caching_policy, timeout)
         self.test_management_client = _suds_client_wrapper(
-            self._url_for_name('TestManagement'), self)
+            self._url_for_name('TestManagement'), self, caching_policy,
+            timeout)
         self.tracker_client = _suds_client_wrapper(
-            self._url_for_name('Tracker'), self)
+            self._url_for_name('Tracker'), self, caching_policy, timeout)
 
     def _login(self):
         """login to the Polarion API"""
@@ -139,15 +146,29 @@ class Session(object):
 class _suds_client_wrapper:
     """class that manages the WSDL clients"""
 
-    def __init__(self, url, enclosing_session):
-        # has the actual WSDL client as a private _suds_client attribute so
-        # that the "magic" __getattr__ function will be able to verify
-        # functions called on it and after processing to call the WSDL function
+    def __init__(self, url, enclosing_session, caching_policy, timeout):
+        """has the actual WSDL client as a private _suds_client attribute so
+        that the "magic" __getattr__ function will be able to verify
+        functions called on it and after processing to call the WSDL function
+
+        Args:
+            url (str): the URL of the Polarion server.
+            enclosing_session: the HTTP session that the requests are sent
+                               through
+            caching_policy (int): is a configuration parameter that specifies
+                                 either 0 or 1. When it is set correctly, the
+                                 client always goes to the same host when using
+                                 a load balancer. Unfortunately, some
+                                 workstations require 1 and others 0 and I have
+                                 not understood what the qualification is.
+            timeout (int): The HTTP timeout of the connection
+        """
         plugin = SoapNull()
         self._suds_client = suds.client.Client(
             url,
             plugins=[plugin],
-            cachingpolicy=1)
+            cachingpolicy=caching_policy,
+            timeout=timeout)
         self._enclosing_session = enclosing_session
 
     def __getattr__(self, attr):
