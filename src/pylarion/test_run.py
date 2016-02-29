@@ -247,8 +247,8 @@ class TestRun(BasePolarion):
         return TestRun(template_id, project_id=project_id)
 
     @classmethod
-    def search(cls, query, fields=[], sort="test_run_id", limit=-1,
-               search_templates=False):
+    def search(cls, query, fields=["test_run_id"], sort="test_run_id",
+               limit=-1, search_templates=False):
         """class method search executes the given query and returns the results
 
         Args:
@@ -256,7 +256,9 @@ class TestRun(BasePolarion):
             fields:  test run fields that should be initialized,
                      all other fields will be null.
                      Field names are from the object's attributes and not
-                     the Polarion field names, default []
+                     the Polarion field names, default ["test_run_id"]. If you
+                     want all of the fields to be returned, pass [] for this
+                     parameter.
             sort: the field used to sort results, default is test_run_id
             limit (int): the maximum number of records to be returned, -1
                          for no limit, default -1.
