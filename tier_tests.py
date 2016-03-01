@@ -17,6 +17,7 @@ def get_command(x):
 
 if __name__ == "__main__":
     nose = 'nose2 --plugin nose2.plugins.junitxml --junit-xml'
+    coverage = ' --with-coverage --coverage-report xml'
     src = ' -s src/unit_tests '
     tests = None
 
@@ -24,7 +25,7 @@ if __name__ == "__main__":
         tests = get_command(sys.argv[1])
 
     if tests:
-        command = nose + src + tests
+        command = nose + coverage + src + tests
         print("Execute " + tests + ":")
         sys.exit(subprocess.call(command.split()))
     else:
