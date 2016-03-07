@@ -173,7 +173,7 @@ class TestRun(BasePolarion):
         self._records = val
 
     @classmethod
-    def create(cls, project_id, test_run_id, template):
+    def create(cls, project_id, test_run_id, template, **kwargs):
         """class method create for creating a new test run in Polarion
 
         Args:
@@ -181,6 +181,9 @@ class TestRun(BasePolarion):
                                  in
             test_run_id (string): the unique identifier for the test run
             template (string): the id of the template to base the test run on.
+            **kwargs: keyword arguments. Test run attributes can be passed in
+                      to be set upon creation. Required fields must be passed
+                      in
 
         Returns:
             The created TestRun object
@@ -188,10 +191,16 @@ class TestRun(BasePolarion):
         References:
             test_management.createTestRun
         """
+        tr = TestRun(project_id=project_id)
+        tr.verify_required(**kwargs)
         uri = cls.session.test_management_client.service.createTestRun(
             project_id, test_run_id, template)
         if uri:
-            return cls(uri=uri)
+            run = cls(uri=uri)
+            for field in kwargs:
+                setattr(run, field, kwargs[field])
+            run.update()
+            return run
         else:
             raise PylarionLibException("Test Run was not created")
 
@@ -200,7 +209,7 @@ class TestRun(BasePolarion):
     def create_template(cls, project_id, template_id,
                         parent_template_id="Empty",
                         select_test_cases_by=None, query=None,
-                        doc_with_space=None):  # , test_case_ids=[]):
+                        doc_with_space=None, **kwargs):  # , test_case_ids=[]):
         # see comment below regarding test_case)ids.
         """class method create_template for creating a new template in Polarion
 
@@ -217,6 +226,9 @@ class TestRun(BasePolarion):
             query: the Lucene query, for query methods, default None
             doc_with_space: the space/doc_name, for document methods
                             default: None
+            **kwargs: keyword arguments. Test run attributes can be passed in
+                      to be set upon creation. Required fields must be passed
+                      in
 
         Returns:
             The created TestRun Template object
@@ -224,7 +236,7 @@ class TestRun(BasePolarion):
         References:
             test_management.createTestRun
         """
-        tr = cls.create(project_id, template_id, parent_template_id)
+        tr = cls.create(project_id, template_id, parent_template_id, **kwargs)
         tr.is_template = True
         if select_test_cases_by:
             tr.select_test_cases_by = select_test_cases_by
@@ -405,7 +417,12 @@ class TestRun(BasePolarion):
         for field in fields:
             f_type = self._custom_field_types(field.getAttribute("type"))
             f_name = field.getAttribute("id")
-            self._custom_field_cache[project_id][f_name] = f_type
+            f_req = False
+            if field.getAttribute("required") == "true":
+                f_req = True
+            self._custom_field_cache[project_id][f_name] = {}
+            self._custom_field_cache[project_id][f_name]["type"] = f_type
+            self._custom_field_cache[project_id][f_name]["required"] = f_req
 
     def _add_custom_fields(self, project_id):
         """ This generates object attributes, with validation, so that custom
@@ -429,18 +446,21 @@ class TestRun(BasePolarion):
         if project_id not in self._custom_field_cache:
             self._cache_custom_fields(project_id)
         cache = self._custom_field_cache[project_id]
+        self._required_fields = []
         for field in cache:
+            if cache[field]["required"]:
+                self._required_fields.append(field)
             self._cls_suds_map[field] = {}
             self._cls_suds_map[field]["field_name"] = field
             self._cls_suds_map[field]["is_custom"] = True
-            if cache[field] == Text:
+            if cache[field]["type"] == Text:
                 self._cls_suds_map[field]["cls"] = Text
-            elif cache[field]:
+            elif cache[field]["type"]:
                 self._cls_suds_map[field]["cls"] = EnumOptionId
-                self._cls_suds_map[field]["enum_id"] = cache[field]
-                if isinstance(cache[field], type) and "project_id" in \
-                        cache[field].__init__.func_code.co_varnames[
-                        :cache[field].__init__.func_code.co_argcount]:
+                self._cls_suds_map[field]["enum_id"] = cache[field]["type"]
+                if isinstance(cache[field]["type"], type) and "project_id" in \
+                        cache[field]["type"].__init__.func_code.co_varnames[
+                        :cache[field]["type"].__init__.func_code.co_argcount]:
                     self._cls_suds_map[field]["additional_parms"] = \
                         {"project_id": project_id}
 
@@ -890,6 +910,7 @@ class TestRun(BasePolarion):
             test_management.updateTestRun
         """
         self._verify_obj()
+        self.verify_required()
         for field in self._changed_fields:
             self._set_custom_field(field, self._changed_fields[field])
         self._changed_fields = {}
@@ -1058,3 +1079,37 @@ class TestRun(BasePolarion):
             suds_content = suds.null()
         self.session.test_management_client.service. \
             updateWikiContentForTestRun(self.uri, suds_content)
+
+    def verify_required(self, **kwargs):
+        """function that checks if all required fields are passed in, that all
+        kwargs are valid attributes and values passed (for enums) are valid.
+
+        Args:
+            **kwargs: keyword arguments. Test run attributes can be passed in
+                      to be set upon creation. Required fields must be passed
+                      in
+        Exceptions:
+            PylarionLibException - if required parms are not passed in, unknown
+            parms or invalid enum values are
+        """
+        fields = ""
+        for req in self._required_fields:
+            if kwargs:
+                if req not in kwargs:
+                    fields += (", " if fields else "") + req
+            else:
+                if not getattr(self, req):
+                    fields += (", " if fields else "") + req
+        if fields:
+            raise PylarionLibException("These parameters are required: {0}".
+                                       format(fields))
+        for field in kwargs:
+            if field not in self._cls_suds_map:
+                fields += (", " if fields else "") + field
+            else:
+                # test that the value is valid
+                setattr(self, field, kwargs[field])
+
+        if fields:
+            raise PylarionLibException("These parameters are unknown: {0}".
+                                       format(fields))

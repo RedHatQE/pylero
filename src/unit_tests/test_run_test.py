@@ -56,11 +56,21 @@ class TestRunTest(unittest2.TestCase):
         """This test does the following:
         * Creates a TestRun template based on the "Empty" template
         * Verifies that the returned object exists and is a template
+        * Adds a custom field as a kwarg
+        * Tries to create another template with an invalid enum value in kwarg
+        * Tries to create another template with an invalid kwarg
         """
         template = TestRun.create_template(
-            DEFAULT_PROJ, TEMPLATE_ID, "Empty")
+            DEFAULT_PROJ, TEMPLATE_ID, "Empty", arch="i386")
         self.assertIsNotNone(template.test_run_id)
         self.assertTrue(template.is_template)
+        self.assertEqual(template.arch, "i386")
+        with self.assertRaises(PylarionLibException):
+            template = TestRun.create_template(
+                DEFAULT_PROJ, TEMPLATE_ID + "1", "Empty", arch="BAD")
+        with self.assertRaises(PylarionLibException):
+            template = TestRun.create_template(
+                DEFAULT_PROJ, TEMPLATE_ID + "2", "Empty", notaparm="BAD")
 
     def test_002_create_run(self):
         """This test does the following:
