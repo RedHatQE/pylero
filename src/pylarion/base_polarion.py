@@ -68,6 +68,13 @@ class Connection(object):
             # _suds_client_wrapper class
             caching_policy = config.get(cls.CONFIG_SECTION, "cachingpolicy")
             timeout = config.get(cls.CONFIG_SECTION, "timeout")
+            try:
+                caching_policy = int(caching_policy)
+                timeout = int(timeout)
+            except ValueError:
+                raise PylarionLibException("The caching policy and timeout"
+                                           "values in the config file must be"
+                                           "integers")
             # if the password is not supplkied in the config file, ask the user
             # for it
             if not pwd:
@@ -85,7 +92,8 @@ class Connection(object):
             while not cls.connected:
                 try:
                     srv = Server(
-                        server_url, login, pwd, caching_policy, timeout)
+                        server_url, login, pwd, caching_policy=caching_policy,
+                        timeout=timeout)
                     cls.session = srv.session()
                     cls.session._login()
                     cls.connected = True
@@ -607,7 +615,7 @@ class BasePolarion(object):
             elif not csm.get("cls") or isinstance(val, basestring):
                 # if there is no cls specified, val can be a bool, int, ...
                 # if val is a string, it may be used to instantiate the class
-                if(isinstance(val, basestring)):
+                if isinstance(val, basestring):
                     self._check_encode(val)
                 if csm.get("enum_id") and \
                         val not in csm.get("enum_override", []):
@@ -648,7 +656,7 @@ class BasePolarion(object):
             value (string): the value that the property is being set to
             field_name: the field name of the Polarion object to set
         """
-        if (isinstance(value, basestring)):
+        if isinstance(value, basestring):
             self._check_encode(value)
         setattr(self._suds_object, field_name, value)
 
