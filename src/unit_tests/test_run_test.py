@@ -9,7 +9,9 @@ import os
 from pylarion.test_run import TestRun
 from pylarion.exceptions import PylarionLibException
 from pylarion.test_record import TestRecord
-from pylarion.work_item import TestCase
+from pylarion.test_step import TestStep
+from pylarion.test_step_result import TestStepResult
+from pylarion.work_item import TestCase, Incident
 from pylarion.plan import Plan
 
 DEFAULT_PROJ = TestRun.default_project
@@ -299,6 +301,53 @@ class TestRunTest(unittest2.TestCase):
         query = "id:%s" % (TEST_RUN_ID)
         lst_tr = TestRun.search(query, fields=["author"])
         self.assertIsNotNone(lst_tr[0].author)
+
+    def test_013_incident_report_test(self):
+        """This test does the following:
+        * gets a TestRun
+        * gets a TestCase
+        * adds test_steps
+        * creates a TestRecord
+        * populates the TestRecord
+        * Fail the testRecord
+        * reloads the TestCase
+        * Verifies that an Incident Report was Created
+        """
+        tr = TestRun(project_id=DEFAULT_PROJ, test_run_id=TEST_RUN_ID)
+        tests = [["Test 1", "Result 1"],
+                 ["Test 2", "Result 2"],
+                 ["Test 3", "Result 3"]]
+        set_steps = []
+        for test in tests:
+            ts = TestStep()
+            ts.values = test
+            set_steps.append(ts)
+        tc = TestCase(work_item_id=self.NEW_TEST_CASE)
+        tc.set_test_steps(set_steps)
+        tc.update()
+        tc.reload()
+        steps = tc.test_steps.steps
+        results = []
+        for step in steps:
+            res = TestStepResult()
+            res.result = "failed"
+            res.comment = "This is the result"
+            results.append(res)
+        rec = TestRecord()
+        rec.test_step_results = results
+        rec.test_case_id = self.NEW_TEST_CASE
+        rec.comment = "Incident Report was Created"
+        rec.duration = "50.5"
+        rec.result = "failed"
+        rec.executed_by = tr.logged_in_user_id
+        rec.executed = datetime.datetime.now()
+        tr.update_test_record_by_object(self.NEW_TEST_CASE, rec)
+        tc.reload()
+        linked_work_items = tc.linked_work_items_derived
+        idx = len(linked_work_items) - 1
+        incident = Incident(project_id="pylarion",
+                            work_item_id=linked_work_items[idx].work_item_id)
+        self.assertIsNotNone(incident)
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
