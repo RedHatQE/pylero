@@ -5,9 +5,10 @@ from pylarion.plan import Plan
 from pylarion.exceptions import PylarionLibException
 from pylarion.work_item import Requirement
 
+TIME_STAMP = datetime.datetime.now().strftime("%Y%m%d%H%M%s")
 DEFAULT_PROJ = Plan.default_project
-TEMPLATE_ID = "tmp_regr-%s" % datetime.datetime.now().strftime("%Y%m%d%H%M%s")
-PLAN_ID = "plan_regr-%s" % datetime.datetime.now().strftime("%Y%m%d%H%M%s")
+TEMPLATE_ID = "tmp_reg-%s" % TIME_STAMP
+PLAN_ID = "plan_reg-%s" % TIME_STAMP
 
 CUR_PATH = os.path.dirname(os.path.abspath(__file__))
 ATTACH_PATH = CUR_PATH + "/refs/red_box.png"
@@ -48,7 +49,8 @@ class PlanTest(unittest2.TestCase):
         * creates a test riun based on the template created in previous test
         * Verifies that the returned object exists and is not a template
         """
-        plan = Plan.create(PLAN_ID, PLAN_ID, DEFAULT_PROJ, None, TEMPLATE_ID)
+        plan = Plan.create(
+            PLAN_ID, "Regression", DEFAULT_PROJ, None, TEMPLATE_ID)
         self.assertIsNotNone(plan.plan_id)
         self.assertFalse(plan.is_template)
 

@@ -13,9 +13,10 @@ from pylarion.work_item import TestCase
 from pylarion.plan import Plan
 
 DEFAULT_PROJ = TestRun.default_project
-TEMPLATE_ID = "tmp_regr-%s" % datetime.datetime.now().strftime("%Y%m%d%H%M%s")
-TEST_RUN_ID = "tr_regr-%s" % datetime.datetime.now().strftime("%Y%m%d%H%M%s")
-PLAN_ID = "plan_regr-%s" % datetime.datetime.now().strftime("%Y%m%d%H%M%s")
+TIME_STAMP = datetime.datetime.now().strftime("%Y%m%d%H%M%s")
+TEMPLATE_ID = "tmp_regr-%s" % TIME_STAMP
+TEST_RUN_ID = "tr_regr-%s" % TIME_STAMP
+PLAN_ID = "plan_regr-%s" % TIME_STAMP
 CUR_PATH = os.path.dirname(os.path.abspath(__file__))
 ATTACH_PATH = CUR_PATH + "/refs/red_box.png"
 ATTACH_TITLE = "File"
@@ -229,13 +230,23 @@ class TestRunTest(unittest2.TestCase):
 
     def test_009_dynamic_records(self):
         """This test does the following:
+        * creates a TestCase
         * creates a TestRun based on the Example template (Dynamic query)
         * verifies that it is a dynamic query
         * updates an test record.
         * reloads
         * verifies that the record has been added
         """
-        tr = TestRun.create("pylarion", "querytest", "Example")
+        TestCase.create(DEFAULT_PROJ,
+                        TIME_STAMP, "regression",
+                        caseimportance="high",
+                        caselevel="component",
+                        caseautomation="notautomated",
+                        caseposneg="positive",
+                        testtype="functional",
+                        subtype1="-")
+        tr = TestRun.create("pylarion", "querytest-%s" % TIME_STAMP, "Example",
+                            query=TIME_STAMP)
         self.assertEquals(tr.select_test_cases_by, "dynamicQueryResult")
         num_recs = len(tr.records)
         test_case_id = tr.records[0].test_case_id
@@ -279,7 +290,7 @@ class TestRunTest(unittest2.TestCase):
         self.assertEquals(tr.plannedin, self.NEW_PLAN)
         tr.update()
 
-    def test_011_search_with_URI_fields(self):
+    def test_012_search_with_URI_fields(self):
         """This test does the following:
         * Gets a TestRun
         * Searches using the same query as the testrun (adding project id)

@@ -7,8 +7,13 @@ import unittest2
 from pylarion.document import Document
 from pylarion.work_item import TestCase
 from pylarion.test_run import TestRun
+import datetime
 
 WI_ID = ""
+TIME_STAMP = datetime.datetime.now().strftime("%Y%m%d%H%M%s")
+DOC_NAME = "Document_Test-%s" % TIME_STAMP
+TEMPLATE_ID = "doc_tmp_test-%s" % TIME_STAMP
+TEST_RUN_ID = "doc_test-%s" % TIME_STAMP
 
 
 class DocumentTest(unittest2.TestCase):
@@ -16,13 +21,8 @@ class DocumentTest(unittest2.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.doc_create = Document.create(
-            Document.default_project, "Testing", "Document_Test",
+            Document.default_project, "Testing", DOC_NAME,
             "Document_Test", ["testcase"], "testspecification")
-
-    @classmethod
-    def tearDownClass(cls):
-        doc = Document(uri=cls.doc_create.uri)
-        doc.delete()
 
     def test_002_get_documents(self):
         lst_doc = Document.get_documents(Document.default_project, "Testing")
@@ -37,7 +37,7 @@ class DocumentTest(unittest2.TestCase):
 
     def test_004_get_name(self):
         self.doc_get1 = Document(project_id=Document.default_project,
-                                 doc_with_space="Testing/Document_Test")
+                                 doc_with_space="Testing/" + DOC_NAME)
         self.assertIsInstance(self.doc_get1, Document)
 
     def test_005_get_uri(self):
@@ -71,12 +71,12 @@ class DocumentTest(unittest2.TestCase):
     def test_008_doc_test_run_template(self):
         doc_with_space = self.doc_create.space
         self.doc_create.session.tx_begin()
-        tmp_tr = TestRun.create_template(project_id=Document.default_project,
-                                         template_id="doc_tmp_test",
-                                         doc_with_space=doc_with_space)
+        TestRun.create_template(project_id=Document.default_project,
+                                template_id=TEMPLATE_ID,
+                                doc_with_space=doc_with_space)
         tr = TestRun.create(project_id=Document.default_project,
-                            test_run_id="doc_test",
-                            template="doc_tmp_test")
+                            test_run_id=TEST_RUN_ID,
+                            template=TEMPLATE_ID)
         self.assertEquals(len(tr.records), 1)
         self.assertEquals(tr.records[0].test_case_id, WI_ID)
         self.doc_create.session.tx_commit()

@@ -5,7 +5,6 @@ from pylarion.document import Document
 from pylarion.exceptions import PylarionLibException
 from pylarion.user import User
 from pylarion.test_run import TestRun
-from pylarion.project import Project
 from pylarion.test_record import TestRecord
 from pylarion.work_item import TestCase, Requirement
 from pylarion.test_steps import TestSteps
@@ -13,7 +12,10 @@ from pylarion.test_steps import TestSteps
 USER = "szacks"
 ALT_USER = "oramraz"
 PROJ2 = "szacks"
-TEST_RUN_ID = "tr_regr-%s" % datetime.datetime.now().strftime("%Y%m%d%H%M%s")
+TIME_STAMP = datetime.datetime.now().strftime("%Y%m%d%H%M%s")
+TEST_RUN_ID = "tr_regr-%s" % TIME_STAMP
+TEMPLATE_ID = "tr_regr2-%s" % TIME_STAMP
+DOC_NAME = "Document_Test-%s" % TIME_STAMP
 DEFAULT_PROJ = Document.default_project
 
 
@@ -22,7 +24,7 @@ class AttributeTest(unittest2.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.doc = Document.create(
-            DEFAULT_PROJ, "Testing", "Attribute_Test",
+            DEFAULT_PROJ, "Testing", DOC_NAME,
             "Attribute_Test", ["testcase"], "testspecification")
         cls.testrun = TestRun.create(DEFAULT_PROJ, TEST_RUN_ID, "example")
         # arch is a custom field defined by global admins for test runs.
@@ -48,7 +50,7 @@ class AttributeTest(unittest2.TestCase):
     @classmethod
     def tearDownClass(cls):
         doc = Document(project_id=DEFAULT_PROJ,
-                       doc_with_space="Testing/Attribute_Test")
+                       doc_with_space="Testing/" + DOC_NAME)
         doc.delete()
 
     def test_basic(self):
@@ -57,7 +59,7 @@ class AttributeTest(unittest2.TestCase):
         self.assertEqual(self.doc.title, "new title")
         self.doc.update()
         doc2 = Document(project_id=DEFAULT_PROJ,
-                        doc_with_space="Testing/Attribute_Test")
+                        doc_with_space="Testing/" + DOC_NAME)
         self.assertEqual(doc2.title, "new title")
 
     def test_obj_writeuser(self):
@@ -144,14 +146,15 @@ class AttributeTest(unittest2.TestCase):
     def test_uri_obj(self):
         testrun2 = TestRun(project_id=DEFAULT_PROJ,
                            test_run_id=TEST_RUN_ID)
-        self.assertEqual(testrun2.project_id, DEFAULT_PROJ)
-        proj = Project(PROJ2)
-        testrun2.project_id = proj
-        self.assertEqual(testrun2.project_id,
-                         proj.project_id)
-        testrun2.project_id = DEFAULT_PROJ
-        self.assertNotEqual(testrun2.project_id,
-                            proj.project_id)
+        self.assertEqual(testrun2.template, "example")
+        new_template = TestRun.create_template(DEFAULT_PROJ,
+                                               TEMPLATE_ID,
+                                               "example")
+        testrun2.template = new_template
+        self.assertEqual(testrun2.template,
+                         new_template.test_run_id)
+        self.assertNotEqual(testrun2.template,
+                            "example")
 
     def test_bad_character(self):
         """this test validates that non UTF-8 characters will cause an error
