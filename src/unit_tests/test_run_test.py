@@ -247,7 +247,25 @@ class TestRunTest(unittest2.TestCase):
         self.assertEquals(test_case_id, tr.records[0].test_case_id)
         self.assertEquals(tr.records[0].result, "blocked")
 
-    def test_010_customfield_object(self):
+    def test_010_search_with_custom_fields(self):
+        """This test does the following:
+        * Gets a TestRun
+        * Searches using the same query as the testrun (adding project id)
+        * and with custom_field 'plannedin'
+        * verifies that the 'plannedin' field of the returnd TestRun is None
+        * The purpose here is to check that it doesnt throws exception
+        """
+        query = "id:%s" % (TEST_RUN_ID)
+        lst_tr = TestRun.search(query, ["plannedin"])
+        self.assertEqual(lst_tr[0].plannedin, None)
+        lst_tr[0].plannedin = self.NEW_PLAN
+        lst_tr[0].update()
+        lst_tr = TestRun.search(query, ["plannedin"])
+        self.assertEqual(lst_tr[0].plannedin, self.NEW_PLAN)
+        lst_tr[0].plannedin = None
+        lst_tr[0].update()
+
+    def test_011_customfield_object(self):
         """This test does the following:
         * gets a TestRun
         * Adds a Plan to it

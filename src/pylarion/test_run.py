@@ -260,7 +260,7 @@ class TestRun(BasePolarion):
 
     @classmethod
     def search(cls, query, fields=["test_run_id"], sort="test_run_id",
-               limit=-1, search_templates=False):
+               limit=-1, search_templates=False, project_id=None):
         """class method search executes the given query and returns the results
 
         Args:
@@ -276,6 +276,7 @@ class TestRun(BasePolarion):
                          for no limit, default -1.
             search_templates (bool): if set, searches the templates
                                      instead of the test runs, default False
+            project_id: if set, searches the project id, else default project
         Returns:
             list of TestRun objects
 
@@ -292,6 +293,12 @@ class TestRun(BasePolarion):
 # The Polarion functions with limited seem to be the same as without limited
 #    when -1 is passed in as limit. Because of this, the wrapper will not
 #    implement the functions without limited.
+        project_id = project_id or cls.default_project
+        query += " AND project.id:%s" % (project_id)
+
+        # The following line one purpose is to instantiate a TestRun and by
+        # doing so setting all the class attribute (including 'customFields').
+        TestRun(project_id=project_id)
         function_name = "search"
         p_sort = cls._cls_suds_map[sort] if not isinstance(
             cls._cls_suds_map[sort], dict) else \

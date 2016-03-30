@@ -540,6 +540,12 @@ class BasePolarion(object):
         return self.session.test_management_client.factory.create(
             "tns4:Custom")
 
+    def custom_array_obj(self):
+        # This returns a custom Polarion object. It can't use the Custom class
+        # as that is a child of this class.
+        return self.session.test_management_client.factory.create(
+            "tns4:ArrayOfCustom")
+
     def _custom_getter(self, field_name):
         """Works with custom fields that has attributes stored differently
         then regular attributes. It first checks if there is a value in the
@@ -562,6 +568,8 @@ class BasePolarion(object):
                 if suds_object:
                     return csm["cls"](suds_object=suds_object)
         else:
+            if "customFields" not in self._suds_object:
+                self._suds_object.customFields = self.custom_array_obj()
             cf = self._suds_object.customFields[0]
             custom_fld = None
             if cf:
@@ -637,6 +645,8 @@ class BasePolarion(object):
                 raise PylarionLibException(
                     "The value must be of type {0}."
                     .format(csm["cls"].__name__))
+            if "customFields" not in self._suds_object:
+                self._suds_object.customFields = self.custom_array_obj()
             cf = self._suds_object.customFields[0]
             if cf:
                 # check if the custom field already exists and modify it.
