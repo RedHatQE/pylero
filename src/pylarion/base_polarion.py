@@ -265,6 +265,8 @@ class BasePolarion(object):
                     if not isinstance(cls._cls_suds_map[x], dict)
                     else cls._cls_suds_map[x]["field_name"]),
                 fields)
+            # Omit 'URI' from URIFields
+            p_fields = map(lambda x: (x.replace("URI", "")), p_fields)
         return p_fields
 
     @classmethod

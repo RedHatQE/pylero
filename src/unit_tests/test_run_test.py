@@ -261,6 +261,16 @@ class TestRunTest(unittest2.TestCase):
         self.assertEquals(tr.plannedin, self.NEW_PLAN)
         tr.update()
 
+    def test_011_search_with_URI_fields(self):
+        """This test does the following:
+        * Gets a TestRun
+        * Searches using the same query as the testrun (adding project id)
+        * Verify that 'author' is instantiated
+        """
+        query = "id:%s" % (TEST_RUN_ID)
+        lst_tr = TestRun.search(query, fields=["author"])
+        self.assertIsNotNone(lst_tr[0].author)
+
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
     unittest2.main()

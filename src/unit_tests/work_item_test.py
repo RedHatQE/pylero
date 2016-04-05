@@ -254,6 +254,13 @@ class WorkItemTest(unittest2.TestCase):
                        work_item_id=self.work_item_id)
         self.assertEqual(tc2.status, "approved")
 
+    def test_020_query_with_URI_field(self):
+        results = TestCase.query(
+            "project.id:%s AND title:regression" % (DEFAULT_PROJ),
+            fields=["work_item_id", "author"])
+        tc = results[0]
+        self.assertIsNotNone(tc.author)
+
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
