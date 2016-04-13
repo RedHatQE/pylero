@@ -15,7 +15,7 @@ from pylarion.test_record import ArrayOfTestRecord
 from pylarion.custom import Custom
 from pylarion.custom import ArrayOfCustom
 from pylarion.document import Document
-from pylarion.work_item import _WorkItem
+from pylarion.work_item import _WorkItem, TestCase
 from pylarion.user import User
 from pylarion.project import Project
 from pylarion.text import Text
@@ -24,6 +24,108 @@ from pylarion.plan import Plan  # NOQA
 from pylarion.base_polarion import tx_wrapper
 import requests
 from requests.auth import HTTPBasicAuth
+
+
+def generate_description(test_run, test_case, test_record):
+    tr_html = "<b>Test Run:</b> <span id=\"link\" class=    " \
+              "\"polarion-rte-link\" data-type=\"testRun\" " \
+              "data-item-id=\"{0}\" data-option-id=\"long\">" \
+              "</span><br/>".format(test_run.test_run_id)
+    tc_html = "<b>Test Case:</b> <span id=\"link\" class=" \
+              "\"polarion-rte-link\" data-type=\"workItem\" " \
+              "data-item-id=\"{0}\" data-option-id=\"long\"></span>" \
+              "<br/>".format(test_case.work_item_id)
+    table_cell_style = "style=\"text-align: left; padding: 10px; " \
+                       "vertical-align: top; background-color: #ffffff;\""
+    table_row_style = "style=\"border-bottom: 1px solid #f0f0f0;\""
+    columns = ["", "#", "<span title=\"Step\">Step</span>",
+               "<span title=\"Expected Result\">Expected Result</span>",
+               "Actual Result"]
+    test_step_results = {"passed": "<span title=\"Results met expected results"
+                                   "\"><span style=\"white-space:nowrap;\"><im"
+                                   "g src=\"/polarion/icons/default/enums/test"
+                                   "run_status_passed.png\" style=\"vertical-a"
+                                   "lign:text-bottom;border:0px;margin-right:2"
+                                   "px;\" class=\"polarion-no-style-cleanup\"/"
+                                   "></span></span>",
+                         "failed": "<span title=\"Results did not meet expecte"
+                                   "d results\"><span style=\"white-space:nowr"
+                                   "ap;\"><img src=\"/polarion/icons/default/e"
+                                   "nums/testrun_status_failed.png\" style=\"v"
+                                   "ertical-align:text-bottom;border:0px;margi"
+                                   "n-right:2px;\" class=\"polarion-no-style-c"
+                                   "leanup\"/></span></span>",
+                         "blocked": "<span title=\"Errors in the product preve"
+                                    "nted test from being executed\"><span sty"
+                                    "le=\"white-space:nowrap;\"><img src=\"/po"
+                                    "larion/icons/default/enums/testrun_status"
+                                    "_blocked.png\" style=\"vertical-align:tex"
+                                    "t-bottom;border:0px;margin-right:2px;\" c"
+                                    "lass=\"polarion-no-style-cleanup\"/>"
+                                    "</span></span>"}
+    table_header = "<table class=\"polarion-no-style-cleanup\" style=\"border" \
+                   "-collapse: collapse;\"><tr style=\"text-align: left; " \
+                   "white-space: nowrap; color: #757575; border-bottom: 1px " \
+                   "solid #d2d7da; background-color: #ffffff;\">{0}</tr>" \
+        .format("".join(["<th {0}>{1}</th>".format(table_cell_style, column)
+                         for column in columns]))
+    verdict = "</table><table style=\"margin-bottom: 15px; ;border-collapse: " \
+              "collapse; width:100%; ;margin-top: 13px;\" class=\"polarion-no" \
+              "-style-cleanup\"><tr><th style=\"width: 80%; text-align: left;" \
+              " background-color: #ffffff;\">Test Case Verdict:</th></tr><tr>" \
+              "<td style=\"vertical-align: top;\"><span style=\"font-weight: " \
+              "bold;\"><span style=\"color: #C30000;\"><span title=\"Results " \
+              "did not meet expected results\"><span style=\"white-space:" \
+              "nowrap;\"><img src=\"/polarion/icons/default/enums/testrun_" \
+              "status_failed.png\" style=\"vertical-align:text-bottom;border:" \
+              "0px;margin-right:2px;\" class=\"polarion-no-style-cleanup\"/>" \
+              "</span>Failed</span></span></span><span> {0}</span></td></tr>" \
+              "</table>" \
+        .format(test_record.comment)
+    table_rows = ""
+    for step in range(len(test_record.test_step_results)):
+        table_rows += "<tr {0}>" \
+                      "<td {1}>{2}</td>" \
+                      "<td {1}>{3}</td>" \
+                      "<td {1}>{4}</td>" \
+                      "<td {1}>{5}</td>" \
+                      "<td {1}>{6}</td>" \
+                      "</tr>".format(table_row_style,
+                                     table_cell_style,
+                                     test_step_results.
+                                     get(test_record.test_step_results[step]
+                                         .result),
+                                     step + 1,
+                                     test_case.test_steps.steps[step].values[0]
+                                     .content,
+                                     test_case.test_steps.steps[step].values[1]
+                                     .content,
+                                     test_record.test_step_results[step]
+                                     .comment)
+    content = tr_html + tc_html + table_header + table_rows + verdict
+
+    return content
+
+
+def create_incident_report(test_run, test_record, test_case):
+    project_id = test_run.project_id
+    status = 'open'
+    project = Project(project_id)
+    tconf = project.get_tests_configuration()
+    defectWorkItemType = tconf.defect_work_item_type
+    title = 'Failed: ' + test_case.title
+    description = generate_description(test_run, test_case, test_record)
+    kwarg_dict = {}
+
+    for prop in tconf.fields_to_copy_from_test_case_to_defect.property:
+        kwarg_dict[prop.value] = getattr(test_case, prop.key)
+    for prop in tconf.fields_to_copy_from_test_run_to_linked_defect.property:
+        kwarg_dict[prop.value] = getattr(test_run, prop.key)
+
+    incident_report = _WorkItem.create(project_id, defectWorkItemType, title,
+                                       description, status, **kwarg_dict)
+    incident_report.add_linked_item(test_case.work_item_id, "triggered_by")
+    return incident_report.work_item_id
 
 
 class TestRun(BasePolarion):
@@ -250,10 +352,11 @@ class TestRun(BasePolarion):
         elif doc_with_space:
             tr.document = Document(project_id, doc_with_space)
 # TODO: This should work as soon as Polarion implements Change Request REQ-6334
-#        if test_case_ids:
-#            for test_case_id in test_case_ids:
-#                tr.add_test_record_by_object(testrec.TestRecord(
-#                                             test_case_id, project_id))
+        #        if test_case_ids:
+        #            for test_case_id in test_case_ids:
+        #                tr.add_test_record_by_object(testrec.TestRecord(
+        #                                            test_case_id,
+        #                                            project_id))
 
         tr.update()
         return TestRun(template_id, project_id=project_id)
@@ -290,6 +393,7 @@ class TestRun(BasePolarion):
             test_management.searchTestRunsWithFields
             test_management.searchTestRunsWithFieldsLimited
         """
+
 # The Polarion functions with limited seem to be the same as without limited
 #    when -1 is passed in as limit. Because of this, the wrapper will not
 #    implement the functions without limited.
@@ -518,8 +622,8 @@ class TestRun(BasePolarion):
     def _verify_test_step_count(self, record_index, test_step_index):
         # verifies the number of test steps is not less then the index given.
         self._verify_record_count(record_index)
-        if test_step_index > (
-                len(self.records[record_index].test_step_results) - 1):
+        if test_step_index > \
+                (len(self.records[record_index].test_step_results) - 1):
             raise PylarionLibException("There are only {0} test records".
                                        format(len(self.records)))
 
@@ -658,39 +762,22 @@ class TestRun(BasePolarion):
             None
 
         References:
-            test_management.addTestRecord
+            test_management.addTestRecordToTestRun
         """
         self._verify_obj()
+        self.check_valid_field_values(test_result, "result", {})
         if not executed or not test_result:
             raise PylarionLibException(
                 "executed and test_result require values")
-        self._check_test_record_exists(test_case_id)
-        self.check_valid_field_values(test_result, "result", {})
-        tc = _WorkItem(work_item_id=test_case_id,
-                       project_id=self.project_id,
-                       fields=["work_item_id"])
-        if test_comment:
-            if isinstance(test_comment, basestring):
-                obj_comment = Text(test_comment)
-                suds_comment = obj_comment._suds_object
-            elif isinstance(test_comment, Text):
-                suds_comment = test_comment._suds_object
-            else:  # is a suds object
-                suds_comment = test_comment
-        else:
-            suds_comment = suds.null()
-        user = User(user_id=executed_by)
+        testrec = TestRecord(self.project_id, test_case_id)
+        testrec.result = test_result
+        testrec.comment = test_comment
+        testrec.executed_by = executed_by
+        testrec.executed = executed
+        testrec.duration = duration
         if defect_work_item_id:
-            defect = _WorkItem(work_item_id=defect_work_item_id,
-                               project_id=self.project_id,
-                               fields=["work_item_id"])
-            defect_uri = defect.uri
-        else:
-            defect_uri = None
-        self.session.test_management_client.service.addTestRecord(
-            self.uri, tc.uri, test_result, suds_comment,
-            user.uri, executed, duration, defect_uri)
-        self._status_change()
+            testrec.defect_case_id = defect_work_item_id
+        self.add_test_record_by_object(testrec)
 
     @tx_wrapper
     def add_test_record_by_object(self, test_record):
@@ -707,11 +794,16 @@ class TestRun(BasePolarion):
             test_management.addTestRecordToTestRun
         """
         self._verify_obj()
-        self._check_test_record_exists(test_record.test_case_id)
+        test_case_id = test_record.test_case_id
+        self._check_test_record_exists(test_case_id)
         if isinstance(test_record, TestRecord):
             suds_object = test_record._suds_object
         elif isinstance(test_record, TestRecord()._suds_object.__class__):
             suds_object = test_record
+        if test_record.result == "failed" and not test_record.defect_case_id:
+            test_record.defect_case_id = \
+                create_incident_report(self, test_record,
+                                       TestCase(work_item_id=test_case_id))
         self.session.test_management_client.service.addTestRecordToTestRun(
             self.uri, suds_object)
         self._status_change()
@@ -1052,6 +1144,11 @@ class TestRun(BasePolarion):
         if test_case_id not in test_case_ids:
             self.add_test_record_by_object(test_record)
         else:
+            if test_record.result == "failed" and \
+                    not test_record.defect_case_id:
+                test_record.defect_case_id = \
+                    create_incident_report(self, test_record,
+                                           TestCase(work_item_id=test_case_id))
             index = test_case_ids.index(test_case_id)
             if isinstance(test_record, TestRecord):
                 suds_object = test_record._suds_object

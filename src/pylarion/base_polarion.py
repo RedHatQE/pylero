@@ -442,7 +442,7 @@ class BasePolarion(object):
         # deepcopy so that changes do not stick
         add_parms = copy.deepcopy(csm.get("additional_parms", {}))
         if isinstance(val, basestring):
-            self._check_encode(val)
+            val = self._check_encode(val)
             if enum_id and val not in enum_override:
                 self.check_valid_field_values(val, enum_id, {},
                                               csm.get("control"))
@@ -520,7 +520,7 @@ class BasePolarion(object):
                 # if str values are based in, try instantiating a class with
                 # the vals and then using that list. Then continue processing
                 if isinstance(val[0], basestring):
-                    self._check_encode(val[0])
+                    val[0] = self._check_encode(val[0])
                     val = [csm["cls"](item) for item in val]
 
                 if isinstance(val[0], obj_inst._suds_object.__class__):
@@ -564,9 +564,9 @@ class BasePolarion(object):
                 return csm["cls"](
                     suds_object=self._changed_fields.get("testSteps"))
             else:
-                suds_object = self.get_test_steps()
-                if suds_object:
-                    return csm["cls"](suds_object=suds_object)
+                test_steps = self.get_test_steps()
+                if test_steps:
+                    return test_steps
         else:
             if "customFields" not in self._suds_object:
                 self._suds_object.customFields = self.custom_array_obj()
@@ -626,7 +626,7 @@ class BasePolarion(object):
                 # if there is no cls specified, val can be a bool, int, ...
                 # if val is a string, it may be used to instantiate the class
                 if isinstance(val, basestring):
-                    self._check_encode(val)
+                    val = self._check_encode(val)
                 if csm.get("enum_id") and \
                         val not in csm.get("enum_override", []):
                     # uses deepcopy, to not affect other instances of the class
@@ -669,7 +669,7 @@ class BasePolarion(object):
             field_name: the field name of the Polarion object to set
         """
         if isinstance(value, basestring):
-            self._check_encode(value)
+            value = self._check_encode(value)
         setattr(self._suds_object, field_name, value)
 
     def _check_encode(self, val):
@@ -682,7 +682,9 @@ class BasePolarion(object):
             val (string): the value that the property is being set to
             """
             try:
+                val = val.replace(u'\xa0', ' ')  # replace chr(160) with space
                 val.decode('utf-8')
+                return val
             except UnicodeError:
                 raise PylarionLibException("string must be UTF-8")
 
