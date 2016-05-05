@@ -275,6 +275,7 @@ class TestRun(BasePolarion):
         self._records = val
 
     @classmethod
+    @tx_wrapper
     def create(cls, project_id, test_run_id, template, **kwargs):
         """class method create for creating a new test run in Polarion
 
@@ -293,8 +294,6 @@ class TestRun(BasePolarion):
         References:
             test_management.createTestRun
         """
-        tr = TestRun(project_id=project_id)
-        tr.verify_required(**kwargs)
         uri = cls.session.test_management_client.service.createTestRun(
             project_id, test_run_id, template)
         if uri:
