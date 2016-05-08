@@ -298,6 +298,7 @@ class TestRun(BasePolarion):
             project_id, test_run_id, template)
         if uri:
             run = cls(uri=uri)
+            run.verify_params(**kwargs)
             for field in kwargs:
                 setattr(run, field, kwargs[field])
             run.update()
@@ -1183,36 +1184,35 @@ class TestRun(BasePolarion):
         self.session.test_management_client.service. \
             updateWikiContentForTestRun(self.uri, suds_content)
 
-    def verify_required(self, **kwargs):
-        """function that checks if all required fields are passed in, that all
-        kwargs are valid attributes and values passed (for enums) are valid.
+    def verify_required(self):
+        """function that checks if all required fields are passed in
+
+        Exceptions:
+            PylarionLibException - if required params are not passed in
+        """
+        fields = ""
+        for req in self._required_fields:
+            if not getattr(self, req):
+                fields += (", " if fields else "") + req
+        if fields:
+            raise PylarionLibException("These parameters are required: {0}".
+                                       format(fields))
+
+    def verify_params(self, **kwargs):
+        """function that checks if all the kwargs are valid attributes.
 
         Args:
             **kwargs: keyword arguments. Test run attributes can be passed in
                       to be set upon creation. Required fields must be passed
                       in
         Exceptions:
-            PylarionLibException - if required parms are not passed in, unknown
-            parms or invalid enum values are
+            PylarionLibException - if params are unknown
         """
-        fields = ""
-        for req in self._required_fields:
-            if kwargs:
-                if req not in kwargs:
-                    fields += (", " if fields else "") + req
-            else:
-                if not getattr(self, req):
-                    fields += (", " if fields else "") + req
-        if fields:
-            raise PylarionLibException("These parameters are required: {0}".
-                                       format(fields))
-        for field in kwargs:
-            if field not in self._cls_suds_map:
-                fields += (", " if fields else "") + field
-            else:
-                # test that the value is valid
-                setattr(self, field, kwargs[field])
+        params = ""
+        for param in kwargs:
+            if param not in self._cls_suds_map:
+                params += (", " if params else "") + param
 
-        if fields:
+        if params:
             raise PylarionLibException("These parameters are unknown: {0}".
-                                       format(fields))
+                                       format(params))
