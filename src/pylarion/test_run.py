@@ -10,6 +10,7 @@ from pylarion.base_polarion import BasePolarion
 from pylarion.test_run_attachment import TestRunAttachment
 from pylarion.test_run_attachment import ArrayOfTestRunAttachment
 from pylarion.enum_option_id import EnumOptionId
+from pylarion.enum_option_id import ArrayOfEnumOptionId
 from pylarion.test_record import TestRecord
 from pylarion.test_record import ArrayOfTestRecord
 from pylarion.custom import Custom
@@ -531,9 +532,13 @@ class TestRun(BasePolarion):
             f_req = False
             if field.getAttribute("required") == "true":
                 f_req = True
+            f_multi = False
+            if field.getAttribute("multi") == "true":
+                f_multi = True
             self._custom_field_cache[project_id][f_name] = {}
             self._custom_field_cache[project_id][f_name]["type"] = f_type
             self._custom_field_cache[project_id][f_name]["required"] = f_req
+            self._custom_field_cache[project_id][f_name]["multi"] = f_multi
 
     def _add_custom_fields(self, project_id):
         """ This generates object attributes, with validation, so that custom
@@ -567,7 +572,11 @@ class TestRun(BasePolarion):
             if cache[field]["type"] == Text:
                 self._cls_suds_map[field]["cls"] = Text
             elif cache[field]["type"]:
-                self._cls_suds_map[field]["cls"] = EnumOptionId
+                if cache[field]["multi"]:
+                    self._cls_suds_map[field]["cls"] = ArrayOfEnumOptionId
+                    self._cls_suds_map[field]["is_array"] = True
+                else:
+                    self._cls_suds_map[field]["cls"] = EnumOptionId
                 self._cls_suds_map[field]["enum_id"] = cache[field]["type"]
                 if isinstance(cache[field]["type"], type) and "project_id" in \
                         cache[field]["type"].__init__.func_code.co_varnames[

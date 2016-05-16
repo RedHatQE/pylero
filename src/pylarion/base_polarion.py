@@ -258,8 +258,8 @@ class BasePolarion(object):
             p_fields = map(
                 lambda x: "%s%s" % (
                     "customFields."
-                    if isinstance(cls._cls_suds_map[x], dict)
-                    and cls._cls_suds_map[x].get("is_custom", False)
+                    if isinstance(cls._cls_suds_map[x], dict) and
+                    cls._cls_suds_map[x].get("is_custom", False)
                     else "",
                     cls._cls_suds_map[x]
                     if not isinstance(cls._cls_suds_map[x], dict)
@@ -583,6 +583,15 @@ class BasePolarion(object):
             if custom_fld:
                 if isinstance(custom_fld, basestring):
                     obj = custom_fld
+                elif csm.get("is_array"):
+                    obj = []
+                    # ArrayOf Polarion objects have a double list.
+                    for inst in custom_fld.value[0]:
+                        if csm["cls"]._cls_inner._id_field:
+                            item_inst = csm["cls"]._cls_inner(suds_object=inst)
+                            obj.append(getattr(item_inst, item_inst._id_field))
+                        else:
+                            obj.append(csm["cls"]._cls_inner(suds_object=inst))
                 elif csm.get("cls"):
                     obj = csm["cls"](suds_object=custom_fld.value)
                 else:
@@ -622,7 +631,8 @@ class BasePolarion(object):
             cust.key = csm["field_name"]
             if val is None:
                 cust.value = None
-            elif not csm.get("cls") or isinstance(val, basestring):
+            elif (not csm.get("cls") or isinstance(val, basestring)) \
+                    and not csm.get("is_array"):
                 # if there is no cls specified, val can be a bool, int, ...
                 # if val is a string, it may be used to instantiate the class
                 if isinstance(val, basestring):
@@ -637,6 +647,23 @@ class BasePolarion(object):
                                                   csm.get("control"))
                 cust.value = csm["cls"](val)._suds_object if csm.get("cls") \
                     else val
+            elif csm.get("is_array"):
+                if not isinstance(val, list):
+                    raise PylarionLibException("value must be a list")
+                if csm.get("enum_id"):
+                    cust.value = csm["cls"]()._suds_object
+                    for i in val:
+                        if i not in csm.get("enum_override", []):
+                            # uses deepcopy, to not affect other instances
+                            # of the class
+                            additional_parms = copy.deepcopy(
+                                csm.get("additional_parms", {}))
+                            self.check_valid_field_values(
+                                i, csm.get("enum_id"), additional_parms,
+                                csm.get("control"))
+                        cust.value[0].append(
+                            csm["cls"]._cls_inner(i)._suds_object)
+
             elif isinstance(val, csm["cls"]):
                 cust.value = val._suds_object
             elif isinstance(val, csm["cls"]()._suds_object.__class__):

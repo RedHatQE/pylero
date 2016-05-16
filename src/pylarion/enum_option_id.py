@@ -19,3 +19,4 @@ class ArrayOfEnumOptionId(BasePolarion):
     """An object to manage Polarion TestManagement tns4:ArrayOfEnumOptionId"""
     _obj_client = "test_management_client"
     _obj_struct = "tns4:ArrayOfEnumOptionId"
+    _cls_inner = EnumOptionId

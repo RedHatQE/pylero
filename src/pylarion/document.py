@@ -155,7 +155,7 @@ class Document(BasePolarion):
                    default space
             document_name: Document name (required)
             document_title: Document title (required)
-            allowed_wi_types: list of types, at least one must be specified
+            allowed_wi_types: list of types, only one should be specified
             document_type: Type of document (required i.e testspecification).
             structure_link_role: required, role which defines the hierarchy of
                                  work items inside the Module, default: parent
