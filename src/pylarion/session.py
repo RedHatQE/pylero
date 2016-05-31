@@ -7,6 +7,7 @@ import time
 import suds.sax.element
 import ssl
 import os
+from urlparse import urlparse
 
 from suds.plugin import MessagePlugin
 from suds.sax.attribute import Attribute
@@ -74,6 +75,19 @@ class Session(object):
         self._session_id_header = None
         self._session_client = _suds_client_wrapper(
             self._url_for_name('Session'), None, caching_policy, timeout)
+        # In certain circumstances when using a load balancer, the wsdl will
+        # switch nodes for an unknown reason. This fix gets the specific node
+        # that was logged into and uses it for all future server interactions.
+        # The cause of this problem is unknown as it works in most instances
+        # without this fix. Another solutions that was tried was to add the
+        # load balancer's sticky bit cookie to the headers, but that did not
+        # have any effect.
+        full_url = self._session_client._suds_client.wsdl.types[0]. \
+            definitions["services"][0]["ports"][0]["location"]
+        p_url = urlparse(full_url)
+        o_url = urlparse(self._server.url)
+        self._server.url = "%s://%s%s" % (
+            p_url.scheme, p_url.hostname, o_url.path)
         self.builder_client = _suds_client_wrapper(
             self._url_for_name('Builder'), self, caching_policy, timeout)
         self.planning_client = _suds_client_wrapper(
@@ -164,6 +178,9 @@ class _suds_client_wrapper:
             timeout (int): The HTTP timeout of the connection
         """
         plugin = SoapNull()
+        # adding cookies gotten from site in session__init__. This will
+        # guarantee that all clients use the load balancer cookies and go to
+        # the same node.
         self._suds_client = suds.client.Client(
             url,
             plugins=[plugin],
