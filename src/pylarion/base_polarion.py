@@ -709,11 +709,16 @@ class BasePolarion(object):
             val (string): the value that the property is being set to
             """
             try:
-                val = val.replace(u'\xa0', ' ')  # replace chr(160) with space
-                val.decode('utf-8')
-                return val
-            except UnicodeError:
-                raise PylarionLibException("string must be UTF-8")
+                if not isinstance(val, type(u'')):
+                    val = val.decode('utf-8')
+                # replace chr(160) with space
+                return val.replace(u'\xa0', u' ')
+            except UnicodeError as err:
+                raise PylarionLibException(
+                    'String must be UTF-8 encoded. The following error was '
+                    'raised when converting it to unicode: {0}'
+                    .format(err)
+                )
 
     def _get_file_data(self, path):
         """Method for getting attachment data that can be passed to the soap

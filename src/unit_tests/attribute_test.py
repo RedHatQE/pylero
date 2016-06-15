@@ -162,13 +162,13 @@ class AttributeTest(unittest2.TestCase):
         test_case = TestCase()
         steps = TestSteps()
         with self.assertRaises(PylarionLibException):  # check _obj_setter
-            test_case.status = u"é"
+            test_case.status = u"é".encode('latin')
         with self.assertRaises(PylarionLibException):  # check _custom_setter
-            test_case.tcmscaseid = u"é"
+            test_case.tcmscaseid = u"é".encode('latin')
         with self.assertRaises(PylarionLibException):  # check _regular_setter
-            test_case.title = u"é"
+            test_case.title = u"é".encode('latin')
         with self.assertRaises(PylarionLibException):  # check _arr_obj_setter
-            steps.keys = [u"é"]
+            steps.keys = [u"é".encode('latin')]
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
