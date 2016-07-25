@@ -18,7 +18,7 @@ from getpass import getpass
 # classproperty is a property that works on the class level
 
 
-class classproperty(property):
+class ClassProperty(property):
     """Returns a classmethod as the getter so that the property can be used as
     a class property. This is needed so that the property can be set for all
     child objects. This project currently has no need of a setter or deleter.
@@ -32,11 +32,21 @@ class Connection(object):
     objects inherited by BasePolarion.
     The url, repo, user and password are read from config files, which are
     located either the current directory ./pylarion, the user's dir ~/.pylarion
-    or the machine dir /etc/pylarion/pylarion.cfg
+    or the Library config dir LIBDIR/etc/pylarion.cfg
+    These can also be overridden with the following environment variables:
+    POLARION_URL
+    POLARION_REPO
+    POLARION_USERNAME
+    POLARION_PASSWORD
+    POLARION_TIMEOUT
+    POLARION_PROJECT
+    POLARION_LOGSTASH_URL
+    POLARION_LOGSTASH_PORT
     """
     connected = False
     session = None
-    GLOBAL_CONFIG = "/etc/pylarion/pylarion.cfg"
+    pkgdir = os.path.dirname(__file__)
+    GLOBAL_CONFIG = "%s/etc/pylarion.cfg" % pkgdir
     LOCAL_CONFIG = os.path.expanduser("~") + "/.pylarion"
     CURDIR_CONFIG = ".pylarion"
     CONFIG_SECTION = "webservice"
@@ -60,28 +70,31 @@ class Connection(object):
                                            .format(cls.GLOBAL_CONFIG,
                                                    cls.LOCAL_CONFIG,
                                                    cls.CURDIR_CONFIG))
-            server_url = config.get(cls.CONFIG_SECTION, "url")
-            repo = config.get(cls.CONFIG_SECTION, "svn_repo")
-            login = config.get(cls.CONFIG_SECTION, "user")
-            pwd = config.get(cls.CONFIG_SECTION, "password")
-            # see comment on cachingpolicy in the session module,
-            # _suds_client_wrapper class
-            caching_policy = config.get(cls.CONFIG_SECTION, "cachingpolicy")
-            timeout = config.get(cls.CONFIG_SECTION, "timeout")
+            server_url = os.environ.get("POLARION_URL") or \
+                config.get(cls.CONFIG_SECTION, "url")
+            repo = os.environ.get("POLARION_REPO") or \
+                config.get(cls.CONFIG_SECTION, "svn_repo")
+            login = os.environ.get("POLARION_USERNAME") or \
+                config.get(cls.CONFIG_SECTION, "user")
+            pwd = os.environ.get("POLARION_PASSWORD") or \
+                config.get(cls.CONFIG_SECTION, "password")
+            timeout = os.environ.get("POLARION_TIMEOUT") or \
+                config.get(cls.CONFIG_SECTION, "timeout")
             try:
-                caching_policy = int(caching_policy)
                 timeout = int(timeout)
             except ValueError:
-                raise PylarionLibException("The caching policy and timeout"
-                                           "values in the config file must be"
-                                           "integers")
+                raise PylarionLibException("The timeout value in the config"
+                                           " file must be an integer")
             # if the password is not supplkied in the config file, ask the user
             # for it
             if not pwd:
                 pwd = getpass("Password not in config file.\nEnter Password:")
-            proj = config.get(cls.CONFIG_SECTION, "default_project")
-            logstash_url = config.get(cls.CONFIG_SECTION, "logstash_url")
-            logstash_port = config.get(cls.CONFIG_SECTION, "logstash_port")
+            proj = os.environ.get("POLARION_PROJECT") or \
+                config.get(cls.CONFIG_SECTION, "default_project")
+            logstash_url = os.environ.get("POLARION_LOGSTASH_URL") or \
+                config.get(cls.CONFIG_SECTION, "logstash_url")
+            logstash_port = os.environ.get("POLARION_LOGSTASH_PORT") or \
+                config.get(cls.CONFIG_SECTION, "logstash_port")
             if not (server_url and login and pwd and proj):
                 raise PylarionLibException("The config files must contain "
                                            "valid values for: url, user, "
@@ -92,8 +105,7 @@ class Connection(object):
             while not cls.connected:
                 try:
                     srv = Server(
-                        server_url, login, pwd, caching_policy=caching_policy,
-                        timeout=timeout)
+                        server_url, login, pwd, timeout=timeout)
                     cls.session = srv.session()
                     cls.session._login()
                     cls.connected = True
@@ -209,7 +221,7 @@ class BasePolarion(object):
     URI_ID_GET_REPLACE = classmethod(lambda cls, x: x)
     URI_ID_SET_REPLACE = classmethod(lambda cls, x: x)
 
-    @classproperty
+    @ClassProperty
     def session(cls):
         # Uses a class property for the session, so that the library doesn't
         # connect to the server until the library is actually used.
@@ -229,7 +241,7 @@ class BasePolarion(object):
             init_logger(cls.session.logstash_url, cls.session.logstash_port)
             return BasePolarion._session
 
-    @classproperty
+    @ClassProperty
     def default_project(cls):
         # Uses a class property for the session, so that the library connects
         # when accessing it.

@@ -40,8 +40,9 @@ Configuration:
 **************
 A configuration file must be filled out, which must be located either in the
 current dir (the dir where the script is executed from) **.pylarion**, in the
-user's home dir **~/.pylarion** or in the system config dir
-**/etc/pylarion/pylarion.cfg**
+user's home dir **~/.pylarion**
+Default settings are stored in **LIBDIR/etc/pylarion.cfg**. This file should
+not be modified, as it will be overwritten with any future updates.
 with the following values::
 
     [webservice]
@@ -55,6 +56,16 @@ with the following values::
 
 If the password value is blank, it will prompt you for a password when you try
 to access any of the pylarion objects.
+
+These can also be overridden with the following environment variables:
+    POLARION_URL
+    POLARION_REPO
+    POLARION_USERNAME
+    POLARION_PASSWORD
+    POLARION_TIMEOUT
+    POLARION_PROJECT
+    POLARION_LOGSTASH_URL
+    POLARION_LOGSTASH_PORT
 
 Requirements:
 *************

@@ -24,7 +24,8 @@ def create_redhat_ssl_context():
     connection in python-version >=2.7.10. this ssl context is customize to use
     redhat certificate which is located in 'cert_path'.
     """
-    cert_path = os.path.join('/etc', 'pylarion', 'newca.crt')
+    pkgdir = os.path.dirname(__file__)
+    cert_path = os.path.join(pkgdir, 'etc', 'newca.crt')
     context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
     context.verify_mode = ssl.CERT_REQUIRED
     context.check_hostname = True
@@ -62,7 +63,7 @@ class Session(object):
         return '{0}/ws/services/{1}WebService?wsdl'.format(self._server.url,
                                                            service_name)
 
-    def __init__(self, server, caching_policy, timeout):
+    def __init__(self, server, timeout):
         """Session constructor, initialize the WSDL clients
 
            Args:
@@ -73,8 +74,8 @@ class Session(object):
         self._server = server
         self._last_request_at = None
         self._session_id_header = None
-        self._session_client = _suds_client_wrapper(
-            self._url_for_name('Session'), None, caching_policy, timeout)
+        self._session_client = _SudsClientWrapper(
+            self._url_for_name('Session'), None, timeout)
         # In certain circumstances when using a load balancer, the wsdl will
         # switch nodes for an unknown reason. This fix gets the specific node
         # that was logged into and uses it for all future server interactions.
@@ -88,19 +89,18 @@ class Session(object):
         o_url = urlparse(self._server.url)
         self._server.url = "%s://%s%s" % (
             p_url.scheme, p_url.hostname, o_url.path)
-        self.builder_client = _suds_client_wrapper(
-            self._url_for_name('Builder'), self, caching_policy, timeout)
-        self.planning_client = _suds_client_wrapper(
-            self._url_for_name('Planning'), self, caching_policy, timeout)
-        self.project_client = _suds_client_wrapper(
-            self._url_for_name('Project'), self, caching_policy, timeout)
-        self.security_client = _suds_client_wrapper(
-            self._url_for_name('Security'), self, caching_policy, timeout)
-        self.test_management_client = _suds_client_wrapper(
-            self._url_for_name('TestManagement'), self, caching_policy,
-            timeout)
-        self.tracker_client = _suds_client_wrapper(
-            self._url_for_name('Tracker'), self, caching_policy, timeout)
+        self.builder_client = _SudsClientWrapper(
+            self._url_for_name('Builder'), self, timeout)
+        self.planning_client = _SudsClientWrapper(
+            self._url_for_name('Planning'), self, timeout)
+        self.project_client = _SudsClientWrapper(
+            self._url_for_name('Project'), self, timeout)
+        self.security_client = _SudsClientWrapper(
+            self._url_for_name('Security'), self, timeout)
+        self.test_management_client = _SudsClientWrapper(
+            self._url_for_name('TestManagement'), self, timeout)
+        self.tracker_client = _SudsClientWrapper(
+            self._url_for_name('Tracker'), self, timeout)
 
     def _login(self):
         """login to the Polarion API"""
@@ -108,10 +108,10 @@ class Session(object):
         sc.service.logIn(self._server.login, self._server.password)
         id_element = sc.last_received(). \
             childAtPath('Envelope/Header/sessionID')
-        sessionID = id_element.text
-        sessionNS = id_element.namespace()
+        session_id = id_element.text
+        session_ns = id_element.namespace()
         self._session_id_header = suds.sax.element.Element(
-            'sessionID', ns=sessionNS).setText(sessionID)
+            'sessionID', ns=session_ns).setText(session_id)
         sc.set_options(soapheaders=self._session_id_header)
         self._last_request_at = time.time()
 
@@ -157,10 +157,10 @@ class Session(object):
         return self._session_client.service.transactionExists()
 
 
-class _suds_client_wrapper:
+class _SudsClientWrapper:
     """class that manages the WSDL clients"""
 
-    def __init__(self, url, enclosing_session, caching_policy, timeout):
+    def __init__(self, url, enclosing_session, timeout):
         """has the actual WSDL client as a private _suds_client attribute so
         that the "magic" __getattr__ function will be able to verify
         functions called on it and after processing to call the WSDL function
@@ -184,7 +184,6 @@ class _suds_client_wrapper:
         self._suds_client = suds.client.Client(
             url,
             plugins=[plugin],
-            cachingpolicy=caching_policy,
             timeout=timeout)
         self._enclosing_session = enclosing_session
 

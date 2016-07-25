@@ -1,63 +1,31 @@
-import os
-import ConfigParser
 from distutils.core import setup
+from distutils.command.install import INSTALL_SCHEMES
 
-old_file = '/etc/pylarion/pylarion.cfg'
-new_file = 'etc/pylarion/pylarion.cfg'
+PACKAGE_NAME = "pylarion"
 
-
-def get_settings_dir():
-    return os.path.join('/etc', 'pylarion')
-
-
-def update_config_file(path_to_old_file, path_to_new_file):
-    """if a .cfg file already exists, we add the new fields
-    from the prject .cfg file (if there are such fields).
-    if there isnt a .cfg file we create it at the given path.
-    """
-    section = 'webservice'
-    new_configs = []
-    old_configs = []
-    existing_keys = []
-
-    config = ConfigParser.ConfigParser()
-    config.read(path_to_new_file)
-
-    if(os.path.isfile(path_to_old_file)):
-        new_configs = config.items(section)
-        config.remove_section(section)
-        config.read(path_to_old_file)
-        old_configs = config.items(section)
-        existing_keys = map(lambda x: x[0], old_configs)
-        for element in new_configs:
-            if(element[0] not in existing_keys):
-                config.set(section, element[0], element[1])
-
-    with open(path_to_old_file, 'w') as configfile:
-        print("Writing pylarion.cfg to " + path_to_old_file)
-        config.write(configfile)
+# change the data dir to be the etc dir under the package dir
+for scheme in INSTALL_SCHEMES.values():
+    scheme['data'] = '%s/%s/etc' % (scheme['purelib'], PACKAGE_NAME)
 
 if __name__ == "__main__":
     setup(
-        name="pylarion",
+        name=PACKAGE_NAME,
         version='0.0.1',
         description="Python SDK for Polarion",
         url="NONE",  # FIXME: once it is public
-        author="Pylarion Developers",
+        author="%s Developers" % PACKAGE_NAME,
         author_email="szacks@redhat.com",
         package_dir={
-            'pylarion': 'src/pylarion',
+            PACKAGE_NAME: 'src/%s' % PACKAGE_NAME,
         },
         packages=[
-            'pylarion',
+            PACKAGE_NAME,
         ],
         scripts=[
-            'scripts/pylarion',
+            'scripts/%s' % PACKAGE_NAME,
         ],
         data_files=[
-            (get_settings_dir(), ['etc/pylarion/newca.crt'])
+            ('', ['etc/%s/newca.crt' % PACKAGE_NAME,
+                  'etc/%s/%s.cfg' % (PACKAGE_NAME, PACKAGE_NAME)])
         ],
     )
-    update_config_file(
-        old_file,
-        new_file)
