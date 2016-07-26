@@ -78,7 +78,7 @@ _logger = None
 _logging = False
 
 
-def init_logger(logstash_url, logstash_port=9300):
+def init_logger(logstash_url, logstash_port=9300, use_logstash=True):
     global _logger
     global LOGSTASH_INITIALIZED
     _logger = logging.getLogger('python-logstash-logger')
@@ -88,7 +88,8 @@ def init_logger(logstash_url, logstash_port=9300):
             logstash_url,
             logstash_port,
             version=1))
-    LOGSTASH_INITIALIZED = True
+    if use_logstash:
+        LOGSTASH_INITIALIZED = True
 
 
 # decorator function to log function usage.

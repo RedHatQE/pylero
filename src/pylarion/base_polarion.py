@@ -59,7 +59,8 @@ class Connection(object):
                         "ops-qe-logstash-2.rhev-ci-vms.eng.rdu2.redhat.com",
                         "logstash_port": "9911",
                         "cachingpolicy": "0",
-                        "timeout": "120"}
+                        "timeout": "120",
+                        "use_logstash": "on"}
             config = SafeConfigParser(defaults)
             if not config.read([cls.GLOBAL_CONFIG, cls.LOCAL_CONFIG,
                                 cls.CURDIR_CONFIG]) or \
@@ -95,6 +96,9 @@ class Connection(object):
                 config.get(cls.CONFIG_SECTION, "logstash_url")
             logstash_port = os.environ.get("POLARION_LOGSTASH_PORT") or \
                 config.get(cls.CONFIG_SECTION, "logstash_port")
+            use_logstash = os.environ.get("POLARION_USE_LOGSTASH") or \
+                config.get(cls.CONFIG_SECTION, "use_logstash")
+
             if not (server_url and login and pwd and proj):
                 raise PylarionLibException("The config files must contain "
                                            "valid values for: url, user, "
@@ -127,6 +131,10 @@ class Connection(object):
                 cls.session.logstash_port = int(logstash_port)
             except ValueError:
                 cls.session.logstash_port = int(defaults["logstash_port"])
+            if use_logstash == "on":
+                cls.session.use_logstash = True
+            else:
+                cls.session.use_logstash = False
         return cls.session
 
 
@@ -238,7 +246,8 @@ class BasePolarion(object):
             # operations
             BasePolarion.repo = cls._session.repo
             # initialize the logger that sends data to logstash.
-            init_logger(cls.session.logstash_url, cls.session.logstash_port)
+            init_logger(cls.session.logstash_url, cls.session.logstash_port,
+                        cls.session.use_logstash)
             return BasePolarion._session
 
     @ClassProperty

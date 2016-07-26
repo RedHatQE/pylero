@@ -51,8 +51,9 @@ with the following values::
     user={your username}
     password={your password}
     default_project={your default project}
-    logstash_url = ops-qe-logstash-2.rhev-ci-vms.eng.rdu2.redhat.com
-    logstash_port = 9911
+    logstash_url=ops-qe-logstash-2.rhev-ci-vms.eng.rdu2.redhat.com
+    logstash_port=9911
+    use_logstash=on
 
 If the password value is blank, it will prompt you for a password when you try
 to access any of the pylarion objects.
@@ -66,6 +67,7 @@ These can also be overridden with the following environment variables:
     POLARION_PROJECT
     POLARION_LOGSTASH_URL
     POLARION_LOGSTASH_PORT
+    POLARION_USE_LOGSTASH
 
 Requirements:
 *************
@@ -109,3 +111,5 @@ The logstash functionality is built to be non-invasive, so that in the event of
 a logstash problem, the rest of pylarion will continue to work. Being that
 Polarion is based on the subversion VCS and tracks every action done, tracking
 usage data is not considered a privacy violation.
+If you do not want your usage data to be tracked, you can set the use_logstash
+value to anything other than on
