@@ -295,6 +295,8 @@ class TestRun(BasePolarion):
         References:
             test_management.createTestRun
         """
+        if not template:
+            raise PylarionLibException("Template is required")
         uri = cls.session.test_management_client.service.createTestRun(
             project_id, test_run_id, template)
         if uri:
