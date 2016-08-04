@@ -1,0 +1,178 @@
+#!/usr/bin/env python
+
+import os
+from pylarion.cli.cmd import CmdList
+from pylarion.cli.cmd import CmdUpdate
+import click
+
+
+@click.group()
+def cli():
+    pass
+
+
+@cli.command()
+@click.option('-d', '--document',
+              help="document with space e.g. 'space/document'")
+@click.option('-e', '--query',
+              help="query items e.g. --query='author.id:xhe'")
+@click.option('-D', '--is_document',
+              default=False,
+              is_flag=True,
+              help='flag indicating that the action will reference a document')
+@click.option('-i', '--testcase',
+              help='testcase id')
+@click.option('-l', '--links',
+              default=False,
+              is_flag=True,
+              help='flag indicating that the action will reference the links')
+@click.option('-m', '--template',
+              default=False,
+              is_flag=True,
+              help='flag indicating that the action will reference a template')
+@click.option('-p', '--plan_ids',
+              help='plan ids in project')
+@click.option('-q', '--requirement',
+              help='requirement id')
+@click.option('-r', '--run',
+              help='test run')
+@click.option('-s', '--steps',
+              default=False,
+              is_flag=True,
+              help='flag indicating that the action will reference the steps')
+@click.option('-t', '--workitem',
+              default=False,
+              is_flag=True,
+              help='flag indicating that the action will reference workitem')
+def list(document,
+         query,
+         is_document,
+         testcase,
+         links,
+         template,
+         plan_ids,
+         requirement,
+         run,
+         steps,
+         workitem):
+    """list documents, testcases, steps of testcase, links of workitems, runs,
+       templates. For more info and examples:
+       https://docs.engineering.redhat.com/x/kzmPAg"""
+
+    # instantiate the list object
+    list_obj = CmdList()
+
+    # get documents
+    if is_document and query:
+            docs = list_obj.list_documents_by_query(query)
+            list_obj.print_documents(docs),
+
+    # get workitems
+    elif workitem:
+        # workitems is from the document: 'space/document'
+        if document:
+            wis = list_obj.list_workitems_in_doc(document)
+            list_obj.print_workitems(wis)
+        # get testcases is from run/template
+        elif run:
+            list_obj.print_testcases_from_run(run)
+
+    # get links
+    elif links:
+        if testcase:
+            list_obj.print_links_for_testcase(testcase)
+        elif requirement:
+            list_obj.print_links_for_requirement(requirement)
+
+    # get templates by query
+    elif query and template:
+        list_obj.print_templates_by_query(query)
+
+    # get runs by query
+    elif query:
+        list_obj.print_runs_by_query(query)
+
+    # get steps for testcase
+    elif steps and testcase:
+        list_obj.print_steps_for_testcase(testcase)
+
+    # get plan ids
+    elif plan_ids:
+        list_obj.print_plan_ids(plan_ids)
+
+    else:
+        click.echo('Please get usage: pylarion-cmd list --help')
+
+
+@cli.command()
+@click.option("-a", "--assignee", default="None",
+              help="assignee of run")
+@click.option("-c", "--comment",
+              help="verdict comment of testcase in run")
+@click.option("-e", "--query",
+              help="query items e.g. --query=author.id:xhe")
+@click.option('-D', '--debug',
+              default=True,
+              is_flag=True,
+              help='debug mode')
+@click.option("-i", "--testcase",
+              help="testcase id")
+@click.option("-m", "--template",
+              help="run template")
+@click.option("-p", "--plannedin",
+              help="plannedin in run")
+@click.option("-o", "--result",
+              type=click.Choice(['passed',
+                                 'failed',
+                                 'blocked']),
+              help="test result in run")
+@click.option("-r", "--run",
+              help="test run")
+@click.option("-s", "--status",
+              type=click.Choice(['notrun',
+                                 'inprogress',
+                                 'finished',
+                                 'invalid']),
+              help="run status")
+def update(assignee,
+           comment,
+           query,
+           debug,
+           testcase,
+           template,
+           plannedin,
+           result,
+           run,
+           status):
+    ''' create run(s), update results and custom fileds for run(s). For more
+        info and examples: https://docs.engineering.redhat.com/x/kzmPAg'''
+
+    # instantiate the update object
+    update_obj = CmdUpdate()
+
+    if run:
+        if result:
+            if testcase:
+                # update one case result for runs
+                update_obj.update_1_case_result_for_run(run,
+                                                        testcase,
+                                                        result,
+                                                        assignee,
+                                                        comment)
+            else:
+                # update all case results for runs
+                update_obj.update_all_case_results_for_runs(run,
+                                                            result,
+                                                            assignee,
+                                                            comment)
+        elif status:
+            # update status for runs
+            update_obj.update_status_for_runs(run, status)
+        elif not result:
+            # update/create runs
+            update_obj.update_runs(run, template, plannedin, assignee)
+    else:
+        click.echo('Please get usage: pylarion-cmd list --help')
+
+if __name__ == '__main__':
+    cli()

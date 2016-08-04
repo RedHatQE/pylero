@@ -2,6 +2,7 @@ from distutils.core import setup
 from distutils.command.install import INSTALL_SCHEMES
 
 PACKAGE_NAME = "pylarion"
+CLI_NAME = "pylarion-cmd"
 
 # change the data dir to be the etc dir under the package dir
 for scheme in INSTALL_SCHEMES.values():
@@ -20,9 +21,11 @@ if __name__ == "__main__":
         },
         packages=[
             PACKAGE_NAME,
+            PACKAGE_NAME+".cli",
         ],
         scripts=[
             'scripts/%s' % PACKAGE_NAME,
+            'scripts/%s' % CLI_NAME,
         ],
         data_files=[
             ('', ['etc/%s/newca.crt' % PACKAGE_NAME,

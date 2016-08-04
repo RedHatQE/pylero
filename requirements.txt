@@ -2,3 +2,4 @@ decorator>=4.0.9
 python-logstash
 suds
 requests
+click
