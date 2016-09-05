@@ -240,31 +240,13 @@ class CmdUpdate(object):
         if not is_found:
             print 'Test case %s is not found in run.' % testcase
 
-    def update_status_for_run(self,
-                              run,
-                              status):
-
-        run = run.strip()
-        tr = TestRun(run, None, TestRun.default_project)
-        tr.status = status
-        tr.update()
-        print 'Updated %s status -> %s' % (run, status)
-
-    def update_status_for_runs(self,
-                               runs,
-                               status):
-
-        if runs.find(','):
-            for run in runs.split(','):
-                self.update_status_for_run(run, status)
-        else:
-            print 'Please use comma \',\' to seperate your runs!'
-
     def update_run(self,
                    run,
                    template=None,
                    plannedin=None,
                    assignee=None,
+                   status=None,
+                   description=None,
                    is_template=False):
 
         run = run.strip()
@@ -291,37 +273,57 @@ class CmdUpdate(object):
             tr = TestRun(run,
                          None,
                          TestRun.default_project)
+
+            # set fields
+            if assignee != 'None':
+                tr.assignee = assignee
+                print '%4sSet Assignee to %s' % ('', assignee)
+            if plannedin is not None:
+                tr.plannedin = plannedin
+                print '%4sSet Plannedin to %s' % ('', plannedin)
+            if status is not None:
+                tr.status = status
+                print '%4sSet Status to %s' % ('', status)
+            if description is not None:
+                tr.description = description
+                print '%4sSet Description to %s' % ('', description)
+            tr.update()
+
         else:
             tr = TestRun.create(TestRun.default_project,
                                 run,
-                                template)
+                                template,
+                                assignee=assignee,
+                                plannedin=plannedin,
+                                status=status,
+                                description=description)
+            # display fields
+            if assignee != 'None':
+                print '%4sSet Assignee to %s' % ('', assignee)
+            if plannedin is not None:
+                print '%4sSet Plannedin to %s' % ('', plannedin)
+            if status is not None:
+                print '%4sSet Status to %s' % ('', status)
+            if description is not None:
+                print '%4sSet Description to %s' % ('', description)
             print 'Created %s:' % run
-
-        # set customer filed of plannedin
-        if plannedin:
-            tr.plannedin = plannedin
-            print '%4sSet Plannedin to %s' % ('', plannedin)
-
-        if assignee == 'None':
-            tr.assignee = TestRun.logged_in_user_id
-        else:
-            tr.assignee = assignee
-
-        print '%4sSet Assignee to %s' % ('', tr.assignee)
-        tr.update()
 
     def update_runs(self,
                     runs,
                     template=None,
                     plannedin=None,
-                    assignee=None):
+                    assignee=None,
+                    status=None,
+                    description=None):
 
         if runs.find(','):
             for run in runs.split(','):
                 self.update_run(run,
                                 template,
                                 plannedin,
-                                assignee)
+                                assignee,
+                                status,
+                                description)
             print 'Done!'
         else:
-            print 'Please use comma \',\' to seperate your runs!'
+            print "Please use comma ',' to seperate your runs!"

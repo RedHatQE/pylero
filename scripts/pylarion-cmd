@@ -109,6 +109,8 @@ def list(document,
               help="assignee of run")
 @click.option("-c", "--comment",
               help="verdict comment of testcase in run")
+@click.option("-d", "--description",
+              help="description of run")
 @click.option("-e", "--query",
               help="query items e.g. --query=author.id:xhe")
 @click.option('-D', '--debug',
@@ -127,7 +129,7 @@ def list(document,
                                  'blocked']),
               help="test result in run")
 @click.option("-r", "--run",
-              help="test run")
+              help="test run id")
 @click.option("-s", "--status",
               type=click.Choice(['notrun',
                                  'inprogress',
@@ -136,6 +138,7 @@ def list(document,
               help="run status")
 def update(assignee,
            comment,
+           description,
            query,
            debug,
            testcase,
@@ -165,14 +168,16 @@ def update(assignee,
                                                             result,
                                                             assignee,
                                                             comment)
-        elif status:
-            # update status for runs
-            update_obj.update_status_for_runs(run, status)
-        elif not result:
+        else:
             # update/create runs
-            update_obj.update_runs(run, template, plannedin, assignee)
+            update_obj.update_runs(run,
+                                   template,
+                                   plannedin, 
+                                   assignee, 
+                                   status,
+                                   description)
     else:
-        click.echo('Please get usage: pylarion-cmd list --help')
+        click.echo('Please get usage: pylarion-cmd update --help')
 
 if __name__ == '__main__':
     cli()
