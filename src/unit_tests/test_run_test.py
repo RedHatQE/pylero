@@ -22,6 +22,9 @@ PLAN_ID = "plan_regr-%s" % TIME_STAMP
 CUR_PATH = os.path.dirname(os.path.abspath(__file__))
 ATTACH_PATH = CUR_PATH + "/refs/red_box.png"
 ATTACH_TITLE = "File"
+TITLE1 = "title1_regr-%s" % TIME_STAMP
+TITLE2 = "title2_regr-%s" % TIME_STAMP
+TEST_RUN_ID2 = "tr2_regr-%s" % TIME_STAMP
 
 
 class TestRunTest(unittest2.TestCase):
@@ -77,12 +80,29 @@ class TestRunTest(unittest2.TestCase):
 
     def test_002_create_run(self):
         """This test does the following:
-        * creates a test riun based on the template created in previous test
+        * creates a test run based on the template created in previous test
         * Verifies that the returned object exists and is not a template
         """
         tr = TestRun.create(DEFAULT_PROJ, TEST_RUN_ID, TEMPLATE_ID)
         self.assertIsNotNone(tr.test_run_id)
         self.assertFalse(tr.is_template)
+
+    def test_002_5_create_run_with_title(self):
+        """This test does the following:
+        * creates a test run based on the template created in previous test
+            * with both a title and an id
+            * with just a title.
+        * Verifies that the returned object exists and is not a template
+        """
+        tr1 = TestRun.create(DEFAULT_PROJ, TEST_RUN_ID2, TEMPLATE_ID, TITLE1)
+        self.assertIsNotNone(tr1.test_run_id)
+        self.assertEqual(tr1.test_run_id, TEST_RUN_ID2)
+        self.assertEqual(tr1.title, TITLE1)
+        self.assertFalse(tr1.is_template)
+        tr2 = TestRun.create(DEFAULT_PROJ, None, TEMPLATE_ID, TITLE2)
+        self.assertIsNotNone(tr2.test_run_id)
+        self.assertEqual(tr2.title, TITLE2)
+        self.assertFalse(tr2.is_template)
 
     def test_003_get(self):
         """This test does the following:

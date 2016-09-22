@@ -64,21 +64,21 @@ def generate_description(test_run, test_case, test_record):
                                     "t-bottom;border:0px;margin-right:2px;\" c"
                                     "lass=\"polarion-no-style-cleanup\"/>"
                                     "</span></span>"}
-    table_header = "<table class=\"polarion-no-style-cleanup\" style=\"border" \
+    table_header = "<table class=\"polarion-no-style-cleanup\" style=\"border"\
                    "-collapse: collapse;\"><tr style=\"text-align: left; " \
                    "white-space: nowrap; color: #757575; border-bottom: 1px " \
                    "solid #d2d7da; background-color: #ffffff;\">{0}</tr>" \
         .format("".join(["<th {0}>{1}</th>".format(table_cell_style, column)
                          for column in columns]))
-    verdict = "</table><table style=\"margin-bottom: 15px; ;border-collapse: " \
-              "collapse; width:100%; ;margin-top: 13px;\" class=\"polarion-no" \
-              "-style-cleanup\"><tr><th style=\"width: 80%; text-align: left;" \
-              " background-color: #ffffff;\">Test Case Verdict:</th></tr><tr>" \
-              "<td style=\"vertical-align: top;\"><span style=\"font-weight: " \
-              "bold;\"><span style=\"color: #C30000;\"><span title=\"Results " \
+    verdict = "</table><table style=\"margin-bottom: 15px; ;border-collapse: "\
+              "collapse; width:100%; ;margin-top: 13px;\" class=\"polarion-no"\
+              "-style-cleanup\"><tr><th style=\"width: 80%; text-align: left;"\
+              " background-color: #ffffff;\">Test Case Verdict:</th></tr><tr>"\
+              "<td style=\"vertical-align: top;\"><span style=\"font-weight: "\
+              "bold;\"><span style=\"color: #C30000;\"><span title=\"Results "\
               "did not meet expected results\"><span style=\"white-space:" \
               "nowrap;\"><img src=\"/polarion/icons/default/enums/testrun_" \
-              "status_failed.png\" style=\"vertical-align:text-bottom;border:" \
+              "status_failed.png\" style=\"vertical-align:text-bottom;border:"\
               "0px;margin-right:2px;\" class=\"polarion-no-style-cleanup\"/>" \
               "</span>Failed</span></span></span><span> {0}</span></td></tr>" \
               "</table>" \
@@ -210,6 +210,7 @@ class TestRun(BasePolarion):
              "cls": _WorkItem,
              "named_arg": "uri",
              "sync_field": "uri"},
+        "title": "title",
         "template":
             {"field_name": "templateURI",
              "named_arg": "uri",
@@ -277,14 +278,26 @@ class TestRun(BasePolarion):
 
     @classmethod
     @tx_wrapper
-    def create(cls, project_id, test_run_id, template, **kwargs):
+    def create(cls, project_id, test_run_id=None, template=None, title=None,
+               **kwargs):
         """class method create for creating a new test run in Polarion
 
         Args:
             project_id (string): the Polarion project to create the test run
                                  in
-            test_run_id (string): the unique identifier for the test run
+            test_run_id (string): the unique identifier for the test run,
+                                  If the Enable Generated Test Run IDs option
+                                  is marked in the configuration, it will
+                                  ignore this field. If it is None, the title
+                                  will be used.
             template (string): the id of the template to base the test run on.
+                               cannot be None. Because of the existing order of
+                               params before adding title, it is given a
+                               default value of None, which will cause an error
+                               if it is not populated
+            title (string): To create a test run with a title. In this case,
+                            if the id is not populated it will be autogen.
+                            If it is populated, it will use that.
             **kwargs: keyword arguments. Test run attributes can be passed in
                       to be set upon creation. Required fields must be passed
                       in
@@ -297,8 +310,13 @@ class TestRun(BasePolarion):
         """
         if not template:
             raise PylarionLibException("Template is required")
-        uri = cls.session.test_management_client.service.createTestRun(
-            project_id, test_run_id, template)
+        if title:
+            uri = cls.session.test_management_client.service.\
+                createTestRunWithTitle(
+                    project_id, test_run_id or title, title, template)
+        else:
+            uri = cls.session.test_management_client.service.createTestRun(
+                project_id, test_run_id, template)
         if uri:
             run = cls(uri=uri)
             run.verify_params(**kwargs)
