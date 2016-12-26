@@ -13,8 +13,12 @@ USER = "szacks"
 ALT_USER = "oramraz"
 PROJ2 = "szacks"
 TIME_STAMP = datetime.datetime.now().strftime("%Y%m%d%H%M%s")
+# TEST_RUN_ID will change if the generate id setting is set
 TEST_RUN_ID = "tr_regr-%s" % TIME_STAMP
+TEST_RUN_TITLE = "tr_regr-%s" % TIME_STAMP
+# TEMPLATE_ID will change if the generate id setting is set
 TEMPLATE_ID = "tr_regr2-%s" % TIME_STAMP
+TEMPLATE_TITLE = "tr_regr2-%s" % TIME_STAMP
 DOC_NAME = "Document_Test-%s" % TIME_STAMP
 DEFAULT_PROJ = Document.default_project
 
@@ -23,10 +27,13 @@ class AttributeTest(unittest2.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        global TEST_RUN_ID
         cls.doc = Document.create(
             DEFAULT_PROJ, "Testing", DOC_NAME,
             "Attribute_Test", ["testcase"], "testspecification")
-        cls.testrun = TestRun.create(DEFAULT_PROJ, TEST_RUN_ID, "example")
+        cls.testrun = TestRun.create(
+            DEFAULT_PROJ, TEST_RUN_ID, "example", TEST_RUN_TITLE)
+        TEST_RUN_ID = cls.testrun.test_run_id
         # arch is a custom field defined by global admins for test runs.
         # It is set here for a test on custom fields that requires at least two
         # valid values. If in the future, this custom field is removed, or the
@@ -149,7 +156,8 @@ class AttributeTest(unittest2.TestCase):
         self.assertEqual(testrun2.template, "example")
         new_template = TestRun.create_template(DEFAULT_PROJ,
                                                TEMPLATE_ID,
-                                               "example")
+                                               "example",
+                                               title=TEMPLATE_TITLE)
         testrun2.template = new_template
         self.assertEqual(testrun2.template,
                          new_template.test_run_id)

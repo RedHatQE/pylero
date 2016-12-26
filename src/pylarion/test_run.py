@@ -380,7 +380,7 @@ class TestRun(BasePolarion):
         #                                            project_id))
 
         tr.update()
-        return TestRun(template_id, project_id=project_id)
+        return TestRun(tr.test_run_id, project_id=project_id)
 
     @classmethod
     def search(cls, query, fields=["test_run_id"], sort="test_run_id",

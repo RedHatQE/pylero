@@ -16,8 +16,12 @@ from pylarion.plan import Plan
 
 DEFAULT_PROJ = TestRun.default_project
 TIME_STAMP = datetime.datetime.now().strftime("%Y%m%d%H%M%s")
+# TEMPLATE_ID will change if the generate id setting is set
 TEMPLATE_ID = "tmp_regr-%s" % TIME_STAMP
+TEMPLATE_TITLE = "tmp_regr-%s" % TIME_STAMP
+# TEST_RUN_ID will change if the generate id setting is set
 TEST_RUN_ID = "tr_regr-%s" % TIME_STAMP
+TEST_RUN_TITLE = "tr_regr-%s" % TIME_STAMP
 PLAN_ID = "plan_regr-%s" % TIME_STAMP
 CUR_PATH = os.path.dirname(os.path.abspath(__file__))
 ATTACH_PATH = CUR_PATH + "/refs/red_box.png"
@@ -66,24 +70,32 @@ class TestRunTest(unittest2.TestCase):
         * Tries to create another template with an invalid enum value in kwarg
         * Tries to create another template with an invalid kwarg
         """
+        global TEMPLATE_ID
         template = TestRun.create_template(
-            DEFAULT_PROJ, TEMPLATE_ID, "Empty", arch="i386")
+            DEFAULT_PROJ, TEMPLATE_ID, "Empty", title=TEMPLATE_TITLE,
+            arch="i386")
+        TEMPLATE_ID = template.test_run_id
         self.assertIsNotNone(template.test_run_id)
         self.assertTrue(template.is_template)
         self.assertEqual(template.arch, "i386")
         with self.assertRaises(PylarionLibException):
             template = TestRun.create_template(
-                DEFAULT_PROJ, TEMPLATE_ID + "1", "Empty", arch="BAD")
+                DEFAULT_PROJ, TEMPLATE_ID + "1", "Empty", TEMPLATE_TITLE + "1",
+                arch="BAD")
         with self.assertRaises(PylarionLibException):
             template = TestRun.create_template(
-                DEFAULT_PROJ, TEMPLATE_ID + "2", "Empty", notaparm="BAD")
+                DEFAULT_PROJ, TEMPLATE_ID + "2", "Empty", TEMPLATE_TITLE + "2",
+                notaparm="BAD")
 
     def test_002_create_run(self):
         """This test does the following:
         * creates a test run based on the template created in previous test
         * Verifies that the returned object exists and is not a template
         """
-        tr = TestRun.create(DEFAULT_PROJ, TEST_RUN_ID, TEMPLATE_ID)
+        global TEST_RUN_ID
+        tr = TestRun.create(
+            DEFAULT_PROJ, TEST_RUN_ID, TEMPLATE_ID, TEST_RUN_TITLE)
+        TEST_RUN_ID = tr.test_run_id
         self.assertIsNotNone(tr.test_run_id)
         self.assertFalse(tr.is_template)
 
@@ -96,7 +108,6 @@ class TestRunTest(unittest2.TestCase):
         """
         tr1 = TestRun.create(DEFAULT_PROJ, TEST_RUN_ID2, TEMPLATE_ID, TITLE1)
         self.assertIsNotNone(tr1.test_run_id)
-        self.assertEqual(tr1.test_run_id, TEST_RUN_ID2)
         self.assertEqual(tr1.title, TITLE1)
         self.assertFalse(tr1.is_template)
         tr2 = TestRun.create(DEFAULT_PROJ, None, TEMPLATE_ID, TITLE2)
@@ -268,7 +279,7 @@ class TestRunTest(unittest2.TestCase):
                         testtype="functional",
                         subtype1="-")
         tr = TestRun.create("pylarion", "querytest-%s" % TIME_STAMP, "Example",
-                            query=TIME_STAMP)
+                            "querytest-%s" % TIME_STAMP, query=TIME_STAMP)
         self.assertEquals(tr.select_test_cases_by, "dynamicQueryResult")
         num_recs = len(tr.records)
         test_case_id = tr.records[0].test_case_id

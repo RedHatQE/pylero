@@ -12,8 +12,11 @@ import datetime
 WI_ID = ""
 TIME_STAMP = datetime.datetime.now().strftime("%Y%m%d%H%M%s")
 DOC_NAME = "Document_Test-%s" % TIME_STAMP
+# TEMPLATE_ID and TEST_RUN_ID will be changed if the project Generate ID is set
 TEMPLATE_ID = "doc_tmp_test-%s" % TIME_STAMP
 TEST_RUN_ID = "doc_test-%s" % TIME_STAMP
+TEMPLATE_TITLE = "doc_tmp_test-%s" % TIME_STAMP
+TEST_RUN_TITLE = "doc_test-%s" % TIME_STAMP
 
 
 class DocumentTest(unittest2.TestCase):
@@ -69,14 +72,20 @@ class DocumentTest(unittest2.TestCase):
         doc.update()
 
     def test_008_doc_test_run_template(self):
+        global TEMPLATE_ID
+        global TEST_RUN_ID
         doc_with_space = self.doc_create.space
         self.doc_create.session.tx_begin()
-        TestRun.create_template(project_id=Document.default_project,
+        tmp = TestRun.create_template(project_id=Document.default_project,
                                 template_id=TEMPLATE_ID,
-                                doc_with_space=doc_with_space)
+                                doc_with_space=doc_with_space,
+                                title=TEMPLATE_TITLE)
+        TEMPLATE_ID = tmp.test_run_id
         tr = TestRun.create(project_id=Document.default_project,
                             test_run_id=TEST_RUN_ID,
-                            template=TEMPLATE_ID)
+                            template=TEMPLATE_ID,
+                            title=TEST_RUN_TITLE)
+        TEST_RUN_ID = tr.test_run_id
         self.assertEquals(len(tr.records), 1)
         self.assertEquals(tr.records[0].test_case_id, WI_ID)
         self.doc_create.session.tx_commit()
