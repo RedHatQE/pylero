@@ -368,9 +368,11 @@ class TestRun(BasePolarion):
         elif query:
             tr.select_test_cases_by = "dynamicQueryResult"
 
+        # you can have both a query and a document, through which the query
+        # qualifies the doc.
         if query:
             tr.query = query
-        elif doc_with_space:
+        if doc_with_space:
             tr.document = Document(project_id, doc_with_space)
 # TODO: This should work as soon as Polarion implements Change Request REQ-6334
         #        if test_case_ids:
