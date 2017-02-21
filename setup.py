@@ -28,7 +28,6 @@ if __name__ == "__main__":
             'scripts/%s' % CLI_NAME,
         ],
         data_files=[
-            ('', ['etc/%s/newca.crt' % PACKAGE_NAME,
-                  'etc/%s/%s.cfg' % (PACKAGE_NAME, PACKAGE_NAME)])
+            ('', ['etc/%s/%s.cfg' % (PACKAGE_NAME, PACKAGE_NAME)])
         ],
     )

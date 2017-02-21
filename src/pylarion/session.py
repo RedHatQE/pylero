@@ -6,7 +6,6 @@ import logging
 import time
 import suds.sax.element
 import ssl
-import os
 from urlparse import urlparse
 
 from suds.plugin import MessagePlugin
@@ -15,6 +14,7 @@ from suds.sax.attribute import Attribute
 
 # TODO: figure out what this does
 logger = logging.getLogger(__name__)
+CERT_PATH = None
 
 
 # the reason why this function definition is at the top is because it is
@@ -24,18 +24,12 @@ def create_redhat_ssl_context():
     connection in python-version >=2.7.10. this ssl context is customize to use
     redhat certificate which is located in 'cert_path'.
     """
-    pkgdir = os.path.dirname(__file__)
-    cert_path = os.path.join(pkgdir, 'etc', 'newca.crt')
+    global CERT_PATH
     context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
     context.verify_mode = ssl.CERT_REQUIRED
     context.check_hostname = True
-    context.load_verify_locations(cert_path)
+    context.load_verify_locations(CERT_PATH)
     return context
-
-
-# this line tells python >= 2.7.10 to use 'redhat_ssl_context' when using ssl
-# if we are using python < 2.7.10, 'create_default_https_context' is never used
-ssl._create_default_https_context = create_redhat_ssl_context
 
 
 class SoapNull(MessagePlugin):
@@ -101,6 +95,12 @@ class Session(object):
             self._url_for_name('TestManagement'), self, timeout)
         self.tracker_client = _SudsClientWrapper(
             self._url_for_name('Tracker'), self, timeout)
+
+        # This block forces ssl certificate verification
+        if self._server.cert_path:
+            global CERT_PATH
+            CERT_PATH = self._server.cert_path
+            ssl._create_default_https_context = create_redhat_ssl_context
 
     def _login(self):
         """login to the Polarion API"""

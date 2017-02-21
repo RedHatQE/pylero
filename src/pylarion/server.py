@@ -10,7 +10,7 @@ class Server(object):
     """
 
     def __init__(self, url, login, password, default_project=None,
-                 relogin_timeout=60, timeout=120):
+                 relogin_timeout=60, timeout=120, cert_path=None):
         """An object that defines the properties of the Polarion server to
         connect to.
 
@@ -22,6 +22,7 @@ class Server(object):
             relogin_timeout: timeout after which the session will try to login
                              again
             timeout: http tiemout
+            cert_path: path to customize CA bundle
         """
         self.url = url
         self.login = login
@@ -29,6 +30,7 @@ class Server(object):
         self.default_project = default_project
         self.relogin_timeout = relogin_timeout
         self.timeout = timeout
+        self.cert_path = cert_path
 
     def session(self):
         return Session(self, self.timeout)

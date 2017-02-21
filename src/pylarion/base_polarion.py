@@ -92,6 +92,11 @@ class Connection(object):
                 pwd = getpass("Password not in config file.\nEnter Password:")
             proj = os.environ.get("POLARION_PROJECT") or \
                 config.get(cls.CONFIG_SECTION, "default_project")
+            try:
+                cert_path = os.environ.get("POLARION_CERT_PATH") or \
+                    config.get(cls.CONFIG_SECTION, "cert_path")
+            except:
+                cert_path = None
             logstash_url = os.environ.get("POLARION_LOGSTASH_URL") or \
                 config.get(cls.CONFIG_SECTION, "logstash_url")
             logstash_port = os.environ.get("POLARION_LOGSTASH_PORT") or \
@@ -109,7 +114,10 @@ class Connection(object):
             while not cls.connected:
                 try:
                     srv = Server(
-                        server_url, login, pwd, timeout=timeout)
+                        server_url,
+                        login, pwd,
+                        timeout=timeout,
+                        cert_path=cert_path)
                     cls.session = srv.session()
                     cls.session._login()
                     cls.connected = True

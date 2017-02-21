@@ -1,2 +1,2 @@
-include etc/pylarion/pylarion.cfg etc/pylarion/newca.crt scripts/pylarion
+include etc/pylarion/pylarion.cfg scripts/pylarion
 recursive-include src/pylarion

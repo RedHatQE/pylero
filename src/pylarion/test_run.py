@@ -25,6 +25,10 @@ from pylarion.plan import Plan  # NOQA
 from pylarion.base_polarion import tx_wrapper
 import requests
 from requests.auth import HTTPBasicAuth
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+
+# This is to disable the InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 
 def generate_description(test_run, test_case, test_record):
@@ -540,10 +544,17 @@ class TestRun(BasePolarion):
         proj = Project(project_id)
         # proj.location[8:-30] removes the default: at the beginning and
         # .polarion/polarion-project.xml
+
+        # Getting the location of the verifying CA-Bundle
+        if self._session._server.cert_path:
+            cert_path = self._session._server.cert_path
+        else:
+            cert_path = False
+
         file_download = requests.get("{0}{1}{2}".format(
             self.repo, proj.location[8:-30], self.CUSTOM_FIELDS_FILE),
             auth=HTTPBasicAuth(self.logged_in_user_id, self.session.password),
-            verify=False)
+            verify=cert_path)
         file_content = file_download.text
         xmldoc = minidom.parseString(file_content)
         fields = xmldoc.getElementsByTagName("field")
