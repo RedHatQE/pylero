@@ -50,7 +50,9 @@ current dir (the dir where the script is executed from) **.pylarion**, in the
 user's home dir **~/.pylarion**
 Default settings are stored in **LIBDIR/etc/pylarion.cfg**. This file should
 not be modified, as it will be overwritten with any future updates.
-with the following values::
+Certificates should be verified automatically, but if they aren't, you can add
+the path to your CA to the cert_path config option.
+with the following values:
 
     [webservice]
     url=https://polarion.engineering.redhat.com/polarion
@@ -61,6 +63,7 @@ with the following values::
     logstash_url=ops-qe-logstash-2.rhev-ci-vms.eng.rdu2.redhat.com
     logstash_port=9911
     use_logstash=on
+    #cert_path=/dir/to/my/cert/ca
 
 If the password value is blank, it will prompt you for a password when you try
 to access any of the pylarion objects.
@@ -75,6 +78,7 @@ These can also be overridden with the following environment variables:
     POLARION_LOGSTASH_URL
     POLARION_LOGSTASH_PORT
     POLARION_USE_LOGSTASH
+    POLARION_CERT_PATH
 
 Requirements:
 *************
