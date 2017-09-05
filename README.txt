@@ -20,6 +20,12 @@ valid value. A number of workflow implementations are also included, for
 example when creating a Document, it automatically creates the Heading work
 item at the same time.
 
+Polarion Work Items are configured per installation, and the library gives 2
+options to handle this. Either you can add the list of workitems to the config
+file and then it will create them on import of the work_item module, or it
+will connect to the Polarion server, download the list of workitems and create
+them.
+
 Download and Installation:
 **************************
 Pylarion is located in a git repository and can be cloned from::
@@ -45,7 +51,9 @@ Default settings are stored in **LIBDIR/etc/pylarion.cfg**. This file should
 not be modified, as it will be overwritten with any future updates.
 Certificates should be verified automatically, but if they aren't, you can add
 the path to your CA to the cert_path config option.
-with the following values:
+Workitems is a JSON with the name of the workitem type as the key and the class
+name as the value.
+These are the configurable values:
 
     [webservice]
     url=https://polarion.engineering.redhat.com/polarion
@@ -53,6 +61,7 @@ with the following values:
     user={your username}
     password={your password}
     default_project={your default project}
+    workitems={"testcase": "TestCase", "requirement":"Requirement}
     #cert_path=/dir/with/certs
 
 If the password value is blank, it will prompt you for a password when you try
@@ -65,6 +74,7 @@ These can also be overridden with the following environment variables:
     POLARION_PASSWORD
     POLARION_TIMEOUT
     POLARION_PROJECT
+    POLARION_WORKITEMS
     POLARION_CERT_PATH
 
 Requirements:
@@ -92,6 +102,14 @@ want to use::
     Type "help", "copyright", "credits" or "license" for more information.
     >>> from pylarion.test_run import TestRun
     >>> tr = TestRun("example", project_id="project_name")
+
+To have all the workitems created, you have to import the module itself::
+    $ python
+    Python 2.6.6 (r266:84292, Nov 21 2013, 10:50:32)
+    [GCC 4.4.7 20120313 (Red Hat 4.4.7-4)] on linux2
+    Type "help", "copyright", "credits" or "license" for more information.
+    >>> import pylarion.work_item
+    >>> from pylarion.work_item import TestCase
 
 Examples:
 **********

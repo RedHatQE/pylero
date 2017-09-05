@@ -23,6 +23,61 @@ class ClassProperty(property):
         return classmethod(self.fget).__get__(instance, cls)()
 
 
+class Configuration(object):
+    pkgdir = os.path.dirname(__file__)
+    GLOBAL_CONFIG = "%s/etc/pylarion.cfg" % pkgdir
+    LOCAL_CONFIG = os.path.expanduser("~") + "/.pylarion"
+    CURDIR_CONFIG = ".pylarion"
+    CONFIG_SECTION = "webservice"
+    # Look at ConfigParser - https://docs.python.org/2.6/library/configparser.html
+
+    def __init__(self):
+        defaults = {"cachingpolicy": "0",
+                    "timeout": "120",
+                    "workitems": None}
+
+
+        config = SafeConfigParser(defaults)
+        if not config.read([self.GLOBAL_CONFIG, self.LOCAL_CONFIG,
+                            self.CURDIR_CONFIG]) or \
+                not config.has_section(self.CONFIG_SECTION):
+            raise PylarionLibException("The config files do not exist or"
+                                       " are not of the correct format."
+                                       " Valid files are: {0}, {1} or {2}"
+                                       .format(self.GLOBAL_CONFIG,
+                                               self.LOCAL_CONFIG,
+                                               self.CURDIR_CONFIG))
+        self.server_url = os.environ.get("POLARION_URL") or \
+                     config.get(self.CONFIG_SECTION, "url")
+        self.repo = os.environ.get("POLARION_REPO") or \
+               config.get(self.CONFIG_SECTION, "svn_repo")
+        self.login = os.environ.get("POLARION_USERNAME") or \
+                config.get(self.CONFIG_SECTION, "user")
+        self.pwd = os.environ.get("POLARION_PASSWORD") or \
+              config.get(self.CONFIG_SECTION, "password")
+        self.timeout = os.environ.get("POLARION_TIMEOUT") or \
+                  config.get(self.CONFIG_SECTION, "timeout")
+        try:
+            self.timeout = int(self.timeout)
+        except ValueError:
+            raise PylarionLibException("The timeout value in the config"
+                                       " file must be an integer")
+        self.proj = os.environ.get("POLARION_PROJECT") or \
+               config.get(self.CONFIG_SECTION, "default_project")
+        try:
+            self.cert_path = os.environ.get("POLARION_CERT_PATH") or \
+                        config.get(self.CONFIG_SECTION, "cert_path")
+        except:
+            self.cert_path = None
+        self.workitems = os.environ.get("POLARION_WORKITEMS") or \
+                    config.get(self.CONFIG_SECTION, "workitems")
+
+        if not (self.server_url and self.login and self.proj):
+            raise PylarionLibException("The config files must contain "
+                                       "valid values for: url, user, "
+                                       "password and default_project")
+
+
 class Connection(object):
     """Creates a Polarion session as a class method, so that it is used for all
     objects inherited by BasePolarion.
@@ -39,83 +94,43 @@ class Connection(object):
     """
     connected = False
     session = None
-    pkgdir = os.path.dirname(__file__)
-    GLOBAL_CONFIG = "%s/etc/pylarion.cfg" % pkgdir
-    LOCAL_CONFIG = os.path.expanduser("~") + "/.pylarion"
-    CURDIR_CONFIG = ".pylarion"
-    CONFIG_SECTION = "webservice"
-# Look at ConfigParser - https://docs.python.org/2.6/library/configparser.html
 
     @classmethod
     def session(cls):
         if not cls.connected:
-            defaults = {"cachingpolicy": "0",
-                        "timeout": "120"}
-            config = SafeConfigParser(defaults)
-            if not config.read([cls.GLOBAL_CONFIG, cls.LOCAL_CONFIG,
-                                cls.CURDIR_CONFIG]) or \
-                    not config.has_section(cls.CONFIG_SECTION):
-                raise PylarionLibException("The config files do not exist or"
-                                           " are not of the correct format."
-                                           " Valid files are: {0}, {1} or {2}"
-                                           .format(cls.GLOBAL_CONFIG,
-                                                   cls.LOCAL_CONFIG,
-                                                   cls.CURDIR_CONFIG))
-            server_url = os.environ.get("POLARION_URL") or \
-                config.get(cls.CONFIG_SECTION, "url")
-            repo = os.environ.get("POLARION_REPO") or \
-                config.get(cls.CONFIG_SECTION, "svn_repo")
-            login = os.environ.get("POLARION_USERNAME") or \
-                config.get(cls.CONFIG_SECTION, "user")
-            pwd = os.environ.get("POLARION_PASSWORD") or \
-                config.get(cls.CONFIG_SECTION, "password")
-            timeout = os.environ.get("POLARION_TIMEOUT") or \
-                config.get(cls.CONFIG_SECTION, "timeout")
-            try:
-                timeout = int(timeout)
-            except ValueError:
-                raise PylarionLibException("The timeout value in the config"
-                                           " file must be an integer")
+            cfg = Configuration()
             # if the password is not supplkied in the config file, ask the user
             # for it
-            if not pwd:
-                pwd = getpass("Password not in config file.\nEnter Password:")
-            proj = os.environ.get("POLARION_PROJECT") or \
-                config.get(cls.CONFIG_SECTION, "default_project")
-            try:
-                cert_path = os.environ.get("POLARION_CERT_PATH") or \
-                    config.get(cls.CONFIG_SECTION, "cert_path")
-            except Exception:
-                cert_path = None
-
-            if not (server_url and login and pwd and proj):
-                raise PylarionLibException("The config files must contain "
-                                           "valid values for: url, user, "
-                                           "password and default_project")
-            # If we couldn't connect its because the user has typed the wrong
-            # password. So we keep asking for password till we are successfully
-            # connected
+            if not cfg.pwd:
+                cfg.pwd = getpass(
+                    "Password not in config file.\nEnter Password:")
             while not cls.connected:
                 try:
                     srv = Server(
-                        server_url,
-                        login, pwd,
-                        timeout=timeout,
-                        cert_path=cert_path)
+                        cfg.server_url,
+                        cfg.login, cfg.pwd,
+                        timeout=cfg.timeout,
+                        cert_path=cfg.cert_path)
                     cls.session = srv.session()
                     cls.session._login()
                     cls.connected = True
                 except suds.WebFault as e:
+# If we couldn't connect its because the user has typed the wrong
+# password. So we keep asking for password till we are successfully
+# connected
                     if "com.polarion.platform.security." \
                             "AuthenticationFailedException" \
                             in e.fault.faultstring:
                         pwd = getpass("Invalid Password.\nEnter Password:")
                     else:
                         raise
-            cls.session.default_project = proj
-            cls.session.user_id = login
-            cls.session.password = pwd
-            cls.session.repo = repo
+            cls.session.default_project = cfg.proj
+            cls.session.user_id = cfg.login
+            cls.session.password = cfg.pwd
+            cls.session.repo = cfg.repo
+            cls.session.workitems = cfg.workitems
+            # must use try/except instead of or because the config file
+            # may return a non empty value, such as " "
         return cls.session
 
 
@@ -428,8 +443,9 @@ class BasePolarion(object):
         if isinstance(val, basestring):
             val = self._check_encode(val)
             if enum_id and val not in enum_override:
-                self.check_valid_field_values(val, enum_id, {},
-                                              csm.get("control"))
+                self.check_valid_field_values(
+                    val, enum_id, {},
+                    self._wi_type if hasattr(self, "_wi_type") else None)
         if not sync_field:
             sync_field = "_suds_object"
         if isinstance(val, basestring) or val is None:
@@ -644,7 +660,8 @@ class BasePolarion(object):
                                 csm.get("additional_parms", {}))
                             self.check_valid_field_values(
                                 i, csm.get("enum_id"), additional_parms,
-                                csm.get("control"))
+                                self._wi_type if hasattr(self,"_wi_type")
+                                else None)
                         cust.value[0].append(
                             csm["cls"]._cls_inner(i)._suds_object)
 
@@ -901,11 +918,15 @@ class BasePolarion(object):
             Tracker.getEnumOptionsForId
         """
         project_id = getattr(self, "project_id", None) or self.default_project
-        enums = self._cache["enums"].get(enum_id)
+        enum_base = self._cache["enums"].get(enum_id)
+        enums = None
+        if enum_base:
+            enums = enum_base.get(control)
         if not enums:
             enums = self.session.tracker_client.service. \
                 getEnumOptionsForIdWithControl(project_id, enum_id, control)
-            self._cache["enums"][enum_id] = enums
+            self._cache["enums"][enum_id]={}
+            self._cache["enums"][enum_id][control] = enums
         # the _cache contains _suds_object, so the id attribute is used.
         return [enum.id for enum in enums]
 
