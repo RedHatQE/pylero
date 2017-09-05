@@ -11,7 +11,6 @@ from pylarion.server import Server
 from __builtin__ import classmethod
 from ConfigParser import SafeConfigParser
 from functools import wraps
-from pylarion.logstasher import LoggingMeta, init_logger
 from getpass import getpass
 
 
@@ -40,8 +39,6 @@ class Connection(object):
     POLARION_PASSWORD
     POLARION_TIMEOUT
     POLARION_PROJECT
-    POLARION_LOGSTASH_URL
-    POLARION_LOGSTASH_PORT
     """
     connected = False
     session = None
@@ -55,12 +52,8 @@ class Connection(object):
     @classmethod
     def session(cls):
         if not cls.connected:
-            defaults = {"logstash_url":
-                        "ops-qe-logstash-2.rhev-ci-vms.eng.rdu2.redhat.com",
-                        "logstash_port": "9911",
-                        "cachingpolicy": "0",
-                        "timeout": "120",
-                        "use_logstash": "on"}
+            defaults = {"cachingpolicy": "0",
+                        "timeout": "120"}
             config = SafeConfigParser(defaults)
             if not config.read([cls.GLOBAL_CONFIG, cls.LOCAL_CONFIG,
                                 cls.CURDIR_CONFIG]) or \
@@ -95,14 +88,8 @@ class Connection(object):
             try:
                 cert_path = os.environ.get("POLARION_CERT_PATH") or \
                     config.get(cls.CONFIG_SECTION, "cert_path")
-            except:
+            except Exception:
                 cert_path = None
-            logstash_url = os.environ.get("POLARION_LOGSTASH_URL") or \
-                config.get(cls.CONFIG_SECTION, "logstash_url")
-            logstash_port = os.environ.get("POLARION_LOGSTASH_PORT") or \
-                config.get(cls.CONFIG_SECTION, "logstash_port")
-            use_logstash = os.environ.get("POLARION_USE_LOGSTASH") or \
-                config.get(cls.CONFIG_SECTION, "use_logstash")
 
             if not (server_url and login and pwd and proj):
                 raise PylarionLibException("The config files must contain "
@@ -132,17 +119,6 @@ class Connection(object):
             cls.session.user_id = login
             cls.session.password = pwd
             cls.session.repo = repo
-            cls.session.logstash_url = logstash_url or defaults["logstash_url"]
-            # must use try/except instead of or because the config file
-            # may return a non empty value, such as " "
-            try:
-                cls.session.logstash_port = int(logstash_port)
-            except ValueError:
-                cls.session.logstash_port = int(defaults["logstash_port"])
-            if use_logstash == "on":
-                cls.session.use_logstash = True
-            else:
-                cls.session.use_logstash = False
         return cls.session
 
 
@@ -178,14 +154,6 @@ class BasePolarion(object):
     WSDL object that is contained by it.
 
     Attributes:
-        __metaclass__ (str): defines the metaclass of BasePolarion to be the
-                             LoggingMeta meta class, which sends usage data to
-                             the logstash server.
-        _logstash_elements (list): list of the object attributes that you want
-                                   to send to logstash. The list items contain
-                                   a tuple containing the variable name for
-                                   logstash and the attribute name (without
-                                   self. or cls.)
         _cls_suds_map (dict): maps the Polarion attribute names to the Pylarion
                         attribute names. Pylarion attribute names use the
                         Red Hat global CI naming conventions.
@@ -209,11 +177,6 @@ class BasePolarion(object):
         default_project (str): The user's default project, to be used when
                           project_id is needed and there is none given
     """
-    __metaclass__ = LoggingMeta
-    _logstash_elements = [("v_user_name", "logged_in_user_id"),
-                          ("v_project_id", "project_id"),
-                          ("v_default_project", "default_project")]
-    _logstash_system = "PYLARION"
     _cls_suds_map = {}
     _id_field = None
     _obj_client = None
@@ -253,9 +216,6 @@ class BasePolarion(object):
             # stores password in the session so it can be used for direct svn
             # operations
             BasePolarion.repo = cls._session.repo
-            # initialize the logger that sends data to logstash.
-            init_logger(cls.session.logstash_url, cls.session.logstash_port,
-                        cls.session.use_logstash)
             return BasePolarion._session
 
     @ClassProperty

@@ -9,9 +9,9 @@ from pylarion.test_record import TestRecord
 from pylarion.work_item import TestCase, Requirement
 from pylarion.test_steps import TestSteps
 
-USER = "szacks"
-ALT_USER = "oramraz"
-PROJ2 = "szacks"
+USER = "user1"
+ALT_USER = "user2"
+PROJ2 = "proj2"
 TIME_STAMP = datetime.datetime.now().strftime("%Y%m%d%H%M%s")
 # TEST_RUN_ID will change if the generate id setting is set
 TEST_RUN_ID = "tr_regr-%s" % TIME_STAMP
@@ -177,6 +177,7 @@ class AttributeTest(unittest2.TestCase):
             test_case.title = u"é".encode('latin')
         with self.assertRaises(PylarionLibException):  # check _arr_obj_setter
             steps.keys = [u"é".encode('latin')]
+
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
