@@ -74,6 +74,7 @@ class Session(object):
         # end get cookies
         self._last_request_at = None
         self._session_id_header = None
+        self._cookies = None
         self._session_client = _SudsClientWrapper(
             self._url_for_name('Session'), None, timeout, self.jsessionid)
         # In certain circumstances when using a load balancer, the wsdl will
@@ -119,6 +120,7 @@ class Session(object):
         session_ns = id_element.namespace()
         self._session_id_header = suds.sax.element.Element(
             'sessionID', ns=session_ns).setText(session_id)
+        self._cookies = sc.options.transport.cookiejar
         sc.set_options(soapheaders=self._session_id_header)
         self._last_request_at = time.time()
 
@@ -208,4 +210,6 @@ class _SudsClientWrapper:
             self._enclosing_session._reauth()
             self._suds_client.set_options(
                 soapheaders=self._enclosing_session._session_id_header)
+            self._suds_client.options.transport.cookiejar = \
+                self._enclosing_session._cookies
         return getattr(self._suds_client, attr)
