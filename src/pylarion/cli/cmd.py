@@ -52,11 +52,34 @@ class CmdList(object):
         return self.workitem_list
 
     def print_workitems(self, workitems):
-        print 'Type%10sID%12sDescription' % ('', '')
-        print '-------%7s-----%9s--------' % ('', '')
+        number = len(workitems)
+        print '\nTotal workitems: %d' % number
+        print 'Created%7sType%10sID%12sTitle' % ('', '', '')
+        print '---------%5s-------%7s-----%9s--------' % ('', '', '')
 
         for wi in workitems:
-            print '%-13s %-13s %s' % (wi.type, wi.work_item_id, wi.title)
+            created = str(wi.created).split(' ')[0]
+            print '%-13s %-13s %-13s %s' % (created, wi.type,
+                                            wi.work_item_id, wi.title)
+
+    def list_workitems_by_query(self, query, wi_type):
+        fields = ['work_item_id',
+                  'title',
+                  'author',
+                  'created']
+
+        if wi_type in ["testcase", "TestCase"]:
+            workitem_list = TestCase.query(query, fields)
+        elif wi_type in ["requirement", "Requirement"]:
+            workitem_list = Requirement.query(query, fields)
+        elif wi_type == '':
+            workitem_list = TestCase.query(query, fields) + \
+                            Requirement.query(query, fields)
+        else:
+            print("'%s' is invalid. Use testcase or requirement" % wi_type)
+            exit(0)
+
+        return workitem_list
 
     def print_steps_for_testcase(self, case_id):
         tc = TestCase(TestCase.default_project, case_id)
