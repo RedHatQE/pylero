@@ -7,13 +7,11 @@ import time
 import suds.sax.element
 import ssl
 from urlparse import urlparse
-import requests
 
 from suds.plugin import MessagePlugin
 from suds.sax.attribute import Attribute
 
 
-# TODO: figure out what this does
 logger = logging.getLogger(__name__)
 CERT_PATH = None
 
@@ -25,7 +23,6 @@ def create_redhat_ssl_context():
     connection in python-version >=2.7.10. this ssl context is customize to use
     redhat certificate which is located in 'cert_path'.
     """
-    global CERT_PATH
     context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
     context.verify_mode = ssl.CERT_REQUIRED
     context.check_hostname = True
@@ -67,42 +64,23 @@ class Session(object):
                 timeout: HTTP timeout for the connection
         """
         self._server = server
-        # get cookies using requests because it doesn't work with suds
-        #
-        site = requests.get(server.url)
-        self.jsessionid = site.cookies.get("JSESSIONID")
-        # end get cookies
         self._last_request_at = None
         self._session_id_header = None
         self._cookies = None
         self._session_client = _SudsClientWrapper(
-            self._url_for_name('Session'), None, timeout, self.jsessionid)
-        # In certain circumstances when using a load balancer, the wsdl will
-        # switch nodes for an unknown reason. This fix gets the specific node
-        # that was logged into and uses it for all future server interactions.
-        # The cause of this problem is unknown as it works in most instances
-        # without this fix. Another solutions that was tried was to add the
-        # load balancer's sticky bit cookie to the headers, but that did not
-        # have any effect.
-        full_url = self._session_client._suds_client.wsdl.types[0]. \
-            definitions["services"][0]["ports"][0]["location"]
-        p_url = urlparse(full_url)
-        o_url = urlparse(self._server.url)
-        self._server.url = "%s://%s%s" % (
-            p_url.scheme, p_url.hostname, o_url.path)
+            self._url_for_name('Session'), None, timeout)
         self.builder_client = _SudsClientWrapper(
-            self._url_for_name('Builder'), self, timeout, self.jsessionid)
+            self._url_for_name('Builder'), self, timeout)
         self.planning_client = _SudsClientWrapper(
-            self._url_for_name('Planning'), self, timeout, self.jsessionid)
+            self._url_for_name('Planning'), self, timeout)
         self.project_client = _SudsClientWrapper(
-            self._url_for_name('Project'), self, timeout, self.jsessionid)
+            self._url_for_name('Project'), self, timeout)
         self.security_client = _SudsClientWrapper(
-            self._url_for_name('Security'), self, timeout, self.jsessionid)
+            self._url_for_name('Security'), self, timeout)
         self.test_management_client = _SudsClientWrapper(
-            self._url_for_name('TestManagement'), self, timeout,
-            self.jsessionid)
+            self._url_for_name('TestManagement'), self, timeout)
         self.tracker_client = _SudsClientWrapper(
-            self._url_for_name('Tracker'), self, timeout, self.jsessionid)
+            self._url_for_name('Tracker'), self, timeout)
 
         # This block forces ssl certificate verification
         if self._server.cert_path:
@@ -169,7 +147,7 @@ class Session(object):
 class _SudsClientWrapper:
     """class that manages the WSDL clients"""
 
-    def __init__(self, url, enclosing_session, timeout, jsessionid):
+    def __init__(self, url, enclosing_session, timeout):
         """has the actual WSDL client as a private _suds_client attribute so
         that the "magic" __getattr__ function will be able to verify
         functions called on it and after processing to call the WSDL function
@@ -187,16 +165,10 @@ class _SudsClientWrapper:
             timeout (int): The HTTP timeout of the connection
         """
         plugin = SoapNull()
-        # adding cookies gotten from site in session__init__. This will
-        # guarantee that all clients use the load balancer cookies and go to
-        # the same node.
-        # Passing in the JSESSIONID cookie. This currently doesn't do anything,
-        # but may in the future.
         self._suds_client = suds.client.Client(
             url,
             plugins=[plugin],
-            timeout=timeout,
-            headers={'Cookie': 'JSESSIONID=%s' % jsessionid})
+            timeout=timeout)
         self._enclosing_session = enclosing_session
 
     def __getattr__(self, attr):
@@ -210,6 +182,15 @@ class _SudsClientWrapper:
             self._enclosing_session._reauth()
             self._suds_client.set_options(
                 soapheaders=self._enclosing_session._session_id_header)
-            self._suds_client.options.transport.cookiejar = \
-                self._enclosing_session._cookies
+            # for some reason adding the cookiejar didn't work, so the
+            # cookie is being added to the header manually.
+            # self._suds_client.options.transport.cookiejar = \
+            #    self._enclosing_session._cookies
+            # adding the RouteID cookie, if it exists to the headers.
+            hostname = urlparse(self._enclosing_session._server.url).hostname
+            route = self._enclosing_session._cookies._cookies \
+                .get(hostname, {}).get("/", {}).get("ROUTEID")
+            if route:
+                self._suds_client.options.headers["Cookie"] = \
+                    "ROUTEID=%s" % route.value
         return getattr(self._suds_client, attr)
