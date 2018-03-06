@@ -380,6 +380,7 @@ class TestRunTest(unittest2.TestCase):
                             work_item_id=linked_work_items[idx].work_item_id)
         self.assertIsNotNone(incident)
 
+
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
     unittest2.main()

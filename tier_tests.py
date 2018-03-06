@@ -15,6 +15,7 @@ def get_command(x):
                ' work_item_test plan_test'
     }.get(x)
 
+
 if __name__ == "__main__":
     nose = 'nose2 --plugin nose2.plugins.junitxml --junit-xml'
     coverage = ' --with-coverage --coverage-report xml'
