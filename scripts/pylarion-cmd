@@ -1,6 +1,5 @@
 #!/usr/bin/python
 
-import os
 from pylarion.cli.cmd import CmdList
 from pylarion.cli.cmd import CmdUpdate
 import click
@@ -121,6 +120,28 @@ def list(document,
               help="description of run")
 @click.option("-e", "--query",
               help="query items e.g. --query=author.id:xhe")
+@click.option("-g", "--is_document",
+              default=False,
+              is_flag=True,
+              help='flag indicating that the action will reference a document')
+@click.option("-p", "--doc_with_space",
+              help="document id with space e.g --doc_with_space=KernelQE/DOC")
+@click.option("-b", "--doc_type",
+              type=click.Choice(['generic',
+                                 'testspecification',
+                                 'requirementspecification']),
+              default='generic',
+              help="document type, default='generic'")
+@click.option("-g", "--doc_wi_type",
+              type=click.Choice(['testcase',
+                                 'requirement']),
+              default='testcase',
+              help="allowed workitem type in document, default='testcase'")
+@click.option("-f", "--doc_content",
+              default='My sample document',
+              help="HTML markup to document, default='My sample\
+                    document'. It can be a html file e.g\
+                    --doc_content=/home/xhe/plan.html")
 @click.option('-D', '--debug',
               default=True,
               is_flag=True,
@@ -148,6 +169,11 @@ def update(assignee,
            comment,
            description,
            query,
+           is_document,
+           doc_with_space,
+           doc_type,
+           doc_wi_type,
+           doc_content,
            debug,
            testcase,
            template,
@@ -161,7 +187,27 @@ def update(assignee,
     # instantiate the update object
     update_obj = CmdUpdate()
 
-    if run:
+    if is_document:
+        if not doc_with_space:
+            print("Exit - Missing value of --doc_with_space")
+            return False
+        if '/' not in doc_with_space:
+            print("Exit - 'SPACE/DOC_NAME' is required, --doc_with_space")
+            return False
+
+        # split string of doc_with_space
+        doc_space_list = doc_with_space.split('/')
+        space = doc_space_list[0]
+        doc_name = doc_space_list[1]
+
+        # set doc_title same as doc_name
+        doc_title = doc_name
+
+        # create document from string or html file
+        update_obj.update_document(space, doc_name, doc_title, doc_wi_type,
+                                   doc_type, "parent", doc_content)
+
+    elif run:
         if result:
             if testcase:
                 # update one case result for runs
@@ -180,12 +226,13 @@ def update(assignee,
             # update/create runs
             update_obj.update_runs(run,
                                    template,
-                                   plannedin, 
-                                   assignee, 
+                                   plannedin,
+                                   assignee,
                                    status,
                                    description)
     else:
         click.echo('Please get usage: pylarion-cmd update --help')
+
 
 if __name__ == '__main__':
     cli()
