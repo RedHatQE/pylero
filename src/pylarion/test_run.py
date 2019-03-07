@@ -646,7 +646,9 @@ class TestRun(BasePolarion):
             check_tr.finished_on = None
         elif len(results) == len(check_tr.records):
             status = "finished"
-            check_tr.finished_on = datetime.datetime.now()
+            # Do not touch finished_on because it can not be reverted
+            # DPP-171495 Web services: You cannot reset finishedOn in TestRun
+            # check_tr.finished_on = datetime.datetime.now()
         else:
             status = "inprogress"
             check_tr.finished_on = None
