@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function, \
     unicode_literals
+from pylarion._compatible import classmethod,object,range, basestring
 import os
 import suds
 import datetime
@@ -25,6 +26,7 @@ from pylarion.plan import Plan  # NOQA
 from pylarion.base_polarion import tx_wrapper
 import requests
 from requests.auth import HTTPBasicAuth
+
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 # This is to disable the InsecureRequestWarning
@@ -544,13 +546,11 @@ class TestRun(BasePolarion):
         proj = Project(project_id)
         # proj.location[8:-30] removes the default: at the beginning and
         # .polarion/polarion-project.xml
-
         # Getting the location of the verifying CA-Bundle
         if self._session._server.cert_path:
             cert_path = self._session._server.cert_path
         else:
             cert_path = False
-
         file_download = requests.get("{0}{1}{2}".format(
             self.repo, proj.location[8:-30], self.CUSTOM_FIELDS_FILE),
             auth=HTTPBasicAuth(self.logged_in_user_id, self.session.password),
@@ -612,8 +612,8 @@ class TestRun(BasePolarion):
                     self._cls_suds_map[field]["cls"] = EnumOptionId
                 self._cls_suds_map[field]["enum_id"] = cache[field]["type"]
                 if isinstance(cache[field]["type"], type) and "project_id" in \
-                        cache[field]["type"].__init__.func_code.co_varnames[
-                        :cache[field]["type"].__init__.func_code.co_argcount]:
+                        cache[field]["type"].__init__.__code__.co_varnames[
+                        :cache[field]["type"].__init__.__code__.co_argcount]:
                     self._cls_suds_map[field]["additional_parms"] = \
                         {"project_id": project_id}
 
@@ -987,7 +987,7 @@ class TestRun(BasePolarion):
         """
         self._verify_obj()
         cf = self._custom_fields
-        match = filter(lambda x: x.key == field_name, cf)
+        match = [x for x in cf if x.key == field_name]
         if match:
             return match[0].value
         else:
@@ -1030,7 +1030,7 @@ class TestRun(BasePolarion):
         cust.value = value
         if cf:
             # check if the custom field already exists and if so, modify it.
-            match = filter(lambda x: x.key == field_name, cf)
+            match = [x for x in cf if x.key == field_name]
             if match:
                 match[0].value = value
             else:

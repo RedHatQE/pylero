@@ -100,3 +100,8 @@ class PlanTest(unittest2.TestCase):
         Plan.delete_plans(DEFAULT_PROJ, PLAN_ID)
         with self.assertRaises(PylarionLibException):
             Plan(project_id=DEFAULT_PROJ, plan_id=PLAN_ID)
+
+if __name__ == "__main__":
+    # import sys;sys.argv = ['', 'Test.testName']
+    unittest2.main()
+

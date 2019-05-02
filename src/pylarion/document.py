@@ -1,6 +1,8 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
+from pylarion._compatible import basestring
+
 import suds
 from pylarion.exceptions import PylarionLibException
 from pylarion.base_polarion import BasePolarion
@@ -193,7 +195,7 @@ class Document(BasePolarion):
                 wi_head.title = document_title
                 doc.create_work_item(None, wi_head)
             return doc
-        except suds.WebFault, e:
+        except suds.WebFault as e:
             if "Invalid document on location Location" in e.fault.faultstring:
                 raise PylarionLibException(
                     "Document {0}/{1} already exists".format(space,

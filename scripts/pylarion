@@ -5,7 +5,6 @@ import inspect
 import pkgutil
 import pylarion
 import readline
-
 # On import, the readline features are active without calling
 # any functions. This enables the arrow keys. Without this
 # import, pressing the arrow keys shows ctrl chars.

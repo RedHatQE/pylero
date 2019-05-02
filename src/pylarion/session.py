@@ -1,13 +1,11 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
-
+from pylarion._compatible import builtins,object,urlparse
 import logging
 import time
 import suds.sax.element
 import ssl
-from urlparse import urlparse
-
 from suds.plugin import MessagePlugin
 from suds.sax.attribute import Attribute
 
@@ -144,7 +142,7 @@ class Session(object):
         return self._session_client.service.transactionExists()
 
 
-class _SudsClientWrapper:
+class _SudsClientWrapper(object):
     """class that manages the WSDL clients"""
 
     def __init__(self, url, enclosing_session, timeout):

@@ -28,7 +28,7 @@ Pylarion is located in a git repository and can be cloned from::
 
 From the root of the project, run::
 
-    $ python setup.py install
+    $ pip install .
 
 If you want to make an rpm out of it::
 
@@ -69,12 +69,11 @@ These can also be overridden with the following environment variables:
 
 Requirements:
 *************
-suds
-requests
-
-There is a requirements.txt file in the root directory. All requirements can
-be installed by:
-pip install -r requirements.txt
+The install_requires attribute in setup.py installs the following requirements
+suds-py3 if python_version>="3"
+suds if python_version<="2.7"
+click
+requests>=2.6.0'
 
 Usage:
 ******

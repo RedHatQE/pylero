@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
+from pylarion._compatible import SafeConfigParser, basestring, classmethod
 import os
 import base64
 import copy
@@ -8,14 +9,10 @@ import re
 import suds
 from pylarion.exceptions import PylarionLibException
 from pylarion.server import Server
-from __builtin__ import classmethod
-from ConfigParser import SafeConfigParser
 from functools import wraps
 from getpass import getpass
 
-
 # classproperty is a property that works on the class level
-
 
 class ClassProperty(property):
     """Returns a classmethod as the getter so that the property can be used as
@@ -108,7 +105,7 @@ class Connection(object):
                     cls.session = srv.session()
                     cls.session._login()
                     cls.connected = True
-                except suds.WebFault, e:
+                except suds.WebFault as e:
                     if "com.polarion.platform.security." \
                             "AuthenticationFailedException" \
                             in e.fault.faultstring:
@@ -244,18 +241,16 @@ class BasePolarion(object):
             if not isinstance(fields, list):
                 fields = [fields]
             # convert given fields to Polarion fields
-            p_fields = map(
-                lambda x: "%s%s" % (
+            p_fields = ["%s%s" % (
                     "customFields."
                     if isinstance(cls._cls_suds_map[x], dict) and
                     cls._cls_suds_map[x].get("is_custom", False)
                     else "",
                     cls._cls_suds_map[x]
                     if not isinstance(cls._cls_suds_map[x], dict)
-                    else cls._cls_suds_map[x]["field_name"]),
-                fields)
+                    else cls._cls_suds_map[x]["field_name"]) for x in fields]
             # Omit 'URI' from URIFields
-            p_fields = map(lambda x: (x.replace("URI", "")), p_fields)
+            p_fields = [(x.replace("URI", "")) for x in p_fields]
         return p_fields
 
     @classmethod
@@ -315,7 +310,7 @@ class BasePolarion(object):
             self._get_suds_object()
         # initialize all instance attributes as properties
         # check if the property already exists. If so, use existing.
-        for key in self._cls_suds_map.keys():
+        for key in list(self._cls_suds_map.keys()):
             if not hasattr(self.__class__, key):
                 # require default values for lambda or it evaluates all
                 # variables
@@ -563,7 +558,7 @@ class BasePolarion(object):
             custom_fld = None
             if cf:
                 # check if the custom field already exists and modify it.
-                match = filter(lambda x: x.key == csm["field_name"], cf)
+                match = [x for x in cf if x.key == csm["field_name"]]
                 if match:
                     custom_fld = match[0]
             if not custom_fld and self.uri:
@@ -666,7 +661,7 @@ class BasePolarion(object):
             cf = self._suds_object.customFields[0]
             if cf:
                 # check if the custom field already exists and modify it.
-                match = filter(lambda x: x.key == csm["field_name"], cf)
+                match = [x for x in cf if x.key == csm["field_name"]]
                 if match:
                     match[0].value = cust.value
                 else:

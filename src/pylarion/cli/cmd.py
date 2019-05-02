@@ -1,4 +1,7 @@
 # -*- coding: utf8 -*-
+from __future__ import print_function
+from pylarion._compatible import object
+from pylarion._compatible import str
 import datetime
 import os
 from pylarion.document import Document

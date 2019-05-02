@@ -278,7 +278,7 @@ class TestRunTest(unittest2.TestCase):
                         caseposneg="positive",
                         testtype="functional",
                         subtype1="-")
-        tr = TestRun.create("pylarion", "querytest-%s" % TIME_STAMP, "Example",
+        tr = TestRun.create("proj1", "querytest-%s" % TIME_STAMP, "Example",
                             "querytest-%s" % TIME_STAMP, query=TIME_STAMP)
         self.assertEquals(tr.select_test_cases_by, "dynamicQueryResult")
         num_recs = len(tr.records)
@@ -376,7 +376,7 @@ class TestRunTest(unittest2.TestCase):
         tc.reload()
         linked_work_items = tc.linked_work_items_derived
         idx = len(linked_work_items) - 1
-        incident = Incident(project_id="pylarion",
+        incident = Incident(project_id="proj1",
                             work_item_id=linked_work_items[idx].work_item_id)
         self.assertIsNotNone(incident)
 

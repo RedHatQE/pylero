@@ -1,3 +1,4 @@
+from __future__ import print_function
 # this script execute tier testsing for pylarion
 # if the first argument is "tier0" it tests tier0
 # if the first argument is "tier1" it tests tier1
