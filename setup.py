@@ -1,12 +1,24 @@
 from setuptools import setup
 from distutils.command.install import INSTALL_SCHEMES
 
+import sys
+
 PACKAGE_NAME = "pylarion"
 CLI_NAME = "pylarion-cmd"
 
 # change the data dir to be the etc dir under the package dir
 for scheme in list(INSTALL_SCHEMES.values()):
     scheme['data'] = '%s/%s/etc' % (scheme['purelib'], PACKAGE_NAME)
+
+install_requires_ = [
+    'click',
+    'requests>=2.6.0'
+]
+
+if sys.version_info >= (3, 0):
+    install_requires_.insert(0, 'suds-py3')
+else:
+    install_requires_.insert(0, 'suds')
 
 if __name__ == "__main__":
     setup(
@@ -30,11 +42,5 @@ if __name__ == "__main__":
         data_files=[
             ('', ['etc/%s/%s.cfg' % (PACKAGE_NAME, PACKAGE_NAME)])
         ],
-        install_requires=[
-            'suds-py3;python_version>="3"',
-            'suds;python_version<"3"',
-            'click',
-            'requests>=2.6.0'
-
-        ],
+        install_requires=install_requires_
     )
