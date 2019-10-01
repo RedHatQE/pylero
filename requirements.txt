@@ -1,3 +1,4 @@
-suds
+suds; python_version < '3.0'
+suds-py3; python_version >= '3.0'
 requests>=2.6.0
 click
