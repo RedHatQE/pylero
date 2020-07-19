@@ -31,7 +31,7 @@ Download and Installation:
 **************************
 Pylarion is located in a git repository and can be cloned from::
 
-    $ git clone https://code.engineering.redhat.com/gerrit/pylarion
+    $ git clone https://gitlab.cee.redhat.com/ccit/pylarion.git
 
 From the root of the project, run::
 
