@@ -68,7 +68,7 @@ These are the configurable values:
     user={your username}
     password={your password}
     default_project={your default project}
-    workitems={"testcase": "TestCase", "requirement":"Requirement}
+    workitems={"testcase": "TestCase", "requirement":"Requirement"}
     #cert_path=/dir/with/certs
 
 If the password value is blank, it will prompt you for a password when you try
