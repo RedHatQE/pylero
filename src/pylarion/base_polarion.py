@@ -34,7 +34,7 @@ class Configuration(object):
     def __init__(self):
         defaults = {"cachingpolicy": "0",
                     "timeout": "120",
-                    "workitems": None}
+                    "workitems": ""}
 
 
         config = SafeConfigParser(defaults)
