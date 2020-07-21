@@ -68,9 +68,6 @@ These are the configurable values:
     user={your username}
     password={your password}
     default_project={your default project}
-    logstash_url=ops-qe-logstash-2.rhev-ci-vms.eng.rdu2.redhat.com
-    logstash_port=9911
-    use_logstash=on
     workitems={"testcase": "TestCase", "requirement":"Requirement}
     #cert_path=/dir/with/certs
 
@@ -84,16 +81,12 @@ These can also be overridden with the following environment variables:
     POLARION_PASSWORD
     POLARION_TIMEOUT
     POLARION_PROJECT
-    POLARION_LOGSTASH_URL
-    POLARION_LOGSTASH_PORT
-    POLARION_USE_LOGSTASH
     POLARION_WORKITEMS
     POLARION_CERT_PATH
 
 Requirements:
 *************
 python-suds
-python-logstash
 requests
 
 There is a requirements.txt file in the root directory. All requirements can
@@ -130,18 +123,6 @@ Examples:
 **********
     Please see https://mojo.redhat.com/docs/DOC-1016728/ for examples
 
-Logstash:
-**********
-Logstash is used to provide usage data and centralized logging for errors. This
-gives the development/implementation team the ability to understand how the
-library is being used in order to determine continued efforts. It also provides
-error logging so that problems reported by users can be more easily debugged.
-The logstash functionality is built to be non-invasive, so that in the event of
-a logstash problem, the rest of pylarion will continue to work. Being that
-Polarion is based on the subversion VCS and tracks every action done, tracking
-usage data is not considered a privacy violation.
-If you do not want your usage data to be tracked, you can set the use_logstash
-value to anything other than on
 
 Contents:
 
