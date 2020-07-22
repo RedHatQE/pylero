@@ -1419,6 +1419,7 @@ class _SpecificWorkItem(_WorkItem):
                                                                    "enum_id",
                                                                    None)
                 cls._cls_suds_map[local_name]["is_custom"] = True
+                cls._cls_suds_map[local_name]["control"] = cls._wi_type
                 if cft.required:
                     cls._required_fields.append(local_name)
         cls._got_custom_fields = True
