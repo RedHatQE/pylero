@@ -33,8 +33,7 @@ class Configuration(object):
 
     def __init__(self):
         defaults = {"cachingpolicy": "0",
-                    "timeout": "120",
-                    "workitems": ""}
+                    "timeout": "120"}
 
 
         config = SafeConfigParser(defaults)
@@ -69,8 +68,6 @@ class Configuration(object):
                         config.get(self.CONFIG_SECTION, "cert_path")
         except:
             self.cert_path = None
-        self.workitems = os.environ.get("POLARION_WORKITEMS") or \
-                    config.get(self.CONFIG_SECTION, "workitems")
 
         if not (self.server_url and self.login and self.proj):
             raise PylarionLibException("The config files must contain "
@@ -99,7 +96,7 @@ class Connection(object):
     def session(cls):
         if not cls.connected:
             cfg = Configuration()
-            # if the password is not supplkied in the config file, ask the user
+            # if the password is not supplied in the config file, ask the user
             # for it
             if not cfg.pwd:
                 cfg.pwd = getpass(
@@ -128,7 +125,6 @@ class Connection(object):
             cls.session.user_id = cfg.login
             cls.session.password = cfg.pwd
             cls.session.repo = cfg.repo
-            cls.session.workitems = cfg.workitems
             # must use try/except instead of or because the config file
             # may return a non empty value, such as " "
         return cls.session

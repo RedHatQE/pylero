@@ -1520,19 +1520,15 @@ class _SpecificWorkItem(_WorkItem):
                 self.set_test_steps(self._changed_fields[field].steps[0])
         self._changed_fields = {}
 
-# On import of the module, it will check the configuration to see if the
-# workitem classes have been defined. If not, it will connect to the server
+# On import of the module, it will connect to the server
 # and get a list of the workitem types and create those classes.
 
 cfg = Configuration()
-if cfg.workitems:
-    workitems = json.loads(cfg.workitems)
-else:
-    bp = BasePolarion()
-    vals = bp.get_valid_field_values("workitem-type")
-    workitems = {}
-    for item in bp._cache["enums"]["workitem-type"][None]:
-        workitems[item.id] = item.name.replace(" ", "")
+bp = BasePolarion()
+vals = bp.get_valid_field_values("workitem-type")
+workitems = {}
+for item in bp._cache["enums"]["workitem-type"][None]:
+    workitems[item.id] = item.name.replace(" ", "")
 
 for wi in workitems:
     newclass = type(str(workitems[wi]),
