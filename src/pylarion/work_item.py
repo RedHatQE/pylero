@@ -6,8 +6,9 @@ import suds
 import os
 import re
 import copy
+import json
 from pylarion.exceptions import PylarionLibException
-from pylarion.base_polarion import BasePolarion
+from pylarion.base_polarion import BasePolarion, Configuration
 from pylarion.approval import Approval
 from pylarion.approval import ArrayOfApproval
 from pylarion.attachment import Attachment
@@ -1519,77 +1520,21 @@ class _SpecificWorkItem(_WorkItem):
                 self.set_test_steps(self._changed_fields[field].steps[0])
         self._changed_fields = {}
 
+# On import of the module, it will connect to the server
+# and get a list of the workitem types and create those classes.
 
-# each workitem class has a few special attributes in the _cls_suds_map
-# so it requires a deep copy so it doesn't interfere with the class
-# attribute.
-class TestCase(_SpecificWorkItem):
-    _wi_type = "testcase"
-    _cls_suds_map = copy.deepcopy(_SpecificWorkItem._cls_suds_map)
-    _cls_suds_map["previous_status"]["enum_id"] = "testcase-status"
-    _cls_suds_map["status"]["enum_id"] = "testcase-status"
+cfg = Configuration()
+bp = BasePolarion()
+vals = bp.get_valid_field_values("workitem-type")
+workitems = {}
+for item in bp._cache["enums"]["workitem-type"][None]:
+    workitems[item.id] = item.name.replace(" ", "")
 
-
-class TestSuite(_SpecificWorkItem):
-    _wi_type = "testsuite"
-    _cls_suds_map = copy.deepcopy(_SpecificWorkItem._cls_suds_map)
-    _cls_suds_map["previous_status"]["enum_id"] = "testsuite-status"
-    _cls_suds_map["status"]["enum_id"] = "testsuite-status"
-
-
-class UnitTestCase(_SpecificWorkItem):
-    _wi_type = "unittestcase"
-    _cls_suds_map = copy.deepcopy(_SpecificWorkItem._cls_suds_map)
-    _cls_suds_map["previous_status"]["enum_id"] = "unittestcase-status"
-    _cls_suds_map["status"]["enum_id"] = "unittestcase-status"
-
-
-class BusinessCase(_SpecificWorkItem):
-    _wi_type = "businesscase"
-    _cls_suds_map = copy.deepcopy(_SpecificWorkItem._cls_suds_map)
-    _cls_suds_map["previous_status"]["enum_id"] = "businesscase-status"
-    _cls_suds_map["status"]["enum_id"] = "businesscase-status"
-
-
-class Requirement(_SpecificWorkItem):
-    _wi_type = "requirement"
-    _cls_suds_map = copy.deepcopy(_SpecificWorkItem._cls_suds_map)
-    _cls_suds_map["previous_status"]["enum_id"] = "requirement-status"
-    _cls_suds_map["status"]["enum_id"] = "requirement-status"
-    _cls_suds_map["resolution"]["enum_id"] = "requirement-resolution"
-    _cls_suds_map["severity"]["enum_id"] = "requirement-severity"
-
-
-class ChangeRequest(_SpecificWorkItem):
-    _wi_type = "changerequest"
-
-
-class Incident(_SpecificWorkItem):
-    _wi_type = "incident"
-    _cls_suds_map = copy.deepcopy(_SpecificWorkItem._cls_suds_map)
-    _cls_suds_map["previous_status"]["enum_id"] = "incident-status"
-    _cls_suds_map["status"]["enum_id"] = "incident-status"
-    _cls_suds_map["resolution"]["enum_id"] = "incident-resolution"
-    _cls_suds_map["severity"]["enum_id"] = "incident-severity"
-    _cls_suds_map["priority"]["enum_id"] = "incident-priority"
-
-
-class Defect(_SpecificWorkItem):
-    _wi_type = "defect"
-    _cls_suds_map = copy.deepcopy(_SpecificWorkItem._cls_suds_map)
-    _cls_suds_map["severity"]["enum_id"] = "defect-severity"
-    _cls_suds_map["priority"]["enum_id"] = "defect-priority"
-
-
-class Task(_SpecificWorkItem):
-    _wi_type = "task"
-    _cls_suds_map = copy.deepcopy(_SpecificWorkItem._cls_suds_map)
-    _cls_suds_map["severity"]["enum_id"] = "task-severity"
-
-
-class Risk(_SpecificWorkItem):
-    _wi_type = "risk"
-    _cls_suds_map = copy.deepcopy(_SpecificWorkItem._cls_suds_map)
-    _cls_suds_map["previous_status"]["enum_id"] = "risk-status"
-    _cls_suds_map["status"]["enum_id"] = "risk-status"
-    _cls_suds_map["resolution"]["enum_id"] = "risk-resolution"
+for wi in workitems:
+    newclass = type(str(workitems[wi]),
+                    (_SpecificWorkItem,),
+                    {"_wi_type": wi,
+                     "_cls_suds_map":
+                        copy.deepcopy(_SpecificWorkItem._cls_suds_map)})
+    # Add the class to the module's namespace
+    globals()[str(workitems[wi])] = newclass

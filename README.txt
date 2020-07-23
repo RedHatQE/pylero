@@ -20,6 +20,10 @@ valid value. A number of workflow implementations are also included, for
 example when creating a Document, it automatically creates the Heading work
 item at the same time.
 
+Polarion Work Items are configured per installation, to give native workitem
+objects (such as TestCase), the library connects to the Polarion server,
+downloads the list of workitems and creates them.
+
 Download and Installation:
 **************************
 Pylarion is located in a git repository and can be cloned from::
@@ -45,7 +49,7 @@ Default settings are stored in **LIBDIR/etc/pylarion.cfg**. This file should
 not be modified, as it will be overwritten with any future updates.
 Certificates should be verified automatically, but if they aren't, you can add
 the path to your CA to the cert_path config option.
-with the following values:
+These are the configurable values:
 
     [webservice]
     url=https://polarion.engineering.redhat.com/polarion
@@ -65,7 +69,7 @@ These can also be overridden with the following environment variables:
     POLARION_PASSWORD
     POLARION_TIMEOUT
     POLARION_PROJECT
-    POLARION_CERT_PATH
+     POLARION_CERT_PATH
 
 Requirements:
 *************
@@ -95,4 +99,128 @@ want to use::
 
 Examples:
 **********
-    Please see https://mojo.redhat.com/docs/DOC-1016728/ for examples
+    import datetime  
+    from pylarion.test_run import TestRun  
+    from pylarion.test_record import TestRecord  
+    from pylarion.work_item import TestCase, Requirement  
+    from pylarion.document import Document  
+      
+    # Creating a Test Run Template:  
+    tr = TestRun.create_template("myproj", "Static Query Test", parent_template_id="Empty", select_test_cases_by="staticQueryResult",  
+                                query="type:testcase AND status:approved")  
+      
+    # Creating a Test Run:  
+    tr = TestRun.create("myproj", "My Test Run", "Static Query Test")  
+    # changing status  
+    tr.status = "inprogress"  
+      
+    # getting and changing a custom attribute in TestRun  
+    arch = tr.get_custom_field("arch")  
+    arch = "i386"  
+    tr.set_custom_field("arch", arch)  
+      
+    # saving the data to the server  
+    tr.update()  
+      
+    # Adding a test record  
+    tr.add_test_record_by_fields(test_case_id="MYPROJ-1813", test_result="passed", test_comment="went smoothly", executed_by="user1",  
+                                executed=datetime.datetime.now(), duration=10.50, defect_work_item_id="MYPROJ-1824")  
+      
+    # Getting specific WorkItems  
+    tc = TestCase(project_id="myproj", work_item_id="MYPROJ-2015")  
+    req = Requirement(project_id="myproj", work_item_id="MYPROJ-2019")  
+      
+      
+    #Getting required custom fields for specific Work Items  
+    reqs = TestCase.custom_fields("myproj")[1]  
+    # returns [u'caseimportance', u'caselevel', u'caseautomation', u'caseposneg']  
+    reqs = Requirement.custom_fields("myproj")[1]  
+    # returns [u'reqtype']  
+      
+    # Getting the valid values for the custom enumerations  
+    tc.get_valid_field_values("caseimportance")  
+    # returns [critical, high, medium, low]  
+      
+    # Creating a specific Work Item  
+    tc = TestCase.create("myproj", "Title", "Description",  
+                         caseimportance="high", caselevel="component",  
+                         caseautomation="notautomated", caseposneg="positive")  
+    # Note if the custom required fields are not specified, an exception will be raised  
+      
+    # Custom field for work items are accessed like regular attributes  
+    tc.caseimportance = "critical"  
+      
+    # to save changes  
+    tc.update()  
+      
+    # Creating a document  
+    doc = Document.create("myproj","Testing","API doc", "The API Document",  
+                                      ["testcase"])  
+    # Adding a Functional Test Case work item to the document  
+    wi = TestCase()  
+    wi.tcmscaseid = "12345"  
+    wi.title = "[GUI] Host Network QoS-'named'"  
+    wi.author = "user1"  
+    wi.tcmscategory = "Functional  
+    wi.caseimportance = "critical"  
+    wi.status = "proposed"  
+    wi.setup = "DC/Cluster/Host"  
+    wi.teardown = """Proceed with the VM Network QoS paradigm, that is creating Network QoS 
+                          entities that can be shared between different networks - let's refer to this 
+                          as ""named"" QoS. 
+                          This QoS entities are created via DC> QoS > Host Network" 
+    """  
+    steps = TestSteps()  
+    steps.keys = ["step", "expectedResult"]  
+    step1 = TestStep()  
+    step1.values = ["This is step 1", "Step 1 expected result"]  
+    step2 = TestStep()  
+    step2.values = ["This is step 2", "Step 2 expected result"]  
+    arr_step = [step1, step2]  
+    steps.steps = arr_step  
+    wi.test_steps = steps  
+    wi.caseautomation = "notautomated"  
+    wi.caseposneg = "positive"  
+    wi.caselevel = "component"  
+    new_wi = doc.create_work_item(None, wi)  
+      
+    # Getting a list of documents in a space.  
+    docs = Document.get_documents(proj="myproj", space="Testing")  
+    # Create template from document  
+    TestRun.create_template("myproj", "tpl_tp_12071", select_test_cases_by="staticLiveDoc"  
+                            doc_with_space="Testing/tp_12071")  
+    # create a test run based on the template  
+    tr = TestRun.create("myproj", "tp_12071_1", "tpl_tp_12071")  
+    # process a record  
+    rec = tr.records[0]  
+    rec.duration = "10.0"  
+    rec.executed_by = "user1"  
+    rec.executed = datetime.datetime.now()  
+    rec.result = "passed"  
+    wi = _WorkItem(uri=rec.test_case_id)  
+    steps = wi.get_test_steps()  
+    res1 = TestStepResult()  
+    res1.comment = "This is the 1st result"  
+    res1.result = "passed"  
+    res2 = TestStepResult()  
+    res2.comment = "This is the 2nd result"  
+    res2.result = "failed"  
+    rec.test_step_results = [res1, res2]  
+    tr.add_test_record_by_object(rec)  
+    # update the test record status  
+      
+    tr.status = "inprogress"  
+    tr.update()  
+      
+      
+    # Adding a linked Item  
+    # TestCase MYPROJ-2828 verifies Requirement MYPROJ-11  
+    tc = TestCase(project_id="MYPROJ", work_item_id="MYPROJ-2828")  
+    tc.add_linked_item("MYPROJ-11", "verifies")  
+    # Verify it on both objects:  
+    tc = TestCase(project_id="myproj", work_item_id="MYPROJ-2828")  
+    for linked in tc.linked_work_items:  
+         print "%s - %s" % (linked.work_item_id, linked.role)  
+    req = Requirement(project_id="myproj", work_item_id="MYPROJ-11")  
+    for linked in req.linked_work_items_derived:  
+         print "%s - %s" % (linked.work_item_id, linked.role)  
