@@ -12,7 +12,8 @@ for scheme in list(INSTALL_SCHEMES.values()):
 
 install_requires_ = [
     'click',
-    'requests>=2.6.0'
+    'requests>=2.6.0',
+    'gnureadline'
 ]
 
 if sys.version_info >= (3, 0):
