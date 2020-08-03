@@ -1,8 +1,8 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
-from pylarion._compatible import builtins,object
-from pylarion.session import Session
+from pylero._compatible import builtins,object
+from pylero.session import Session
 
 
 class Server(object):

@@ -1,29 +1,29 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function, \
     unicode_literals
-from pylarion._compatible import classmethod,object,range, basestring
+from pylero._compatible import classmethod,object,range, basestring
 import os
 import suds
 import datetime
 from xml.dom import minidom
-from pylarion.exceptions import PylarionLibException
-from pylarion.base_polarion import BasePolarion
-from pylarion.test_run_attachment import TestRunAttachment
-from pylarion.test_run_attachment import ArrayOfTestRunAttachment
-from pylarion.enum_option_id import EnumOptionId
-from pylarion.enum_option_id import ArrayOfEnumOptionId
-from pylarion.test_record import TestRecord
-from pylarion.test_record import ArrayOfTestRecord
-from pylarion.custom import Custom
-from pylarion.custom import ArrayOfCustom
-from pylarion.document import Document
-from pylarion.work_item import _WorkItem, TestCase
-from pylarion.user import User
-from pylarion.project import Project
-from pylarion.text import Text
+from pylero.exceptions import PylarionLibException
+from pylero.base_polarion import BasePolarion
+from pylero.test_run_attachment import TestRunAttachment
+from pylero.test_run_attachment import ArrayOfTestRunAttachment
+from pylero.enum_option_id import EnumOptionId
+from pylero.enum_option_id import ArrayOfEnumOptionId
+from pylero.test_record import TestRecord
+from pylero.test_record import ArrayOfTestRecord
+from pylero.custom import Custom
+from pylero.custom import ArrayOfCustom
+from pylero.document import Document
+from pylero.work_item import _WorkItem, TestCase
+from pylero.user import User
+from pylero.project import Project
+from pylero.text import Text
 # Plan is used in custom fields.
-from pylarion.plan import Plan  # NOQA
-from pylarion.base_polarion import tx_wrapper
+from pylero.plan import Plan  # NOQA
+from pylero.base_polarion import tx_wrapper
 import requests
 from requests.auth import HTTPBasicAuth
 

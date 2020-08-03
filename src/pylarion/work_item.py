@@ -1,54 +1,54 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
-from pylarion._compatible import basestring
+from pylero._compatible import basestring
 import suds
 import os
 import re
 import copy
 import json
-from pylarion.exceptions import PylarionLibException
-from pylarion.base_polarion import BasePolarion, Configuration
-from pylarion.approval import Approval
-from pylarion.approval import ArrayOfApproval
-from pylarion.attachment import Attachment
-from pylarion.attachment import ArrayOfAttachment
-from pylarion.user import User
-from pylarion.user import ArrayOfUser
-from pylarion.category import Category
-from pylarion.category import ArrayOfCategory
-from pylarion.comment import Comment
-from pylarion.comment import ArrayOfComment
-from pylarion.custom import Custom
-from pylarion.custom import ArrayOfCustom
-from pylarion.custom_field import CustomField
-from pylarion.custom_field_type import CustomFieldType
-from pylarion.enum_custom_field_type import EnumCustomFieldType
-from pylarion.text import Text
-from pylarion.externally_linked_work_item import ExternallyLinkedWorkItem
-from pylarion.externally_linked_work_item \
+from pylero.exceptions import PylarionLibException
+from pylero.base_polarion import BasePolarion, Configuration
+from pylero.approval import Approval
+from pylero.approval import ArrayOfApproval
+from pylero.attachment import Attachment
+from pylero.attachment import ArrayOfAttachment
+from pylero.user import User
+from pylero.user import ArrayOfUser
+from pylero.category import Category
+from pylero.category import ArrayOfCategory
+from pylero.comment import Comment
+from pylero.comment import ArrayOfComment
+from pylero.custom import Custom
+from pylero.custom import ArrayOfCustom
+from pylero.custom_field import CustomField
+from pylero.custom_field_type import CustomFieldType
+from pylero.enum_custom_field_type import EnumCustomFieldType
+from pylero.text import Text
+from pylero.externally_linked_work_item import ExternallyLinkedWorkItem
+from pylero.externally_linked_work_item \
     import ArrayOfExternallyLinkedWorkItem
-from pylarion.hyperlink import Hyperlink
-from pylarion.hyperlink import ArrayOfHyperlink
-from pylarion.revision import Revision
-from pylarion.revision import ArrayOfRevision
-from pylarion.linked_work_item import LinkedWorkItem
-from pylarion.linked_work_item import ArrayOfLinkedWorkItem
-from pylarion.subterra_uri import SubterraURI
-from pylarion.planning_constraint import PlanningConstraint
-from pylarion.planning_constraint import ArrayOfPlanningConstraint
-from pylarion.enum_option_id import EnumOptionId
+from pylero.hyperlink import Hyperlink
+from pylero.hyperlink import ArrayOfHyperlink
+from pylero.revision import Revision
+from pylero.revision import ArrayOfRevision
+from pylero.linked_work_item import LinkedWorkItem
+from pylero.linked_work_item import ArrayOfLinkedWorkItem
+from pylero.subterra_uri import SubterraURI
+from pylero.planning_constraint import PlanningConstraint
+from pylero.planning_constraint import ArrayOfPlanningConstraint
+from pylero.enum_option_id import EnumOptionId
 # ArrayOfEnumOptionId is used in dynamic code for custom fields
-from pylarion.enum_option_id import ArrayOfEnumOptionId  # NOQA
-from pylarion.priority_option_id import PriorityOptionId
-from pylarion.project import Project
-from pylarion.test_steps import TestSteps
-from pylarion.test_step import TestStep
-from pylarion.time_point import TimePoint
-from pylarion.work_record import WorkRecord
-from pylarion.work_record import ArrayOfWorkRecord
-from pylarion.workflow_action import WorkflowAction
-from pylarion.base_polarion import tx_wrapper
+from pylero.enum_option_id import ArrayOfEnumOptionId  # NOQA
+from pylero.priority_option_id import PriorityOptionId
+from pylero.project import Project
+from pylero.test_steps import TestSteps
+from pylero.test_step import TestStep
+from pylero.time_point import TimePoint
+from pylero.work_record import WorkRecord
+from pylero.work_record import ArrayOfWorkRecord
+from pylero.workflow_action import WorkflowAction
+from pylero.base_polarion import tx_wrapper
 
 
 class _WorkItem(BasePolarion):
@@ -485,8 +485,8 @@ class _WorkItem(BasePolarion):
         # This module imports plan and plan imports this module.
         # The module references itself as a class attribute, which is not
         # allowed, so the self reference is defined here.
-        from pylarion.plan import Plan
-        from pylarion.plan import ArrayOfPlan
+        from pylero.plan import Plan
+        from pylero.plan import ArrayOfPlan
         self._cls_suds_map["planned_in"]["is_array"] = True
         self._cls_suds_map["planned_in"]["cls"] = Plan
         self._cls_suds_map["planned_in"]["arr_cls"] = ArrayOfPlan
@@ -1334,7 +1334,7 @@ class _WorkItem(BasePolarion):
             list of TestRun objects
         """
         # import done in the function so as not to cause circular refs
-        from pylarion.test_run import TestRun
+        from pylero.test_run import TestRun
         return TestRun.search(self.work_item_id)
 
 

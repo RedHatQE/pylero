@@ -1,25 +1,25 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
-from pylarion._compatible import basestring
+from pylero._compatible import basestring
 
 import suds
-from pylarion.exceptions import PylarionLibException
-from pylarion.base_polarion import BasePolarion
-from pylarion.enum_option_id import EnumOptionId
-from pylarion.enum_option_id import ArrayOfEnumOptionId
-from pylarion.user import User
-from pylarion.subterra_uri import SubterraURI
-from pylarion.text import Text
-from pylarion.module_comment import ModuleComment
-from pylarion.module_comment import ArrayOfModuleComment
-from pylarion.project import Project
-from pylarion.custom import Custom
-from pylarion.custom import ArrayOfCustom
-from pylarion.signature_context import SignatureContext
-from pylarion.signature_context import ArrayOfSignatureContext
-from pylarion.work_item import _WorkItem
-from pylarion.base_polarion import tx_wrapper
+from pylero.exceptions import PylarionLibException
+from pylero.base_polarion import BasePolarion
+from pylero.enum_option_id import EnumOptionId
+from pylero.enum_option_id import ArrayOfEnumOptionId
+from pylero.user import User
+from pylero.subterra_uri import SubterraURI
+from pylero.text import Text
+from pylero.module_comment import ModuleComment
+from pylero.module_comment import ArrayOfModuleComment
+from pylero.project import Project
+from pylero.custom import Custom
+from pylero.custom import ArrayOfCustom
+from pylero.signature_context import SignatureContext
+from pylero.signature_context import ArrayOfSignatureContext
+from pylero.work_item import _WorkItem
+from pylero.base_polarion import tx_wrapper
 
 
 class Document(BasePolarion):

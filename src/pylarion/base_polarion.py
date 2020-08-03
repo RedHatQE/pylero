@@ -1,14 +1,14 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
-from pylarion._compatible import SafeConfigParser, basestring, classmethod
+from pylero._compatible import SafeConfigParser, basestring, classmethod
 import os
 import base64
 import copy
 import re
 import suds
-from pylarion.exceptions import PylarionLibException
-from pylarion.server import Server
+from pylero.exceptions import PylarionLibException
+from pylero.server import Server
 from functools import wraps
 from getpass import getpass
 
@@ -25,9 +25,9 @@ class ClassProperty(property):
 
 class Configuration(object):
     pkgdir = os.path.dirname(__file__)
-    GLOBAL_CONFIG = "%s/etc/pylarion.cfg" % pkgdir
-    LOCAL_CONFIG = os.path.expanduser("~") + "/.pylarion"
-    CURDIR_CONFIG = ".pylarion"
+    GLOBAL_CONFIG = "%s/etc/pylero.cfg" % pkgdir
+    LOCAL_CONFIG = os.path.expanduser("~") + "/.pylero"
+    CURDIR_CONFIG = ".pylero"
     CONFIG_SECTION = "webservice"
     # Look at ConfigParser - https://docs.python.org/2.6/library/configparser.html
 
@@ -79,8 +79,8 @@ class Connection(object):
     """Creates a Polarion session as a class method, so that it is used for all
     objects inherited by BasePolarion.
     The url, repo, user and password are read from config files, which are
-    located either the current directory ./pylarion, the user's dir ~/.pylarion
-    or the Library config dir LIBDIR/etc/pylarion.cfg
+    located either the current directory ./pylero, the user's dir ~/.pylero
+    or the Library config dir LIBDIR/etc/pylero.cfg
     These can also be overridden with the following environment variables:
     POLARION_URL
     POLARION_REPO

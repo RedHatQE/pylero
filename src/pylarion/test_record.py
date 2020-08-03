@@ -1,15 +1,15 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
-from pylarion.base_polarion import BasePolarion
-from pylarion.text import Text
-from pylarion.test_run_attachment import TestRunAttachment
-from pylarion.test_run_attachment import ArrayOfTestRunAttachment
-from pylarion.test_step_result import TestStepResult
-from pylarion.test_step_result import ArrayOfTestStepResult
-from pylarion.enum_option_id import EnumOptionId
-from pylarion.work_item import _WorkItem
-from pylarion.user import User
+from pylero.base_polarion import BasePolarion
+from pylero.text import Text
+from pylero.test_run_attachment import TestRunAttachment
+from pylero.test_run_attachment import ArrayOfTestRunAttachment
+from pylero.test_step_result import TestStepResult
+from pylero.test_step_result import ArrayOfTestStepResult
+from pylero.enum_option_id import EnumOptionId
+from pylero.work_item import _WorkItem
+from pylero.user import User
 
 
 class TestRecord(BasePolarion):

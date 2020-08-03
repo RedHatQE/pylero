@@ -1,9 +1,9 @@
 import unittest2
 import datetime
 import os
-from pylarion.plan import Plan
-from pylarion.exceptions import PylarionLibException
-from pylarion.work_item import Requirement
+from pylero.plan import Plan
+from pylero.exceptions import PylarionLibException
+from pylero.work_item import Requirement
 
 TIME_STAMP = datetime.datetime.now().strftime("%Y%m%d%H%M%s")
 DEFAULT_PROJ = Plan.default_project

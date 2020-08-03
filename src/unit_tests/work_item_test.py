@@ -5,9 +5,9 @@ Created on Apr 15, 2015
 '''
 import unittest2
 import os
-from pylarion.work_item import TestCase, Requirement
-from pylarion.exceptions import PylarionLibException
-from pylarion.test_step import TestStep
+from pylero.work_item import TestCase, Requirement
+from pylero.exceptions import PylarionLibException
+from pylero.test_step import TestStep
 
 DEFAULT_PROJ = TestCase.default_project
 HYPERLINK = "http://www.google.com"

@@ -1,9 +1,9 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
-from pylarion.base_polarion import BasePolarion
-from pylarion.user import User
-from pylarion.project import Project
+from pylero.base_polarion import BasePolarion
+from pylero.user import User
+from pylero.project import Project
 
 
 class Baseline(BasePolarion):

@@ -1,11 +1,11 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
-from pylarion.base_polarion import BasePolarion
-from pylarion.user import User
-from pylarion.build_test_results import BuildTestResults
-from pylarion.build_linked_work_item import BuildLinkedWorkItem
-from pylarion.build_linked_work_item import ArrayOfBuildLinkedWorkItem
+from pylero.base_polarion import BasePolarion
+from pylero.user import User
+from pylero.build_test_results import BuildTestResults
+from pylero.build_linked_work_item import BuildLinkedWorkItem
+from pylero.build_linked_work_item import ArrayOfBuildLinkedWorkItem
 
 
 class Build(BasePolarion):

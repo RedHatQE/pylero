@@ -1,22 +1,22 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
-from pylarion._compatible import basestring
+from pylero._compatible import basestring
 import suds
-from pylarion.exceptions import PylarionLibException
-from pylarion.base_polarion import BasePolarion
-from pylarion.subterra_uri import SubterraURI
-from pylarion.enum_option_id import EnumOptionId
-from pylarion.enum_option_id import ArrayOfEnumOptionId
-from pylarion.custom import Custom
-from pylarion.custom import ArrayOfCustom
-from pylarion.text import Text
-from pylarion.plan_record import PlanRecord
-from pylarion.plan_statistics import PlanStatistics
-from pylarion.plan_record import ArrayOfPlanRecord
-from pylarion.work_item import _WorkItem
-from pylarion.user import User
-from pylarion.project import Project
+from pylero.exceptions import PylarionLibException
+from pylero.base_polarion import BasePolarion
+from pylero.subterra_uri import SubterraURI
+from pylero.enum_option_id import EnumOptionId
+from pylero.enum_option_id import ArrayOfEnumOptionId
+from pylero.custom import Custom
+from pylero.custom import ArrayOfCustom
+from pylero.text import Text
+from pylero.plan_record import PlanRecord
+from pylero.plan_statistics import PlanStatistics
+from pylero.plan_record import ArrayOfPlanRecord
+from pylero.work_item import _WorkItem
+from pylero.user import User
+from pylero.project import Project
 
 
 class Plan(BasePolarion):

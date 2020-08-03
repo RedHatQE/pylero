@@ -1,10 +1,10 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
-from pylarion.base_polarion import BasePolarion
-from pylarion.subterra_uri import SubterraURI
-from pylarion.subterra_uri import ArrayOfSubterraURI
-from pylarion.project import Project
+from pylero.base_polarion import BasePolarion
+from pylero.subterra_uri import SubterraURI
+from pylero.subterra_uri import ArrayOfSubterraURI
+from pylero.project import Project
 
 
 class ProjectGroup(BasePolarion):

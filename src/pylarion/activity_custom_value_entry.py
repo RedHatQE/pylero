@@ -1,8 +1,8 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
-from pylarion.base_polarion import BasePolarion
-from pylarion.activity_custom_value import ActivityCustomValue
+from pylero.base_polarion import BasePolarion
+from pylero.activity_custom_value import ActivityCustomValue
 
 
 class ActivityCustomValueEntry(BasePolarion):

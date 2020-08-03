@@ -1,8 +1,8 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
-from pylarion.base_polarion import BasePolarion
-from pylarion.enum_option_id import EnumOptionId
+from pylero.base_polarion import BasePolarion
+from pylero.enum_option_id import EnumOptionId
 
 
 class LinkedWorkItem(BasePolarion):
@@ -38,7 +38,7 @@ class LinkedWorkItem(BasePolarion):
         # need to import WorkItem, but this module is used by WorkItem.
         # need to pass in the project_id parm to the Work Item,
         # but it is not given before instantiation
-        from pylarion.work_item import _WorkItem
+        from pylero.work_item import _WorkItem
         self._cls_suds_map["work_item_id"]["cls"] = _WorkItem
         self._cls_suds_map["work_item_id"]["additional_parms"] = \
             {"project_id": self.project_id}

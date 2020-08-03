@@ -2,13 +2,13 @@
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
 import copy
-from pylarion.base_polarion import BasePolarion
-from pylarion.category import Category
-from pylarion.custom_field_type import CustomFieldType
-from pylarion.text import Text
-from pylarion.user import User
-from pylarion.exceptions import PylarionLibException
-from pylarion.tests_configuration import TestsConfiguration
+from pylero.base_polarion import BasePolarion
+from pylero.category import Category
+from pylero.custom_field_type import CustomFieldType
+from pylero.text import Text
+from pylero.user import User
+from pylero.exceptions import PylarionLibException
+from pylero.tests_configuration import TestsConfiguration
 
 
 class Project(BasePolarion):
@@ -116,7 +116,7 @@ class Project(BasePolarion):
     def _fix_circular_refs(self):
         # The module references ProjectGroup, which references this class
         # This is not allowed, so the self reference is defined here.
-        from pylarion.project_group import ProjectGroup
+        from pylero.project_group import ProjectGroup
         self._cls_suds_map["project_group"]["cls"] = ProjectGroup
 
     def get_categories(self):

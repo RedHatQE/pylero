@@ -1,7 +1,7 @@
 """
     _compatible.py
 
-    This is a compatibility module that assists on keeping the pylarion
+    This is a compatibility module that assists on keeping the pylero
     Library compatible with python 2.x and python 3.x.
 
     :copyright: (c) 2017 Red Hat, Inc.

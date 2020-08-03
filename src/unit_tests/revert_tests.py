@@ -1,6 +1,6 @@
 import pysvn
-from pylarion.project import Project
-from pylarion.test_run import TestRun
+from pylero.project import Project
+from pylero.test_run import TestRun
 
 REVERT_TO = 2590
 # this is the svn revision that the project should be reverted to for a clean

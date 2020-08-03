@@ -6,13 +6,13 @@ Created on Apr 19, 2015
 import unittest2
 import datetime
 import os
-from pylarion.test_run import TestRun
-from pylarion.exceptions import PylarionLibException
-from pylarion.test_record import TestRecord
-from pylarion.test_step import TestStep
-from pylarion.test_step_result import TestStepResult
-from pylarion.work_item import TestCase, IncidentReport
-from pylarion.plan import Plan
+from pylero.test_run import TestRun
+from pylero.exceptions import PylarionLibException
+from pylero.test_record import TestRecord
+from pylero.test_step import TestStep
+from pylero.test_step_result import TestStepResult
+from pylero.work_item import TestCase, IncidentReport
+from pylero.plan import Plan
 
 DEFAULT_PROJ = TestRun.default_project
 TIME_STAMP = datetime.datetime.now().strftime("%Y%m%d%H%M%s")

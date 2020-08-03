@@ -1,14 +1,14 @@
 # -*- coding: utf8 -*-
 from __future__ import print_function
-from pylarion._compatible import object
-from pylarion._compatible import str
+from pylero._compatible import object
+from pylero._compatible import str
 import datetime
 import os
-from pylarion.document import Document
-from pylarion.work_item import TestCase
-from pylarion.work_item import Requirement
-from pylarion.test_run import TestRun
-from pylarion.plan import Plan
+from pylero.document import Document
+from pylero.work_item import TestCase
+from pylero.work_item import Requirement
+from pylero.test_run import TestRun
+from pylero.plan import Plan
 
 
 class CmdList(object):
