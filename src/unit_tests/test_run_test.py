@@ -11,7 +11,7 @@ from pylarion.exceptions import PylarionLibException
 from pylarion.test_record import TestRecord
 from pylarion.test_step import TestStep
 from pylarion.test_step_result import TestStepResult
-from pylarion.work_item import TestCase, Incident
+from pylarion.work_item import TestCase, IncidentReport
 from pylarion.plan import Plan
 
 DEFAULT_PROJ = TestRun.default_project
@@ -376,7 +376,7 @@ class TestRunTest(unittest2.TestCase):
         tc.reload()
         linked_work_items = tc.linked_work_items_derived
         idx = len(linked_work_items) - 1
-        incident = Incident(project_id="proj1",
+        incident = IncidentReport(project_id="proj1",
                             work_item_id=linked_work_items[idx].work_item_id)
         self.assertIsNotNone(incident)
 
