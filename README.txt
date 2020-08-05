@@ -1,20 +1,20 @@
-Welcome to Pylarion, the Python wrapper for the Polarion WSDL API. The
-Pylarion wrapper enables native python access to Polarion objects and
+Welcome to Pylero, the Python wrapper for the Polarion WSDL API. The
+Pylero wrapper enables native python access to Polarion objects and
 functionality using object oriented structure and functionality. This
-allows the devlopers to use Pylarion in a natural fashion without being
+allows the devlopers to use Pylero in a natural fashion without being
 concerned about the Polarion details.
 
-All Pylarion objects inherit from BasePolarion. The objects used in the
+All Pylero objects inherit from BasePolarion. The objects used in the
 library are all generated from the SOAP factory class, using the python-suds
-library. The Pylarion class attributes are generated dynamically as
-properties, based on a mapping dict between the pylarion naming convention
+library. The Pylero class attributes are generated dynamically as
+properties, based on a mapping dict between the pylero naming convention
 and the Polarion attribute names.
 
-The use of properties allows the pylarion object attributes to be virtual with
+The use of properties allows the pylero object attributes to be virtual with
 no need for syncing between them and the Polarion objects they are based on.
 
 The Polarion WSDL API does not implement validation/verification of data
-passed in, so the Pylarion library takes care of this itself. All enums are
+passed in, so the Pylero library takes care of this itself. All enums are
 validated before being sent to the server and raise an error if not using a
 valid value. A number of workflow implementations are also included, for
 example when creating a Document, it automatically creates the Heading work
@@ -26,9 +26,9 @@ downloads the list of workitems and creates them.
 
 Download and Installation:
 **************************
-Pylarion is located in a git repository and can be cloned from::
+Pylero is located in a git repository and can be cloned from::
 
-    $ git clone https://gitlab.cee.redhat.com/ccit/pylarion.git
+    $ git clone https://gitlab.cee.redhat.com/ccit/pylero.git
 
 From the root of the project, run::
 
@@ -38,14 +38,14 @@ If you want to make an rpm out of it::
 
     $ python setup.py bdist_rpm
 
-Pylarion must be configured (see next section) before it can be used.
+Pylero must be configured (see next section) before it can be used.
 
 Configuration:
 **************
 A configuration file must be filled out, which must be located either in the
-current dir (the dir where the script is executed from) **.pylarion**, in the
-user's home dir **~/.pylarion**
-Default settings are stored in **LIBDIR/etc/pylarion.cfg**. This file should
+current dir (the dir where the script is executed from) **.pylero**, in the
+user's home dir **~/.pylero**
+Default settings are stored in **LIBDIR/etc/pylero.cfg**. This file should
 not be modified, as it will be overwritten with any future updates.
 Certificates should be verified automatically, but if they aren't, you can add
 the path to your CA to the cert_path config option.
@@ -60,7 +60,7 @@ These are the configurable values:
     #cert_path=/dir/with/certs
 
 If the password value is blank, it will prompt you for a password when you try
-to access any of the pylarion objects.
+to access any of the pylero objects.
 
 These can also be overridden with the following environment variables:
     POLARION_URL
@@ -81,10 +81,10 @@ requests>=2.6.0'
 
 Usage:
 ******
-There is a pylarion script installed that opens a python shell with all the
+There is a pylero script installed that opens a python shell with all the
 objects in the library already loaded::
 
-    $ pylarion
+    $ pylero
     >>> tr = TestRun("example", project_id="project_name")
 
 Alternatively, you can open a python shell and import the objects that you
@@ -94,16 +94,16 @@ want to use::
     Python 2.6.6 (r266:84292, Nov 21 2013, 10:50:32)
     [GCC 4.4.7 20120313 (Red Hat 4.4.7-4)] on linux2
     Type "help", "copyright", "credits" or "license" for more information.
-    >>> from pylarion.test_run import TestRun
+    >>> from pylero.test_run import TestRun
     >>> tr = TestRun("example", project_id="project_name")
 
 Examples:
 **********
     import datetime  
-    from pylarion.test_run import TestRun  
-    from pylarion.test_record import TestRecord  
-    from pylarion.work_item import TestCase, Requirement  
-    from pylarion.document import Document  
+    from pylero.test_run import TestRun  
+    from pylero.test_record import TestRecord  
+    from pylero.work_item import TestCase, Requirement  
+    from pylero.document import Document  
       
     # Creating a Test Run Template:  
     tr = TestRun.create_template("myproj", "Static Query Test", parent_template_id="Empty", select_test_cases_by="staticQueryResult",  

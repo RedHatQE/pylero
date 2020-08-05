@@ -4,9 +4,9 @@ Created on Apr 13, 2015
 @author: szacks
 '''
 import unittest2
-from pylarion.document import Document
-from pylarion.work_item import TestCase
-from pylarion.test_run import TestRun
+from pylero.document import Document
+from pylero.work_item import TestCase
+from pylero.test_run import TestRun
 import datetime
 
 WI_ID = ""

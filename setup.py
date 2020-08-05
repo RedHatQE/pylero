@@ -3,8 +3,8 @@ from distutils.command.install import INSTALL_SCHEMES
 
 import sys
 
-PACKAGE_NAME = "pylarion"
-CLI_NAME = "pylarion-cmd"
+PACKAGE_NAME = "pylero"
+CLI_NAME = "pylero-cmd"
 
 # change the data dir to be the etc dir under the package dir
 for scheme in list(INSTALL_SCHEMES.values()):

@@ -1,2 +1,2 @@
-include etc/pylarion/pylarion.cfg scripts/pylarion
-recursive-include src/pylarion
+include etc/pylero/pylero.cfg scripts/pylero
+recursive-include src/pylero

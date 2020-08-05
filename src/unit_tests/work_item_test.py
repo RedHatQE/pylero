@@ -5,9 +5,9 @@ Created on Apr 15, 2015
 '''
 import unittest2
 import os
-from pylarion.work_item import TestCase, Requirement
-from pylarion.exceptions import PylarionLibException
-from pylarion.test_step import TestStep
+from pylero.work_item import TestCase, Requirement
+from pylero.exceptions import PyleroLibException
+from pylero.test_step import TestStep
 
 DEFAULT_PROJ = TestCase.default_project
 HYPERLINK = "http://www.google.com"
@@ -62,7 +62,7 @@ class WorkItemTest(unittest2.TestCase):
     def test_003_add_assignee(self):
         tc = TestCase(project_id=DEFAULT_PROJ,
                       work_item_id=self.work_item_id)
-        with self.assertRaises(PylarionLibException):
+        with self.assertRaises(PyleroLibException):
             tc.add_assignee("invalid user")
         self.assertTrue(tc.add_assignee(tc.logged_in_user_id))
         tc2 = TestCase(project_id=DEFAULT_PROJ,
@@ -73,7 +73,7 @@ class WorkItemTest(unittest2.TestCase):
     def test_004_add_approvee(self):
         tc = TestCase(project_id=DEFAULT_PROJ,
                       work_item_id=self.work_item_id)
-        with self.assertRaises(PylarionLibException):
+        with self.assertRaises(PyleroLibException):
             tc.add_approvee("invalid user")
         tc.add_approvee(tc.logged_in_user_id)
         tc2 = TestCase(project_id=DEFAULT_PROJ,
@@ -86,7 +86,7 @@ class WorkItemTest(unittest2.TestCase):
     def test_005_add_category(self):
         tc = TestCase(project_id=DEFAULT_PROJ,
                       work_item_id=self.work_item_id)
-        with self.assertRaises(PylarionLibException):
+        with self.assertRaises(PyleroLibException):
             tc.add_category("invalid category")
         self.assertTrue(tc.add_category("filesystems"))
         tc2 = TestCase(project_id=DEFAULT_PROJ,
@@ -99,7 +99,7 @@ class WorkItemTest(unittest2.TestCase):
         # TODO: check if an invalid hyperlink can be passed in.
         tc = TestCase(project_id=DEFAULT_PROJ,
                       work_item_id=self.work_item_id)
-        with self.assertRaises(PylarionLibException):
+        with self.assertRaises(PyleroLibException):
             tc.add_hyperlink(HYPERLINK, "invalid")
         self.assertTrue(tc.add_hyperlink(HYPERLINK, "ref_ext"))
         tc2 = TestCase(project_id=DEFAULT_PROJ,
@@ -159,9 +159,9 @@ class WorkItemTest(unittest2.TestCase):
     def test_011_edit_approval(self):
         tc = TestCase(project_id=DEFAULT_PROJ,
                       work_item_id=self.work_item_id)
-        with self.assertRaises(PylarionLibException):
+        with self.assertRaises(PyleroLibException):
             tc.edit_approval("invalid user", "approved")
-        with self.assertRaises(PylarionLibException):
+        with self.assertRaises(PyleroLibException):
             tc.edit_approval(tc.logged_in_user_id, "invalid status")
         tc.edit_approval(tc.logged_in_user_id, "approved")
         tc2 = TestCase(project_id=DEFAULT_PROJ,

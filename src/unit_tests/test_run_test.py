@@ -6,13 +6,13 @@ Created on Apr 19, 2015
 import unittest2
 import datetime
 import os
-from pylarion.test_run import TestRun
-from pylarion.exceptions import PylarionLibException
-from pylarion.test_record import TestRecord
-from pylarion.test_step import TestStep
-from pylarion.test_step_result import TestStepResult
-from pylarion.work_item import TestCase, IncidentReport
-from pylarion.plan import Plan
+from pylero.test_run import TestRun
+from pylero.exceptions import PyleroLibException
+from pylero.test_record import TestRecord
+from pylero.test_step import TestStep
+from pylero.test_step_result import TestStepResult
+from pylero.work_item import TestCase, IncidentReport
+from pylero.plan import Plan
 
 DEFAULT_PROJ = TestRun.default_project
 TIME_STAMP = datetime.datetime.now().strftime("%Y%m%d%H%M%s")
@@ -78,11 +78,11 @@ class TestRunTest(unittest2.TestCase):
         self.assertIsNotNone(template.test_run_id)
         self.assertTrue(template.is_template)
         self.assertEqual(template.arch, "i386")
-        with self.assertRaises(PylarionLibException):
+        with self.assertRaises(PyleroLibException):
             template = TestRun.create_template(
                 DEFAULT_PROJ, TEMPLATE_ID + "1", "Empty", TEMPLATE_TITLE + "1",
                 arch="BAD")
-        with self.assertRaises(PylarionLibException):
+        with self.assertRaises(PyleroLibException):
             template = TestRun.create_template(
                 DEFAULT_PROJ, TEMPLATE_ID + "2", "Empty", TEMPLATE_TITLE + "2",
                 notaparm="BAD")
@@ -121,7 +121,7 @@ class TestRunTest(unittest2.TestCase):
         * Gets a valid TestRun
         * verifies that the TestRun retrieves has the expected test_run_id
         """
-        with self.assertRaises(PylarionLibException):
+        with self.assertRaises(PyleroLibException):
             TestRun(project_id=DEFAULT_PROJ, test_run_id="InValid")
         tr = TestRun(project_id=DEFAULT_PROJ, test_run_id=TEST_RUN_ID)
         self.assertEqual(tr.test_run_id, TEST_RUN_ID)
@@ -150,7 +150,7 @@ class TestRunTest(unittest2.TestCase):
         * updates the test record.
         """
         tr = TestRun(project_id=DEFAULT_PROJ, test_run_id=TEST_RUN_ID)
-        with self.assertRaises(PylarionLibException):
+        with self.assertRaises(PyleroLibException):
             tr.add_test_record_by_fields(
                 self.NEW_TEST_CASE, "invalid", "No Comment",
                 tr.logged_in_user_id, datetime.datetime.now(), "50.5")
@@ -160,7 +160,7 @@ class TestRunTest(unittest2.TestCase):
         tr.reload()
         self.assertEqual(tr.status, "finished")
         # test that the same case cannot be added multiple times.
-        with self.assertRaises(PylarionLibException):
+        with self.assertRaises(PyleroLibException):
             tr.add_test_record_by_fields(
                 self.NEW_TEST_CASE, "passed", "No Comment",
                 tr.logged_in_user_id, datetime.datetime.now(), "50.5")
@@ -207,7 +207,7 @@ class TestRunTest(unittest2.TestCase):
         rec.duration = "50.5"
         # verify that it does not allow duplicate records.
         # (same record was added in previous test)
-        with self.assertRaises(PylarionLibException):
+        with self.assertRaises(PyleroLibException):
             tr.add_test_record_by_object(rec)
         rec.test_case_id = self.NEW_TEST_CASE2
         tr.add_test_record_by_object(rec)
@@ -317,7 +317,7 @@ class TestRunTest(unittest2.TestCase):
         * Verifies that a non valid plan cant be added
         """
         tr = TestRun(project_id=DEFAULT_PROJ, test_run_id=TEST_RUN_ID)
-        with self.assertRaises(PylarionLibException):
+        with self.assertRaises(PyleroLibException):
             tr.plannedin = "not_valid"
         tr.plannedin = self.NEW_PLAN
         self.assertEquals(tr.plannedin, self.NEW_PLAN)

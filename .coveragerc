@@ -1,4 +1,4 @@
 [run]
 branch = True
-include = .tox/*/pylarion/*
+include = .tox/*/pylero/*
 timid = True
