@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
-from pylarion.cli.cmd import CmdList
-from pylarion.cli.cmd import CmdUpdate
+from pylero.cli.cmd import CmdList
+from pylero.cli.cmd import CmdUpdate
 import click
 
 
@@ -108,7 +108,7 @@ def list(document,
         list_obj.print_plan_ids(plan_ids)
 
     else:
-        click.echo('Please get usage: pylarion-cmd list --help')
+        click.echo('Please get usage: pylero-cmd list --help')
 
 
 @cli.command()
@@ -231,7 +231,7 @@ def update(assignee,
                                    status,
                                    description)
     else:
-        click.echo('Please get usage: pylarion-cmd update --help')
+        click.echo('Please get usage: pylero-cmd update --help')
 
 
 if __name__ == '__main__':

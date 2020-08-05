@@ -5,7 +5,7 @@ from pylero.base_polarion import BasePolarion
 from pylero.text import Text
 from pylero.subterra_uri import SubterraURI
 from pylero.subterra_uri import ArrayOfSubterraURI
-from pylero.exceptions import PylarionLibException
+from pylero.exceptions import PyleroLibException
 
 
 class User(BasePolarion):
@@ -125,7 +125,7 @@ class User(BasePolarion):
                 self._suds_object = self.session.project_client.service. \
                     getUserByUri(uri)
             if getattr(self._suds_object, "_unresolvable", True):
-                raise PylarionLibException(
+                raise PyleroLibException(
                     "The user {0} was not found.".format(user_id))
 
     def get_context_roles(self, location):
@@ -179,7 +179,7 @@ class User(BasePolarion):
             return self.session.project_client.service.getUserAvatarURL(
                 self.user_id)
         else:
-            raise PylarionLibException("The user object is empty")
+            raise PyleroLibException("The user object is empty")
 
     def has_permission(self, permission, project_id):
         """Checks if given permission is granted to the user.
@@ -217,7 +217,7 @@ class User(BasePolarion):
             self.session.project_client.service.updateUser(self._suds_object)
             # CHECK for verification
         else:
-            raise PylarionLibException("The user object is empty")
+            raise PyleroLibException("The user object is empty")
 
 
 class ArrayOfUser(BasePolarion):

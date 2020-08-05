@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from pylero._compatible import basestring
 
 import suds
-from pylero.exceptions import PylarionLibException
+from pylero.exceptions import PyleroLibException
 from pylero.base_polarion import BasePolarion
 from pylero.enum_option_id import EnumOptionId
 from pylero.enum_option_id import ArrayOfEnumOptionId
@@ -197,11 +197,11 @@ class Document(BasePolarion):
             return doc
         except suds.WebFault as e:
             if "Invalid document on location Location" in e.fault.faultstring:
-                raise PylarionLibException(
+                raise PyleroLibException(
                     "Document {0}/{1} already exists".format(space,
                                                              document_name))
             else:
-                raise PylarionLibException(e.fault)
+                raise PyleroLibException(e.fault)
 
     @classmethod
     def get_documents(cls, project_id, space, fields=[]):
@@ -342,7 +342,7 @@ class Document(BasePolarion):
             self._suds_object = getattr(self.session.tracker_client.service,
                                         function_name)(*parms)
             if getattr(self._suds_object, "_unresolvable", True):
-                raise PylarionLibException(
+                raise PyleroLibException(
                     "The Document {0} was not found.".format(doc_with_space or
                                                              uri))
 
@@ -370,7 +370,7 @@ class Document(BasePolarion):
             w_item.verify_required()
             suds_wi = w_item._suds_object
         else:
-            raise PylarionLibException(
+            raise PyleroLibException(
                 "the w_item parameter must be a _WorkItem")
         if parent_id:
             parent_uri = _WorkItem(work_item_id=parent_id,

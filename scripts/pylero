@@ -3,7 +3,7 @@
 import os
 import inspect
 import pkgutil
-import pylarion
+import pylero
 import gnureadline
 # On import, the gnureadline features are active without calling
 # any functions. This enables the arrow keys. Without this
@@ -14,10 +14,10 @@ def main():
     EXCLUDE_MODULES = ['test_classes', 'embedding', 'interface', 'server',
                        'session']
     _class_names = []
-    for lstmods in pkgutil.iter_modules([pylarion.__path__[0]]):
+    for lstmods in pkgutil.iter_modules([pylero.__path__[0]]):
         the_mod = lstmods[1]
         if the_mod not in EXCLUDE_MODULES:
-            imp_mod = __import__("pylarion.{0}".format(the_mod), fromlist=[''])
+            imp_mod = __import__("pylero.{0}".format(the_mod), fromlist=[''])
         for cls in inspect.getmembers(imp_mod, inspect.isclass):
             globals()[cls[0]] = cls[1]
             if cls[0] not in _class_names:

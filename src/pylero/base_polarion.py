@@ -7,7 +7,7 @@ import base64
 import copy
 import re
 import suds
-from pylero.exceptions import PylarionLibException
+from pylero.exceptions import PyleroLibException
 from pylero.server import Server
 from functools import wraps
 from getpass import getpass
@@ -40,7 +40,7 @@ class Configuration(object):
         if not config.read([self.GLOBAL_CONFIG, self.LOCAL_CONFIG,
                             self.CURDIR_CONFIG]) or \
                 not config.has_section(self.CONFIG_SECTION):
-            raise PylarionLibException("The config files do not exist or"
+            raise PyleroLibException("The config files do not exist or"
                                        " are not of the correct format."
                                        " Valid files are: {0}, {1} or {2}"
                                        .format(self.GLOBAL_CONFIG,
@@ -59,7 +59,7 @@ class Configuration(object):
         try:
             self.timeout = int(self.timeout)
         except ValueError:
-            raise PylarionLibException("The timeout value in the config"
+            raise PyleroLibException("The timeout value in the config"
                                        " file must be an integer")
         self.proj = os.environ.get("POLARION_PROJECT") or \
                config.get(self.CONFIG_SECTION, "default_project")
@@ -70,7 +70,7 @@ class Configuration(object):
             self.cert_path = None
 
         if not (self.server_url and self.login and self.proj):
-            raise PylarionLibException("The config files must contain "
+            raise PyleroLibException("The config files must contain "
                                        "valid values for: url, user, "
                                        "password and default_project")
 
@@ -148,7 +148,7 @@ def tx_wrapper(func):
             if new_tx:
                 self.session.tx_commit()
             return res
-        except (suds.WebFault, PylarionLibException, Exception):
+        except (suds.WebFault, PyleroLibException, Exception):
             if new_tx and self.session.tx_in():
                 self.session.tx_rollback()
             raise
@@ -162,8 +162,8 @@ class BasePolarion(object):
     WSDL object that is contained by it.
 
     Attributes:
-        _cls_suds_map (dict): maps the Polarion attribute names to the Pylarion
-                        attribute names. Pylarion attribute names use the
+        _cls_suds_map (dict): maps the Polarion attribute names to the Pylero
+                        attribute names. Pylero attribute names use the
                         Red Hat global CI naming conventions.
                         Attributes that reference either objects or an array of
                         objects have the properties relate to the relationship
@@ -217,7 +217,7 @@ class BasePolarion(object):
         else:
             # For some reason, using the cls attribute makes it into a class
             # attribute for the specific class but not for all the other
-            # Pylarion objects.
+            # Pylero objects.
             BasePolarion._session = Connection.session()
             BasePolarion._default_project = cls._session.default_project
             BasePolarion.logged_in_user_id = cls._session.user_id
@@ -312,7 +312,7 @@ class BasePolarion(object):
         # if _id_field has not been set in the child class, the obj_id field
         # cannot be passed as a parameter.
         if obj_id and not self._id_field:
-            raise PylarionLibException(
+            raise PyleroLibException(
                 "{0} only accepts a suds object, not an obj_id".format(
                     self.__class__.__name))
         if suds_object:
@@ -421,7 +421,7 @@ class BasePolarion(object):
 
     def _obj_setter(self, val, field_name):
         """set function for attributes that reference an object. It can accept
-        a string, a Pylarion object or a raw WSDL object. If a string is given,
+        a string, a Pylero object or a raw WSDL object. If a string is given,
         it is passed in to the object as its obj_id.
 
         Args:
@@ -460,14 +460,14 @@ class BasePolarion(object):
                 val = getattr(val, suds_sync_field)
             setattr(self._suds_object, suds_field_name, val)
         else:
-            raise PylarionLibException("the value {0} is not a valid type".
+            raise PyleroLibException("the value {0} is not a valid type".
                                        format(val))
 
     def _arr_obj_getter(self, field_name):
         """get function for attributes that reference an array of objects.
         The Polarion array object always has a single Python list item which
         contains a list of the WSDL objects. This function converts each WSDL
-        object to its Pylarion object and returns that list
+        object to its Pylero object and returns that list
 
         Args:
             field_name: the field name of the Polarion object to get
@@ -484,7 +484,7 @@ class BasePolarion(object):
 
     def _arr_obj_setter(self, val, field_name):
         """set function for attributes that reference an array of objects. It
-        requires a single instance or list of either Pylarion or WSDL objects
+        requires a single instance or list of either Pylero or WSDL objects
         or an empty list.
         An empty list erases the attribute value.
         Otherwise it sets the attribute the value passed in.
@@ -501,7 +501,7 @@ class BasePolarion(object):
         if not isinstance(val,
                           (list, arr_inst.__class__,
                            arr_inst._suds_object.__class__)):
-            raise PylarionLibException(
+            raise PyleroLibException(
                 "{0}s must be a list of {1}").format(
                     csm["field_name"], obj_inst.__class__.__name__)
         elif not val:
@@ -617,7 +617,7 @@ class BasePolarion(object):
             elif isinstance(val, csm["cls"]()._suds_object.__class__):
                 self._changed_fields[csm["field_name"]] = val
             else:
-                raise PylarionLibException(
+                raise PyleroLibException(
                     "The value must be a {0}".format(csm["cls"].__name__))
         # move the custom fields to within the object, otherwise each custom
         # field is a seperate SVN commit. testSteps, does not work unless it
@@ -645,7 +645,7 @@ class BasePolarion(object):
                     else val
             elif csm.get("is_array"):
                 if not isinstance(val, list):
-                    raise PylarionLibException("value must be a list")
+                    raise PyleroLibException("value must be a list")
                 if csm.get("enum_id"):
                     cust.value = csm["cls"]()._suds_object
                     for i in val:
@@ -666,7 +666,7 @@ class BasePolarion(object):
             elif isinstance(val, csm["cls"]()._suds_object.__class__):
                 cust.value = val
             else:
-                raise PylarionLibException(
+                raise PyleroLibException(
                     "The value must be of type {0}."
                     .format(csm["cls"].__name__))
             if "customFields" not in self._suds_object:
@@ -711,7 +711,7 @@ class BasePolarion(object):
                 # replace chr(160) with space
                 return val.replace(u'\xa0', u' ')
             except UnicodeError as err:
-                raise PylarionLibException(
+                raise PyleroLibException(
                     'String must be UTF-8 encoded. The following error was '
                     'raised when converting it to unicode: {0}'
                     .format(err)
@@ -738,7 +738,7 @@ class BasePolarion(object):
         # checking if the uri field is populated. If no URI it didn't come from
         # the server
         if not getattr(self, "uri", None):
-            raise PylarionLibException("There is no {0} loaded".format(
+            raise PyleroLibException("There is no {0} loaded".format(
                 self.__class__.__name__))
 
     def can_add_element_to_key(self, key):
@@ -889,13 +889,13 @@ class BasePolarion(object):
                 # parms. If that works, it is a valid value
                 enum_id(val, **additional_parms)
             except Exception:
-                raise PylarionLibException(
+                raise PyleroLibException(
                     "{0} is not a valid value for {1}"
                     .format(val, enum_id.__name__))
         else:
             valid_values = self.get_valid_field_values(enum_id, control)
             if val not in valid_values:
-                raise PylarionLibException("Acceptable values for {0} are:"
+                raise PyleroLibException("Acceptable values for {0} are:"
                                            "{1}".format(enum_id, valid_values))
 
     def get_valid_field_values(self, enum_id, control=None):

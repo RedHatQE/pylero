@@ -7,7 +7,7 @@ import os
 import re
 import copy
 import json
-from pylero.exceptions import PylarionLibException
+from pylero.exceptions import PyleroLibException
 from pylero.base_polarion import BasePolarion, Configuration
 from pylero.approval import Approval
 from pylero.approval import ArrayOfApproval
@@ -475,7 +475,7 @@ class _WorkItem(BasePolarion):
                                         function_name)(*parms)
         if not suds_object:
             if getattr(self._suds_object, "_unresolvable", True):
-                raise PylarionLibException(
+                raise PyleroLibException(
                     "The WorkItem {0} was not found.".format(work_item_id))
         # if it is a suds object, only relevant fields are passed in.
         if not self.project_id and not suds_object:
@@ -510,7 +510,7 @@ class _WorkItem(BasePolarion):
         allowed = self.get_allowed_approvers()
         allowed_ids = [u.user_id for u in allowed]
         if approvee_id not in (allowed_ids):
-            raise PylarionLibException("%s is not an allowed assignee" %
+            raise PyleroLibException("%s is not an allowed assignee" %
                                        approvee_id)
         self.session.tracker_client.service.addApprovee(self.uri, approvee_id)
 
@@ -531,7 +531,7 @@ class _WorkItem(BasePolarion):
         allowed = self.get_allowed_assignees()
         allowed_ids = [u.user_id for u in allowed]
         if assignee_id not in (allowed_ids):
-            raise PylarionLibException("%s is not an allowed assignee" %
+            raise PyleroLibException("%s is not an allowed assignee" %
                                        assignee_id)
         return self.session.tracker_client.service.addAssignee(self.uri,
                                                                assignee_id)
@@ -554,7 +554,7 @@ class _WorkItem(BasePolarion):
         cats = proj.get_categories()
         cat_ids = [cat.category_id for cat in cats]
         if category_id not in cat_ids:
-            raise PylarionLibException("the category_id must be one of: %s" %
+            raise PyleroLibException("the category_id must be one of: %s" %
                                        cat_ids)
         return self.session.tracker_client.service.addCategory(self.uri,
                                                                category_id)
@@ -623,7 +623,7 @@ class _WorkItem(BasePolarion):
             Tracker.addLinkedItemWithRev
         """
         self._verify_obj()
-        # validates the role. Will raise PylarionLibException if invalid
+        # validates the role. Will raise PyleroLibException if invalid
         self.check_valid_field_values(role, "workitem-link-role", {})
         wi_linked = _WorkItem(work_item_id=linked_work_item_id,
                               project_id=self.project_id)
@@ -1274,7 +1274,7 @@ class _WorkItem(BasePolarion):
                             _suds_object.__class__):
                 parm = test_steps
         else:
-            raise PylarionLibException("Expecting a list of testStep objects")
+            raise PyleroLibException("Expecting a list of testStep objects")
         self.session.test_management_client.service.setTestSteps(self.uri,
                                                                  parm)
 
@@ -1320,7 +1320,7 @@ class _WorkItem(BasePolarion):
     def verify_required(self):
         for field in self._required_fields:
             if not getattr(self, field):
-                raise PylarionLibException(
+                raise PyleroLibException(
                     "{0} is a required field".format(field))
 
     def which_test_runs(self):
@@ -1370,14 +1370,14 @@ class _SpecificWorkItem(_WorkItem):
             if req not in kwargs:
                 fields += (", " if fields else "") + req
         if fields:
-            raise PylarionLibException("These parameters are required: {0}".
+            raise PyleroLibException("These parameters are required: {0}".
                                        format(fields))
         for field in kwargs:
             if field not in cls._all_custom_fields and \
                     field not in cls._cls_suds_map:
                 fields += (", " if fields else "") + field
         if fields:
-            raise PylarionLibException("These parameters are unknown: {0}".
+            raise PyleroLibException("These parameters are unknown: {0}".
                                        format(fields))
         return super(_SpecificWorkItem, cls).create(
             project_id, cls._wi_type, title, desc, status, **kwargs)
@@ -1504,7 +1504,7 @@ class _SpecificWorkItem(_WorkItem):
         if not self.type:
             self.type = self._wi_type
         if self.type != self._wi_type:
-            raise PylarionLibException("This is of type {0}, not type {1}".
+            raise PyleroLibException("This is of type {0}, not type {1}".
                                        format(self.type, self._wi_type))
 
     @tx_wrapper

@@ -1,563 +1,563 @@
-pylarion package
+pylero package
 ================
 
 
 Submodules
 ----------
 
-pylarion.activity module
+pylero.activity module
 ------------------------
 
-.. automodule:: pylarion.activity
+.. automodule:: pylero.activity
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.activity_comment module
+pylero.activity_comment module
 --------------------------------
 
-.. automodule:: pylarion.activity_comment
+.. automodule:: pylero.activity_comment
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.activity_custom_value module
+pylero.activity_custom_value module
 -------------------------------------
 
-.. automodule:: pylarion.activity_custom_value
+.. automodule:: pylero.activity_custom_value
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.activity_custom_value_entry module
+pylero.activity_custom_value_entry module
 -------------------------------------------
 
-.. automodule:: pylarion.activity_custom_value_entry
+.. automodule:: pylero.activity_custom_value_entry
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.activity_source module
+pylero.activity_source module
 -------------------------------
 
-.. automodule:: pylarion.activity_source
+.. automodule:: pylero.activity_source
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.approval module
+pylero.approval module
 ------------------------
 
-.. automodule:: pylarion.approval
+.. automodule:: pylero.approval
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.attachment module
+pylero.attachment module
 --------------------------
 
-.. automodule:: pylarion.attachment
+.. automodule:: pylero.attachment
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.base_polarion module
+pylero.base_polarion module
 -----------------------------
 
-.. automodule:: pylarion.base_polarion
+.. automodule:: pylero.base_polarion
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.baseline module
+pylero.baseline module
 ------------------------
 
-.. automodule:: pylarion.baseline
+.. automodule:: pylero.baseline
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.build module
+pylero.build module
 ---------------------
 
-.. automodule:: pylarion.build
+.. automodule:: pylero.build
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.build_linked_work_item module
+pylero.build_linked_work_item module
 --------------------------------------
 
-.. automodule:: pylarion.build_linked_work_item
+.. automodule:: pylero.build_linked_work_item
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.build_test_results module
+pylero.build_test_results module
 ----------------------------------
 
-.. automodule:: pylarion.build_test_results
+.. automodule:: pylero.build_test_results
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.category module
+pylero.category module
 ------------------------
 
-.. automodule:: pylarion.category
+.. automodule:: pylero.category
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.change module
+pylero.change module
 ----------------------
 
-.. automodule:: pylarion.change
+.. automodule:: pylero.change
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.comment module
+pylero.comment module
 -----------------------
 
-.. automodule:: pylarion.comment
+.. automodule:: pylero.comment
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.custom module
+pylero.custom module
 ----------------------
 
-.. automodule:: pylarion.custom
+.. automodule:: pylero.custom
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.custom_field module
+pylero.custom_field module
 ----------------------------
 
-.. automodule:: pylarion.custom_field
+.. automodule:: pylero.custom_field
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.custom_field_type module
+pylero.custom_field_type module
 ---------------------------------
 
-.. automodule:: pylarion.custom_field_type
+.. automodule:: pylero.custom_field_type
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.document module
+pylero.document module
 ------------------------
 
-.. automodule:: pylarion.document
+.. automodule:: pylero.document
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.enum_custom_field_type module
+pylero.enum_custom_field_type module
 --------------------------------------
 
-.. automodule:: pylarion.enum_custom_field_type
+.. automodule:: pylero.enum_custom_field_type
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.enum_option module
+pylero.enum_option module
 ---------------------------
 
-.. automodule:: pylarion.enum_option
+.. automodule:: pylero.enum_option
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.enum_option_id module
+pylero.enum_option_id module
 ------------------------------
 
-.. automodule:: pylarion.enum_option_id
+.. automodule:: pylero.enum_option_id
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.exceptions module
+pylero.exceptions module
 --------------------------
 
-.. automodule:: pylarion.exceptions
+.. automodule:: pylero.exceptions
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.externally_linked_work_item module
+pylero.externally_linked_work_item module
 -------------------------------------------
 
-.. automodule:: pylarion.externally_linked_work_item
+.. automodule:: pylero.externally_linked_work_item
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.field_diff module
+pylero.field_diff module
 --------------------------
 
-.. automodule:: pylarion.field_diff
+.. automodule:: pylero.field_diff
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.hyperlink module
+pylero.hyperlink module
 -------------------------
 
-.. automodule:: pylarion.hyperlink
+.. automodule:: pylero.hyperlink
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.imported_comment module
+pylero.imported_comment module
 --------------------------------
 
-.. automodule:: pylarion.imported_comment
+.. automodule:: pylero.imported_comment
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.language_definition module
+pylero.language_definition module
 -----------------------------------
 
-.. automodule:: pylarion.language_definition
+.. automodule:: pylero.language_definition
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.license_info module
+pylero.license_info module
 ----------------------------
 
-.. automodule:: pylarion.license_info
+.. automodule:: pylero.license_info
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.linked_work_item module
+pylero.linked_work_item module
 --------------------------------
 
-.. automodule:: pylarion.linked_work_item
+.. automodule:: pylero.linked_work_item
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.module_comment module
+pylero.module_comment module
 ------------------------------
 
-.. automodule:: pylarion.module_comment
+.. automodule:: pylero.module_comment
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.plan module
+pylero.plan module
 --------------------
 
-.. automodule:: pylarion.plan
+.. automodule:: pylero.plan
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.plan_record module
+pylero.plan_record module
 ---------------------------
 
-.. automodule:: pylarion.plan_record
+.. automodule:: pylero.plan_record
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.plan_statistics module
+pylero.plan_statistics module
 -------------------------------
 
-.. automodule:: pylarion.plan_statistics
+.. automodule:: pylero.plan_statistics
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.planning_constraint module
+pylero.planning_constraint module
 -----------------------------------
 
-.. automodule:: pylarion.planning_constraint
+.. automodule:: pylero.planning_constraint
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.priority_opt module
+pylero.priority_opt module
 ----------------------------
 
-.. automodule:: pylarion.priority_opt
+.. automodule:: pylero.priority_opt
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.priority_option_id module
+pylero.priority_option_id module
 ----------------------------------
 
-.. automodule:: pylarion.priority_option_id
+.. automodule:: pylero.priority_option_id
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.product_license module
+pylero.product_license module
 -------------------------------
 
-.. automodule:: pylarion.product_license
+.. automodule:: pylero.product_license
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.project module
+pylero.project module
 -----------------------
 
-.. automodule:: pylarion.project
+.. automodule:: pylero.project
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.project_group module
+pylero.project_group module
 -----------------------------
 
-.. automodule:: pylarion.project_group
+.. automodule:: pylero.project_group
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.properties module
+pylero.properties module
 --------------------------
 
-.. automodule:: pylarion.properties
+.. automodule:: pylero.properties
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.property module
+pylero.property module
 ------------------------
 
-.. automodule:: pylarion.property
+.. automodule:: pylero.property
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.revision module
+pylero.revision module
 ------------------------
 
-.. automodule:: pylarion.revision
+.. automodule:: pylero.revision
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.server module
+pylero.server module
 ----------------------
 
-.. automodule:: pylarion.server
+.. automodule:: pylero.server
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.session module
+pylero.session module
 -----------------------
 
-.. automodule:: pylarion.session
+.. automodule:: pylero.session
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.signature module
+pylero.signature module
 -------------------------
 
-.. automodule:: pylarion.signature
+.. automodule:: pylero.signature
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.signature_context module
+pylero.signature_context module
 ---------------------------------
 
-.. automodule:: pylarion.signature_context
+.. automodule:: pylero.signature_context
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.signature_data module
+pylero.signature_data module
 ------------------------------
 
-.. automodule:: pylarion.signature_data
+.. automodule:: pylero.signature_data
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.subterra_uri module
+pylero.subterra_uri module
 ----------------------------
 
-.. automodule:: pylarion.subterra_uri
+.. automodule:: pylero.subterra_uri
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.test_record module
+pylero.test_record module
 ---------------------------
 
-.. automodule:: pylarion.test_record
+.. automodule:: pylero.test_record
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.test_run module
+pylero.test_run module
 ------------------------
 
-.. automodule:: pylarion.test_run
+.. automodule:: pylero.test_run
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.test_run_attachment module
+pylero.test_run_attachment module
 -----------------------------------
 
-.. automodule:: pylarion.test_run_attachment
+.. automodule:: pylero.test_run_attachment
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.test_step module
+pylero.test_step module
 -------------------------
 
-.. automodule:: pylarion.test_step
+.. automodule:: pylero.test_step
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.test_step_result module
+pylero.test_step_result module
 --------------------------------
 
-.. automodule:: pylarion.test_step_result
+.. automodule:: pylero.test_step_result
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.test_steps module
+pylero.test_steps module
 --------------------------
 
-.. automodule:: pylarion.test_steps
+.. automodule:: pylero.test_steps
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.tests_configuration module
+pylero.tests_configuration module
 -----------------------------------
 
-.. automodule:: pylarion.tests_configuration
+.. automodule:: pylero.tests_configuration
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.text module
+pylero.text module
 --------------------
 
-.. automodule:: pylarion.text
+.. automodule:: pylero.text
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.time_point module
+pylero.time_point module
 --------------------------
 
-.. automodule:: pylarion.time_point
+.. automodule:: pylero.time_point
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.user module
+pylero.user module
 --------------------
 
-.. automodule:: pylarion.user
+.. automodule:: pylero.user
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.wiki_page module
+pylero.wiki_page module
 -------------------------
 
-.. automodule:: pylarion.wiki_page
+.. automodule:: pylero.wiki_page
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.wiki_page_attachment module
+pylero.wiki_page_attachment module
 ------------------------------------
 
-.. automodule:: pylarion.wiki_page_attachment
+.. automodule:: pylero.wiki_page_attachment
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.work_item module
+pylero.work_item module
 -------------------------
 
-.. automodule:: pylarion.work_item
+.. automodule:: pylero.work_item
     :members:
     :special-members: __init__
     :undoc-members:
@@ -575,19 +575,19 @@ pylarion.work_item module
     :undoc-members:
     :show-inheritance:
 
-pylarion.work_record module
+pylero.work_record module
 ---------------------------
 
-.. automodule:: pylarion.work_record
+.. automodule:: pylero.work_record
     :members:
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
 
-pylarion.workflow_action module
+pylero.workflow_action module
 -------------------------------
 
-.. automodule:: pylarion.workflow_action
+.. automodule:: pylero.workflow_action
     :members:
     :special-members: __init__
     :undoc-members:
@@ -597,7 +597,7 @@ pylarion.workflow_action module
 Module contents
 ---------------
 
-.. automodule:: pylarion
+.. automodule:: pylero
     :members:
     :special-members: __init__
     :undoc-members:

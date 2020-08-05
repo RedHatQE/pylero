@@ -7,7 +7,7 @@ from pylero.category import Category
 from pylero.custom_field_type import CustomFieldType
 from pylero.text import Text
 from pylero.user import User
-from pylero.exceptions import PylarionLibException
+from pylero.exceptions import PyleroLibException
 from pylero.tests_configuration import TestsConfiguration
 
 
@@ -111,7 +111,7 @@ class Project(BasePolarion):
                 getProjectByURI(uri)
         if project_id or location or uri:
             if getattr(self._suds_object, "_unresolvable", True):
-                raise PylarionLibException("The Project was not found.")
+                raise PyleroLibException("The Project was not found.")
 
     def _fix_circular_refs(self):
         # The module references ProjectGroup, which references this class

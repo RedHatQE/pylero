@@ -6,7 +6,7 @@ import os
 import suds
 import datetime
 from xml.dom import minidom
-from pylero.exceptions import PylarionLibException
+from pylero.exceptions import PyleroLibException
 from pylero.base_polarion import BasePolarion
 from pylero.test_run_attachment import TestRunAttachment
 from pylero.test_run_attachment import ArrayOfTestRunAttachment
@@ -267,7 +267,7 @@ class TestRun(BasePolarion):
             cases = _WorkItem.query(
                 self.query + " AND project.id:" + self.project_id)
         else:
-            raise PylarionLibException("Only Test Runs based on Docs or"
+            raise PyleroLibException("Only Test Runs based on Docs or"
                                        " Queries can be dynamic")
         executed_ids = [rec.test_case_id for rec in self._records]
         test_recs = self._records
@@ -315,7 +315,7 @@ class TestRun(BasePolarion):
             test_management.createTestRun
         """
         if not template:
-            raise PylarionLibException("Template is required")
+            raise PyleroLibException("Template is required")
         if title:
             uri = cls.session.test_management_client.service.\
                 createTestRunWithTitle(
@@ -331,7 +331,7 @@ class TestRun(BasePolarion):
             run.update()
             return run
         else:
-            raise PylarionLibException("Test Run was not created")
+            raise PyleroLibException("Test Run was not created")
 
     @classmethod
     @tx_wrapper
@@ -480,7 +480,7 @@ class TestRun(BasePolarion):
         super(self.__class__, self).__init__(test_run_id, suds_object)
         if test_run_id:
             if not project_id:
-                raise PylarionLibException("When test_run_id is passed in, "
+                raise PyleroLibException("When test_run_id is passed in, "
                                            "project_id is required")
             self._suds_object = self.session.test_management_client.service. \
                 getTestRunById(project_id, test_run_id)
@@ -489,7 +489,7 @@ class TestRun(BasePolarion):
                 getTestRunByUri(uri)
         if test_run_id or uri:
             if getattr(self._suds_object, "_unresolvable", True):
-                raise PylarionLibException(
+                raise PyleroLibException(
                     "The Test Run {0} was not found.".format(test_run_id))
 
     def _fix_circular_refs(self):
@@ -500,8 +500,8 @@ class TestRun(BasePolarion):
     def _custom_field_types(self, field_type):
         """There are 4 types of custom fields in test runs:
         * built-in types (string, boolean, ...)
-        * Pylarion Text object (text)
-        * Enum of existing type (@ prefix, i.e. enum:@user = Pylarion User)
+        * Pylero Text object (text)
+        * Enum of existing type (@ prefix, i.e. enum:@user = Pylero User)
         * Enum, based on lookup table(i.e. enum:arch)
         The basic enums can get their valid values using the BasePolarion
         get_valid_field_values function.
@@ -631,7 +631,7 @@ class TestRun(BasePolarion):
                 index += 1
             if test_case_id in test_record._suds_object.testCaseURI:
                 return index
-        raise PylarionLibException("The Test Case is either not part of "
+        raise PyleroLibException("The Test Case is either not part of "
                                    "this TestRun or has not been executed")
 
     def _status_change(self):
@@ -660,7 +660,7 @@ class TestRun(BasePolarion):
         # verifies the number of records is not less then the index given.
         self._verify_obj()
         if record_index > (len(self.records) - 1):
-            raise PylarionLibException("There are only {0} test records".
+            raise PyleroLibException("There are only {0} test records".
                                        format(len(self.records)))
 
     def _verify_test_step_count(self, record_index, test_step_index):
@@ -668,7 +668,7 @@ class TestRun(BasePolarion):
         self._verify_record_count(record_index)
         if test_step_index > \
                 (len(self.records[record_index].test_step_results) - 1):
-            raise PylarionLibException("There are only {0} test records".
+            raise PyleroLibException("There are only {0} test records".
                                        format(len(self.records)))
 
     def add_attachment_to_test_record(self, test_case_id, path, title):
@@ -772,10 +772,10 @@ class TestRun(BasePolarion):
             'project.id:%s AND id:"%s" AND %s' %
             (self.project_id, self.test_run_id, test_case_id))
         if len(check_tr) not in [0, 1]:
-            raise PylarionLibException(
+            raise PyleroLibException(
                 "The search function did not work as expected. Please report.")
         elif len(check_tr) == 1:
-            raise PylarionLibException(
+            raise PyleroLibException(
                 "This test case is already part of the test run")
         else:
             return None
@@ -811,7 +811,7 @@ class TestRun(BasePolarion):
         self._verify_obj()
         self.check_valid_field_values(test_result, "result", {})
         if not executed or not test_result:
-            raise PylarionLibException(
+            raise PyleroLibException(
                 "executed and test_result require values")
         testrec = TestRecord(self.project_id, test_case_id)
         testrec.result = test_result
@@ -1232,14 +1232,14 @@ class TestRun(BasePolarion):
         """function that checks if all required fields are passed in
 
         Exceptions:
-            PylarionLibException - if required params are not passed in
+            PyleroLibException - if required params are not passed in
         """
         fields = ""
         for req in self._required_fields:
             if not getattr(self, req):
                 fields += (", " if fields else "") + req
         if fields:
-            raise PylarionLibException("These parameters are required: {0}".
+            raise PyleroLibException("These parameters are required: {0}".
                                        format(fields))
 
     def verify_params(self, **kwargs):
@@ -1250,7 +1250,7 @@ class TestRun(BasePolarion):
                       to be set upon creation. Required fields must be passed
                       in
         Exceptions:
-            PylarionLibException - if params are unknown
+            PyleroLibException - if params are unknown
         """
         params = ""
         for param in kwargs:
@@ -1258,5 +1258,5 @@ class TestRun(BasePolarion):
                 params += (", " if params else "") + param
 
         if params:
-            raise PylarionLibException("These parameters are unknown: {0}".
+            raise PyleroLibException("These parameters are unknown: {0}".
                                        format(params))

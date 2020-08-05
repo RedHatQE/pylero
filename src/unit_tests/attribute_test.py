@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 import unittest2
 import datetime
 from pylero.document import Document
-from pylero.exceptions import PylarionLibException
+from pylero.exceptions import PyleroLibException
 from pylero.user import User
 from pylero.test_run import TestRun
 from pylero.test_record import TestRecord
@@ -85,7 +85,7 @@ class AttributeTest(unittest2.TestCase):
 
     def test_enum(self):
         # also tests id_attr with no_obj.
-        with self.assertRaises(PylarionLibException):
+        with self.assertRaises(PyleroLibException):
             self.doc.status = "bad"
         self.doc.status = "obsolete"
         self.assertEqual(self.doc.status, "obsolete")
@@ -116,7 +116,7 @@ class AttributeTest(unittest2.TestCase):
         testrun = TestRun(project_id=DEFAULT_PROJ,
                           test_run_id=TEST_RUN_ID)
         self.assertIsNotNone(testrun.arch)
-        with self.assertRaises(PylarionLibException):
+        with self.assertRaises(PyleroLibException):
             testrun.arch = "bad"
         valid_values = testrun.get_valid_field_values("arch")
         testrun.arch = valid_values[0]
@@ -132,7 +132,7 @@ class AttributeTest(unittest2.TestCase):
         """
         testrun = TestRun()
         self.assertIsNone(testrun.arch)
-        with self.assertRaises(PylarionLibException):
+        with self.assertRaises(PyleroLibException):
             testrun.arch = "bad"
         valid_values = testrun.get_valid_field_values("arch")
         testrun.arch = valid_values[0]
@@ -142,13 +142,13 @@ class AttributeTest(unittest2.TestCase):
         tc2 = TestCase(project_id=DEFAULT_PROJ,
                        work_item_id=self.TEST_CASE_ID)
         self.assertIsNotNone(tc2.caseautomation)
-        with self.assertRaises(PylarionLibException):
+        with self.assertRaises(PyleroLibException):
             tc2.caseautomation = "bad"
         tc2.caseautomation = "automated"
         # check for shared memory issue
         self.assertNotEqual(self.tc.caseautomation, tc2.caseautomation)
         req = Requirement()
-        with self.assertRaises(PylarionLibException):
+        with self.assertRaises(PyleroLibException):
             req.reqtype = "bad"
         req.reqtype = 'functional'
 
@@ -171,13 +171,13 @@ class AttributeTest(unittest2.TestCase):
         """
         test_case = TestCase()
         steps = TestSteps()
-        with self.assertRaises(PylarionLibException):  # check _obj_setter
+        with self.assertRaises(PyleroLibException):  # check _obj_setter
             test_case.status = u"é".encode('latin')
-        with self.assertRaises(PylarionLibException):  # check _custom_setter
+        with self.assertRaises(PyleroLibException):  # check _custom_setter
             test_case.tcmscaseid = u"é".encode('latin')
-        with self.assertRaises(PylarionLibException):  # check _regular_setter
+        with self.assertRaises(PyleroLibException):  # check _regular_setter
             test_case.title = u"é".encode('latin')
-        with self.assertRaises(PylarionLibException):  # check _arr_obj_setter
+        with self.assertRaises(PyleroLibException):  # check _arr_obj_setter
             steps.keys = [u"é".encode('latin')]
 
 

@@ -2,7 +2,7 @@ import unittest2
 import datetime
 import os
 from pylero.plan import Plan
-from pylero.exceptions import PylarionLibException
+from pylero.exceptions import PyleroLibException
 from pylero.work_item import Requirement
 
 TIME_STAMP = datetime.datetime.now().strftime("%Y%m%d%H%M%s")
@@ -98,7 +98,7 @@ class PlanTest(unittest2.TestCase):
 
     def test_010_delete(self):
         Plan.delete_plans(DEFAULT_PROJ, PLAN_ID)
-        with self.assertRaises(PylarionLibException):
+        with self.assertRaises(PyleroLibException):
             Plan(project_id=DEFAULT_PROJ, plan_id=PLAN_ID)
 
 if __name__ == "__main__":

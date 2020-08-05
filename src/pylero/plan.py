@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
 from pylero._compatible import basestring
 import suds
-from pylero.exceptions import PylarionLibException
+from pylero.exceptions import PyleroLibException
 from pylero.base_polarion import BasePolarion
 from pylero.subterra_uri import SubterraURI
 from pylero.enum_option_id import EnumOptionId
@@ -248,7 +248,7 @@ class Plan(BasePolarion):
                                              suds_object=suds_object)
         if plan_id:
             if not project_id:
-                raise PylarionLibException("When plan_id is passed in, "
+                raise PyleroLibException("When plan_id is passed in, "
                                            "project_id is required")
             self._suds_object = self.session.planning_client.service. \
                 getPlanById(project_id, plan_id)
@@ -257,7 +257,7 @@ class Plan(BasePolarion):
                 getPlanByUri(uri)
         if plan_id or uri:
             if getattr(self._suds_object, "_unresolvable", True):
-                raise PylarionLibException(
+                raise PyleroLibException(
                     "The Plan {0} was not found.".format(plan_id))
 
 # The parent variable is commented out, see above for explanation.
@@ -283,7 +283,7 @@ class Plan(BasePolarion):
         self._verify_obj()
         if work_items:
             if not isinstance(work_items, list):
-                raise PylarionLibException(
+                raise PyleroLibException(
                     "work_items must be a list of _WorkItem objects")
         p_items = []
         for item in work_items:
@@ -340,7 +340,7 @@ class Plan(BasePolarion):
         self._verify_obj()
         if work_items:
             if not isinstance(work_items, list):
-                raise PylarionLibException(
+                raise PyleroLibException(
                     "work_items must be a list of _WorkItem objects")
         p_items = []
         for item in work_items:
