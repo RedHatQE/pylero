@@ -202,10 +202,12 @@ class _WorkItem(BasePolarion):
             {"field_name": "previousStatus",
              "cls": EnumOptionId,
              "enum_id": "status"},
+        # priority is technically an enum, but it also accepts other values,
+        # so we didn't include it here. If you want to enforce the enum in
+        # the code, add "enum_id": "priority" to the prioirity dict
         "priority":
             {"field_name": "priority",
-             "cls": PriorityOptionId,
-             "enum_id": "priority"},
+             "cls": PriorityOptionId},
         "project_id":
             {"field_name": "project",
              "cls": Project},

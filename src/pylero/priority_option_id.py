@@ -13,8 +13,27 @@ class PriorityOptionId(BasePolarion):
     _cls_suds_map = {"id": "id",
                      "uri": "_uri",
                      "_unresolved": "_unresolved"}
+    _id_field = "id"
     _obj_client = "builder_client"
     _obj_struct = "tns5:PriorityOptionId"
+
+    def __init__(self, id=None, uri=None,
+                 suds_object=None):
+        """PriorityOptionID Constructor
+
+        Args:
+            id: value of the priority
+            uri: the SubterraURI of the priority
+            suds_object: the Polarion Plan object
+
+        Returns:
+            None
+
+        References:
+            _WorkItem.priority
+        """
+        super(self.__class__, self).__init__(id, suds_object)
+
 
 
 class ArrayOfPriorityOptionId(BasePolarion):

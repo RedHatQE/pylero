@@ -32,7 +32,8 @@ class WorkItemTest(unittest2.TestCase):
                                  "regression _link",
                                  "regression link",
                                  reqtype="functional",
-                                 severity="should_have")
+                                 severity="should_have",
+                                 priority = "50.0")
         cls.work_item_id = tc.work_item_id
         cls.work_item_uri = tc.uri
         cls.work_item_id_2 = req.work_item_id
