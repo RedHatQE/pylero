@@ -16,10 +16,10 @@ CERT_PATH = None
 
 # the reason why this function definition is at the top is because it is
 # assigned to "ssl._create_default_https_context", few lines below
-def create_redhat_ssl_context():
+def create_ssl_context():
     """this function creates a custom ssl context which is required for ssl
     connection in python-version >=2.7.10. this ssl context is customize to use
-    redhat certificate which is located in 'cert_path'.
+    certificate which is located in 'CERT_PATH'.
     """
     context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
     context.verify_mode = ssl.CERT_REQUIRED
@@ -84,7 +84,7 @@ class Session(object):
         if self._server.cert_path:
             global CERT_PATH
             CERT_PATH = self._server.cert_path
-            ssl._create_default_https_context = create_redhat_ssl_context
+            ssl._create_default_https_context = create_ssl_context
 
     def _login(self):
         """login to the Polarion API"""
@@ -154,12 +154,6 @@ class _SudsClientWrapper(object):
             url (str): the URL of the Polarion server.
             enclosing_session: the HTTP session that the requests are sent
                                through
-            caching_policy (int): is a configuration parameter that specifies
-                                 either 0 or 1. When it is set correctly, the
-                                 client always goes to the same host when using
-                                 a load balancer. Unfortunately, some
-                                 workstations require 1 and others 0 and I have
-                                 not understood what the qualification is.
             timeout (int): The HTTP timeout of the connection
         """
         plugin = SoapNull()

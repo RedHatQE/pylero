@@ -31,7 +31,7 @@ downloads the list of workitems and creates them.
 
 Pylero is located in a git repository and can be cloned from:
 
-`$ git clone https://gitlab.cee.redhat.com/ccit/pylero.git`
+`$ git clone https://github.com/RedHatQE/pylero.git`
 
 From the root of the project, run:
 
@@ -57,8 +57,8 @@ your CA to the cert_path config option.  These are the configurable values:
 
 ```
     [webservice]
-    url=https://polarion.engineering.redhat.com/polarion
-    svn_repo=https://polarion.engineering.redhat.com/repo
+    url=https://{your polarion web URL}/polarion
+    svn_repo=https://{your polarion web URL}/repo
     user={your username}
     password={your password}
     default_project={your default project}

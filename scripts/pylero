@@ -4,10 +4,21 @@ import os
 import inspect
 import pkgutil
 import pylero
-import gnureadline
-# On import, the gnureadline features are active without calling
+import sys
+
+# On import, the (gnu/)readline features are active without calling
 # any functions. This enables the arrow keys. Without this
 # import, pressing the arrow keys shows ctrl chars.
+if sys.version_info > (3, 6):
+    try:
+        import gnureadline as readline
+    except ImportError:
+        # `readline` is deprecated and `gnureadline` requires `Python.h` and
+        # `ncurses-devel` packages. TODO: Furnish steps to install `gnureadline`
+        pass
+else:
+    # `readline` on python > 3.6 resulting in Traceback at times
+    import readline
 
 
 def main():
