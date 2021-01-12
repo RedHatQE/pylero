@@ -91,6 +91,7 @@ class Connection(object):
     """
     connected = False
     session = None
+    password_retries = 3
 
     @classmethod
     def session(cls):
@@ -101,7 +102,7 @@ class Connection(object):
             if not cfg.pwd:
                 cfg.pwd = getpass(
                     "Password not in config file.\nEnter Password:")
-            while not cls.connected:
+            while not cls.connected and cls.password_retries:
                 try:
                     srv = Server(
                         cfg.server_url,
@@ -119,8 +120,12 @@ class Connection(object):
                             "AuthenticationFailedException" \
                             in e.fault.faultstring:
                         pwd = getpass("Invalid Password.\nEnter Password:")
+                        cls.password_retries -= 1
                     else:
                         raise
+            if not cls.password_retries:
+                raise PyleroLibException("Unable to establish pylero session "
+                        "due to 3 incorrect login attempts")
             cls.session.default_project = cfg.proj
             cls.session.user_id = cfg.login
             cls.session.password = cfg.pwd
@@ -163,17 +168,16 @@ class BasePolarion(object):
 
     Attributes:
         _cls_suds_map (dict): maps the Polarion attribute names to the Pylero
-                        attribute names. Pylero attribute names use the
-                        Red Hat global CI naming conventions.
-                        Attributes that reference either objects or an array of
-                        objects have the properties relate to the relationship
-                        meaning that accessing the property will give access to
-                        the object or list of objects.
+                        attribute names. Attributes that reference either
+                        objects or an array of objects have the properties
+                        relate to the relationship meaning that accessing the
+                        property will give access to the object or list of
+                        objects.
         _id_field (str): the field that represents an id field, used in the
                          child class's constructor. when a child's class
                          defines the field it allows this constructor to accept
                          an obj_id as a parameter
-        _obj_client (str): The Polarion client the child's WSDL object is
+        _obj_client (str): The Polarion client child's WSDL object is
                            defined by
         _obj_struct (str): The data type defined by the WSDL library. The
                            structure of the datatype is tnsX:ObjectName, the X

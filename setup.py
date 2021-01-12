@@ -13,7 +13,6 @@ for scheme in list(INSTALL_SCHEMES.values()):
 install_requires_ = [
     'click',
     'requests>=2.6.0',
-    'gnureadline'
 ]
 
 if sys.version_info >= (3, 0):
@@ -26,7 +25,7 @@ if __name__ == "__main__":
         name=PACKAGE_NAME,
         version='0.0.1',
         description="Python SDK for Polarion",
-        url="NONE",  # FIXME: once it is public
+        url="https://github.com/RedHatQE/pylero",
         author="%s Developers" % PACKAGE_NAME,
         author_email="szacks@redhat.com",
         package_dir={

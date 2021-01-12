@@ -58,17 +58,16 @@ def list(document,
          steps,
          workitem,
          wi_type=None):
-    """list documents, testcases, steps of testcase, links of workitems, runs,
-       templates. For more info and examples:
-       https://docs.engineering.redhat.com/x/kzmPAg"""
+    """list documents, testcases, steps of testcase, links of workitems, runs
+    templates."""
 
     # instantiate the list object
     list_obj = CmdList()
 
     # get documents
     if is_document and query:
-            docs = list_obj.list_documents_by_query(query)
-            list_obj.print_documents(docs),
+        docs = list_obj.list_documents_by_query(query)
+        list_obj.print_documents(docs),
 
     # get workitems
     elif workitem:
@@ -181,8 +180,7 @@ def update(assignee,
            result,
            run,
            status):
-    ''' create run(s), update results and custom fileds for run(s). For more
-        info and examples: https://docs.engineering.redhat.com/x/kzmPAg'''
+    ''' create run(s), update results and custom fileds for run(s). '''
 
     # instantiate the update object
     update_obj = CmdUpdate()
