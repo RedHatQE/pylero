@@ -37,17 +37,17 @@ extensions = [
     'sphinx.ext.extlinks',
 ]
 
+pol_client = 'https://{}/polarion/sdk/doc/javadoc/com/polarion/alm/ws/client'.format('YOUR_POLARION_URL')
+
 extlinks = {
-    'project': ('https://polarion.engineering.redhat.com/polarion/sdk/doc/javadoc/com/polarion/alm/ws/client/projects/ProjectWebService.html#%s', ''),
-    'tracker': ('http://polarion.dqe.lab.eng.bos.redhat.com/polarion/sdk/doc/javadoc/com/polarion/alm/ws/client/tracker/TrackerWebService.html#%s', ''),
-    'testmanagement': ('https://polarion.engineering.redhat.com/polarion/sdk/doc/javadoc/com/polarion/alm/ws/client/testmanagement/TestManagementWebService.html#%s', ''),
-    'planning': ('https://polarion.engineering.redhat.com/polarion/sdk/doc/javadoc/com/polarion/alm/ws/client/planning/PlanningWebService.html#%s', ''),
-    'security': ('https://polarion.engineering.redhat.com/polarion/sdk/doc/javadoc/com/polarion/alm/ws/client/security/SecurityWebService.html#%s', ''),
-    'session': ('https://polarion.engineering.redhat.com/polarion/sdk/doc/javadoc/com/polarion/alm/ws/client/session/SessionWebService.html#%s', ''),
-    'builder': ('https://polarion.engineering.redhat.com/polarion/sdk/doc/javadoc/com/polarion/alm/ws/client/builder/BuilderWebService.html#%s', '')
+    'project': ('{}/projects/ProjectWebService.html#%s'.format(pol_client), ''),
+    'tracker': ('{}/tracker/TrackerWebService.html#%s'.format(pol_client), ''),
+    'testmanagement': ('{}/testmanagement/TestManagementWebService.html#%s'.format(pol_client), ''),
+    'planning': ('{}/planning/PlanningWebService.html#%s'.format(pol_client), ''),
+    'security': ('{}/security/SecurityWebService.html#%s'.format(pol_client), ''),
+    'session': ('{}/session/SessionWebService.html#%s'.format(pol_client), ''),
+    'builder': ('{}/builder/BuilderWebService.html#%s'.format(pol_client), '')
 }
-
-
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
