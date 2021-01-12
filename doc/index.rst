@@ -60,8 +60,8 @@ These are the configurable values:
 
 
     [webservice]
-    url=https://polarion.engineering.redhat.com/polarion
-    svn_repo=https://polarion.engineering.redhat.com/repo
+    url=https://{your polarion web URL}/polarion
+    svn_repo=https://{your polarion web URL}/repo
     user={your username}
     password={your password}
     default_project={your default project}
