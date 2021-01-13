@@ -37,15 +37,20 @@ class Configuration(object):
 
 
         config = SafeConfigParser(defaults)
+        # Check for existence of config file and config_section
         if not config.read([self.GLOBAL_CONFIG, self.LOCAL_CONFIG,
                             self.CURDIR_CONFIG]) or \
                 not config.has_section(self.CONFIG_SECTION):
-            raise PyleroLibException("The config files do not exist or"
-                                       " are not of the correct format."
-                                       " Valid files are: {0}, {1} or {2}"
-                                       .format(self.GLOBAL_CONFIG,
-                                               self.LOCAL_CONFIG,
-                                               self.CURDIR_CONFIG))
+            # Check for mandatory environ variables if config file is not found
+            if not all(os.environ.get(item) for item in ('POLARION_URL',
+                'POLARION_REPO', 'POLARION_USERNAME', 'POLARION_PASSWORD',
+                'POLARION_PROJECT')):
+                raise PyleroLibException("The config files/ENV vars do not "
+                                        "exist or are not of the correct "
+                                        "format. Valid files are: {0}, {1} "
+                                        "or {2}" .format(self.GLOBAL_CONFIG,
+                                                self.LOCAL_CONFIG,
+                                                self.CURDIR_CONFIG))
         self.server_url = os.environ.get("POLARION_URL") or \
                      config.get(self.CONFIG_SECTION, "url")
         self.repo = os.environ.get("POLARION_REPO") or \
@@ -54,8 +59,13 @@ class Configuration(object):
                 config.get(self.CONFIG_SECTION, "user")
         self.pwd = os.environ.get("POLARION_PASSWORD") or \
               config.get(self.CONFIG_SECTION, "password")
-        self.timeout = os.environ.get("POLARION_TIMEOUT") or \
-                  config.get(self.CONFIG_SECTION, "timeout")
+
+        try:
+            self.timeout = os.environ.get("POLARION_TIMEOUT") or \
+                    config.get(self.CONFIG_SECTION, "timeout")
+        except:
+            self.timeout = config.defaults['timeout']
+
         try:
             self.timeout = int(self.timeout)
         except ValueError:

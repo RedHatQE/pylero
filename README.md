@@ -83,11 +83,11 @@ These can also be overridden with the following environment variables:
 ----------------
 The install_requires attribute in setup.py installs the following requirements:
 ```
-    suds-py3 if python_version>="3"
-    suds if python_version<="2.7"
-    requests>=2.6.0'
+    suds; python_version < '3.0'
+    suds-py3; python_version >= '3.0'
+    requests>=2.6.0
     click
-    gnureadline
+    readline; python_version <= '3.6'
 ```
 
 ## Usage:
