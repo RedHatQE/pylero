@@ -6,7 +6,6 @@ import suds
 import os
 import re
 import copy
-import json
 from pylero.exceptions import PyleroLibException
 from pylero.base_polarion import BasePolarion, Configuration
 from pylero.approval import Approval
@@ -336,7 +335,7 @@ class _WorkItem(BasePolarion):
     @classmethod
     def query(cls, query, is_sql=False, fields=["work_item_id"],
               sort="work_item_id", limit=-1, baseline_revision=None,
-              query_uris=False):
+              query_uris=False, project_id=None):
         """Searches for Work Items.
 
         Notes:
@@ -378,6 +377,10 @@ class _WorkItem(BasePolarion):
                                      default: None
             query_uris (bool): returns a list of URI of the WorkItems found,
                                default: False
+            project_id (str): is used to pass in a specific project_id instead
+                              of using the default. If child class doesn't
+                              provide any project_id, it'll be set to default
+                              project. Default: None
 
         Returns:
             list of _WorkItem objects
@@ -396,6 +399,12 @@ class _WorkItem(BasePolarion):
             Tracker.queryWorkItemsInBaselineLimited
             Tracker.queryWorkItemsLimited
         """
+        if not project_id:
+            project_id = cls.default_project
+        # Generally child class adds 'project_id' to query, check for it's
+        # absence
+        if "project.id" not in query:
+            query += " AND project.id:%s" % (project_id)
         parms = [query]
         if not is_sql:
             parms.append(sort)
@@ -417,6 +426,7 @@ class _WorkItem(BasePolarion):
         elif limit != -1:
             # You can't have both SQL and limited.
             base_name += "Limited"
+
         wis = getattr(cls.session.tracker_client.service, base_name)(*parms)
         if query_uris:
             return wis
@@ -513,7 +523,7 @@ class _WorkItem(BasePolarion):
         allowed_ids = [u.user_id for u in allowed]
         if approvee_id not in (allowed_ids):
             raise PyleroLibException("%s is not an allowed assignee" %
-                                       approvee_id)
+                                     approvee_id)
         self.session.tracker_client.service.addApprovee(self.uri, approvee_id)
 
     def add_assignee(self, assignee_id):
@@ -534,7 +544,7 @@ class _WorkItem(BasePolarion):
         allowed_ids = [u.user_id for u in allowed]
         if assignee_id not in (allowed_ids):
             raise PyleroLibException("%s is not an allowed assignee" %
-                                       assignee_id)
+                                     assignee_id)
         return self.session.tracker_client.service.addAssignee(self.uri,
                                                                assignee_id)
 
@@ -557,7 +567,7 @@ class _WorkItem(BasePolarion):
         cat_ids = [cat.category_id for cat in cats]
         if category_id not in cat_ids:
             raise PyleroLibException("the category_id must be one of: %s" %
-                                       cat_ids)
+                                     cat_ids)
         return self.session.tracker_client.service.addCategory(self.uri,
                                                                category_id)
 
@@ -1373,14 +1383,14 @@ class _SpecificWorkItem(_WorkItem):
                 fields += (", " if fields else "") + req
         if fields:
             raise PyleroLibException("These parameters are required: {0}".
-                                       format(fields))
+                                     format(fields))
         for field in kwargs:
             if field not in cls._all_custom_fields and \
                     field not in cls._cls_suds_map:
                 fields += (", " if fields else "") + field
         if fields:
             raise PyleroLibException("These parameters are unknown: {0}".
-                                       format(fields))
+                                     format(fields))
         return super(_SpecificWorkItem, cls).create(
             project_id, cls._wi_type, title, desc, status, **kwargs)
 
@@ -1401,29 +1411,29 @@ class _SpecificWorkItem(_WorkItem):
         cfts = cls.get_defined_custom_field_types(project_id,
                                                   cls._wi_type)
         for cft in cfts:
-                # convert the custom field name to use code convention, where
-                # possible
-                split_name = re.findall('[a-zA-Z][^A-Z]*', cft.cft_id)
-                local_name = "_".join(split_name).replace("_U_R_I", "_uri"). \
-                    replace("_W_I", "_wi").replace("_I_D", "_id").lower()
-                cls._all_custom_fields.append(local_name)
-                cls._cls_suds_map[local_name] = {}
-                cls._cls_suds_map[local_name]["field_name"] = cft.cft_id
-                # types are returned in format:
-                # * nsX:obj_type for objects and
-                # * xsd:string for native types
-                # for all object types, I need special processing.
-                parse_type = cft.type.split(":")
-                if parse_type[0].startswith("ns"):
-                    cls._cls_suds_map[local_name]["cls"] = \
-                        globals()[parse_type[1]]
-                cls._cls_suds_map[local_name]["enum_id"] = getattr(cft,
-                                                                   "enum_id",
-                                                                   None)
-                cls._cls_suds_map[local_name]["is_custom"] = True
-                cls._cls_suds_map[local_name]["control"] = cls._wi_type
-                if cft.required:
-                    cls._required_fields.append(local_name)
+            # convert the custom field name to use code convention, where
+            # possible
+            split_name = re.findall('[a-zA-Z][^A-Z]*', cft.cft_id)
+            local_name = "_".join(split_name).replace("_U_R_I", "_uri"). \
+                replace("_W_I", "_wi").replace("_I_D", "_id").lower()
+            cls._all_custom_fields.append(local_name)
+            cls._cls_suds_map[local_name] = {}
+            cls._cls_suds_map[local_name]["field_name"] = cft.cft_id
+            # types are returned in format:
+            # * nsX:obj_type for objects and
+            # * xsd:string for native types
+            # for all object types, I need special processing.
+            parse_type = cft.type.split(":")
+            if parse_type[0].startswith("ns"):
+                cls._cls_suds_map[local_name]["cls"] = \
+                    globals()[parse_type[1]]
+            cls._cls_suds_map[local_name]["enum_id"] = getattr(cft,
+                                                               "enum_id",
+                                                               None)
+            cls._cls_suds_map[local_name]["is_custom"] = True
+            cls._cls_suds_map[local_name]["control"] = cls._wi_type
+            if cft.required:
+                cls._required_fields.append(local_name)
         cls._got_custom_fields = True
         return None
 
@@ -1507,7 +1517,7 @@ class _SpecificWorkItem(_WorkItem):
             self.type = self._wi_type
         if self.type != self._wi_type:
             raise PyleroLibException("This is of type {0}, not type {1}".
-                                       format(self.type, self._wi_type))
+                                     format(self.type, self._wi_type))
 
     @tx_wrapper
     def update(self):
@@ -1524,6 +1534,7 @@ class _SpecificWorkItem(_WorkItem):
 
 # On import of the module, it will connect to the server
 # and get a list of the workitem types and create those classes.
+
 
 cfg = Configuration()
 bp = BasePolarion()

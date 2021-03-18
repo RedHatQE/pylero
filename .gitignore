@@ -1,3 +1,4 @@
 *.pyc
 .pylero
 .pylarion
+doc/_build/
