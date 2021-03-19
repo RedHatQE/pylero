@@ -119,8 +119,8 @@ class Plan(BasePolarion):
         "updated": "updated",
         "uri": "_uri",
         "_unresolved": "_unresolved"}
-    _obj_client = "builder_client"
-    _obj_struct = "tns6:Plan"
+    _obj_client = "planning_client"
+    _obj_struct = "tns4:Plan"
     _id_field = "plan_id"
 
     @classmethod
