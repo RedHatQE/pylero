@@ -1,0 +1,510 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pylero.plan &#8212; pylero  documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for pylero.plan</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf8 -*-</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">unicode_literals</span>
+<span class="kn">from</span> <span class="nn">pylero._compatible</span> <span class="kn">import</span> <span class="n">basestring</span>
+<span class="kn">import</span> <span class="nn">suds</span>
+<span class="kn">from</span> <span class="nn">pylero.exceptions</span> <span class="kn">import</span> <span class="n">PyleroLibException</span>
+<span class="kn">from</span> <span class="nn">pylero.base_polarion</span> <span class="kn">import</span> <span class="n">BasePolarion</span>
+<span class="kn">from</span> <span class="nn">pylero.subterra_uri</span> <span class="kn">import</span> <span class="n">SubterraURI</span>
+<span class="kn">from</span> <span class="nn">pylero.enum_option_id</span> <span class="kn">import</span> <span class="n">EnumOptionId</span>
+<span class="kn">from</span> <span class="nn">pylero.enum_option_id</span> <span class="kn">import</span> <span class="n">ArrayOfEnumOptionId</span>
+<span class="kn">from</span> <span class="nn">pylero.custom</span> <span class="kn">import</span> <span class="n">Custom</span>
+<span class="kn">from</span> <span class="nn">pylero.custom</span> <span class="kn">import</span> <span class="n">ArrayOfCustom</span>
+<span class="kn">from</span> <span class="nn">pylero.text</span> <span class="kn">import</span> <span class="n">Text</span>
+<span class="kn">from</span> <span class="nn">pylero.plan_record</span> <span class="kn">import</span> <span class="n">PlanRecord</span>
+<span class="kn">from</span> <span class="nn">pylero.plan_statistics</span> <span class="kn">import</span> <span class="n">PlanStatistics</span>
+<span class="kn">from</span> <span class="nn">pylero.plan_record</span> <span class="kn">import</span> <span class="n">ArrayOfPlanRecord</span>
+<span class="kn">from</span> <span class="nn">pylero.work_item</span> <span class="kn">import</span> <span class="n">_WorkItem</span>
+<span class="kn">from</span> <span class="nn">pylero.user</span> <span class="kn">import</span> <span class="n">User</span>
+<span class="kn">from</span> <span class="nn">pylero.project</span> <span class="kn">import</span> <span class="n">Project</span>
+
+
+<div class="viewcode-block" id="Plan"><a class="viewcode-back" href="../../pylero.html#pylero.plan.Plan">[docs]</a><span class="k">class</span> <span class="nc">Plan</span><span class="p">(</span><span class="n">BasePolarion</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Object to handle the Polarion WSDL tns6:Plan class</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        allowed_types (ArrayOfEnumOptionId)</span>
+<span class="sd">        author_uri (SubterraURI)</span>
+<span class="sd">        calculation_type (EnumOptionId)</span>
+<span class="sd">        capacity (float)</span>
+<span class="sd">        color (string)</span>
+<span class="sd">        created (dateTime)</span>
+<span class="sd">        custom_fields (ArrayOfCustom)</span>
+<span class="sd">        default_estimate (float)</span>
+<span class="sd">        description (Text)</span>
+<span class="sd">        due_date (date)</span>
+<span class="sd">        estimation_field (string)</span>
+<span class="sd">        finished_on (dateTime)</span>
+<span class="sd">        is_template (boolean)</span>
+<span class="sd">        location (Location)</span>
+<span class="sd">        name (string)</span>
+<span class="sd">        parent (Plan)</span>
+<span class="sd">        plan_id (string)</span>
+<span class="sd">        previous_time_spent (duration)</span>
+<span class="sd">        prioritization_field (string)</span>
+<span class="sd">        project_uri (SubterraURI)</span>
+<span class="sd">        records (ArrayOfPlanRecord)</span>
+<span class="sd">        sort_order (int)</span>
+<span class="sd">        start_date (date)</span>
+<span class="sd">        started_on (dateTime)</span>
+<span class="sd">        status (EnumOptionId)</span>
+<span class="sd">        template_uri (SubterraURI)</span>
+<span class="sd">        updated (dateTime)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+    <span class="n">_cls_suds_map</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;allowed_types&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;allowedTypes&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;is_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">EnumOptionId</span><span class="p">,</span>
+             <span class="s2">&quot;arr_cls&quot;</span><span class="p">:</span> <span class="n">ArrayOfEnumOptionId</span><span class="p">,</span>
+             <span class="s2">&quot;inner_field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;EnumOptionId&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;enum_id&quot;</span><span class="p">:</span> <span class="s2">&quot;workitem-type&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;author&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;authorURI&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">User</span><span class="p">,</span>
+             <span class="s2">&quot;named_arg&quot;</span><span class="p">:</span> <span class="s2">&quot;uri&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;sync_field&quot;</span><span class="p">:</span> <span class="s2">&quot;uri&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;calculation_type&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;calculationType&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">EnumOptionId</span><span class="p">},</span>
+        <span class="s2">&quot;capacity&quot;</span><span class="p">:</span> <span class="s2">&quot;capacity&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;color&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;created&quot;</span><span class="p">:</span> <span class="s2">&quot;created&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;custom_fields&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;customFields&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;is_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">Custom</span><span class="p">,</span>
+             <span class="s2">&quot;arr_cls&quot;</span><span class="p">:</span> <span class="n">ArrayOfCustom</span><span class="p">,</span>
+             <span class="s2">&quot;inner_field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Custom&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;default_estimate&quot;</span><span class="p">:</span> <span class="s2">&quot;defaultEstimate&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;description&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;description&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">Text</span><span class="p">},</span>
+        <span class="s2">&quot;due_date&quot;</span><span class="p">:</span> <span class="s2">&quot;dueDate&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;estimation_field&quot;</span><span class="p">:</span> <span class="s2">&quot;estimationField&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;finished_on&quot;</span><span class="p">:</span> <span class="s2">&quot;finishedOn&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;is_template&quot;</span><span class="p">:</span> <span class="s2">&quot;isTemplate&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="s2">&quot;location&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+        <span class="c1"># the parent field exists when creating an object Plan(), however the</span>
+        <span class="c1"># field is not returned in a get or search operation. Because of this,</span>
+        <span class="c1"># the attribute should not be accessible. the _fix_circular_refs is</span>
+        <span class="c1"># also commented out for the same reason. If this attribute become</span>
+        <span class="c1"># relevant in the future, that funciton should be activated.</span>
+        <span class="c1"># &quot;parent&quot;:</span>
+        <span class="c1">#    {&quot;field_name&quot;: &quot;parent&quot;},  # populated in circ refs</span>
+        <span class="s2">&quot;plan_id&quot;</span><span class="p">:</span> <span class="s2">&quot;id&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;previous_time_spent&quot;</span><span class="p">:</span> <span class="s2">&quot;previousTimeSpent&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;prioritization_field&quot;</span><span class="p">:</span> <span class="s2">&quot;prioritizationField&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;project_id&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;projectURI&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">Project</span><span class="p">,</span>
+             <span class="s2">&quot;named_arg&quot;</span><span class="p">:</span> <span class="s2">&quot;uri&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;sync_field&quot;</span><span class="p">:</span> <span class="s2">&quot;uri&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;records&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;records&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;is_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">PlanRecord</span><span class="p">,</span>
+             <span class="s2">&quot;arr_cls&quot;</span><span class="p">:</span> <span class="n">ArrayOfPlanRecord</span><span class="p">,</span>
+             <span class="s2">&quot;inner_field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;PlanRecord&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;sort_order&quot;</span><span class="p">:</span> <span class="s2">&quot;sortOrder&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;start_date&quot;</span><span class="p">:</span> <span class="s2">&quot;startDate&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;started_on&quot;</span><span class="p">:</span> <span class="s2">&quot;startedOn&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;status&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;status&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">EnumOptionId</span><span class="p">},</span>
+        <span class="s2">&quot;template_uri&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;templateURI&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">SubterraURI</span><span class="p">},</span>
+        <span class="s2">&quot;updated&quot;</span><span class="p">:</span> <span class="s2">&quot;updated&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;uri&quot;</span><span class="p">:</span> <span class="s2">&quot;_uri&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_unresolved&quot;</span><span class="p">:</span> <span class="s2">&quot;_unresolved&quot;</span><span class="p">}</span>
+    <span class="n">_obj_client</span> <span class="o">=</span> <span class="s2">&quot;builder_client&quot;</span>
+    <span class="n">_obj_struct</span> <span class="o">=</span> <span class="s2">&quot;tns6:Plan&quot;</span>
+    <span class="n">_id_field</span> <span class="o">=</span> <span class="s2">&quot;plan_id&quot;</span>
+
+<div class="viewcode-block" id="Plan.create"><a class="viewcode-back" href="../../pylero.html#pylero.plan.Plan.create">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">plan_id</span><span class="p">,</span> <span class="n">plan_name</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">parent_id</span><span class="p">,</span> <span class="n">template_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Creates a new plan</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            plan_id (str): The id of the new plan</span>
+<span class="sd">            plan_name: The name of the new plan</span>
+<span class="sd">            project_id (str): The project the plan will be created in</span>
+<span class="sd">            parent_id: The id of the parent plan (can be null)</span>
+<span class="sd">            template_id: The id of the template used for this plan</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Plan Object</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Planning.createPlan</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">uri</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">planning_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">createPlan</span><span class="p">(</span><span class="n">project_id</span><span class="p">,</span>
+                                                             <span class="n">plan_name</span><span class="p">,</span>
+                                                             <span class="n">plan_id</span><span class="p">,</span>
+                                                             <span class="n">parent_id</span><span class="p">,</span>
+                                                             <span class="n">template_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Plan</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="n">uri</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Plan.create_plan_template"><a class="viewcode-back" href="../../pylero.html#pylero.plan.Plan.create_plan_template">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">create_plan_template</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">template_id</span><span class="p">,</span> <span class="n">template_name</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span>
+                             <span class="n">parent_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Creates a new plan template</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            template_id (str): The id of the new template</span>
+<span class="sd">            template_name: The name of the new template</span>
+<span class="sd">            project_id (str): The project the plan will be created in</span>
+<span class="sd">            parent_id: The id of the template the new template is based on</span>
+<span class="sd">                        (can be null)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Plan Object</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Planning.createPlanTemplate</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">uri</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">planning_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">createPlanTemplate</span><span class="p">(</span>
+            <span class="n">project_id</span><span class="p">,</span> <span class="n">template_name</span><span class="p">,</span> <span class="n">template_id</span><span class="p">,</span> <span class="n">parent_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Plan</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="n">uri</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Plan.delete_plans"><a class="viewcode-back" href="../../pylero.html#pylero.plan.Plan.delete_plans">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">delete_plans</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">plan_ids</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Delete specified plans</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            project_id: the project the plans will be deleted in</span>
+<span class="sd">            plan_ids: list of plan ids to delete.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Planning.deletePlans</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">planning_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">deletePlans</span><span class="p">(</span><span class="n">project_id</span><span class="p">,</span> <span class="n">plan_ids</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Plan.search"><a class="viewcode-back" href="../../pylero.html#pylero.plan.Plan.search">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="s2">&quot;plan_id&quot;</span><span class="p">,</span> <span class="n">limit</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="p">[],</span>
+               <span class="n">search_templates</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;search plans or plan templates</span>
+
+<span class="sd">        Args</span>
+<span class="sd">            query</span>
+<span class="sd">            sort</span>
+<span class="sd">            limit: the maximum number of records to be returned,</span>
+<span class="sd">                   -1 for no limit.</span>
+<span class="sd">            fields: list of the fields requested.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of Plan objects</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Planning.searchPlanTemplates</span>
+<span class="sd">            Planning.searchPlanTemplatesWithFields</span>
+<span class="sd">            Planning.searchPlans</span>
+<span class="sd">            Planning.searchPlansWithFields</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># function names and parameter lists generated dynamically based on</span>
+        <span class="c1"># parameters passed in.</span>
+        <span class="k">if</span> <span class="n">search_templates</span><span class="p">:</span>
+            <span class="n">function_name</span> <span class="o">=</span> <span class="s2">&quot;searchPlanTemplates&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">function_name</span> <span class="o">=</span> <span class="s2">&quot;searchPlans&quot;</span>
+        <span class="k">if</span> <span class="n">fields</span><span class="p">:</span>
+            <span class="n">function_name</span> <span class="o">+=</span> <span class="s2">&quot;WithFields&quot;</span>
+        <span class="n">p_sort</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="n">sort</span><span class="p">]</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="n">sort</span><span class="p">],</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> \
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="n">sort</span><span class="p">][</span><span class="s2">&quot;field_name&quot;</span><span class="p">]</span>
+        <span class="n">parms</span> <span class="o">=</span> <span class="p">[</span><span class="n">query</span><span class="p">,</span> <span class="n">p_sort</span><span class="p">,</span> <span class="n">limit</span><span class="p">]</span> <span class="o">+</span> \
+            <span class="p">([</span><span class="bp">cls</span><span class="o">.</span><span class="n">_convert_obj_fields_to_polarion</span><span class="p">(</span><span class="n">fields</span><span class="p">)]</span>
+             <span class="k">if</span> <span class="n">fields</span> <span class="k">else</span> <span class="p">[])</span>
+        <span class="n">plans</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">sud_plan</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">planning_client</span><span class="o">.</span><span class="n">service</span><span class="p">,</span>
+                                <span class="n">function_name</span><span class="p">)(</span><span class="o">*</span><span class="n">parms</span><span class="p">):</span>
+            <span class="n">plans</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Plan</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">sud_plan</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">plans</span></div>
+
+<div class="viewcode-block" id="Plan.__init__"><a class="viewcode-back" href="../../pylero.html#pylero.plan.Plan.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plan_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">suds_object</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plan Constructor</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            plan_id: ID of the plan</span>
+<span class="sd">            project_id: ID of the project that contains the specific plan</span>
+<span class="sd">                        required when plan_id is given</span>
+<span class="sd">            uri: the SubterraURI of the plan to load</span>
+<span class="sd">            suds_object: the Polarion Plan object</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Planning.getPlanById</span>
+<span class="sd">            Planning.getPlanByUri</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">obj_id</span><span class="o">=</span><span class="n">plan_id</span><span class="p">,</span>
+                                             <span class="n">suds_object</span><span class="o">=</span><span class="n">suds_object</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">plan_id</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">project_id</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span><span class="s2">&quot;When plan_id is passed in, &quot;</span>
+                                           <span class="s2">&quot;project_id is required&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">planning_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
+                <span class="n">getPlanById</span><span class="p">(</span><span class="n">project_id</span><span class="p">,</span> <span class="n">plan_id</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">uri</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">planning_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
+                <span class="n">getPlanByUri</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">plan_id</span> <span class="ow">or</span> <span class="n">uri</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">,</span> <span class="s2">&quot;_unresolvable&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span>
+                    <span class="s2">&quot;The Plan </span><span class="si">{0}</span><span class="s2"> was not found.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">plan_id</span><span class="p">))</span></div>
+
+<span class="c1"># The parent variable is commented out, see above for explanation.</span>
+<span class="c1"># in the event that the parent atrtribute becomes relevant, this function will</span>
+<span class="c1"># need to be uncommented out as well</span>
+<span class="c1">#    def _fix_circular_refs(self):</span>
+<span class="c1">#        # The module references itself as a class attribute, which is not</span>
+<span class="c1">#        # allowed, so the self reference is defined here.</span>
+<span class="c1">#        self._cls_suds_map[&quot;parent&quot;][&quot;cls&quot;] = self.__class__</span>
+
+<div class="viewcode-block" id="Plan.add_plan_items"><a class="viewcode-back" href="../../pylero.html#pylero.plan.Plan.add_plan_items">[docs]</a>    <span class="k">def</span> <span class="nf">add_plan_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">work_items</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add plan records to the plan.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            items: list of work_item_ids</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Planning.addPlanItems</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">work_items</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">work_items</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span>
+                    <span class="s2">&quot;work_items must be a list of _WorkItem objects&quot;</span><span class="p">)</span>
+        <span class="n">p_items</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">work_items</span><span class="p">:</span>
+            <span class="n">wi</span> <span class="o">=</span> <span class="n">_WorkItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_id</span><span class="p">,</span> <span class="n">work_item_id</span><span class="o">=</span><span class="n">item</span><span class="p">)</span>
+            <span class="n">p_items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">wi</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">planning_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">addPlanItems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">p_items</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Plan.get_statistics"><a class="viewcode-back" href="../../pylero.html#pylero.plan.Plan.get_statistics">[docs]</a>    <span class="k">def</span> <span class="nf">get_statistics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;get statistics of the plan</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            PlanStatistics object</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Planning.getPlanStatistics</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="n">suds_stat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">planning_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">getPlanStatistics</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">PlanStatistics</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">suds_stat</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Plan.get_wiki_content"><a class="viewcode-back" href="../../pylero.html#pylero.plan.Plan.get_wiki_content">[docs]</a>    <span class="k">def</span> <span class="nf">get_wiki_content</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the wiki content of the plan</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Text object</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Planning.getPlanWikiContent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="n">suds_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">planning_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">getPlanWikiContent</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Text</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">suds_obj</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Plan.remove_plan_items"><a class="viewcode-back" href="../../pylero.html#pylero.plan.Plan.remove_plan_items">[docs]</a>    <span class="k">def</span> <span class="nf">remove_plan_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">work_items</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remove plan records to the plan.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            items: list of work_item_ids</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Planning.removePlanItems</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">work_items</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">work_items</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span>
+                    <span class="s2">&quot;work_items must be a list of _WorkItem objects&quot;</span><span class="p">)</span>
+        <span class="n">p_items</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">work_items</span><span class="p">:</span>
+            <span class="n">wi</span> <span class="o">=</span> <span class="n">_WorkItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_id</span><span class="p">,</span> <span class="n">work_item_id</span><span class="o">=</span><span class="n">item</span><span class="p">)</span>
+            <span class="n">p_items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">wi</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">planning_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">removePlanItems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">p_items</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Plan.set_wiki_content"><a class="viewcode-back" href="../../pylero.html#pylero.plan.Plan.set_wiki_content">[docs]</a>    <span class="k">def</span> <span class="nf">set_wiki_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;method set_wiki_content updates the wiki for the current Plan</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            Content (str or Text object)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Planning.setPlanWikiContent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">content</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span>
+                <span class="n">obj_content</span> <span class="o">=</span> <span class="n">Text</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="n">content</span><span class="p">)</span>
+                <span class="n">suds_content</span> <span class="o">=</span> <span class="n">obj_content</span><span class="o">.</span><span class="n">_suds_object</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">Text</span><span class="p">):</span>
+                <span class="n">suds_content</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">_suds_object</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># is a suds object</span>
+                <span class="n">suds_content</span> <span class="o">=</span> <span class="n">content</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">suds_content</span> <span class="o">=</span> <span class="n">suds</span><span class="o">.</span><span class="n">null</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">planning_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
+            <span class="n">setPlanWikiContent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">suds_content</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Plan.update"><a class="viewcode-back" href="../../pylero.html#pylero.plan.Plan.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;updates the server with the current plan content</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Planning.updatePlan</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">planning_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">updatePlan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Plan.was_started"><a class="viewcode-back" href="../../pylero.html#pylero.plan.Plan.was_started">[docs]</a>    <span class="k">def</span> <span class="nf">was_started</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;checks if the plan was started yet</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Planning.wasPlanStarted</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">planning_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">wasPlanStarted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ArrayOfPlan"><a class="viewcode-back" href="../../pylero.html#pylero.plan.ArrayOfPlan">[docs]</a><span class="k">class</span> <span class="nc">ArrayOfPlan</span><span class="p">(</span><span class="n">BasePolarion</span><span class="p">):</span>
+    <span class="n">_obj_client</span> <span class="o">=</span> <span class="s2">&quot;builder_client&quot;</span>
+    <span class="n">_obj_struct</span> <span class="o">=</span> <span class="s2">&quot;tns6:ArrayOfPlan&quot;</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">pylero</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">pylero</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Sim Zacks and Pylero Contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

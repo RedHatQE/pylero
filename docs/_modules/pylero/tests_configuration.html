@@ -1,0 +1,176 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pylero.tests_configuration &#8212; pylero  documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for pylero.tests_configuration</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf8 -*-</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">unicode_literals</span>
+<span class="kn">from</span> <span class="nn">pylero.base_polarion</span> <span class="kn">import</span> <span class="n">BasePolarion</span>
+<span class="kn">from</span> <span class="nn">pylero.properties</span> <span class="kn">import</span> <span class="n">Properties</span>
+
+
+<div class="viewcode-block" id="TestsConfiguration"><a class="viewcode-back" href="../../pylero.html#pylero.tests_configuration.TestsConfiguration">[docs]</a><span class="k">class</span> <span class="nc">TestsConfiguration</span><span class="p">(</span><span class="n">BasePolarion</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Object to handle the Polarion WSDL tns3:TestsConfiguration class</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        defect_auto_assignement_enabled (boolean)</span>
+<span class="sd">        defect_reuse_type (string)</span>
+<span class="sd">        defect_template (string)</span>
+<span class="sd">        defect_to_test_case_link_role_id (string)</span>
+<span class="sd">        defect_work_item_type (string)</span>
+<span class="sd">        defects_project (string)</span>
+<span class="sd">        fields_to_copy_from_test_case_to_defect (Properties)</span>
+<span class="sd">        fields_to_copy_from_test_run_to_linked_defect (Properties)</span>
+<span class="sd">        fields_to_copy_from_test_run_to_new_defect (Properties)</span>
+<span class="sd">        max_created_defects (int)</span>
+<span class="sd">        max_created_defects_percent (int)</span>
+<span class="sd">        result_error_enum_id (string)</span>
+<span class="sd">        result_failed_enum_id (string)</span>
+<span class="sd">        result_passed_enum_id (string)</span>
+<span class="sd">        retest_allowed (boolean)</span>
+<span class="sd">        status_error_enum_id (string)</span>
+<span class="sd">        status_failed_enum_id (string)</span>
+<span class="sd">        status_ok_enum_id (string)</span>
+<span class="sd">        summary_defect_severity (string)</span>
+<span class="sd">        test_case_id_custom_field (string)</span>
+<span class="sd">        test_case_template (string)</span>
+<span class="sd">        test_case_test_comment_field_id (string)</span>
+<span class="sd">        test_case_test_result_field_id (string)</span>
+<span class="sd">        test_case_work_item_type (string)</span>
+<span class="sd">        test_run_template (string)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+    <span class="n">_cls_suds_map</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;defect_auto_assignement_enabled&quot;</span><span class="p">:</span>
+                     <span class="s2">&quot;defectAutoAssignementEnabled&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;defect_reuse_type&quot;</span><span class="p">:</span> <span class="s2">&quot;defectReuseType&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;defect_template&quot;</span><span class="p">:</span> <span class="s2">&quot;defectTemplate&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;defect_to_test_case_link_role_id&quot;</span><span class="p">:</span>
+                     <span class="s2">&quot;defectToTestCaseLinkRoleId&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;defect_work_item_type&quot;</span><span class="p">:</span> <span class="s2">&quot;defectWorkItemType&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;defects_project&quot;</span><span class="p">:</span> <span class="s2">&quot;defectsProject&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;fields_to_copy_from_test_case_to_defect&quot;</span><span class="p">:</span>
+                     <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;fieldsToCopyFromTestCaseToDefect&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">Properties</span><span class="p">},</span>
+                     <span class="s2">&quot;fields_to_copy_from_test_run_to_linked_defect&quot;</span><span class="p">:</span>
+                     <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;fieldsToCopyFromTestRunToLinkedDefect&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">Properties</span><span class="p">},</span>
+                     <span class="s2">&quot;fields_to_copy_from_test_run_to_new_defect&quot;</span><span class="p">:</span>
+                     <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;fieldsToCopyFromTestRunToNewDefect&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">Properties</span><span class="p">},</span>
+                     <span class="s2">&quot;max_created_defects&quot;</span><span class="p">:</span> <span class="s2">&quot;maxCreatedDefects&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;max_created_defects_percent&quot;</span><span class="p">:</span> <span class="s2">&quot;maxCreatedDefectsPercent&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;result_error_enum_id&quot;</span><span class="p">:</span> <span class="s2">&quot;resultErrorEnumId&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;result_failed_enum_id&quot;</span><span class="p">:</span> <span class="s2">&quot;resultFailedEnumId&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;result_passed_enum_id&quot;</span><span class="p">:</span> <span class="s2">&quot;resultPassedEnumId&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;retest_allowed&quot;</span><span class="p">:</span> <span class="s2">&quot;retestAllowed&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;status_error_enum_id&quot;</span><span class="p">:</span> <span class="s2">&quot;statusErrorEnumId&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;status_failed_enum_id&quot;</span><span class="p">:</span> <span class="s2">&quot;statusFailedEnumId&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;status_ok_enum_id&quot;</span><span class="p">:</span> <span class="s2">&quot;statusOkEnumId&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;summary_defect_severity&quot;</span><span class="p">:</span> <span class="s2">&quot;summaryDefectSeverity&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;test_case_id_custom_field&quot;</span><span class="p">:</span> <span class="s2">&quot;testCaseIdCustomField&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;test_case_template&quot;</span><span class="p">:</span> <span class="s2">&quot;testCaseTemplate&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;test_case_test_comment_field_id&quot;</span><span class="p">:</span>
+                     <span class="s2">&quot;testCaseTestCommentFieldId&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;test_case_test_result_field_id&quot;</span><span class="p">:</span>
+                     <span class="s2">&quot;testCaseTestResultFieldId&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;test_case_work_item_type&quot;</span><span class="p">:</span> <span class="s2">&quot;testCaseWorkItemType&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;test_run_template&quot;</span><span class="p">:</span> <span class="s2">&quot;testRunTemplate&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;uri&quot;</span><span class="p">:</span> <span class="s2">&quot;_uri&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;_unresolved&quot;</span><span class="p">:</span> <span class="s2">&quot;_unresolved&quot;</span><span class="p">}</span>
+    <span class="n">_obj_client</span> <span class="o">=</span> <span class="s2">&quot;test_management_client&quot;</span>
+    <span class="n">_obj_struct</span> <span class="o">=</span> <span class="s2">&quot;tns3:TestsConfiguration&quot;</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">pylero</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">pylero</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Sim Zacks and Pylero Contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
