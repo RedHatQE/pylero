@@ -114,7 +114,7 @@ grep -riln $project $build_dir | tee /dev/tty | xargs  sed -i "s|$project|POLARI
 echo
 
 # Need to have 'docs' folder for serving from github pages
-rm -rf docs && mkdir -p docs
+rm -rf docs
 $(shopt -s dotglob; mv -f $build_dir docs)
 ln -fsvr docs "doc/_build/"
 echo "Done! Docs can be served from 'docs' folder"
