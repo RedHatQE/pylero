@@ -1,0 +1,602 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pylero.document &#8212; pylero  documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for pylero.document</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf8 -*-</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">unicode_literals</span>
+<span class="kn">from</span> <span class="nn">pylero._compatible</span> <span class="kn">import</span> <span class="n">basestring</span>
+
+<span class="kn">import</span> <span class="nn">suds</span>
+<span class="kn">from</span> <span class="nn">pylero.exceptions</span> <span class="kn">import</span> <span class="n">PyleroLibException</span>
+<span class="kn">from</span> <span class="nn">pylero.base_polarion</span> <span class="kn">import</span> <span class="n">BasePolarion</span>
+<span class="kn">from</span> <span class="nn">pylero.enum_option_id</span> <span class="kn">import</span> <span class="n">EnumOptionId</span>
+<span class="kn">from</span> <span class="nn">pylero.enum_option_id</span> <span class="kn">import</span> <span class="n">ArrayOfEnumOptionId</span>
+<span class="kn">from</span> <span class="nn">pylero.user</span> <span class="kn">import</span> <span class="n">User</span>
+<span class="kn">from</span> <span class="nn">pylero.subterra_uri</span> <span class="kn">import</span> <span class="n">SubterraURI</span>
+<span class="kn">from</span> <span class="nn">pylero.text</span> <span class="kn">import</span> <span class="n">Text</span>
+<span class="kn">from</span> <span class="nn">pylero.module_comment</span> <span class="kn">import</span> <span class="n">ModuleComment</span>
+<span class="kn">from</span> <span class="nn">pylero.module_comment</span> <span class="kn">import</span> <span class="n">ArrayOfModuleComment</span>
+<span class="kn">from</span> <span class="nn">pylero.project</span> <span class="kn">import</span> <span class="n">Project</span>
+<span class="kn">from</span> <span class="nn">pylero.custom</span> <span class="kn">import</span> <span class="n">Custom</span>
+<span class="kn">from</span> <span class="nn">pylero.custom</span> <span class="kn">import</span> <span class="n">ArrayOfCustom</span>
+<span class="kn">from</span> <span class="nn">pylero.signature_context</span> <span class="kn">import</span> <span class="n">SignatureContext</span>
+<span class="kn">from</span> <span class="nn">pylero.signature_context</span> <span class="kn">import</span> <span class="n">ArrayOfSignatureContext</span>
+<span class="kn">from</span> <span class="nn">pylero.work_item</span> <span class="kn">import</span> <span class="n">_WorkItem</span>
+<span class="kn">from</span> <span class="nn">pylero.base_polarion</span> <span class="kn">import</span> <span class="n">tx_wrapper</span>
+
+
+<div class="viewcode-block" id="Document"><a class="viewcode-back" href="../../pylero.html#pylero.document.Document">[docs]</a><span class="k">class</span> <span class="nc">Document</span><span class="p">(</span><span class="n">BasePolarion</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;An object to manage the TestManagement WS tns4:Module</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        allowed_wi_types (ArrayOfEnumOptionId)</span>
+<span class="sd">        are_links_from_parent_to_child (boolean)</span>
+<span class="sd">        author (User)</span>
+<span class="sd">        auto_suspect (boolean)</span>
+<span class="sd">        branched_from (Module)</span>
+<span class="sd">        branched_with_query (string)</span>
+<span class="sd">        comments (ArrayOfModuleComment)</span>
+<span class="sd">        created (dateTime)</span>
+<span class="sd">        custom_fields (ArrayOfCustom)</span>
+<span class="sd">        derived_fields (ArrayOfstring)</span>
+<span class="sd">        derived_from_link_role (EnumOptionId)</span>
+<span class="sd">        derived_from_uri (SubterraURI)</span>
+<span class="sd">        home_page_content (Text)</span>
+<span class="sd">        id (string)</span>
+<span class="sd">        location (Location)</span>
+<span class="sd">        module_absolute_location (Location)</span>
+<span class="sd">        module_folder (string)</span>
+<span class="sd">        module_location (Location)</span>
+<span class="sd">        module_name (string)</span>
+<span class="sd">        project (Project)</span>
+<span class="sd">        signature_contexts (ArrayOfSignatureContext)</span>
+<span class="sd">        status (EnumOptionId)</span>
+<span class="sd">        structure_link_role (EnumOptionId)</span>
+<span class="sd">        title (string)</span>
+<span class="sd">        type (EnumOptionId)</span>
+<span class="sd">        updated (dateTime)</span>
+<span class="sd">        updated_by (User)</span>
+<span class="sd">        uses_outline_numbering (boolean)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+    <span class="n">_cls_suds_map</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;allowed_wi_types&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;allowedWITypes&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;is_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">EnumOptionId</span><span class="p">,</span>
+             <span class="s2">&quot;arr_cls&quot;</span><span class="p">:</span> <span class="n">ArrayOfEnumOptionId</span><span class="p">,</span>
+             <span class="s2">&quot;inner_field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;EnumOptionId&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;enum_id&quot;</span><span class="p">:</span> <span class="s2">&quot;workitem-type&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;are_links_from_parent_to_child&quot;</span><span class="p">:</span>
+        <span class="s2">&quot;areLinksFromParentToChild&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;author&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;author&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">User</span><span class="p">},</span>
+        <span class="s2">&quot;auto_suspect&quot;</span><span class="p">:</span> <span class="s2">&quot;autoSuspect&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;branched_from&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;branchedFrom&quot;</span><span class="p">},</span>  <span class="c1"># populated in circ refs</span>
+        <span class="s2">&quot;branched_with_query&quot;</span><span class="p">:</span> <span class="s2">&quot;branchedWithQuery&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;comments&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;comments&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;is_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">ModuleComment</span><span class="p">,</span>
+             <span class="s2">&quot;arr_cls&quot;</span><span class="p">:</span> <span class="n">ArrayOfModuleComment</span><span class="p">,</span>
+             <span class="s2">&quot;inner_field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;ModuleComment&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;created&quot;</span><span class="p">:</span> <span class="s2">&quot;created&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;derived_fields&quot;</span><span class="p">:</span> <span class="s2">&quot;derived_fields&quot;</span><span class="p">,</span>  <span class="c1"># arrayOfstring?</span>
+        <span class="s2">&quot;derived_from_uri&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;derivedFromURI&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">SubterraURI</span><span class="p">},</span>
+        <span class="s2">&quot;derived_from_link_role&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;derivedFromLinkRole&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">EnumOptionId</span><span class="p">},</span>
+        <span class="s2">&quot;home_page_content&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;homePageContent&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">Text</span><span class="p">},</span>
+        <span class="s2">&quot;document_id&quot;</span><span class="p">:</span> <span class="s2">&quot;id&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;space&quot;</span><span class="p">:</span> <span class="s2">&quot;moduleLocation&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;document_absolute_location&quot;</span><span class="p">:</span> <span class="s2">&quot;moduleAbsoluteLocation&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;document_folder&quot;</span><span class="p">:</span> <span class="s2">&quot;moduleFolder&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;document_name&quot;</span><span class="p">:</span> <span class="s2">&quot;moduleName&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;project_id&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;project&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">Project</span><span class="p">},</span>
+        <span class="s2">&quot;signature_contexts&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;signatureContexts&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;is_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">SignatureContext</span><span class="p">,</span>
+             <span class="s2">&quot;arr_cls&quot;</span><span class="p">:</span> <span class="n">ArrayOfSignatureContext</span><span class="p">,</span>
+             <span class="s2">&quot;inner_field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;SignatureContext&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;status&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;status&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">EnumOptionId</span><span class="p">,</span>
+             <span class="s2">&quot;enum_id&quot;</span><span class="p">:</span> <span class="s2">&quot;documents/document-status&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;structure_link_role&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;structureLinkRole&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">EnumOptionId</span><span class="p">},</span>
+        <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;title&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;type&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">EnumOptionId</span><span class="p">,</span>
+             <span class="s2">&quot;enum_id&quot;</span><span class="p">:</span> <span class="s2">&quot;documents/document-type&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;updated&quot;</span><span class="p">:</span> <span class="s2">&quot;updated&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;updated_by&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;updatedBy&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">User</span><span class="p">},</span>
+        <span class="s2">&quot;uses_outline_numbering&quot;</span><span class="p">:</span> <span class="s2">&quot;usesOutlineNumbering&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;custom_fields&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;customFields&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;is_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">Custom</span><span class="p">,</span>
+             <span class="s2">&quot;arr_cls&quot;</span><span class="p">:</span> <span class="n">ArrayOfCustom</span><span class="p">,</span>
+             <span class="s2">&quot;inner_field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Custom&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;uri&quot;</span><span class="p">:</span> <span class="s2">&quot;_uri&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_unresolvable&quot;</span><span class="p">:</span> <span class="s2">&quot;_unresolvable&quot;</span><span class="p">}</span>
+    <span class="n">_obj_client</span> <span class="o">=</span> <span class="s2">&quot;test_management_client&quot;</span>
+    <span class="n">_obj_struct</span> <span class="o">=</span> <span class="s2">&quot;tns4:Module&quot;</span>
+    <span class="c1"># The uri struct of a module is different then others because of extra</span>
+    <span class="c1"># moduleFolder element. Also requires a substitution from # to / and back</span>
+    <span class="n">URI_STRUCT</span> <span class="o">=</span> <span class="s2">&quot;subterra:data-service:objects:/default/&quot;</span> \
+                 <span class="s2">&quot;</span><span class="si">%(project)s</span><span class="s2">${</span><span class="si">%(obj)s</span><span class="s2">}</span><span class="si">{moduleFolder}%(id)s</span><span class="s2">&quot;</span>
+    <span class="c1"># must wrap lambda with classmethod so it can be used as such</span>
+    <span class="n">URI_ID_GET_REPLACE</span> <span class="o">=</span> <span class="nb">classmethod</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">))</span>
+    <span class="n">URI_ID_SET_REPLACE</span> <span class="o">=</span> <span class="nb">classmethod</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;#&quot;</span><span class="p">))</span>
+
+<div class="viewcode-block" id="Document.create"><a class="viewcode-back" href="../../pylero.html#pylero.document.Document.create">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="nd">@tx_wrapper</span>
+    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">space</span><span class="p">,</span> <span class="n">document_name</span><span class="p">,</span> <span class="n">document_title</span><span class="p">,</span>
+               <span class="n">allowed_wi_types</span><span class="p">,</span>
+               <span class="n">document_type</span><span class="p">,</span>
+               <span class="n">structure_link_role</span><span class="o">=</span><span class="s2">&quot;parent&quot;</span><span class="p">,</span>
+               <span class="n">home_page_content</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+                <span class="c1"># There is no document object.</span>
+        <span class="c1"># don&#39;t know what to do with the URI it returns.</span>
+        <span class="sd">&quot;&quot;&quot;class method create Creates a document or an old-style</span>
+<span class="sd">        Module/Document in given location with given parameters.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            project_id: project to create module in</span>
+<span class="sd">            space: document space location with one component or None for</span>
+<span class="sd">                   default space</span>
+<span class="sd">            document_name: Document name (required)</span>
+<span class="sd">            document_title: Document title (required)</span>
+<span class="sd">            allowed_wi_types: list of types, only one should be specified</span>
+<span class="sd">            document_type: Type of document (required i.e testspecification).</span>
+<span class="sd">            structure_link_role: required, role which defines the hierarchy of</span>
+<span class="sd">                                 work items inside the Module, default: parent</span>
+<span class="sd">            home_page_content: HTML markup for document home page, default &quot;&quot;</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.createDocument</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">allowed_wi_types</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span>
+            <span class="n">allowed_wi_types</span> <span class="o">=</span> <span class="p">[</span><span class="n">allowed_wi_types</span><span class="p">]</span>
+        <span class="n">awit</span> <span class="o">=</span> <span class="p">[</span><span class="n">EnumOptionId</span><span class="p">(</span><span class="n">item</span><span class="p">)</span><span class="o">.</span><span class="n">_suds_object</span>
+                <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">allowed_wi_types</span><span class="p">]</span>
+        <span class="n">slr</span> <span class="o">=</span> <span class="n">EnumOptionId</span><span class="p">(</span><span class="n">structure_link_role</span><span class="p">)</span><span class="o">.</span><span class="n">_suds_object</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">uri</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">createDocument</span><span class="p">(</span>
+                <span class="n">project_id</span><span class="p">,</span> <span class="n">space</span><span class="p">,</span> <span class="n">document_name</span><span class="p">,</span> <span class="n">document_title</span><span class="p">,</span> <span class="n">awit</span><span class="p">,</span>
+                <span class="n">slr</span><span class="p">,</span> <span class="n">home_page_content</span><span class="p">)</span>
+            <span class="n">doc</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="n">uri</span><span class="p">)</span>
+            <span class="n">doc</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">document_type</span>
+            <span class="c1"># for some reason, when in a tx (@tx_wrapper), the</span>
+            <span class="c1"># returned doc does not include the home_page_content attribute</span>
+            <span class="c1"># so it must be reset before the update. If it is not set, an</span>
+            <span class="c1"># exception is raised:</span>
+            <span class="c1"># &quot;java.lang.IllegalArgumentException: Content can&#39;t be null&quot;</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">doc</span><span class="o">.</span><span class="n">home_page_content</span><span class="p">:</span>
+                <span class="n">doc</span><span class="o">.</span><span class="n">home_page_content</span> <span class="o">=</span> <span class="n">home_page_content</span>
+            <span class="n">doc</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">home_page_content</span><span class="p">:</span>
+                <span class="c1"># create heading work item for each document</span>
+                <span class="n">wi_head</span> <span class="o">=</span> <span class="n">_WorkItem</span><span class="p">()</span>
+                <span class="n">wi_head</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s2">&quot;heading&quot;</span>
+                <span class="n">wi_head</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">document_title</span>
+                <span class="n">doc</span><span class="o">.</span><span class="n">create_work_item</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">wi_head</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">doc</span>
+        <span class="k">except</span> <span class="n">suds</span><span class="o">.</span><span class="n">WebFault</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;Invalid document on location Location&quot;</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">fault</span><span class="o">.</span><span class="n">faultstring</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span>
+                    <span class="s2">&quot;Document </span><span class="si">{0}</span><span class="s2">/</span><span class="si">{1}</span><span class="s2"> already exists&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">space</span><span class="p">,</span>
+                                                             <span class="n">document_name</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">fault</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Document.get_documents"><a class="viewcode-back" href="../../pylero.html#pylero.document.Document.get_documents">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_documents</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">space</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="p">[]):</span>
+        <span class="sd">&quot;&quot;&quot;returns a list of Document objects</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            project_id: the project where the modules are located</span>
+<span class="sd">            space: specific location of the repository</span>
+<span class="sd">            fields: optional list of fields that should be contained in the</span>
+<span class="sd">                    returned objects.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of Document Objects</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.getModules</span>
+<span class="sd">            Tracker.getModulesWithFields</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># function names and parameter lists generated dynamically based on</span>
+        <span class="c1"># parameters passed in.</span>
+        <span class="n">docs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">function_name</span> <span class="o">=</span> <span class="s2">&quot;getModules&quot;</span>
+        <span class="n">parms</span> <span class="o">=</span> <span class="p">[</span><span class="n">project_id</span><span class="p">,</span> <span class="n">space</span><span class="p">]</span>
+        <span class="n">p_fields</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_convert_obj_fields_to_polarion</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">p_fields</span><span class="p">:</span>
+            <span class="n">function_name</span> <span class="o">+=</span> <span class="s2">&quot;WithFields&quot;</span>
+            <span class="n">parms</span> <span class="o">+=</span> <span class="p">[</span><span class="n">p_fields</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">suds_module</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="p">,</span>
+                                   <span class="n">function_name</span><span class="p">)(</span><span class="o">*</span><span class="n">parms</span><span class="p">):</span>
+            <span class="n">docs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">cls</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">suds_module</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">docs</span></div>
+
+<div class="viewcode-block" id="Document.query"><a class="viewcode-back" href="../../pylero.html#pylero.document.Document.query">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">is_sql</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;document_id&quot;</span><span class="p">],</span>
+              <span class="n">sort</span><span class="o">=</span><span class="s2">&quot;document_id&quot;</span><span class="p">,</span> <span class="n">limit</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">baseline_revision</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+              <span class="n">query_uris</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Searches for Modules/Documents.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            query: query, either Lucene or SQL</span>
+<span class="sd">            is_sql (bool): determines if the query is SQL or Lucene</span>
+<span class="sd">            fields: list of field names to fill in the returned</span>
+<span class="sd">                    Modules/Documents (can be null). For nested structures in</span>
+<span class="sd">                    the lists you can use following syntax to include only</span>
+<span class="sd">                    subset of fields: myList.LIST.key</span>
+<span class="sd">                    (e.g. linkedWorkItems.LIST.role).</span>
+<span class="sd">                    For custom fields you can specify which fields you want to</span>
+<span class="sd">                    be filled using following syntax:</span>
+<span class="sd">                    customFields.CUSTOM_FIELD_ID (e.g. customFields.risk).</span>
+<span class="sd">                    default: list containing &quot;document_id&quot;</span>
+<span class="sd">            sort: Lucene sort string, default: document_id</span>
+<span class="sd">            limit: how many results to return (-1 means everything (default))</span>
+<span class="sd">            baseline_revision (str): if populated, query done in specified rev</span>
+<span class="sd">                                     default - None</span>
+<span class="sd">            query_uris: returns a list of URI of the Modules found, instead of</span>
+<span class="sd">                        a list of Documents. default - False.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of modules</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            queryModuleUris</span>
+<span class="sd">            queryModuleUrisBySQL</span>
+<span class="sd">            queryModuleUrisInBaseline</span>
+<span class="sd">            queryModuleUrisInBaselineBySQL</span>
+<span class="sd">            queryModules</span>
+<span class="sd">            queryModulesBySQL</span>
+<span class="sd">            queryModulesInBaseline</span>
+<span class="sd">            queryModulesInBaselineBySQL</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">parms</span> <span class="o">=</span> <span class="p">[</span><span class="n">query</span><span class="p">]</span>
+        <span class="c1"># The parameters have to be listed in the specific order, based on the</span>
+        <span class="c1"># specific function called. That&#39;s why there are 2 if not is_sql</span>
+        <span class="c1"># conditions.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_sql</span><span class="p">:</span>
+            <span class="n">parms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sort</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">baseline_revision</span><span class="p">:</span>
+            <span class="n">parms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">baseline_revision</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">query_uris</span><span class="p">:</span>
+            <span class="n">p_fields</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_convert_obj_fields_to_polarion</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
+            <span class="n">parms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p_fields</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_sql</span><span class="p">:</span>
+            <span class="n">parms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">query_uris</span><span class="p">:</span>
+            <span class="n">base_name</span> <span class="o">=</span> <span class="s2">&quot;queryModules&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">base_name</span> <span class="o">=</span> <span class="s2">&quot;queryModuleUris&quot;</span>
+        <span class="k">if</span> <span class="n">baseline_revision</span><span class="p">:</span>
+            <span class="n">base_name</span> <span class="o">+=</span> <span class="s2">&quot;InBaseline&quot;</span>
+        <span class="k">if</span> <span class="n">is_sql</span><span class="p">:</span>
+            <span class="n">base_name</span> <span class="o">+=</span> <span class="s2">&quot;BySQL&quot;</span>
+        <span class="n">docs</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="p">,</span> <span class="n">base_name</span><span class="p">)(</span><span class="o">*</span><span class="n">parms</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">query_uris</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">docs</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">lst_doc</span> <span class="o">=</span> <span class="p">[</span><span class="n">Document</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">doc</span><span class="p">)</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">lst_doc</span></div>
+
+<div class="viewcode-block" id="Document.__init__"><a class="viewcode-back" href="../../pylero.html#pylero.document.Document.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">doc_with_space</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">uri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">suds_object</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;constructor for the Module object. Gets the module object from the</span>
+<span class="sd">        Polarion server based on parameters passed in.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            project_id: the project where the module is located</span>
+<span class="sd">            doc_with_space: specific space/doc_name of the repository,</span>
+<span class="sd">                            required if project_id is given</span>
+<span class="sd">                            (Testing, Development, ...)</span>
+<span class="sd">            fields: optional list of fields that should be contained in the</span>
+<span class="sd">                     returned object.</span>
+<span class="sd">            uri: The Polarion specific uri of the module object</span>
+<span class="sd">            suds_object: the WSDL Module object</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.getModuleByLocation</span>
+<span class="sd">            Tracker.getModuleByLocationWithFields</span>
+<span class="sd">            Tracker.getModuleByUri</span>
+<span class="sd">            Tracker.getModuleByUriWithFields</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">suds_object</span><span class="p">)</span>
+        <span class="c1"># function names and parameter lists generated dynamically based on</span>
+        <span class="c1"># parameters passed in.</span>
+        <span class="k">if</span> <span class="n">doc_with_space</span> <span class="ow">or</span> <span class="n">uri</span><span class="p">:</span>
+            <span class="n">function_name</span> <span class="o">=</span> <span class="s2">&quot;getModuleBy&quot;</span>
+            <span class="n">parms</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="n">doc_with_space</span><span class="p">:</span>
+                <span class="n">function_name</span> <span class="o">+=</span> <span class="s2">&quot;Location&quot;</span>
+                <span class="n">parms</span> <span class="o">+=</span> <span class="p">[</span><span class="n">project_id</span><span class="p">,</span> <span class="n">doc_with_space</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">uri</span><span class="p">:</span>
+                <span class="n">function_name</span> <span class="o">+=</span> <span class="s2">&quot;Uri&quot;</span>
+                <span class="n">parms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">fields</span><span class="p">:</span>
+                <span class="n">function_name</span> <span class="o">=</span> <span class="s2">&quot;WithFields&quot;</span>
+                <span class="n">parms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_convert_obj_fields_to_polarion</span><span class="p">(</span><span class="n">fields</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="p">,</span>
+                                        <span class="n">function_name</span><span class="p">)(</span><span class="o">*</span><span class="n">parms</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">,</span> <span class="s2">&quot;_unresolvable&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span>
+                    <span class="s2">&quot;The Document </span><span class="si">{0}</span><span class="s2"> was not found.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">doc_with_space</span> <span class="ow">or</span>
+                                                             <span class="n">uri</span><span class="p">))</span></div>
+
+    <span class="k">def</span> <span class="nf">_fix_circular_refs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># a class can&#39;t reference itself as a class attribute.</span>
+        <span class="c1"># defined after instatiation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="s2">&quot;branched_from&quot;</span><span class="p">][</span><span class="s2">&quot;cls&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span>
+
+<div class="viewcode-block" id="Document.create_work_item"><a class="viewcode-back" href="../../pylero.html#pylero.document.Document.create_work_item">[docs]</a>    <span class="nd">@tx_wrapper</span>
+    <span class="k">def</span> <span class="nf">create_work_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent_id</span><span class="p">,</span> <span class="n">w_item</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;create a work item in the current document</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            parent_id: The work_item_id of the parent _WorkItem</span>
+<span class="sd">            wi: The Work Item object to create.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The created _WorkItem</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.createWorkItemInModule</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">w_item</span><span class="p">,</span> <span class="n">_WorkItem</span><span class="p">):</span>
+            <span class="n">w_item</span><span class="o">.</span><span class="n">verify_required</span><span class="p">()</span>
+            <span class="n">suds_wi</span> <span class="o">=</span> <span class="n">w_item</span><span class="o">.</span><span class="n">_suds_object</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span>
+                <span class="s2">&quot;the w_item parameter must be a _WorkItem&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">parent_id</span><span class="p">:</span>
+            <span class="n">parent_uri</span> <span class="o">=</span> <span class="n">_WorkItem</span><span class="p">(</span><span class="n">work_item_id</span><span class="o">=</span><span class="n">parent_id</span><span class="p">,</span>
+                                   <span class="n">project_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project_id</span><span class="p">)</span><span class="o">.</span><span class="n">uri</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">doc_wis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_work_items</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">doc_wis</span><span class="p">:</span>
+                <span class="n">parent_uri</span> <span class="o">=</span> <span class="n">doc_wis</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">uri</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">parent_uri</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">wi_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
+                <span class="n">createWorkItemInModule</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">parent_uri</span><span class="p">,</span> <span class="n">suds_wi</span><span class="p">)</span>
+            <span class="n">new_wi</span> <span class="o">=</span> <span class="n">w_item</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="n">wi_uri</span><span class="p">)</span>
+            <span class="n">new_wi</span><span class="o">.</span><span class="n">_changed_fields</span> <span class="o">=</span> <span class="n">w_item</span><span class="o">.</span><span class="n">_changed_fields</span>
+            <span class="n">new_wi</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+            <span class="n">new_wi</span> <span class="o">=</span> <span class="n">_WorkItem</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="n">wi_uri</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">new_wi</span></div>
+
+<div class="viewcode-block" id="Document.delete"><a class="viewcode-back" href="../../pylero.html#pylero.document.Document.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;delete the current document</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">deleteModule</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Document.get_work_items"><a class="viewcode-back" href="../../pylero.html#pylero.document.Document.get_work_items">[docs]</a>    <span class="k">def</span> <span class="nf">get_work_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent_work_item_id</span><span class="p">,</span> <span class="n">deep</span><span class="p">,</span>
+                       <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;work_item_id&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">]):</span>
+        <span class="sd">&quot;&quot;&quot;Returns work items (with given fields set) contained in given</span>
+<span class="sd">        Module/Document under given parent (if specified).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            parent_work_item_id (str): Id of parent work item or None</span>
+<span class="sd">            deep: true to return work items from the whole subtree</span>
+<span class="sd">            fields: fields to fill. For nested structures in the lists you can</span>
+<span class="sd">                    use following syntax to include only subset of fields:</span>
+<span class="sd">                    myList.LIST.key (e.g. linkedWorkItems.LIST.role).</span>
+<span class="sd">                    For custom fields you can specify which fields you want to</span>
+<span class="sd">                    be filled using following syntax:</span>
+<span class="sd">                    customFields.CUSTOM_FIELD_ID (e.g. customFields.risk).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of _WorkItem objects</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.getModuleWorkItems</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">parent_work_item_id</span><span class="p">:</span>
+            <span class="n">parent_uri</span> <span class="o">=</span> <span class="n">_WorkItem</span><span class="p">(</span><span class="n">work_item_id</span><span class="o">=</span><span class="n">parent_work_item_id</span><span class="p">,</span>
+                                   <span class="n">project_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project_id</span><span class="p">)</span><span class="o">.</span><span class="n">uri</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">parent_uri</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">p_fields</span> <span class="o">=</span> <span class="n">_WorkItem</span><span class="o">.</span><span class="n">_convert_obj_fields_to_polarion</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
+        <span class="n">suds_wi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
+            <span class="n">getModuleWorkItems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">parent_uri</span><span class="p">,</span> <span class="n">deep</span><span class="p">,</span> <span class="n">p_fields</span><span class="p">)</span>
+        <span class="n">work_items</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">w_item</span> <span class="ow">in</span> <span class="n">suds_wi</span><span class="p">:</span>
+            <span class="n">work_items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_WorkItem</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">w_item</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">work_items</span></div>
+
+<div class="viewcode-block" id="Document.move_work_item_here"><a class="viewcode-back" href="../../pylero.html#pylero.document.Document.move_work_item_here">[docs]</a>    <span class="k">def</span> <span class="nf">move_work_item_here</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">work_item_id</span><span class="p">,</span> <span class="n">parent_id</span><span class="p">,</span> <span class="n">position</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+                            <span class="n">retain_flow</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Moves a work item to a specific position in a Document. If the work</span>
+<span class="sd">        item is not yet inside the Document it will be moved into the Document.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            work_item_id: WorkItem id to move</span>
+<span class="sd">            parent_id: The parent WorkItem id, can be None</span>
+<span class="sd">            position (int): desired position in the list of children or a</span>
+<span class="sd">                            value &lt; 0 to insert at the end (if the old and new</span>
+<span class="sd">                            parent is the same then moved work item is not</span>
+<span class="sd">                            counted)</span>
+<span class="sd">            retain_flow (bool): true to retain the position of moved work item</span>
+<span class="sd">                                in the document flow (even if it means to</span>
+<span class="sd">                                change the parent).</span>
+<span class="sd">                                false to keep desired parent (even if it means</span>
+<span class="sd">                                to move work item to different position)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.moveWorkItemToDocument</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="n">wi</span> <span class="o">=</span> <span class="n">_WorkItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_id</span><span class="p">,</span> <span class="n">work_item_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">parent_id</span><span class="p">:</span>
+            <span class="n">parent_uri</span> <span class="o">=</span> <span class="n">_WorkItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_id</span><span class="p">,</span> <span class="n">parent_id</span><span class="p">)</span><span class="o">.</span><span class="n">uri</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">parent_uri</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">moveWorkItemToDocument</span><span class="p">(</span>
+            <span class="n">wi</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">parent_uri</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">retain_flow</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Document.add_referenced_work_item"><a class="viewcode-back" href="../../pylero.html#pylero.document.Document.add_referenced_work_item">[docs]</a>    <span class="k">def</span> <span class="nf">add_referenced_work_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">work_item_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Adds a work item to the document as a referenced work_item to the</span>
+<span class="sd">        end of the current document.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            work_item_id (str): the id of a work item in the same project as</span>
+<span class="sd">            the current document</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="n">wi</span> <span class="o">=</span> <span class="n">_WorkItem</span><span class="p">(</span><span class="n">project_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project_id</span><span class="p">,</span> <span class="n">work_item_id</span><span class="o">=</span><span class="n">work_item_id</span><span class="p">)</span>
+        <span class="n">ref_wi_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;div id=&quot;polarion_wiki macro name=&quot;&quot;&quot;</span> \
+            <span class="sd">&quot;&quot;&quot;module-workitem;params=id=%s|external=true&quot;&gt;&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">home_page_content</span> <span class="o">+=</span> <span class="n">ref_wi_template</span> <span class="o">%</span> <span class="n">work_item_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Document.update"><a class="viewcode-back" href="../../pylero.html#pylero.document.Document.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;updates the server with the current module data</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.updateModule</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">updateModule</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">pylero</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">pylero</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Sim Zacks and Pylero Contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

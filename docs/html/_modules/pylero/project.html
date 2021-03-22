@@ -1,0 +1,396 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pylero.project &#8212; pylero  documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for pylero.project</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf8 -*-</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">unicode_literals</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">from</span> <span class="nn">pylero.base_polarion</span> <span class="kn">import</span> <span class="n">BasePolarion</span>
+<span class="kn">from</span> <span class="nn">pylero.category</span> <span class="kn">import</span> <span class="n">Category</span>
+<span class="kn">from</span> <span class="nn">pylero.custom_field_type</span> <span class="kn">import</span> <span class="n">CustomFieldType</span>
+<span class="kn">from</span> <span class="nn">pylero.text</span> <span class="kn">import</span> <span class="n">Text</span>
+<span class="kn">from</span> <span class="nn">pylero.user</span> <span class="kn">import</span> <span class="n">User</span>
+<span class="kn">from</span> <span class="nn">pylero.exceptions</span> <span class="kn">import</span> <span class="n">PyleroLibException</span>
+<span class="kn">from</span> <span class="nn">pylero.tests_configuration</span> <span class="kn">import</span> <span class="n">TestsConfiguration</span>
+
+
+<div class="viewcode-block" id="Project"><a class="viewcode-back" href="../../pylero.html#pylero.project.Project">[docs]</a><span class="k">class</span> <span class="nc">Project</span><span class="p">(</span><span class="n">BasePolarion</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Object to handle the Polarion WSDL tns4:Project class</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        active (boolean)</span>
+<span class="sd">        description (Text)</span>
+<span class="sd">        finish (date)</span>
+<span class="sd">        lead (User)</span>
+<span class="sd">        location (str)</span>
+<span class="sd">        lock_work_records_date (date)</span>
+<span class="sd">        name (string)</span>
+<span class="sd">        project_group (ProjectGroup)</span>
+<span class="sd">        project_id (string)</span>
+<span class="sd">        start (date)</span>
+<span class="sd">        tracker_prefix (string)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+    <span class="n">_cls_suds_map</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;active&quot;</span><span class="p">:</span> <span class="s2">&quot;active&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;description&quot;</span><span class="p">:</span>
+                     <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;description&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">Text</span><span class="p">},</span>
+                     <span class="s2">&quot;finish&quot;</span><span class="p">:</span> <span class="s2">&quot;finish&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;lead&quot;</span><span class="p">:</span>
+                     <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;lead&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">User</span><span class="p">},</span>
+                     <span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="s2">&quot;location&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;lock_work_records_date&quot;</span><span class="p">:</span> <span class="s2">&quot;lockWorkRecordsDate&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;project_group&quot;</span><span class="p">:</span>
+                     <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;projectGroupURI&quot;</span><span class="p">,</span>
+                      <span class="c1"># cls is defined in _fix_circular_refs function</span>
+                      <span class="s2">&quot;named_arg&quot;</span><span class="p">:</span> <span class="s2">&quot;uri&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;sync_field&quot;</span><span class="p">:</span> <span class="s2">&quot;uri&quot;</span><span class="p">},</span>
+                     <span class="s2">&quot;project_id&quot;</span><span class="p">:</span> <span class="s2">&quot;id&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="s2">&quot;start&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;tracker_prefix&quot;</span><span class="p">:</span> <span class="s2">&quot;trackerPrefix&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;uri&quot;</span><span class="p">:</span> <span class="s2">&quot;_uri&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;_unresolved&quot;</span><span class="p">:</span> <span class="s2">&quot;_unresolved&quot;</span><span class="p">}</span>
+    <span class="n">_id_field</span> <span class="o">=</span> <span class="s2">&quot;project_id&quot;</span>
+    <span class="n">_obj_client</span> <span class="o">=</span> <span class="s2">&quot;project_client&quot;</span>
+    <span class="n">_obj_struct</span> <span class="o">=</span> <span class="s2">&quot;tns2:Project&quot;</span>
+
+    <span class="n">URI_STRUCT</span> <span class="o">=</span> <span class="s2">&quot;subterra:data-service:objects:/default/&quot;</span> \
+                 <span class="s2">&quot;</span><span class="si">%(id)s</span><span class="s2">${</span><span class="si">%(obj)s</span><span class="s2">}</span><span class="si">%(id)s</span><span class="s2">&quot;</span>
+
+<div class="viewcode-block" id="Project.get_context_roles"><a class="viewcode-back" href="../../pylero.html#pylero.project.Project.get_context_roles">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_context_roles</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">location</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the context (project) roles for the given location.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            location: the location of the context (project/project group)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of roles</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Security.getContextRoles</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">security_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">getContextRoles</span><span class="p">(</span><span class="n">location</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Project.__init__"><a class="viewcode-back" href="../../pylero.html#pylero.project.Project.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">suds_object</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">uri</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Project constructor.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            project_id: when given, the object is populated with the</span>
+<span class="sd">                         Project data.</span>
+<span class="sd">            suds_object: PolarionProject object. When given, the object</span>
+<span class="sd">                          is populated by object data.</span>
+<span class="sd">            location: the location of the Polarion project</span>
+<span class="sd">            uri: the uri that references the PolarionProject</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            Either project_id or suds_object or location or uri can be passed</span>
+<span class="sd">            in or none of them. If none of the identifying parameters are</span>
+<span class="sd">            passed in an empty object is created</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Project.getProject</span>
+<span class="sd">            Project.getProjectatLocation</span>
+<span class="sd">            Project.getProjectByURI</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">project_id</span><span class="p">,</span> <span class="n">suds_object</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">project_id</span><span class="p">:</span>
+            <span class="c1"># if the project is already cached, make a deep copy and use it.</span>
+            <span class="c1"># If not, get it and add it to the cache.</span>
+            <span class="n">project</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;projects&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">project_id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">project</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">project_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
+                    <span class="n">getProject</span><span class="p">(</span><span class="n">project_id</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;projects&quot;</span><span class="p">][</span><span class="n">project_id</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span>
+        <span class="k">elif</span> <span class="n">location</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">project_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
+                <span class="n">getProjectatLocation</span><span class="p">(</span><span class="n">location</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">uri</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">project_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
+                <span class="n">getProjectByURI</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">project_id</span> <span class="ow">or</span> <span class="n">location</span> <span class="ow">or</span> <span class="n">uri</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">,</span> <span class="s2">&quot;_unresolvable&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span><span class="s2">&quot;The Project was not found.&quot;</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_fix_circular_refs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># The module references ProjectGroup, which references this class</span>
+        <span class="c1"># This is not allowed, so the self reference is defined here.</span>
+        <span class="kn">from</span> <span class="nn">pylero.project_group</span> <span class="kn">import</span> <span class="n">ProjectGroup</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="s2">&quot;project_group&quot;</span><span class="p">][</span><span class="s2">&quot;cls&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ProjectGroup</span>
+
+<div class="viewcode-block" id="Project.get_categories"><a class="viewcode-back" href="../../pylero.html#pylero.project.Project.get_categories">[docs]</a>    <span class="k">def</span> <span class="nf">get_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; method get_categories retrieves a list of Category objects</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of Category objects</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.getCategories</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="n">categories</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">suds_cat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
+                <span class="n">getCategories</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_id</span><span class="p">):</span>
+            <span class="n">categories</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Category</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">suds_cat</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">categories</span></div>
+
+<div class="viewcode-block" id="Project.get_defined_custom_field_keys"><a class="viewcode-back" href="../../pylero.html#pylero.project.Project.get_defined_custom_field_keys">[docs]</a>    <span class="k">def</span> <span class="nf">get_defined_custom_field_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">work_item_type_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets all custom field keys defined for a workitem type in a project.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            work_item_type_id: the workitem type ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of key for the project for the given workitem type</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.getDefinedCustomFieldkeys</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">getDefinedCustomFieldkeys</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">project_id</span><span class="p">,</span> <span class="n">work_item_type_id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Project.get_defined_custom_field_type"><a class="viewcode-back" href="../../pylero.html#pylero.project.Project.get_defined_custom_field_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_defined_custom_field_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">work_item_type_id</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;method get_defined_custom_field_type gets custom field definition</span>
+<span class="sd">        of a work item type for the given key.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            work_item_type_id: the workitem type ID.</span>
+<span class="sd">            key: The key of the custom field</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            CustomFieldType object</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.getDefinedCustomFieldType</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="n">suds_custom</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
+            <span class="n">getDefinedCustomFieldType</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_uri</span><span class="p">,</span> <span class="n">work_item_type_id</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">CustomFieldType</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">suds_custom</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Project.get_defined_custom_field_types"><a class="viewcode-back" href="../../pylero.html#pylero.project.Project.get_defined_custom_field_types">[docs]</a>    <span class="k">def</span> <span class="nf">get_defined_custom_field_types</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">work_item_type_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;method get_defined_custom_field_type gets custom field definition</span>
+<span class="sd">        of a work item type all keys.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            work_item_type_id: the workitem type ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of CustomFieldType object</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.getDefinedCustomFieldType</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="n">customs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">suds_custom</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
+                <span class="n">getDefinedCustomFieldType</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_uri</span><span class="p">,</span> <span class="n">work_item_type_id</span><span class="p">):</span>
+            <span class="n">customs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CustomFieldType</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">suds_custom</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">customs</span></div>
+
+<div class="viewcode-block" id="Project.get_document_locations"><a class="viewcode-back" href="../../pylero.html#pylero.project.Project.get_document_locations">[docs]</a>    <span class="k">def</span> <span class="nf">get_document_locations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets the document locations (e.g. LiveDocuments) for a project.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of (string) document locations</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.getDocumentLocations</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
+            <span class="n">getDocumentLocations</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Project.get_document_spaces"><a class="viewcode-back" href="../../pylero.html#pylero.project.Project.get_document_spaces">[docs]</a>    <span class="k">def</span> <span class="nf">get_document_spaces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets the Module/Document spaces for the project.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of (string) document spaces</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.getDocumentSpaces</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
+            <span class="n">getDocumentSpaces</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Project.get_project_users"><a class="viewcode-back" href="../../pylero.html#pylero.project.Project.get_project_users">[docs]</a>    <span class="k">def</span> <span class="nf">get_project_users</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets users of the project</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of u.User objects</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Project.getProjectUsers</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="n">users</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">suds_user</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">project_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
+                <span class="n">getProjectUsers</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_id</span><span class="p">):</span>
+            <span class="n">users</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">User</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">suds_user</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Project.get_test_steps_configuration"><a class="viewcode-back" href="../../pylero.html#pylero.project.Project.get_test_steps_configuration">[docs]</a>    <span class="k">def</span> <span class="nf">get_test_steps_configuration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;method get_test_steps_configuration retrieves a list of the</span>
+<span class="sd">        Test Steps configuration for the project</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of configuration of the Test Steps custom field.</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            TestManagement.getTestStepsConfiguration</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="n">config_steps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
+            <span class="n">getTestStepsConfiguration</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">config_steps</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Project.get_tests_configuration"><a class="viewcode-back" href="../../pylero.html#pylero.project.Project.get_tests_configuration">[docs]</a>    <span class="k">def</span> <span class="nf">get_tests_configuration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;method get_tests_configuration retrieves the test management</span>
+<span class="sd">        configuration for the project</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            TestsConfiguration object</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            TestManagement.getTestsConfiguration</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="n">tests_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
+            <span class="n">getTestsConfiguration</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">TestsConfiguration</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">tests_config</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Project.get_wiki_spaces"><a class="viewcode-back" href="../../pylero.html#pylero.project.Project.get_wiki_spaces">[docs]</a>    <span class="k">def</span> <span class="nf">get_wiki_spaces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns Wiki spaces from current project</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Array of string</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.getWikiSpaces</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">getWikiSpaces</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">project_id</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">pylero</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">pylero</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Sim Zacks and Pylero Contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

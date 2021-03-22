@@ -1,0 +1,234 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pylero.project_group &#8212; pylero  documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for pylero.project_group</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf8 -*-</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">unicode_literals</span>
+<span class="kn">from</span> <span class="nn">pylero.base_polarion</span> <span class="kn">import</span> <span class="n">BasePolarion</span>
+<span class="kn">from</span> <span class="nn">pylero.subterra_uri</span> <span class="kn">import</span> <span class="n">SubterraURI</span>
+<span class="kn">from</span> <span class="nn">pylero.subterra_uri</span> <span class="kn">import</span> <span class="n">ArrayOfSubterraURI</span>
+<span class="kn">from</span> <span class="nn">pylero.project</span> <span class="kn">import</span> <span class="n">Project</span>
+
+
+<div class="viewcode-block" id="ProjectGroup"><a class="viewcode-back" href="../../pylero.html#pylero.project_group.ProjectGroup">[docs]</a><span class="k">class</span> <span class="nc">ProjectGroup</span><span class="p">(</span><span class="n">BasePolarion</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Object to handle the Polarion WSDL tns2:ProjectGroup class</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        group_uris (ArrayOfSubterraURI)</span>
+<span class="sd">        location (Location)</span>
+<span class="sd">        name (string)</span>
+<span class="sd">        parent_uri (SubterraURI)</span>
+<span class="sd">        project_ids (ArrayOfstring)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+    <span class="n">_cls_suds_map</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;group_uris&quot;</span><span class="p">:</span>
+                     <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;groupURIs&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;is_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                      <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">SubterraURI</span><span class="p">,</span>
+                      <span class="s2">&quot;arr_cls&quot;</span><span class="p">:</span> <span class="n">ArrayOfSubterraURI</span><span class="p">,</span>
+                      <span class="s2">&quot;inner_field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;SubterraURI&quot;</span><span class="p">},</span>
+                     <span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="s2">&quot;location&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;parent_uri&quot;</span><span class="p">:</span>
+                     <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;parentURI&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">SubterraURI</span><span class="p">},</span>
+                     <span class="s2">&quot;project_ids&quot;</span><span class="p">:</span> <span class="s2">&quot;projectIDs&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;uri&quot;</span><span class="p">:</span> <span class="s2">&quot;_uri&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;_unresolved&quot;</span><span class="p">:</span> <span class="s2">&quot;_unresolved&quot;</span><span class="p">}</span>
+    <span class="n">_obj_client</span> <span class="o">=</span> <span class="s2">&quot;project_client&quot;</span>
+    <span class="n">_obj_struct</span> <span class="o">=</span> <span class="s2">&quot;tns2:ProjectGroup&quot;</span>
+
+<div class="viewcode-block" id="ProjectGroup.get_root_project_group"><a class="viewcode-back" href="../../pylero.html#pylero.project_group.ProjectGroup.get_root_project_group">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_root_project_group</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets the root project group.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ProjectGroup object</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Project.getRootProjectGroup</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">project_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span>
+                   <span class="n">getRootProjectGroup</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="ProjectGroup.__init__"><a class="viewcode-back" href="../../pylero.html#pylero.project_group.ProjectGroup.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">suds_object</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;ProjectGroup constructor.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            uri: the uri that references the Polarion ProjectGroup</span>
+<span class="sd">            location: the location of the Polarion ProjectGroup</span>
+<span class="sd">            suds_object: Polarion ProjectGroup object. When given, the object</span>
+<span class="sd">                         is populated by object data.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            Either uri or suds_object or location in or none of them.</span>
+<span class="sd">            If none of the identifying parameters are</span>
+<span class="sd">            passed in an empty object is created</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            p.Project.getProjectGroup</span>
+<span class="sd">            p.Project.getProjectGroupAtLocation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">suds_object</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">uri</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">project_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
+                <span class="n">getProjectGroup</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">location</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">project_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
+                <span class="n">getProjectGroupAtLocation</span><span class="p">(</span><span class="n">location</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ProjectGroup.get_contained_groups"><a class="viewcode-back" href="../../pylero.html#pylero.project_group.ProjectGroup.get_contained_groups">[docs]</a>    <span class="k">def</span> <span class="nf">get_contained_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets all project groups located directly below the project group.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of p.ProjectGroup objects</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            p.Project.getContainedGroups</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="n">groups</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">suds_group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">project_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
+                <span class="n">getContainedGroups</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">):</span>
+            <span class="n">groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">suds_group</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">groups</span></div>
+
+<div class="viewcode-block" id="ProjectGroup.get_contained_projects"><a class="viewcode-back" href="../../pylero.html#pylero.project_group.ProjectGroup.get_contained_projects">[docs]</a>    <span class="k">def</span> <span class="nf">get_contained_projects</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets all projects located directly below the project group.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of p.Project objects</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            p.Project.getContainedProjects</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="n">projects</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">suds_project</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">project_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
+                <span class="n">getContainedProjects</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">):</span>
+            <span class="n">projects</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Project</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">suds_project</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">projects</span></div>
+
+<div class="viewcode-block" id="ProjectGroup.get_deep_contained_projects"><a class="viewcode-back" href="../../pylero.html#pylero.project_group.ProjectGroup.get_deep_contained_projects">[docs]</a>    <span class="k">def</span> <span class="nf">get_deep_contained_projects</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets all projects located below the project group.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of p.Project objects</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            p.Project.getDeepContainedProjects</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="n">projects</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">suds_project</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">project_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
+                <span class="n">getDeepContainedProjects</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">):</span>
+            <span class="n">projects</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Project</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">suds_project</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">projects</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">pylero</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">pylero</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Sim Zacks and Pylero Contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

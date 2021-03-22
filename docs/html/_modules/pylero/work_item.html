@@ -1,0 +1,1642 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pylero.work_item &#8212; pylero  documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for pylero.work_item</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf8 -*-</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">unicode_literals</span>
+<span class="kn">from</span> <span class="nn">pylero._compatible</span> <span class="kn">import</span> <span class="n">basestring</span>
+<span class="kn">import</span> <span class="nn">suds</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">pylero.exceptions</span> <span class="kn">import</span> <span class="n">PyleroLibException</span>
+<span class="kn">from</span> <span class="nn">pylero.base_polarion</span> <span class="kn">import</span> <span class="n">BasePolarion</span><span class="p">,</span> <span class="n">Configuration</span>
+<span class="kn">from</span> <span class="nn">pylero.approval</span> <span class="kn">import</span> <span class="n">Approval</span>
+<span class="kn">from</span> <span class="nn">pylero.approval</span> <span class="kn">import</span> <span class="n">ArrayOfApproval</span>
+<span class="kn">from</span> <span class="nn">pylero.attachment</span> <span class="kn">import</span> <span class="n">Attachment</span>
+<span class="kn">from</span> <span class="nn">pylero.attachment</span> <span class="kn">import</span> <span class="n">ArrayOfAttachment</span>
+<span class="kn">from</span> <span class="nn">pylero.user</span> <span class="kn">import</span> <span class="n">User</span>
+<span class="kn">from</span> <span class="nn">pylero.user</span> <span class="kn">import</span> <span class="n">ArrayOfUser</span>
+<span class="kn">from</span> <span class="nn">pylero.category</span> <span class="kn">import</span> <span class="n">Category</span>
+<span class="kn">from</span> <span class="nn">pylero.category</span> <span class="kn">import</span> <span class="n">ArrayOfCategory</span>
+<span class="kn">from</span> <span class="nn">pylero.comment</span> <span class="kn">import</span> <span class="n">Comment</span>
+<span class="kn">from</span> <span class="nn">pylero.comment</span> <span class="kn">import</span> <span class="n">ArrayOfComment</span>
+<span class="kn">from</span> <span class="nn">pylero.custom</span> <span class="kn">import</span> <span class="n">Custom</span>
+<span class="kn">from</span> <span class="nn">pylero.custom</span> <span class="kn">import</span> <span class="n">ArrayOfCustom</span>
+<span class="kn">from</span> <span class="nn">pylero.custom_field</span> <span class="kn">import</span> <span class="n">CustomField</span>
+<span class="kn">from</span> <span class="nn">pylero.custom_field_type</span> <span class="kn">import</span> <span class="n">CustomFieldType</span>
+<span class="kn">from</span> <span class="nn">pylero.enum_custom_field_type</span> <span class="kn">import</span> <span class="n">EnumCustomFieldType</span>
+<span class="kn">from</span> <span class="nn">pylero.text</span> <span class="kn">import</span> <span class="n">Text</span>
+<span class="kn">from</span> <span class="nn">pylero.externally_linked_work_item</span> <span class="kn">import</span> <span class="n">ExternallyLinkedWorkItem</span>
+<span class="kn">from</span> <span class="nn">pylero.externally_linked_work_item</span> \
+    <span class="kn">import</span> <span class="nn">ArrayOfExternallyLinkedWorkItem</span>
+<span class="kn">from</span> <span class="nn">pylero.hyperlink</span> <span class="kn">import</span> <span class="n">Hyperlink</span>
+<span class="kn">from</span> <span class="nn">pylero.hyperlink</span> <span class="kn">import</span> <span class="n">ArrayOfHyperlink</span>
+<span class="kn">from</span> <span class="nn">pylero.revision</span> <span class="kn">import</span> <span class="n">Revision</span>
+<span class="kn">from</span> <span class="nn">pylero.revision</span> <span class="kn">import</span> <span class="n">ArrayOfRevision</span>
+<span class="kn">from</span> <span class="nn">pylero.linked_work_item</span> <span class="kn">import</span> <span class="n">LinkedWorkItem</span>
+<span class="kn">from</span> <span class="nn">pylero.linked_work_item</span> <span class="kn">import</span> <span class="n">ArrayOfLinkedWorkItem</span>
+<span class="kn">from</span> <span class="nn">pylero.subterra_uri</span> <span class="kn">import</span> <span class="n">SubterraURI</span>
+<span class="kn">from</span> <span class="nn">pylero.planning_constraint</span> <span class="kn">import</span> <span class="n">PlanningConstraint</span>
+<span class="kn">from</span> <span class="nn">pylero.planning_constraint</span> <span class="kn">import</span> <span class="n">ArrayOfPlanningConstraint</span>
+<span class="kn">from</span> <span class="nn">pylero.enum_option_id</span> <span class="kn">import</span> <span class="n">EnumOptionId</span>
+<span class="c1"># ArrayOfEnumOptionId is used in dynamic code for custom fields</span>
+<span class="kn">from</span> <span class="nn">pylero.enum_option_id</span> <span class="kn">import</span> <span class="n">ArrayOfEnumOptionId</span>  <span class="c1"># NOQA</span>
+<span class="kn">from</span> <span class="nn">pylero.priority_option_id</span> <span class="kn">import</span> <span class="n">PriorityOptionId</span>
+<span class="kn">from</span> <span class="nn">pylero.project</span> <span class="kn">import</span> <span class="n">Project</span>
+<span class="kn">from</span> <span class="nn">pylero.test_steps</span> <span class="kn">import</span> <span class="n">TestSteps</span>
+<span class="kn">from</span> <span class="nn">pylero.test_step</span> <span class="kn">import</span> <span class="n">TestStep</span>
+<span class="kn">from</span> <span class="nn">pylero.time_point</span> <span class="kn">import</span> <span class="n">TimePoint</span>
+<span class="kn">from</span> <span class="nn">pylero.work_record</span> <span class="kn">import</span> <span class="n">WorkRecord</span>
+<span class="kn">from</span> <span class="nn">pylero.work_record</span> <span class="kn">import</span> <span class="n">ArrayOfWorkRecord</span>
+<span class="kn">from</span> <span class="nn">pylero.workflow_action</span> <span class="kn">import</span> <span class="n">WorkflowAction</span>
+<span class="kn">from</span> <span class="nn">pylero.base_polarion</span> <span class="kn">import</span> <span class="n">tx_wrapper</span>
+
+
+<span class="k">class</span> <span class="nc">_WorkItem</span><span class="p">(</span><span class="n">BasePolarion</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Object to handle the Polarion WSDL tns5:WorkItem class</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        approvals (ArrayOfApproval)</span>
+<span class="sd">        assignee (ArrayOfUser)</span>
+<span class="sd">        attachments (ArrayOfAttachment)</span>
+<span class="sd">        author (User)</span>
+<span class="sd">        auto_suspect (boolean)</span>
+<span class="sd">        categories (ArrayOfCategory)</span>
+<span class="sd">        comments (ArrayOfComment)</span>
+<span class="sd">        created (dateTime)</span>
+<span class="sd">        custom_fields (ArrayOfCustom)</span>
+<span class="sd">        description (Text)</span>
+<span class="sd">        due_date (date)</span>
+<span class="sd">        externally_linked_work_items (ArrayOfExternallyLinkedWorkItem)</span>
+<span class="sd">        hyperlinks (ArrayOfHyperlink)</span>
+<span class="sd">        initial_estimate (duration)</span>
+<span class="sd">        linked_revisions (ArrayOfRevision)</span>
+<span class="sd">        linked_revisions_derived (ArrayOfRevision)</span>
+<span class="sd">        linked_work_items (ArrayOfLinkedWorkItem)</span>
+<span class="sd">        linked_work_items_derived (ArrayOfLinkedWorkItem)</span>
+<span class="sd">        location (Location)</span>
+<span class="sd">        module_uri (SubterraURI)</span>
+<span class="sd">        outline_number (string)</span>
+<span class="sd">        planned_end (dateTime)</span>
+<span class="sd">        planned_in (ArrayOfPlan)</span>
+<span class="sd">        planned_start (dateTime)</span>
+<span class="sd">        planning_constraints (ArrayOfPlanningConstraint)</span>
+<span class="sd">        previous_status (EnumOptionId)</span>
+<span class="sd">        priority (PriorityOptionId)</span>
+<span class="sd">        project_id (Project)</span>
+<span class="sd">        remaining_estimate (duration)</span>
+<span class="sd">        resolution (EnumOptionId)</span>
+<span class="sd">        resolved_on (dateTime)</span>
+<span class="sd">        severity (EnumOptionId)</span>
+<span class="sd">        status (EnumOptionId)</span>
+<span class="sd">        time_point (TimePoint)</span>
+<span class="sd">        time_spent (duration)</span>
+<span class="sd">        title (string)</span>
+<span class="sd">        type (EnumOptionId)</span>
+<span class="sd">        updated (dateTime)</span>
+<span class="sd">        work_item_id (string)</span>
+<span class="sd">        work_records (ArrayOfWorkRecord)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+    <span class="n">_cls_suds_map</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;approvals&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;approvals&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;is_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">Approval</span><span class="p">,</span>
+             <span class="s2">&quot;arr_cls&quot;</span><span class="p">:</span> <span class="n">ArrayOfApproval</span><span class="p">,</span>
+             <span class="s2">&quot;inner_field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Approval&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;assignee&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;assignee&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;is_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">User</span><span class="p">,</span>
+             <span class="s2">&quot;arr_cls&quot;</span><span class="p">:</span> <span class="n">ArrayOfUser</span><span class="p">,</span>
+             <span class="s2">&quot;inner_field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;User&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;attachments&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;attachments&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;is_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">Attachment</span><span class="p">,</span>
+             <span class="s2">&quot;arr_cls&quot;</span><span class="p">:</span> <span class="n">ArrayOfAttachment</span><span class="p">,</span>
+             <span class="s2">&quot;inner_field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Attachment&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;author&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;author&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">User</span><span class="p">},</span>
+        <span class="s2">&quot;auto_suspect&quot;</span><span class="p">:</span> <span class="s2">&quot;autoSuspect&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;categories&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;categories&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;is_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">Category</span><span class="p">,</span>
+             <span class="s2">&quot;arr_cls&quot;</span><span class="p">:</span> <span class="n">ArrayOfCategory</span><span class="p">,</span>
+             <span class="s2">&quot;inner_field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Category&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;comments&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;comments&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;is_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">Comment</span><span class="p">,</span>
+             <span class="s2">&quot;arr_cls&quot;</span><span class="p">:</span> <span class="n">ArrayOfComment</span><span class="p">,</span>
+             <span class="s2">&quot;inner_field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Comment&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;created&quot;</span><span class="p">:</span> <span class="s2">&quot;created&quot;</span><span class="p">,</span>
+        <span class="c1"># the custom field attribute has been changed to be a protected attr.</span>
+        <span class="c1"># All interaction with custom fields should be done directly with the</span>
+        <span class="c1"># derived attribute.</span>
+        <span class="s2">&quot;_custom_fields&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;customFields&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;is_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">Custom</span><span class="p">,</span>
+             <span class="s2">&quot;arr_cls&quot;</span><span class="p">:</span> <span class="n">ArrayOfCustom</span><span class="p">,</span>
+             <span class="s2">&quot;inner_field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Custom&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;description&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;description&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">Text</span><span class="p">},</span>
+        <span class="s2">&quot;due_date&quot;</span><span class="p">:</span> <span class="s2">&quot;dueDate&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;externally_linked_work_items&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;externallyLinkedWorkItems&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;is_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">ExternallyLinkedWorkItem</span><span class="p">,</span>
+             <span class="s2">&quot;arr_cls&quot;</span><span class="p">:</span> <span class="n">ArrayOfExternallyLinkedWorkItem</span><span class="p">,</span>
+             <span class="s2">&quot;inner_field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;ExternallyLinkedWorkItem&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;hyperlinks&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;hyperlinks&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;is_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">Hyperlink</span><span class="p">,</span>
+             <span class="s2">&quot;arr_cls&quot;</span><span class="p">:</span> <span class="n">ArrayOfHyperlink</span><span class="p">,</span>
+             <span class="s2">&quot;inner_field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Hyperlink&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;initial_estimate&quot;</span><span class="p">:</span> <span class="s2">&quot;initialEstimate&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;linked_revisions&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;linkedRevisions&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;is_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">Revision</span><span class="p">,</span>
+             <span class="s2">&quot;arr_cls&quot;</span><span class="p">:</span> <span class="n">ArrayOfRevision</span><span class="p">,</span>
+             <span class="s2">&quot;inner_field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Revision&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;linked_revisions_derived&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;linkedRevisionsDerived&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;is_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">Revision</span><span class="p">,</span>
+             <span class="s2">&quot;arr_cls&quot;</span><span class="p">:</span> <span class="n">ArrayOfRevision</span><span class="p">,</span>
+             <span class="s2">&quot;inner_field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Revision&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;linked_work_items&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;linkedWorkItems&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;is_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">LinkedWorkItem</span><span class="p">,</span>
+             <span class="s2">&quot;arr_cls&quot;</span><span class="p">:</span> <span class="n">ArrayOfLinkedWorkItem</span><span class="p">,</span>
+             <span class="s2">&quot;inner_field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;LinkedWorkItem&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;linked_work_items_derived&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;linkedWorkItemsDerived&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;is_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">LinkedWorkItem</span><span class="p">,</span>
+             <span class="s2">&quot;arr_cls&quot;</span><span class="p">:</span> <span class="n">ArrayOfLinkedWorkItem</span><span class="p">,</span>
+             <span class="s2">&quot;inner_field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;LinkedWorkItem&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="s2">&quot;location&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;module_uri&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;moduleURI&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">SubterraURI</span><span class="p">},</span>
+        <span class="s2">&quot;outline_number&quot;</span><span class="p">:</span> <span class="s2">&quot;outlineNumber&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;planned_end&quot;</span><span class="p">:</span> <span class="s2">&quot;plannedEnd&quot;</span><span class="p">,</span>
+        <span class="c1"># planned_in completed in the _fix_circular_imports func</span>
+        <span class="s2">&quot;planned_in&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;plannedIn&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;planned_start&quot;</span><span class="p">:</span> <span class="s2">&quot;plannedStart&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;planning_constraints&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;planningConstraints&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;is_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">PlanningConstraint</span><span class="p">,</span>
+             <span class="s2">&quot;arr_cls&quot;</span><span class="p">:</span> <span class="n">ArrayOfPlanningConstraint</span><span class="p">,</span>
+             <span class="s2">&quot;inner_field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;PlanningConstraint&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;previous_status&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;previousStatus&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">EnumOptionId</span><span class="p">,</span>
+             <span class="s2">&quot;enum_id&quot;</span><span class="p">:</span> <span class="s2">&quot;status&quot;</span><span class="p">},</span>
+        <span class="c1"># priority is technically an enum, but it also accepts other values,</span>
+        <span class="c1"># so we didn&#39;t include it here. If you want to enforce the enum in</span>
+        <span class="c1"># the code, add &quot;enum_id&quot;: &quot;priority&quot; to the prioirity dict</span>
+        <span class="s2">&quot;priority&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;priority&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">PriorityOptionId</span><span class="p">},</span>
+        <span class="s2">&quot;project_id&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;project&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">Project</span><span class="p">},</span>
+        <span class="s2">&quot;remaining_estimate&quot;</span><span class="p">:</span> <span class="s2">&quot;remainingEstimate&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;resolution&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;resolution&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">EnumOptionId</span><span class="p">,</span>
+             <span class="s2">&quot;enum_id&quot;</span><span class="p">:</span> <span class="s2">&quot;resolution&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;resolved_on&quot;</span><span class="p">:</span> <span class="s2">&quot;resolvedOn&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;severity&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;severity&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">EnumOptionId</span><span class="p">,</span>
+             <span class="s2">&quot;enum_id&quot;</span><span class="p">:</span> <span class="s2">&quot;severity&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;status&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;status&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">EnumOptionId</span><span class="p">,</span>
+             <span class="s2">&quot;enum_id&quot;</span><span class="p">:</span> <span class="s2">&quot;status&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;time_point&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;timePoint&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">TimePoint</span><span class="p">},</span>
+        <span class="s2">&quot;time_spent&quot;</span><span class="p">:</span> <span class="s2">&quot;timeSpent&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;title&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;type&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">EnumOptionId</span><span class="p">,</span>
+             <span class="s2">&quot;enum_id&quot;</span><span class="p">:</span> <span class="s2">&quot;workitem-type&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;enum_override&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;heading&quot;</span><span class="p">]},</span>
+        <span class="s2">&quot;updated&quot;</span><span class="p">:</span> <span class="s2">&quot;updated&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;work_item_id&quot;</span><span class="p">:</span> <span class="s2">&quot;id&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;work_records&quot;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;workRecords&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;is_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">WorkRecord</span><span class="p">,</span>
+             <span class="s2">&quot;arr_cls&quot;</span><span class="p">:</span> <span class="n">ArrayOfWorkRecord</span><span class="p">,</span>
+             <span class="s2">&quot;inner_field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;WorkRecord&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;uri&quot;</span><span class="p">:</span> <span class="s2">&quot;_uri&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_unresolved&quot;</span><span class="p">:</span> <span class="s2">&quot;_unresolved&quot;</span><span class="p">}</span>
+    <span class="n">_id_field</span> <span class="o">=</span> <span class="s2">&quot;work_item_id&quot;</span>
+    <span class="n">_obj_client</span> <span class="o">=</span> <span class="s2">&quot;tracker_client&quot;</span>
+    <span class="n">_obj_struct</span> <span class="o">=</span> <span class="s2">&quot;tns3:WorkItem&quot;</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">wi_type</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">desc</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Creates a new work item with the given content. The project and the</span>
+<span class="sd">        type have to be set for the workitem for the creation to succeed. The</span>
+<span class="sd">        uri MUST NOT be set otherwise the creation will fail. To create a work</span>
+<span class="sd">        item in a specific location e.g. a LiveDoc set the location of the</span>
+<span class="sd">        work item to the desired target location. To create a work item in a</span>
+<span class="sd">        specific Module/Document set the Module/Document of the work item to</span>
+<span class="sd">        the desired target Module/Document.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            project_id: id of project to create work item in</span>
+<span class="sd">            wi_type: type of work item (testcase,...)</span>
+<span class="sd">            title: title of WorkItem</span>
+<span class="sd">            desc: description of WorkItem</span>
+<span class="sd">            status: initial status of the WorkItem, draft by default</span>
+<span class="sd">            kwargs: named parameters that are added to the object and updated</span>
+<span class="sd">                    after the object is created. Required custom fields must be</span>
+<span class="sd">                    passed in.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            new _WorkItem</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.createWorkItem</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">wi</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+        <span class="n">wi</span><span class="o">.</span><span class="n">project_id</span> <span class="o">=</span> <span class="n">project_id</span>
+        <span class="n">wi</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">wi_type</span>
+        <span class="n">wi</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">title</span>
+        <span class="n">wi</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">desc</span>
+        <span class="n">wi</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">status</span>
+        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">wi</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">field</span><span class="p">])</span>
+        <span class="n">wi_uri</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">createWorkItem</span><span class="p">(</span>
+            <span class="n">wi</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">)</span>
+        <span class="n">new_wi</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="n">wi_uri</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_wi</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_query_result_count</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Counts number of workitems returned by given query.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            query: the lucene query to be used.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">            int</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.getWorkItemsCount</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">getWorkItemsCount</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_defined_custom_field_types</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">wi_type</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets all the custom fields defined for the specified wi_type.</span>
+<span class="sd">        the custom fields are all either of type CustomFieldType or</span>
+<span class="sd">        EnumCustomFieldType in the case where the field is an enumeration.</span>
+<span class="sd">        These 2 classes are mostly interchangeable.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            project_id: the project to get the custom fields from</span>
+<span class="sd">            wi_type: The type of work item to get the custom fields for</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of all the custom fields</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            tracker.getDefinedCustomFieldTypes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;custom_field_types&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">wi_type</span><span class="p">):</span>
+            <span class="n">cfts</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
+                <span class="n">getDefinedCustomFieldTypes</span><span class="p">(</span><span class="n">project_id</span><span class="p">,</span> <span class="n">wi_type</span><span class="p">)</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;custom_field_types&quot;</span><span class="p">][</span><span class="n">wi_type</span><span class="p">]</span> <span class="o">=</span> <span class="n">cfts</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cfts</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;custom_field_types&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">wi_type</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="n">CustomFieldType</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">item</span><span class="p">)</span>
+                   <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span>
+                                 <span class="n">CustomFieldType</span><span class="p">()</span><span class="o">.</span><span class="n">_suds_object</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
+                   <span class="k">else</span> <span class="n">EnumCustomFieldType</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">item</span><span class="p">)</span>
+                   <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">cfts</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">results</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">is_sql</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;work_item_id&quot;</span><span class="p">],</span>
+              <span class="n">sort</span><span class="o">=</span><span class="s2">&quot;work_item_id&quot;</span><span class="p">,</span> <span class="n">limit</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">baseline_revision</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+              <span class="n">query_uris</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Searches for Work Items.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            The query function only returns a partially populated object with</span>
+<span class="sd">            the fields passed in (by default work_item_id) and the uri field.</span>
+<span class="sd">            The uri field is the Polarion unique object identifier which can</span>
+<span class="sd">             be used (among other things) to instantiate objects. Because not</span>
+<span class="sd">             all fields are returned in the object, this can cause problems</span>
+<span class="sd">             when trying to update an object that was returned by the query</span>
+<span class="sd">             function. Another issue is that certain fields are references and</span>
+<span class="sd">             are not retrieved by using their standard field names.</span>
+<span class="sd">             Examples of problems are:</span>
+<span class="sd">              * trying to use custom fields</span>
+<span class="sd">              * updating an object that has required fields that were not</span>
+<span class="sd">                retrieved</span>
+<span class="sd">              * trying to retrieve the project_id field.</span>
+<span class="sd">            Because of these issues, recommended usage is as follows:</span>
+<span class="sd">            {WI_TYPE} is TestCase, Requirement, ...</span>
+<span class="sd">                query_results = {WI_TYPE}.query(&quot;query string&quot;)</span>
+<span class="sd">                for item in query_results:</span>
+<span class="sd">                    wi = {WI_TYPE}(uri=item.uri)</span>
+<span class="sd">                    ... # do what you want with the object</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            query: query, either Lucene or SQL</span>
+<span class="sd">            is_sql (bool): determines if the query is SQL or Lucene</span>
+<span class="sd">            fields: array of field names to fill in the returned</span>
+<span class="sd">                    WorkItems (can be null). For nested structures in</span>
+<span class="sd">                    the lists you can use following syntax to include only</span>
+<span class="sd">                    subset of fields: myList.LIST.key</span>
+<span class="sd">                    (e.g. linkedWorkItems.LIST.role).</span>
+<span class="sd">                    For custom fields you can specify which fields you want to</span>
+<span class="sd">                    be filled using following syntax:</span>
+<span class="sd">                    customFields.CUSTOM_FIELD_ID (e.g. customFields.risk).</span>
+<span class="sd">                    Default: list containing &quot;work_item_id&quot;.</span>
+<span class="sd">            sort: Lucene sort string (can be null), default: work_item_id</span>
+<span class="sd">            limit: how many results to return (-1 means everything, default)</span>
+<span class="sd">            baseline_revision (str): if populated, query done in specified rev</span>
+<span class="sd">                                     default: None</span>
+<span class="sd">            query_uris (bool): returns a list of URI of the WorkItems found,</span>
+<span class="sd">                               default: False</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of _WorkItem objects</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.queryWorkItemUris</span>
+<span class="sd">            Tracker.queryWorkItemUrisBySQL</span>
+<span class="sd">            Tracker.queryWorkItemUrisInBaseline</span>
+<span class="sd">            Tracker.queryWorkItemUrisInBaselineBySQL</span>
+<span class="sd">            Tracker.queryWorkItemUrisInBaselineLimited</span>
+<span class="sd">            Tracker.queryWorkItemUrisLimited</span>
+<span class="sd">            Tracker.queryWorkItems</span>
+<span class="sd">            Tracker.queryWorkItemsBySQL</span>
+<span class="sd">            Tracker.queryWorkItemsInBaseline</span>
+<span class="sd">            Tracker.queryWorkItemsInBaselineBySQL</span>
+<span class="sd">            Tracker.queryWorkItemsInBaselineLimited</span>
+<span class="sd">            Tracker.queryWorkItemsLimited</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">parms</span> <span class="o">=</span> <span class="p">[</span><span class="n">query</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_sql</span><span class="p">:</span>
+            <span class="n">parms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sort</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">baseline_revision</span><span class="p">:</span>
+            <span class="n">parms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">baseline_revision</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">query_uris</span><span class="p">:</span>
+            <span class="n">p_fields</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_convert_obj_fields_to_polarion</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
+            <span class="n">parms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p_fields</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_sql</span> <span class="ow">and</span> <span class="n">limit</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">parms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">query_uris</span><span class="p">:</span>
+            <span class="n">base_name</span> <span class="o">=</span> <span class="s2">&quot;queryWorkItems&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">base_name</span> <span class="o">=</span> <span class="s2">&quot;queryWorkItemUris&quot;</span>
+        <span class="k">if</span> <span class="n">baseline_revision</span><span class="p">:</span>
+            <span class="n">base_name</span> <span class="o">+=</span> <span class="s2">&quot;InBaseline&quot;</span>
+        <span class="k">if</span> <span class="n">is_sql</span><span class="p">:</span>
+            <span class="n">base_name</span> <span class="o">+=</span> <span class="s2">&quot;BySQL&quot;</span>
+        <span class="k">elif</span> <span class="n">limit</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># You can&#39;t have both SQL and limited.</span>
+            <span class="n">base_name</span> <span class="o">+=</span> <span class="s2">&quot;Limited&quot;</span>
+        <span class="n">wis</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="p">,</span> <span class="n">base_name</span><span class="p">)(</span><span class="o">*</span><span class="n">parms</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">query_uris</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">wis</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">lst_wi</span> <span class="o">=</span> <span class="p">[</span><span class="bp">cls</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">wi</span><span class="p">)</span> <span class="k">for</span> <span class="n">wi</span> <span class="ow">in</span> <span class="n">wis</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">lst_wi</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">work_item_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">suds_object</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">uri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;WorkItem constructor.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            project_id: the Polarion project that the _WorkItem is located</span>
+<span class="sd">                        in.</span>
+<span class="sd">            work_item_id: when given, the object is populated with the</span>
+<span class="sd">                         _WorkItem&#39;s data . Requires project_id parameter</span>
+<span class="sd">            suds_object: Polarion _WorkItem object. When given, the object</span>
+<span class="sd">                         is populated by object data.</span>
+<span class="sd">            uri: the uri that references the Polarion _WorkItem</span>
+<span class="sd">            fields: the fields that are requested to be populated.</span>
+<span class="sd">                    if this is null then it will return all fields.</span>
+<span class="sd">            revision: if given, get the _WorkItem in the specified revision</span>
+<span class="sd">                       Is only relevant if URI is given.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            Either test_run_id and project or suds_object or uri can be passed</span>
+<span class="sd">            in or none of them. If none of the identifying parameters are</span>
+<span class="sd">            passed in an empty object is created</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.getWorkItemById</span>
+<span class="sd">            Tracker.getWorkItemByIdsWithFields</span>
+<span class="sd">            Tracker.getWorkItemByUri</span>
+<span class="sd">            Tracker.getWorkItemByUriInRevision</span>
+<span class="sd">            Tracker.getWorkItemByUriInRevisionWithFields</span>
+<span class="sd">            Tracker.getWorkItemByUriWithFields</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_required_fields</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_required_fields&quot;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_changed_fields</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_changed_fields&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="c1"># because other classes inherit from this. If super uses self.__class__</span>
+        <span class="c1"># it will be a infinite loop for the derived class.</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">_WorkItem</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">work_item_id</span><span class="p">,</span> <span class="n">suds_object</span><span class="p">)</span>
+        <span class="n">p_fields</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_obj_fields_to_polarion</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">work_item_id</span> <span class="ow">or</span> <span class="n">uri</span><span class="p">:</span>
+            <span class="n">function_name</span> <span class="o">=</span> <span class="s2">&quot;getWorkItemBy&quot;</span>
+            <span class="n">parms</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="n">work_item_id</span><span class="p">:</span>
+                <span class="n">function_name</span> <span class="o">+=</span> <span class="s2">&quot;Id&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">p_fields</span> <span class="k">else</span> <span class="s2">&quot;IdsWithFields&quot;</span>
+                <span class="n">parms</span> <span class="o">=</span> <span class="p">[</span><span class="n">project_id</span><span class="p">,</span> <span class="n">work_item_id</span><span class="p">]</span> <span class="o">+</span> \
+                    <span class="p">([</span><span class="n">p_fields</span><span class="p">]</span> <span class="k">if</span> <span class="n">p_fields</span> <span class="k">else</span> <span class="p">[])</span>
+            <span class="k">elif</span> <span class="n">uri</span><span class="p">:</span>
+                <span class="n">function_name</span> <span class="o">+=</span> <span class="s2">&quot;Uri&quot;</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;InRevision&quot;</span> <span class="k">if</span> <span class="n">revision</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">+</span> \
+                    <span class="p">(</span><span class="s2">&quot;WithFields&quot;</span> <span class="k">if</span> <span class="n">p_fields</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+                <span class="n">parms</span> <span class="o">=</span> <span class="p">[</span><span class="n">uri</span><span class="p">]</span> <span class="o">+</span> <span class="p">([</span><span class="n">revision</span><span class="p">]</span> <span class="k">if</span> <span class="n">revision</span> <span class="k">else</span> <span class="p">[])</span> <span class="o">+</span> \
+                    <span class="p">([</span><span class="n">p_fields</span><span class="p">]</span> <span class="k">if</span> <span class="n">p_fields</span> <span class="k">else</span> <span class="p">[])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="p">,</span>
+                                        <span class="n">function_name</span><span class="p">)(</span><span class="o">*</span><span class="n">parms</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">suds_object</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">,</span> <span class="s2">&quot;_unresolvable&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span>
+                    <span class="s2">&quot;The WorkItem </span><span class="si">{0}</span><span class="s2"> was not found.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">work_item_id</span><span class="p">))</span>
+        <span class="c1"># if it is a suds object, only relevant fields are passed in.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_id</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">suds_object</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">project_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_project</span>
+
+    <span class="k">def</span> <span class="nf">_fix_circular_refs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># This module imports plan and plan imports this module.</span>
+        <span class="c1"># The module references itself as a class attribute, which is not</span>
+        <span class="c1"># allowed, so the self reference is defined here.</span>
+        <span class="kn">from</span> <span class="nn">pylero.plan</span> <span class="kn">import</span> <span class="n">Plan</span>
+        <span class="kn">from</span> <span class="nn">pylero.plan</span> <span class="kn">import</span> <span class="n">ArrayOfPlan</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="s2">&quot;planned_in&quot;</span><span class="p">][</span><span class="s2">&quot;is_array&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="s2">&quot;planned_in&quot;</span><span class="p">][</span><span class="s2">&quot;cls&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Plan</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="s2">&quot;planned_in&quot;</span><span class="p">][</span><span class="s2">&quot;arr_cls&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ArrayOfPlan</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="s2">&quot;planned_in&quot;</span><span class="p">][</span><span class="s2">&quot;inner_field_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Plan&quot;</span>
+
+    <span class="k">def</span> <span class="nf">add_approvee</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">approvee_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;method add_approvee adds an approvee to the current _WorkItem.</span>
+<span class="sd">        The approvee passed in must be an allowed approver</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            approvee_id (str):er_id of approvee to add</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.addApprovee</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="c1"># verify that the user is allowed to be an approver.</span>
+        <span class="n">allowed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_allowed_approvers</span><span class="p">()</span>
+        <span class="n">allowed_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">u</span><span class="o">.</span><span class="n">user_id</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">allowed</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">approvee_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">allowed_ids</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is not an allowed assignee&quot;</span> <span class="o">%</span>
+                                       <span class="n">approvee_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">addApprovee</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">approvee_id</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">add_assignee</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">assignee_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;method add_assignee adds an assignee to the current _WorkItem</span>
+<span class="sd">        The assignee passed in must be an allowed assignee</span>
+<span class="sd">        Args:</span>
+<span class="sd">            assignee_id (str): user_id of assignee to add</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.addAssignee</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="c1"># verify that the user is allowed to be an assignee.</span>
+        <span class="n">allowed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_allowed_assignees</span><span class="p">()</span>
+        <span class="n">allowed_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">u</span><span class="o">.</span><span class="n">user_id</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">allowed</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">assignee_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">allowed_ids</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is not an allowed assignee&quot;</span> <span class="o">%</span>
+                                       <span class="n">assignee_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">addAssignee</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span>
+                                                               <span class="n">assignee_id</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">add_category</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;method add_category adds a category to the current _WorkItem</span>
+<span class="sd">    The category passed in must be a defined category in the current project</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            category_id (str): id of the category to add</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.addCategoy</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="n">proj</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_id</span><span class="p">)</span>
+        <span class="n">cats</span> <span class="o">=</span> <span class="n">proj</span><span class="o">.</span><span class="n">get_categories</span><span class="p">()</span>
+        <span class="n">cat_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">cat</span><span class="o">.</span><span class="n">category_id</span> <span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="n">cats</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">category_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cat_ids</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span><span class="s2">&quot;the category_id must be one of: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span>
+                                       <span class="n">cat_ids</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">addCategory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span>
+                                                               <span class="n">category_id</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">add_external_linked_revision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repository_name</span><span class="p">,</span> <span class="n">revision_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;method add_external_linked_revision links a revision from external</span>
+<span class="sd">        repository.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            repository_name (str): name of external repository</span>
+<span class="sd">            revision_id (str): the id of the revision to add</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.addExternalLinkedRevision</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">addExternalLinkedRevision</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">repository_name</span><span class="p">,</span> <span class="n">revision_id</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">add_hyperlink</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">role</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;method add_hyperlink adds a hyperlink to a _WorkItem</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            url: the url of the hyperlink to add.</span>
+<span class="sd">            role: the role of the hyperlink to add.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.addHyperlink</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_valid_field_values</span><span class="p">(</span><span class="n">role</span><span class="p">,</span> <span class="s2">&quot;hyperlink-role&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">suds_role</span> <span class="o">=</span> <span class="n">EnumOptionId</span><span class="p">(</span><span class="n">role</span><span class="p">)</span><span class="o">.</span><span class="n">_suds_object</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">addHyperlink</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">suds_role</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">add_linked_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">linked_work_item_id</span><span class="p">,</span> <span class="n">role</span><span class="p">,</span>
+                        <span class="n">revision</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">suspect</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;method add_linked_item adds a linked _WorkItem to current _WorkItem</span>
+<span class="sd">        The linking is done to the &quot;child&quot; object. For example, if you have a</span>
+<span class="sd">        Test Case that verifies a requirement, you would add the</span>
+<span class="sd">        linked item to the Test Case with the &quot;verifies&quot; role and</span>
+<span class="sd">        not the Requirement.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            linked_work_item_id - the URI of the target work item the link</span>
+<span class="sd">                                  points to.</span>
+<span class="sd">            role (str): the role of the hyperlink to add.</span>
+<span class="sd">            revision (str): optional, specific revision for linked item</span>
+<span class="sd">                           (None means HEAD revision)</span>
+<span class="sd">                           default: None</span>
+<span class="sd">            suspect (bool): true if the link should be marked with suspect flag</span>
+<span class="sd">                      Only valid if revision is set.</span>
+<span class="sd">                      default: None</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.addLinkedItem</span>
+<span class="sd">            Tracker.addLinkedItemWithRev</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="c1"># validates the role. Will raise PyleroLibException if invalid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_valid_field_values</span><span class="p">(</span><span class="n">role</span><span class="p">,</span> <span class="s2">&quot;workitem-link-role&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">wi_linked</span> <span class="o">=</span> <span class="n">_WorkItem</span><span class="p">(</span><span class="n">work_item_id</span><span class="o">=</span><span class="n">linked_work_item_id</span><span class="p">,</span>
+                              <span class="n">project_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project_id</span><span class="p">)</span>
+        <span class="n">enum_role</span> <span class="o">=</span> <span class="n">EnumOptionId</span><span class="p">(</span><span class="n">role</span><span class="p">)</span><span class="o">.</span><span class="n">_suds_object</span>
+        <span class="n">function_name</span> <span class="o">=</span> <span class="s2">&quot;addLinkedItem&quot;</span>
+        <span class="n">parms</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">wi_linked</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">enum_role</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">revision</span><span class="p">:</span>
+            <span class="n">function_name</span> <span class="o">+=</span> <span class="s2">&quot;WithRev&quot;</span>
+            <span class="n">parms</span> <span class="o">+=</span> <span class="p">[</span><span class="n">revision</span><span class="p">,</span> <span class="n">suspect</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="p">,</span>
+                       <span class="n">function_name</span><span class="p">)(</span><span class="o">*</span><span class="n">parms</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">add_linked_revision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">revision</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;method add_linked_revision links a revision to the current _WorkItem</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            revision: the revision to add.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.addLinkedRevision</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">addLinkedRevision</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span>
+                                                                     <span class="n">revision</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">create_attachment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">title</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;method create_attachment adds the given attachment to the current</span>
+<span class="sd">        _WorkItem</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path: file path to upload</span>
+<span class="sd">            title: u.User friendly name of the file</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            Raises an error if the _WorkItem object is not populated</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.createAttachment</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_file_data</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
+            <span class="n">createAttachment</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">create_comment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;method create_comment adds a comment to the current _WorkItem</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            content (Text or str)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.createComment</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">content</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span>
+                <span class="n">obj_content</span> <span class="o">=</span> <span class="n">Text</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+                <span class="n">suds_content</span> <span class="o">=</span> <span class="n">obj_content</span><span class="o">.</span><span class="n">_suds_object</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">Text</span><span class="p">):</span>
+                <span class="n">suds_content</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">_suds_object</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># is a suds object</span>
+                <span class="n">suds_content</span> <span class="o">=</span> <span class="n">content</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">suds_content</span> <span class="o">=</span> <span class="n">suds</span><span class="o">.</span><span class="n">null</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">createComment</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span>
+                                                          <span class="n">suds_content</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">create_work_record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">date_worked</span><span class="p">,</span> <span class="n">time_spent</span><span class="p">,</span>
+                           <span class="n">record_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">record_comment</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Creates a work record</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            user_id: the user for the work record.</span>
+<span class="sd">            date_worked: the date of the work record.</span>
+<span class="sd">            time_spent: the time spent for the work record.</span>
+<span class="sd">            record_type: the type of the work record, default: None</span>
+<span class="sd">            record-comment: work record comment, default: None</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.createWorkRecord</span>
+<span class="sd">            Tracker.createWorkRecordWithTypeAndComment</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span><span class="n">user_id</span><span class="o">=</span><span class="n">user_id</span><span class="p">)</span>
+        <span class="n">function_name</span> <span class="o">=</span> <span class="s2">&quot;createWorkRecord&quot;</span>
+        <span class="n">parms</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">,</span> <span class="n">date_worked</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">record_type</span> <span class="ow">or</span> <span class="n">record_comment</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">record_type</span><span class="p">:</span>
+                <span class="n">record_type</span> <span class="o">=</span> <span class="n">suds</span><span class="o">.</span><span class="n">null</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">record_comment</span><span class="p">:</span>
+                <span class="n">record_comment</span> <span class="o">=</span> <span class="n">suds</span><span class="o">.</span><span class="n">null</span><span class="p">()</span>
+            <span class="n">function_name</span> <span class="o">+=</span> <span class="s2">&quot;WithTypeAndComment&quot;</span>
+            <span class="n">parms</span> <span class="o">+=</span> <span class="p">[</span><span class="n">record_type</span><span class="p">,</span> <span class="n">time_spent</span><span class="p">,</span> <span class="n">record_comment</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">parms</span> <span class="o">+=</span> <span class="p">[</span><span class="n">time_spent</span><span class="p">]</span>
+        <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="p">,</span> <span class="n">function_name</span><span class="p">)(</span><span class="o">*</span><span class="n">parms</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">delete_attachment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attachment_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;method delete_attachment removes the specified attachment from the</span>
+<span class="sd">        current _WorkItem</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            attachment_id (str): the ID of the attachment to be removed.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.deleteAttachment</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">deleteAttachment</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">attachment_id</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">do_auto_suspect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Triggers auto suspect.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.doAutoSuspect</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">doAutoSuspect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">do_auto_assign</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Triggers auto assignment.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.doAutoAssign</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">doAutoAssign</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">edit_approval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">approvee_id</span><span class="p">,</span> <span class="n">status</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Changes the status of an approval.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            approveeId: the user id of the approvee.</span>
+<span class="sd">            status: the new status to set.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.editApproval</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="c1"># verify that the user exists.</span>
+        <span class="n">User</span><span class="p">(</span><span class="n">approvee_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_valid_field_values</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="s2">&quot;approval-status&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">suds_status</span> <span class="o">=</span> <span class="n">EnumOptionId</span><span class="p">(</span><span class="n">status</span><span class="p">)</span><span class="o">.</span><span class="n">_suds_object</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">editApproval</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">approvee_id</span><span class="p">,</span> <span class="n">suds_status</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_allowed_approvers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets all allowed approvers&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of u.Users</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.getAllowedApprovers</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">users</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">suds_user</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
+                <span class="n">getAllowedApprovers</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">):</span>
+            <span class="n">users</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">User</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">suds_user</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">users</span>
+
+    <span class="k">def</span> <span class="nf">get_allowed_assignees</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets all allowed assignees&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of u.Users</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.getAllowedAssignees</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">users</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">suds_user</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
+                <span class="n">getAllowedAssignees</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">):</span>
+            <span class="n">users</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">User</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">suds_user</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">users</span>
+
+    <span class="k">def</span> <span class="nf">get_available_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets the actions that can be used on the workflow object in its</span>
+<span class="sd">        current state. Conditions of the action are checked and those with</span>
+<span class="sd">        failed condition(s) are not returned.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of WorkFlowActions</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.getAvailableActions</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="n">actions</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">suds_action</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
+                <span class="n">getAvailableActions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">):</span>
+            <span class="n">actions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">WorkflowAction</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">suds_action</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">actions</span>
+
+    <span class="k">def</span> <span class="nf">get_back_linked_work_items</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets the back linked work items, work items linking to the specified</span>
+<span class="sd">        work item.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of LinkedWorkItems</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.getbackLinkedWorkitems</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="n">linked_work_items</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">suds_lwi</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
+                <span class="n">getBackLinkedWorkitems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">):</span>
+            <span class="n">linked_work_items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">LinkedWorkItem</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">suds_lwi</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">linked_work_items</span>
+
+    <span class="k">def</span> <span class="nf">get_custom_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;method get_custom_field gets a custom field of a work item.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key: The key of the custom field</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            CustomField object</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.getCustomField</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="n">suds_custom</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">getCustomField</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">CustomField</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">suds_custom</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_custom_field_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;method get_custom_field_keys Gets the names of defined custom</span>
+<span class="sd">        fields.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of keys</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.getCustomFieldKeys</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">getCustomFieldKeys</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_custom_field_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;method get_custom_field_type gets custom field definition of a</span>
+<span class="sd">        work item.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key: The key of the custom field</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            CustomFieldType object</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.getCustomFieldType</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="n">suds_custom</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">getCustomFieldType</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">CustomFieldType</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">suds_custom</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_custom_field_types</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;method get_custom_field_types gets all custom field definitions for</span>
+<span class="sd">        a specific workitem fields.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of CustomFieldType</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.getCustomFieldTypes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="n">custom_types</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">suds_custom</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
+                <span class="n">getCustomFieldTypes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">):</span>
+            <span class="n">custom_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CustomFieldType</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">suds_custom</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">get_enum_control_key_for_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enum_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets the enumeration control key for the specified work item key.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            enum_id: the id of the enumeration to get the control key for.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Enumeration control key</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.getEnumControlKeyForId</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">getEnumControlKeyForId</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">project_id</span><span class="p">,</span> <span class="n">enum_id</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_enum_control_key_for_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets the enumeration control key for the specified work item key.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key: the key of the field containing the enumeration to get the</span>
+<span class="sd">                 control key for</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Enumeration control key</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.getEnumControlKeyForId</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">getEnumControlKeyForId</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">project_id</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_initial_workflow_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">work_item_type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets the initial workflow action for the specified object, returns</span>
+<span class="sd">        None if there is no initial action for the corresponding workflow.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            work_item_type: the type of the work item to get the</span>
+<span class="sd">                             available actions from. can be None</span>
+<span class="sd">                             default: None</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            WorkFlowAction object</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.getInitialWorkflowAction</span>
+<span class="sd">            Tracker.getInitialWorkflowActionForProjectAndType</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="n">function_name</span> <span class="o">=</span> <span class="s2">&quot;getInitialWorkflowAction&quot;</span>
+        <span class="n">parm</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">work_item_type</span><span class="p">:</span>
+            <span class="n">function_name</span> <span class="o">+=</span> <span class="s2">&quot;ForProjectAndType&quot;</span>
+            <span class="n">parm</span> <span class="o">+=</span> <span class="p">[</span><span class="n">work_item_type</span><span class="p">]</span>
+        <span class="n">suds_action</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="p">,</span>
+                              <span class="n">function_name</span><span class="p">)(</span><span class="o">*</span><span class="n">parm</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">WorkflowAction</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">suds_action</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_test_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;method get_test_steps retrieves the test steps of the current</span>
+<span class="sd">        WorkItem. If the _WorkItem is not populated, it returns an exception.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            a TestSteps object</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.getTestSteps</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="n">suds_ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
+            <span class="n">getTestSteps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">TestSteps</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">suds_ts</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_unavailable_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets the actions that can not be used on the work item in the</span>
+<span class="sd">        current state because of unsatisfied condition(s). Conditions of the</span>
+<span class="sd">        action are checked and those with failed condition(s) are returned.</span>
+<span class="sd">        The reason of unavailability is returned by</span>
+<span class="sd">        WorkflowAction.getUnavailabilityMessage().</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of WorkflowAction objects</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.getUnavailableActions</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="n">actions</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">suds_action</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
+                <span class="n">getUnavailableActions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">):</span>
+            <span class="n">actions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">WorkflowAction</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">suds_action</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">actions</span>
+
+    <span class="k">def</span> <span class="nf">perform_workflow_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Executes a workflow action. The actions that can be performed can be</span>
+<span class="sd">        received by _WorkItem.getAvailableActions(java.lang.String).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            action_id: the id of the action to execute.</span>
+
+<span class="sd">        Retuns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.performWorkflowAction</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">performWorkflowAction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span>
+                                                                  <span class="n">action_id</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">remove_assignee</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">assignee_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;removes an assignee from the _WorkItem.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            assignee_id: user id of the assignee to remove</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.removeAssignee</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">removeAssignee</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span>
+                                                                  <span class="n">assignee_id</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">remove_category</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;removes a category from the _WorkItem.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            category_id: id of category to remove</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.removeCategory</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">removeCategory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span>
+                                                                  <span class="n">category_id</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">remove_external_linked_revision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repository_name</span><span class="p">,</span> <span class="n">revision_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Removes a revision from external repository.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            repository_name: the ID of the external repository.</span>
+<span class="sd">            revision_id: the ID of the revision to remove.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.removeExternalLinkedRevision</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
+            <span class="n">removeExternalLinkedRevision</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">repository_name</span><span class="p">,</span>
+                                         <span class="n">revision_id</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">remove_externally_linked_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">linked_external_workitem_id</span><span class="p">,</span> <span class="n">role</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Removes an externally linked work item.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            linked_external_workitem_id: the ID of the linked item to remove</span>
+<span class="sd">            role: the role of the linked item to remove</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.removeExternallyLinkedItem</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="n">external_wi</span> <span class="o">=</span> <span class="n">_WorkItem</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="n">linked_external_workitem_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
+            <span class="n">removeExternallyLinkedItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">external_wi</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">role</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">remove_hyperlink</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Removes a hyperlink from the _WorkItem</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            url: the url of the hyperlink to remove</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.removeHyperlink</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
+            <span class="n">removeHyperlink</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">remove_linked_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">linked_item_id</span><span class="p">,</span> <span class="n">role</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Removes a linked work item.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            linked_item_id: the ID of the linked item to remove</span>
+<span class="sd">            role: the role of the linked item to remove</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.removeLinkedItem</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="n">wi_linked</span> <span class="o">=</span> <span class="n">_WorkItem</span><span class="p">(</span><span class="n">work_item_id</span><span class="o">=</span><span class="n">linked_item_id</span><span class="p">,</span>
+                              <span class="n">project_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project_id</span><span class="p">)</span>
+        <span class="n">enum_role</span> <span class="o">=</span> <span class="n">EnumOptionId</span><span class="p">(</span><span class="n">role</span><span class="p">)</span><span class="o">.</span><span class="n">_suds_object</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
+            <span class="n">removeLinkedItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">wi_linked</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">enum_role</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">remove_linked_revision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">revision_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Removes a revision</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            revision_id: The ID of the revision to remove</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.removeLinkedRevision</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
+            <span class="n">removeLinkedRevision</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">revision_id</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">remove_planning_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">constraint_date</span><span class="p">,</span> <span class="n">constraint</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Removes a planning constraint</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            constraint_date: the date of the planning constraint to remove.</span>
+<span class="sd">            constraint: the type of constraint to remove.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.removePlaningConstraint</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
+            <span class="n">removePlaningConstraint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">constraint_date</span><span class="p">,</span> <span class="n">constraint</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">reset_workflow</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;resets the workflow for the current object. Performs initial action</span>
+<span class="sd">        if exists and sets the initial status</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.resetWorkflow</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">resetWorkflow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_set_custom_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;sends the custom field value to the server</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key: the suds field name</span>
+<span class="sd">            value:</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.setCustomField</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">CustomField</span><span class="p">()</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">parent_item_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">uri</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">setCustomField</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">set_fields_null</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fields</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;sets the specified fields to Null.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            fields: list of fields to set to null</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.setFieldsNull</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="n">p_fields</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_obj_fields_to_polarion</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">setFieldsNull</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">p_fields</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">set_test_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_steps</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;method set_test-steps Adds Test Steps to the current Work Item (WI)</span>
+<span class="sd">        (add operation). If WI already has Test Steps, they will be completely</span>
+<span class="sd">        replaced (update operation). If the test_steps parameter is None, the</span>
+<span class="sd">        content of the Test Steps field will be emptied (delete operation).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            test_steps: a list of TestStep objects. Default: None</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">         References:</span>
+<span class="sd">            Test_Management.setTestSteps</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">test_steps</span><span class="p">:</span>
+            <span class="n">parm</span> <span class="o">=</span> <span class="n">suds</span><span class="o">.</span><span class="n">null</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">test_steps</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">parm</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">test_steps</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">TestStep</span><span class="p">):</span>
+                <span class="n">parm</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">_suds_object</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">test_steps</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">test_steps</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">TestStep</span><span class="p">()</span><span class="o">.</span>
+                            <span class="n">_suds_object</span><span class="o">.</span><span class="vm">__class__</span><span class="p">):</span>
+                <span class="n">parm</span> <span class="o">=</span> <span class="n">test_steps</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span><span class="s2">&quot;Expecting a list of testStep objects&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">setTestSteps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span>
+                                                                 <span class="n">parm</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Update the server with the current _WorkItem data</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.updateWorkItem</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">updateWorkItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">update_attachment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attachment_id</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">title</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;method update_attachment updates the specified attachment to the</span>
+<span class="sd">        current _WorkItem</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            attachment_id: the ID of the attachment to be updated</span>
+<span class="sd">            path: file path to upload</span>
+<span class="sd">            title: u.User friendly name of the file</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            Raises an error if the test run object is not populated.</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.updateAttachment</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_file_data</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
+            <span class="n">updateAttachment</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">attachment_id</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">verify_required</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_required_fields</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span>
+                    <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2"> is a required field&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">field</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">which_test_runs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gives the user a list of TestRun objects that the current WorkItem</span>
+<span class="sd">        instance is contained in.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of TestRun objects</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># import done in the function so as not to cause circular refs</span>
+        <span class="kn">from</span> <span class="nn">pylero.test_run</span> <span class="kn">import</span> <span class="n">TestRun</span>
+        <span class="k">return</span> <span class="n">TestRun</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">work_item_id</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">_SpecificWorkItem</span><span class="p">(</span><span class="n">_WorkItem</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;specific work item is a class that contains the WorkItem implementation</span>
+<span class="sd">    that is different per WorkItem type. Classes that inherit from this class</span>
+<span class="sd">    must define the _wi_type class attribute as a minimum.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_wi_type</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">_got_custom_fields</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">_required_fields</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">_all_custom_fields</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">desc</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s2">&quot;draft&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Creates the specific type of work item, requiring the base fields to</span>
+<span class="sd">        be passed in and all required custom fields as key word args. If not</span>
+<span class="sd">        all required fields are passed in or key word fields that are not</span>
+<span class="sd">        custom, it raises an exception.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            project_id: The project to create the WorkItem in</span>
+<span class="sd">            work_item_id: The unique id for the WorkItem</span>
+<span class="sd">            title: the title of the WorkItem</span>
+<span class="sd">            desc: the Description of the WorkItem</span>
+<span class="sd">            status: the initial status of the WorkItem, draft by default</span>
+<span class="sd">            kwargs: keyword arguments for custom fields. All required custom</span>
+<span class="sd">                    fields must appear as keyword arguments.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">get_custom_fields</span><span class="p">(</span><span class="n">project_id</span><span class="p">)</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">req</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_required_fields</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">req</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="n">fields</span> <span class="o">+=</span> <span class="p">(</span><span class="s2">&quot;, &quot;</span> <span class="k">if</span> <span class="n">fields</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">req</span>
+        <span class="k">if</span> <span class="n">fields</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span><span class="s2">&quot;These parameters are required: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span>
+                                       <span class="nb">format</span><span class="p">(</span><span class="n">fields</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">field</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_all_custom_fields</span> <span class="ow">and</span> \
+                    <span class="n">field</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">:</span>
+                <span class="n">fields</span> <span class="o">+=</span> <span class="p">(</span><span class="s2">&quot;, &quot;</span> <span class="k">if</span> <span class="n">fields</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">field</span>
+        <span class="k">if</span> <span class="n">fields</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span><span class="s2">&quot;These parameters are unknown: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span>
+                                       <span class="nb">format</span><span class="p">(</span><span class="n">fields</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">_SpecificWorkItem</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+            <span class="n">project_id</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_wi_type</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">desc</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_custom_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">project_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;List of custom fields for the project and specific wi_type</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            project_id: project that the user is working with</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple containing:</span>
+<span class="sd">                a) list of all custom fields</span>
+<span class="sd">                b) list of all required fields</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_required_fields</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_all_custom_fields</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">cfts</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_defined_custom_field_types</span><span class="p">(</span><span class="n">project_id</span><span class="p">,</span>
+                                                  <span class="bp">cls</span><span class="o">.</span><span class="n">_wi_type</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">cft</span> <span class="ow">in</span> <span class="n">cfts</span><span class="p">:</span>
+                <span class="c1"># convert the custom field name to use code convention, where</span>
+                <span class="c1"># possible</span>
+                <span class="n">split_name</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;[a-zA-Z][^A-Z]*&#39;</span><span class="p">,</span> <span class="n">cft</span><span class="o">.</span><span class="n">cft_id</span><span class="p">)</span>
+                <span class="n">local_name</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">split_name</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;_U_R_I&quot;</span><span class="p">,</span> <span class="s2">&quot;_uri&quot;</span><span class="p">)</span><span class="o">.</span> \
+                    <span class="n">replace</span><span class="p">(</span><span class="s2">&quot;_W_I&quot;</span><span class="p">,</span> <span class="s2">&quot;_wi&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;_I_D&quot;</span><span class="p">,</span> <span class="s2">&quot;_id&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">_all_custom_fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">local_name</span><span class="p">)</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="n">local_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="n">local_name</span><span class="p">][</span><span class="s2">&quot;field_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cft</span><span class="o">.</span><span class="n">cft_id</span>
+                <span class="c1"># types are returned in format:</span>
+                <span class="c1"># * nsX:obj_type for objects and</span>
+                <span class="c1"># * xsd:string for native types</span>
+                <span class="c1"># for all object types, I need special processing.</span>
+                <span class="n">parse_type</span> <span class="o">=</span> <span class="n">cft</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">parse_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;ns&quot;</span><span class="p">):</span>
+                    <span class="bp">cls</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="n">local_name</span><span class="p">][</span><span class="s2">&quot;cls&quot;</span><span class="p">]</span> <span class="o">=</span> \
+                        <span class="nb">globals</span><span class="p">()[</span><span class="n">parse_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="n">local_name</span><span class="p">][</span><span class="s2">&quot;enum_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cft</span><span class="p">,</span>
+                                                                   <span class="s2">&quot;enum_id&quot;</span><span class="p">,</span>
+                                                                   <span class="kc">None</span><span class="p">)</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="n">local_name</span><span class="p">][</span><span class="s2">&quot;is_custom&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="n">local_name</span><span class="p">][</span><span class="s2">&quot;control&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_wi_type</span>
+                <span class="k">if</span> <span class="n">cft</span><span class="o">.</span><span class="n">required</span><span class="p">:</span>
+                    <span class="bp">cls</span><span class="o">.</span><span class="n">_required_fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">local_name</span><span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_got_custom_fields</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;work_item_id&quot;</span><span class="p">],</span>
+              <span class="n">sort</span><span class="o">=</span><span class="s2">&quot;work_item_id&quot;</span><span class="p">,</span> <span class="n">limit</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">baseline_revision</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+              <span class="n">query_uris</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Function overrides the query function in the _WorkItem class. It</span>
+<span class="sd">        only accepts Lucene queries, specifically queries the specific type of</span>
+<span class="sd">        work item and the default project. To search other projects, there is a</span>
+<span class="sd">        project_id parameter.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            The query function only returns a partially populated object with</span>
+<span class="sd">            the fields passed in (by default work_item_id) and the uri field.</span>
+<span class="sd">            The uri field is the Polarion unique object identifier which can</span>
+<span class="sd">             be used (among other things) to instantiate objects. Because not</span>
+<span class="sd">             all fields are returned in the object, this can cause problems</span>
+<span class="sd">             when trying to update an object that was returned by the query</span>
+<span class="sd">             function. Another issue is that certain fields are references and</span>
+<span class="sd">             are not retrieved by using their standard field names.</span>
+<span class="sd">             Examples of problems are:</span>
+<span class="sd">              * trying to use custom fields</span>
+<span class="sd">              * updating an object that has required fields that were not</span>
+<span class="sd">                retrieved</span>
+<span class="sd">              * trying to retrieve the project_id field.</span>
+<span class="sd">            Because of these issues, recommended usage is as follows:</span>
+<span class="sd">            {WI_TYPE} is TestCase, Requirement, ...</span>
+<span class="sd">                query_results = {WI_TYPE}.query(&quot;query string&quot;)</span>
+<span class="sd">                for item in query_results:</span>
+<span class="sd">                    wi = {WI_TYPE}(uri=item.uri)</span>
+<span class="sd">                    ... # do what you want with the object</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            query: query, Lucene</span>
+<span class="sd">            fields: array of field names to fill in the returned</span>
+<span class="sd">                    WorkItems (can be null). For nested structures in</span>
+<span class="sd">                    the lists you can use following syntax to include only</span>
+<span class="sd">                    subset of fields: myList.LIST.key</span>
+<span class="sd">                    (e.g. linkedWorkItems.LIST.role).</span>
+<span class="sd">                    For custom fields you can specify which fields you want to</span>
+<span class="sd">                    be filled using following syntax:</span>
+<span class="sd">                    customFields.CUSTOM_FIELD_ID (e.g. customFields.risk).</span>
+<span class="sd">                    Default: list containing &quot;work_item_id&quot;.</span>
+<span class="sd">            sort: Lucene sort string (can be null), default: work_item_id</span>
+<span class="sd">            limit: how many results to return (-1 means everything, default)</span>
+<span class="sd">            baseline_revision (str): if populated, query done in specified rev</span>
+<span class="sd">                                     default: None</span>
+<span class="sd">            query_uris (bool): returns a list of URI of the WorkItems found,</span>
+<span class="sd">                               default: False</span>
+<span class="sd">            project_id (str): is used to pass in a specific project_id instead</span>
+<span class="sd">                              of using the default. Default: None</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of the specific WorkItem objects that were found.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_got_custom_fields</span><span class="p">:</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">get_custom_fields</span><span class="p">(</span><span class="n">project_id</span> <span class="ow">or</span> <span class="bp">cls</span><span class="o">.</span><span class="n">default_project</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">query</span><span class="p">:</span>
+            <span class="n">query</span> <span class="o">+=</span> <span class="s2">&quot; AND &quot;</span>
+        <span class="n">query</span> <span class="o">+=</span> <span class="s2">&quot;type:</span><span class="si">%s</span><span class="s2"> AND project.id:</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> \
+            <span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_wi_type</span><span class="p">,</span> <span class="n">project_id</span> <span class="ow">or</span> <span class="bp">cls</span><span class="o">.</span><span class="n">default_project</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">_SpecificWorkItem</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+            <span class="n">query</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">sort</span><span class="p">,</span> <span class="n">limit</span><span class="p">,</span> <span class="n">baseline_revision</span><span class="p">,</span> <span class="n">query_uris</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">work_item_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">suds_object</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">uri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;In this constructor, it adds the custom fields per WorkItem type to</span>
+<span class="sd">        the _cls_suds_map along with the is_custom and is_enum fields.</span>
+<span class="sd">        In the property builder of the base class, it defines special behavior</span>
+<span class="sd">        for custom fields so they are treated like regular attributes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">project_id</span><span class="p">:</span>
+            <span class="n">project_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_project</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_changed_fields</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_custom_fields</span><span class="p">(</span><span class="n">project_id</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">_SpecificWorkItem</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">project_id</span><span class="p">,</span> <span class="n">work_item_id</span><span class="p">,</span>
+                                                <span class="n">suds_object</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span>
+                                                <span class="n">revision</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wi_type</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wi_type</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span><span class="s2">&quot;This is of type </span><span class="si">{0}</span><span class="s2">, not type </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span>
+                                       <span class="nb">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wi_type</span><span class="p">))</span>
+
+    <span class="nd">@tx_wrapper</span>
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;calls update on changes to the work item.</span>
+<span class="sd">        It first verifies that required fields are all set, then calls update</span>
+<span class="sd">        on the object and then iterates the custom fields and updates each one</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verify_required</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">_SpecificWorkItem</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_changed_fields</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">field</span> <span class="o">==</span> <span class="s2">&quot;testSteps&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_test_steps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_changed_fields</span><span class="p">[</span><span class="n">field</span><span class="p">]</span><span class="o">.</span><span class="n">steps</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_changed_fields</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="c1"># On import of the module, it will connect to the server</span>
+<span class="c1"># and get a list of the workitem types and create those classes.</span>
+
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">Configuration</span><span class="p">()</span>
+<span class="n">bp</span> <span class="o">=</span> <span class="n">BasePolarion</span><span class="p">()</span>
+<span class="n">vals</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">get_valid_field_values</span><span class="p">(</span><span class="s2">&quot;workitem-type&quot;</span><span class="p">)</span>
+<span class="n">workitems</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">bp</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;enums&quot;</span><span class="p">][</span><span class="s2">&quot;workitem-type&quot;</span><span class="p">][</span><span class="kc">None</span><span class="p">]:</span>
+    <span class="n">workitems</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">wi</span> <span class="ow">in</span> <span class="n">workitems</span><span class="p">:</span>
+    <span class="n">newclass</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">workitems</span><span class="p">[</span><span class="n">wi</span><span class="p">]),</span>
+                    <span class="p">(</span><span class="n">_SpecificWorkItem</span><span class="p">,),</span>
+                    <span class="p">{</span><span class="s2">&quot;_wi_type&quot;</span><span class="p">:</span> <span class="n">wi</span><span class="p">,</span>
+                     <span class="s2">&quot;_cls_suds_map&quot;</span><span class="p">:</span>
+                        <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">_SpecificWorkItem</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">)})</span>
+    <span class="c1"># Add the class to the module&#39;s namespace</span>
+    <span class="nb">globals</span><span class="p">()[</span><span class="nb">str</span><span class="p">(</span><span class="n">workitems</span><span class="p">[</span><span class="n">wi</span><span class="p">])]</span> <span class="o">=</span> <span class="n">newclass</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">pylero</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">pylero</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Sim Zacks and Pylero Contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

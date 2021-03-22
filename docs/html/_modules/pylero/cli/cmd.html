@@ -1,0 +1,501 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pylero.cli.cmd &#8212; pylero  documentation</title>
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for pylero.cli.cmd</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf8 -*-</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
+<span class="kn">from</span> <span class="nn">pylero._compatible</span> <span class="kn">import</span> <span class="nb">object</span>
+<span class="kn">from</span> <span class="nn">pylero._compatible</span> <span class="kn">import</span> <span class="nb">str</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">pylero.document</span> <span class="kn">import</span> <span class="n">Document</span>
+<span class="kn">from</span> <span class="nn">pylero.work_item</span> <span class="kn">import</span> <span class="n">TestCase</span>
+<span class="kn">from</span> <span class="nn">pylero.work_item</span> <span class="kn">import</span> <span class="n">Requirement</span>
+<span class="kn">from</span> <span class="nn">pylero.test_run</span> <span class="kn">import</span> <span class="n">TestRun</span>
+<span class="kn">from</span> <span class="nn">pylero.plan</span> <span class="kn">import</span> <span class="n">Plan</span>
+
+
+<div class="viewcode-block" id="CmdList"><a class="viewcode-back" href="../../../pylero.cli.html#pylero.cli.cmd.CmdList">[docs]</a><span class="k">class</span> <span class="nc">CmdList</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; An object to manage the command of list&#39;&#39;&#39;</span>
+
+<div class="viewcode-block" id="CmdList.list_documents_by_query"><a class="viewcode-back" href="../../../pylero.cli.html#pylero.cli.cmd.CmdList.list_documents_by_query">[docs]</a>    <span class="k">def</span> <span class="nf">list_documents_by_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                                <span class="n">query</span><span class="p">):</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;document_id&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;document_name&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;author&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;created&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;updated&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;updated_by&#39;</span><span class="p">]</span>
+        <span class="n">doc_list</span> <span class="o">=</span> <span class="n">Document</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">fields</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">doc_list</span></div>
+
+<div class="viewcode-block" id="CmdList.print_documents"><a class="viewcode-back" href="../../../pylero.cli.html#pylero.cli.cmd.CmdList.print_documents">[docs]</a>    <span class="k">def</span> <span class="nf">print_documents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Created</span><span class="si">%7s</span><span class="s1">Author</span><span class="si">%7s</span><span class="s1">Document&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-------</span><span class="si">%7s</span><span class="s1">------</span><span class="si">%7s</span><span class="s1">--------&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%-14s</span><span class="s1"> </span><span class="si">%-11s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">created</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">),</span>
+                                      <span class="n">doc</span><span class="o">.</span><span class="n">author</span><span class="p">,</span>
+                                      <span class="n">doc</span><span class="o">.</span><span class="n">document_id</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="CmdList.list_workitems_in_doc"><a class="viewcode-back" href="../../../pylero.cli.html#pylero.cli.cmd.CmdList.list_workitems_in_doc">[docs]</a>    <span class="k">def</span> <span class="nf">list_workitems_in_doc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc_name_with_space</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">doc_name_with_space</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Document format should be: &#39;space/document&#39;&quot;</span><span class="p">)</span>
+            <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">doc</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">Document</span><span class="o">.</span><span class="n">default_project</span><span class="p">,</span> <span class="n">doc_name_with_space</span><span class="p">)</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;work_item_id&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;author&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;title&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;type&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;status&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;assignee&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;categories&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;comments&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;created&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;approvals&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;updated&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">workitem_list</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">get_work_items</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">fields</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">workitem_list</span></div>
+
+<div class="viewcode-block" id="CmdList.print_workitems"><a class="viewcode-back" href="../../../pylero.cli.html#pylero.cli.cmd.CmdList.print_workitems">[docs]</a>    <span class="k">def</span> <span class="nf">print_workitems</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workitems</span><span class="p">):</span>
+        <span class="n">number</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">workitems</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Total workitems: </span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">number</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Created</span><span class="si">%7s</span><span class="s1">Type</span><span class="si">%10s</span><span class="s1">ID</span><span class="si">%12s</span><span class="s1">Title&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;---------</span><span class="si">%5s</span><span class="s1">-------</span><span class="si">%7s</span><span class="s1">-----</span><span class="si">%9s</span><span class="s1">--------&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">wi</span> <span class="ow">in</span> <span class="n">workitems</span><span class="p">:</span>
+            <span class="n">created</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">wi</span><span class="o">.</span><span class="n">created</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%-13s</span><span class="s1"> </span><span class="si">%-13s</span><span class="s1"> </span><span class="si">%-13s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">created</span><span class="p">,</span> <span class="n">wi</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+                                            <span class="n">wi</span><span class="o">.</span><span class="n">work_item_id</span><span class="p">,</span> <span class="n">wi</span><span class="o">.</span><span class="n">title</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="CmdList.list_workitems_by_query"><a class="viewcode-back" href="../../../pylero.cli.html#pylero.cli.cmd.CmdList.list_workitems_by_query">[docs]</a>    <span class="k">def</span> <span class="nf">list_workitems_by_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">wi_type</span><span class="p">):</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;work_item_id&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;title&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;author&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;created&#39;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">wi_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;testcase&quot;</span><span class="p">,</span> <span class="s2">&quot;TestCase&quot;</span><span class="p">]:</span>
+            <span class="n">workitem_list</span> <span class="o">=</span> <span class="n">TestCase</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">fields</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">wi_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;requirement&quot;</span><span class="p">,</span> <span class="s2">&quot;Requirement&quot;</span><span class="p">]:</span>
+            <span class="n">workitem_list</span> <span class="o">=</span> <span class="n">Requirement</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">fields</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">wi_type</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="n">workitem_list</span> <span class="o">=</span> <span class="n">TestCase</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">fields</span><span class="p">)</span> <span class="o">+</span> \
+                            <span class="n">Requirement</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">fields</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&#39;</span><span class="si">%s</span><span class="s2">&#39; is invalid. Use testcase or requirement&quot;</span> <span class="o">%</span> <span class="n">wi_type</span><span class="p">)</span>
+            <span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">workitem_list</span></div>
+
+<div class="viewcode-block" id="CmdList.print_steps_for_testcase"><a class="viewcode-back" href="../../../pylero.cli.html#pylero.cli.cmd.CmdList.print_steps_for_testcase">[docs]</a>    <span class="k">def</span> <span class="nf">print_steps_for_testcase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case_id</span><span class="p">):</span>
+        <span class="n">tc</span> <span class="o">=</span> <span class="n">TestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="o">.</span><span class="n">default_project</span><span class="p">,</span> <span class="n">case_id</span><span class="p">)</span>
+        <span class="n">steps</span> <span class="o">=</span> <span class="n">tc</span><span class="o">.</span><span class="n">get_test_steps</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">steps</span><span class="o">.</span><span class="n">steps</span><span class="p">:</span>
+            <span class="n">stp</span> <span class="o">=</span> <span class="n">step</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">content</span>
+            <span class="n">exp</span> <span class="o">=</span> <span class="n">step</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">content</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;TestStep       = </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">stp</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;ExpectedResult = </span><span class="si">%s</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">exp</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">steps</span><span class="o">.</span><span class="n">steps</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;No step for this tesecase!&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CmdList.print_links_for_requirement"><a class="viewcode-back" href="../../../pylero.cli.html#pylero.cli.cmd.CmdList.print_links_for_requirement">[docs]</a>    <span class="k">def</span> <span class="nf">print_links_for_requirement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req_id</span><span class="p">):</span>
+        <span class="n">req</span> <span class="o">=</span> <span class="n">Requirement</span><span class="p">(</span><span class="n">Requirement</span><span class="o">.</span><span class="n">default_project</span><span class="p">,</span> <span class="n">req_id</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;ID</span><span class="si">%-12s</span><span class="s1">Role&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-------</span><span class="si">%7s</span><span class="s1">------&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">linked</span> <span class="ow">in</span> <span class="n">req</span><span class="o">.</span><span class="n">linked_work_items_derived</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%-13s</span><span class="s1"> </span><span class="si">%-13s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">linked</span><span class="o">.</span><span class="n">work_item_id</span><span class="p">,</span>
+                                   <span class="n">linked</span><span class="o">.</span><span class="n">role</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="CmdList.print_links_for_testcase"><a class="viewcode-back" href="../../../pylero.cli.html#pylero.cli.cmd.CmdList.print_links_for_testcase">[docs]</a>    <span class="k">def</span> <span class="nf">print_links_for_testcase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case_id</span><span class="p">):</span>
+        <span class="n">tc</span> <span class="o">=</span> <span class="n">TestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="o">.</span><span class="n">default_project</span><span class="p">,</span> <span class="n">case_id</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;ID</span><span class="si">%-12s</span><span class="s1">Role&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-------</span><span class="si">%7s</span><span class="s1">------&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">linked</span> <span class="ow">in</span> <span class="n">tc</span><span class="o">.</span><span class="n">linked_work_items</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%-13s</span><span class="s1"> </span><span class="si">%-13s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">linked</span><span class="o">.</span><span class="n">work_item_id</span><span class="p">,</span>
+                                   <span class="n">linked</span><span class="o">.</span><span class="n">role</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="CmdList.print_runs_by_query"><a class="viewcode-back" href="../../../pylero.cli.html#pylero.cli.cmd.CmdList.print_runs_by_query">[docs]</a>    <span class="k">def</span> <span class="nf">print_runs_by_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">is_template</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">query_ful</span> <span class="o">=</span> <span class="s1">&#39;project.id:</span><span class="si">%s</span><span class="s1"> AND </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">TestRun</span><span class="o">.</span><span class="n">default_project</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;query&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;created&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;test_run_id&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;select_test_cases_by&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;status&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;plannedin&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;assignee&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;author&#39;</span><span class="p">]</span>
+
+        <span class="n">st</span> <span class="o">=</span> <span class="n">TestRun</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query_ful</span><span class="p">,</span>
+                            <span class="n">fields</span><span class="p">,</span>
+                            <span class="s1">&#39;created&#39;</span><span class="p">,</span>
+                            <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+                            <span class="n">is_template</span><span class="p">)</span>
+        <span class="n">Object</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">is_template</span><span class="p">:</span>
+            <span class="n">Object</span> <span class="o">=</span> <span class="s1">&#39;Template&#39;</span>
+
+        <span class="n">prestr</span> <span class="o">=</span> <span class="s1">&#39;Created Time </span><span class="si">%8s</span><span class="s1">Author </span><span class="si">%3s</span><span class="s1">Assignee&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">latstr</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">Status </span><span class="si">%3s</span><span class="s1">PlanID</span><span class="si">%10s%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">Object</span><span class="p">)</span>
+        <span class="n">preln</span> <span class="o">=</span> <span class="s1">&#39;------------</span><span class="si">%9s</span><span class="s1">------</span><span class="si">%4s</span><span class="s1">------&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">latln</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%2s</span><span class="s1">--------</span><span class="si">%2s</span><span class="s1">-------</span><span class="si">%9s</span><span class="s1">--------&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">prestr</span><span class="p">,</span> <span class="n">latstr</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">preln</span><span class="p">,</span> <span class="n">latln</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">tp</span> <span class="ow">in</span> <span class="n">st</span><span class="p">:</span>
+            <span class="n">created_time</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">tp</span><span class="o">.</span><span class="n">created</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%-20s</span><span class="s1"> </span><span class="si">%-9s</span><span class="s1"> </span><span class="si">%-8s</span><span class="s1"> </span><span class="si">%-10s%-15s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">created_time</span><span class="p">,</span>
+                                                     <span class="n">tp</span><span class="o">.</span><span class="n">author</span><span class="p">,</span>
+                                                     <span class="n">tp</span><span class="o">.</span><span class="n">assignee</span><span class="p">,</span>
+                                                     <span class="n">tp</span><span class="o">.</span><span class="n">status</span><span class="p">,</span>
+                                                     <span class="n">tp</span><span class="o">.</span><span class="n">plannedin</span><span class="p">,</span>
+                                                     <span class="n">tp</span><span class="o">.</span><span class="n">test_run_id</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="CmdList.print_templates_by_query"><a class="viewcode-back" href="../../../pylero.cli.html#pylero.cli.cmd.CmdList.print_templates_by_query">[docs]</a>    <span class="k">def</span> <span class="nf">print_templates_by_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print_runs_by_query</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CmdList.print_testcases_from_run"><a class="viewcode-back" href="../../../pylero.cli.html#pylero.cli.cmd.CmdList.print_testcases_from_run">[docs]</a>    <span class="k">def</span> <span class="nf">print_testcases_from_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run</span><span class="p">):</span>
+        <span class="n">tr</span> <span class="o">=</span> <span class="n">TestRun</span><span class="p">(</span><span class="n">run</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">TestRun</span><span class="o">.</span><span class="n">default_project</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;(Only CaseID can be displayed when --run=$template)&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;List cases for: </span><span class="si">%s</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">run</span><span class="p">)</span>
+        <span class="n">ttstr</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Created Time </span><span class="si">%8s</span><span class="s1">Status </span><span class="si">%1s</span><span class="s1">ExecutedBy </span><span class="si">%2s</span><span class="s1">CaseID&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                                                     <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                                                     <span class="s1">&#39;&#39;</span><span class="p">))</span>
+        <span class="n">lnstr</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;------------</span><span class="si">%9s</span><span class="s1">------</span><span class="si">%2s</span><span class="s1">----------</span><span class="si">%3s</span><span class="s1">------&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">ttstr</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">lnstr</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">rec</span> <span class="ow">in</span> <span class="n">tr</span><span class="o">.</span><span class="n">records</span><span class="p">:</span>
+            <span class="n">time</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">rec</span><span class="o">.</span><span class="n">executed</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%-21s%-9s%-12s%-10s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">time</span><span class="p">,</span>
+                                           <span class="n">rec</span><span class="o">.</span><span class="n">result</span><span class="p">,</span>
+                                           <span class="n">rec</span><span class="o">.</span><span class="n">executed_by</span><span class="p">,</span>
+                                           <span class="n">rec</span><span class="o">.</span><span class="n">test_case_id</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="CmdList.print_plan_ids"><a class="viewcode-back" href="../../../pylero.cli.html#pylero.cli.cmd.CmdList.print_plan_ids">[docs]</a>    <span class="k">def</span> <span class="nf">print_plan_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+        <span class="n">pls</span> <span class="o">=</span> <span class="n">Plan</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">,</span>
+                          <span class="n">sort</span><span class="o">=</span><span class="s1">&#39;due_date&#39;</span><span class="p">,</span>
+                          <span class="n">limit</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;due_date&#39;</span><span class="p">,</span>
+                                  <span class="s1">&#39;name&#39;</span><span class="p">,</span>
+                                  <span class="s1">&#39;plan_id&#39;</span><span class="p">])</span>
+
+        <span class="n">ttstr</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Due Date</span><span class="si">%-5s</span><span class="s1">Plan ID</span><span class="si">%-24s</span><span class="s1">Plan Name&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
+        <span class="n">lnstr</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;-----------  ---------- </span><span class="si">%-20s</span><span class="s1">---------&#39;</span> <span class="o">%</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">ttstr</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">lnstr</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">pl</span> <span class="ow">in</span> <span class="n">pls</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%-12s</span><span class="s1"> </span><span class="si">%-30s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">pl</span><span class="o">.</span><span class="n">due_date</span><span class="p">,</span> <span class="n">pl</span><span class="o">.</span><span class="n">plan_id</span><span class="p">,</span> <span class="n">pl</span><span class="o">.</span><span class="n">name</span><span class="p">))</span></div></div>
+
+
+<div class="viewcode-block" id="CmdUpdate"><a class="viewcode-back" href="../../../pylero.cli.html#pylero.cli.cmd.CmdUpdate">[docs]</a><span class="k">class</span> <span class="nc">CmdUpdate</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; An object to manage the command of update&#39;&#39;&#39;</span>
+
+<div class="viewcode-block" id="CmdUpdate.update_all_case_results_for_run"><a class="viewcode-back" href="../../../pylero.cli.html#pylero.cli.cmd.CmdUpdate.update_all_case_results_for_run">[docs]</a>    <span class="k">def</span> <span class="nf">update_all_case_results_for_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">comment</span><span class="p">):</span>
+
+        <span class="n">run</span> <span class="o">=</span> <span class="n">run</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">tr</span> <span class="o">=</span> <span class="n">TestRun</span><span class="p">(</span><span class="n">run</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">TestRun</span><span class="o">.</span><span class="n">default_project</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Update </span><span class="si">%s</span><span class="s1">:&#39;</span> <span class="o">%</span> <span class="n">run</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">comment</span><span class="p">:</span>
+            <span class="n">comment</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Total records: </span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">records</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Updated Date Time    Result  CaseID&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-------------------  ------  -----------&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">user</span> <span class="o">==</span> <span class="s1">&#39;None&#39;</span><span class="p">:</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="n">TestRun</span><span class="o">.</span><span class="n">logged_in_user_id</span>
+
+        <span class="k">for</span> <span class="n">rec</span> <span class="ow">in</span> <span class="n">tr</span><span class="o">.</span><span class="n">records</span><span class="p">:</span>
+            <span class="n">rec</span><span class="o">.</span><span class="n">executed</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+            <span class="n">rec</span><span class="o">.</span><span class="n">executed_by</span> <span class="o">=</span> <span class="n">user</span>
+            <span class="n">executed_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">rec</span><span class="o">.</span><span class="n">executed</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">rec</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">result</span>
+            <span class="n">rec</span><span class="o">.</span><span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%-20s</span><span class="s1"> </span><span class="si">%-7s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">executed_str</span><span class="p">,</span>
+                                     <span class="n">result</span><span class="p">,</span>
+                                     <span class="n">rec</span><span class="o">.</span><span class="n">test_case_id</span><span class="p">))</span>
+            <span class="n">tr</span><span class="o">.</span><span class="n">update_test_record_by_object</span><span class="p">(</span><span class="n">rec</span><span class="o">.</span><span class="n">test_case_id</span><span class="p">,</span>
+                                            <span class="n">rec</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Done!&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CmdUpdate.update_all_case_results_for_runs"><a class="viewcode-back" href="../../../pylero.cli.html#pylero.cli.cmd.CmdUpdate.update_all_case_results_for_runs">[docs]</a>    <span class="k">def</span> <span class="nf">update_all_case_results_for_runs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">runs</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">comment</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">runs</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="n">runs</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">update_all_case_results_for_run</span><span class="p">(</span><span class="n">run</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span>
+                                                     <span class="n">user</span><span class="p">,</span> <span class="n">comment</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Please use comma &#39;,&#39; to seperate your runs!&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CmdUpdate.update_1_case_result_for_run"><a class="viewcode-back" href="../../../pylero.cli.html#pylero.cli.cmd.CmdUpdate.update_1_case_result_for_run">[docs]</a>    <span class="k">def</span> <span class="nf">update_1_case_result_for_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                                     <span class="n">run</span><span class="p">,</span>
+                                     <span class="n">testcase</span><span class="p">,</span>
+                                     <span class="n">result</span><span class="p">,</span>
+                                     <span class="n">user</span><span class="p">,</span>
+                                     <span class="n">comment</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">comment</span><span class="p">:</span>
+            <span class="n">comment</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+        <span class="n">tr</span> <span class="o">=</span> <span class="n">TestRun</span><span class="p">(</span><span class="n">run</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="kc">None</span><span class="p">,</span> <span class="n">TestRun</span><span class="o">.</span><span class="n">default_project</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Update </span><span class="si">%s</span><span class="s1">:&#39;</span> <span class="o">%</span> <span class="n">run</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">user</span> <span class="o">==</span> <span class="s1">&#39;None&#39;</span><span class="p">:</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="n">TestRun</span><span class="o">.</span><span class="n">logged_in_user_id</span>
+
+        <span class="n">is_found</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">rec</span> <span class="ow">in</span> <span class="n">tr</span><span class="o">.</span><span class="n">records</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">rec</span><span class="o">.</span><span class="n">test_case_id</span> <span class="o">==</span> <span class="n">testcase</span><span class="p">:</span>
+                <span class="n">is_found</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">rec</span><span class="o">.</span><span class="n">executed</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+                <span class="n">rec</span><span class="o">.</span><span class="n">executed_by</span> <span class="o">=</span> <span class="n">user</span>
+                <span class="n">rec</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">result</span>
+                <span class="n">rec</span><span class="o">.</span><span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span>
+
+                <span class="n">tr</span><span class="o">.</span><span class="n">update_test_record_by_object</span><span class="p">(</span><span class="n">testcase</span><span class="p">,</span> <span class="n">rec</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%4s</span><span class="s2">Set </span><span class="si">%s</span><span class="s2"> to </span><span class="si">%s</span><span class="s2"> (verdict comment: &#39;</span><span class="si">%s</span><span class="s2">&#39;)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                                                   <span class="n">testcase</span><span class="p">,</span>
+                                                                   <span class="n">result</span><span class="p">,</span>
+                                                                   <span class="n">comment</span><span class="p">))</span>
+                <span class="k">return</span> <span class="mi">0</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_found</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Test case </span><span class="si">%s</span><span class="s1"> is not found in run.&#39;</span> <span class="o">%</span> <span class="n">testcase</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CmdUpdate.update_document"><a class="viewcode-back" href="../../../pylero.cli.html#pylero.cli.cmd.CmdUpdate.update_document">[docs]</a>    <span class="k">def</span> <span class="nf">update_document</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                        <span class="n">space</span><span class="p">,</span>
+                        <span class="n">doc_name</span><span class="p">,</span>
+                        <span class="n">doc_title</span><span class="p">,</span>
+                        <span class="n">wi_types</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                        <span class="n">doc_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                        <span class="n">structure_link_role</span><span class="o">=</span><span class="s2">&quot;parent&quot;</span><span class="p">,</span>
+                        <span class="n">content</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+
+        <span class="n">cl</span> <span class="o">=</span> <span class="n">CmdList</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">cl</span><span class="o">.</span><span class="n">list_documents_by_query</span><span class="p">(</span><span class="n">doc_name</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Exit - Found same name &#39;</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">space</span><span class="p">,</span> <span class="n">doc_name</span><span class="p">))</span>
+            <span class="k">return</span>
+
+        <span class="n">file_path</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="c1"># the content could be file or data</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">content</span><span class="p">):</span>
+            <span class="n">file_path</span> <span class="o">=</span> <span class="n">content</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">check_file</span><span class="p">:</span>
+                <span class="n">content</span> <span class="o">=</span> <span class="n">check_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+        <span class="n">doc</span> <span class="o">=</span> <span class="n">Document</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">Document</span><span class="o">.</span><span class="n">default_project</span><span class="p">,</span>
+                              <span class="n">space</span><span class="p">,</span>
+                              <span class="n">doc_name</span><span class="p">,</span>
+                              <span class="n">doc_title</span><span class="p">,</span>
+                              <span class="n">wi_types</span><span class="p">,</span>
+                              <span class="n">doc_type</span><span class="p">,</span>
+                              <span class="n">structure_link_role</span><span class="p">,</span>
+                              <span class="n">content</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">cl</span><span class="o">.</span><span class="n">list_documents_by_query</span><span class="p">(</span><span class="n">doc_name</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Created document &#39;</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">space</span><span class="p">,</span> <span class="n">doc_name</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; - document author      : </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">doc</span><span class="o">.</span><span class="n">author</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; - document type        : </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">doc</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; - allowed workitem type: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">wi_types</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; - created date         : </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">doc</span><span class="o">.</span><span class="n">created</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">file_path</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; - document content is from: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">file_path</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; - document content     : </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">content</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Failed to create document &#39;</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">space</span><span class="p">,</span> <span class="n">doc_name</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="CmdUpdate.update_run"><a class="viewcode-back" href="../../../pylero.cli.html#pylero.cli.cmd.CmdUpdate.update_run">[docs]</a>    <span class="k">def</span> <span class="nf">update_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                   <span class="n">run</span><span class="p">,</span>
+                   <span class="n">template</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                   <span class="n">plannedin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                   <span class="n">assignee</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                   <span class="n">status</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                   <span class="n">description</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                   <span class="n">is_template</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+        <span class="n">run</span> <span class="o">=</span> <span class="n">run</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">query_ful</span> <span class="o">=</span> <span class="s1">&#39;project.id:</span><span class="si">%s</span><span class="s1"> AND id:</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">TestRun</span><span class="o">.</span><span class="n">default_project</span><span class="p">,</span>
+                                                 <span class="n">run</span><span class="p">)</span>
+
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;query&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;created&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;test_run_id&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;select_test_cases_by&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;status&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;plannedin&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;assignee&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;author&#39;</span><span class="p">]</span>
+        <span class="n">st</span> <span class="o">=</span> <span class="n">TestRun</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query_ful</span><span class="p">,</span>
+                            <span class="n">fields</span><span class="p">,</span>
+                            <span class="s1">&#39;created&#39;</span><span class="p">,</span>
+                            <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+                            <span class="n">is_template</span><span class="p">)</span>
+
+        <span class="c1"># Update run if exists, otherwise create it.</span>
+        <span class="k">if</span> <span class="n">st</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Update the existing run: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">run</span><span class="p">)</span>
+            <span class="n">tr</span> <span class="o">=</span> <span class="n">TestRun</span><span class="p">(</span><span class="n">run</span><span class="p">,</span>
+                         <span class="kc">None</span><span class="p">,</span>
+                         <span class="n">TestRun</span><span class="o">.</span><span class="n">default_project</span><span class="p">)</span>
+
+            <span class="c1"># set fields</span>
+            <span class="k">if</span> <span class="n">assignee</span> <span class="o">!=</span> <span class="s1">&#39;None&#39;</span><span class="p">:</span>
+                <span class="n">tr</span><span class="o">.</span><span class="n">assignee</span> <span class="o">=</span> <span class="n">assignee</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%4s</span><span class="s1">Set Assignee to </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">assignee</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">plannedin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">tr</span><span class="o">.</span><span class="n">plannedin</span> <span class="o">=</span> <span class="n">plannedin</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%4s</span><span class="s1">Set Plannedin to </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">plannedin</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">status</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">tr</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">status</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%4s</span><span class="s1">Set Status to </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">status</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">description</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">tr</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">description</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%4s</span><span class="s1">Set Description to </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">description</span><span class="p">))</span>
+            <span class="n">tr</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">tr</span> <span class="o">=</span> <span class="n">TestRun</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">TestRun</span><span class="o">.</span><span class="n">default_project</span><span class="p">,</span>
+                                <span class="n">run</span><span class="p">,</span>
+                                <span class="n">template</span><span class="p">,</span>
+                                <span class="n">assignee</span><span class="o">=</span><span class="n">assignee</span><span class="p">,</span>
+                                <span class="n">plannedin</span><span class="o">=</span><span class="n">plannedin</span><span class="p">,</span>
+                                <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span>
+                                <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">)</span>
+            <span class="c1"># display fields</span>
+            <span class="k">if</span> <span class="n">assignee</span> <span class="o">!=</span> <span class="s1">&#39;None&#39;</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%4s</span><span class="s1">Set Assignee to </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">assignee</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">plannedin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%4s</span><span class="s1">Set Plannedin to </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">plannedin</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">status</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%4s</span><span class="s1">Set Status to </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">status</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">description</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%4s</span><span class="s1">Set Description to </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">description</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Created </span><span class="si">%s</span><span class="s1">:&#39;</span> <span class="o">%</span> <span class="n">run</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CmdUpdate.update_runs"><a class="viewcode-back" href="../../../pylero.cli.html#pylero.cli.cmd.CmdUpdate.update_runs">[docs]</a>    <span class="k">def</span> <span class="nf">update_runs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                    <span class="n">runs</span><span class="p">,</span>
+                    <span class="n">template</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">plannedin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">assignee</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">status</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">description</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">runs</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="n">runs</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">update_run</span><span class="p">(</span><span class="n">run</span><span class="p">,</span>
+                                <span class="n">template</span><span class="p">,</span>
+                                <span class="n">plannedin</span><span class="p">,</span>
+                                <span class="n">assignee</span><span class="p">,</span>
+                                <span class="n">status</span><span class="p">,</span>
+                                <span class="n">description</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Done!&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Please use comma &#39;,&#39; to seperate your runs!&quot;</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">pylero</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">pylero</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Sim Zacks and Pylero Contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
