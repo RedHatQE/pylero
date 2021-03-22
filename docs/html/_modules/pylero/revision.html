@@ -1,0 +1,175 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pylero.revision &#8212; pylero  documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for pylero.revision</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf8 -*-</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">unicode_literals</span>
+<span class="kn">from</span> <span class="nn">pylero.base_polarion</span> <span class="kn">import</span> <span class="n">BasePolarion</span>
+<span class="kn">from</span> <span class="nn">pylero.subterra_uri</span> <span class="kn">import</span> <span class="n">SubterraURI</span>
+<span class="kn">from</span> <span class="nn">pylero.subterra_uri</span> <span class="kn">import</span> <span class="n">ArrayOfSubterraURI</span>
+
+
+<div class="viewcode-block" id="Revision"><a class="viewcode-back" href="../../pylero.html#pylero.revision.Revision">[docs]</a><span class="k">class</span> <span class="nc">Revision</span><span class="p">(</span><span class="n">BasePolarion</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Object to handle the Polarion WSDL tns4:Revision class</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        author (string)</span>
+<span class="sd">        created (dateTime)</span>
+<span class="sd">        internal_commit (boolean)</span>
+<span class="sd">        linked_work_item_uris (ArrayOfSubterraURI)</span>
+<span class="sd">        message (string)</span>
+<span class="sd">        name (string)</span>
+<span class="sd">        repository_name (string)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+    <span class="n">_cls_suds_map</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;author&quot;</span><span class="p">:</span> <span class="s2">&quot;author&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;created&quot;</span><span class="p">:</span> <span class="s2">&quot;created&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;internal_commit&quot;</span><span class="p">:</span> <span class="s2">&quot;internalCommit&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;linked_work_item_uris&quot;</span><span class="p">:</span>
+                     <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;linkedWorkItemURIs&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;is_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                      <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">SubterraURI</span><span class="p">,</span>
+                      <span class="s2">&quot;arr_cls&quot;</span><span class="p">:</span> <span class="n">ArrayOfSubterraURI</span><span class="p">,</span>
+                      <span class="s2">&quot;inner_field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;SubterraURI&quot;</span><span class="p">},</span>
+                     <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;message&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;repository_name&quot;</span><span class="p">:</span> <span class="s2">&quot;repositoryName&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;uri&quot;</span><span class="p">:</span> <span class="s2">&quot;_uri&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;_unresolved&quot;</span><span class="p">:</span> <span class="s2">&quot;_unresolved&quot;</span><span class="p">}</span>
+    <span class="n">_obj_client</span> <span class="o">=</span> <span class="s2">&quot;builder_client&quot;</span>
+    <span class="n">_obj_struct</span> <span class="o">=</span> <span class="s2">&quot;tns4:Revision&quot;</span>
+
+<div class="viewcode-block" id="Revision.query"><a class="viewcode-back" href="../../pylero.html#pylero.revision.Revision.query">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">query_uris</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Searches revisions</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            query: query, Lucene</span>
+<span class="sd">            sort: Lucene sort string, default - name</span>
+<span class="sd">            fields: list of field names to fill in the returned</span>
+<span class="sd">                    Revision (can be null). For nested structures in</span>
+<span class="sd">                    the lists you can use following syntax to include only</span>
+<span class="sd">                    subset of fields: myList.LIST.key</span>
+<span class="sd">                    (e.g. linkedWorkItems.LIST.role).</span>
+<span class="sd">                    For custom fields you can specify which fields you want to</span>
+<span class="sd">                    be filled using following syntax:</span>
+<span class="sd">                    customFields.CUSTOM_FIELD_ID (e.g. customFields.risk).</span>
+<span class="sd">                    Default - list containing &quot;name&quot;</span>
+<span class="sd">            query_uris: if True, returns a list of URIs instead of Revision</span>
+<span class="sd">                        objects. default - False</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of Revisions</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.queryRevisions</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">query_uris</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">queryRevisionUris</span><span class="p">(</span>
+                <span class="n">query</span><span class="p">,</span> <span class="n">sort</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">revs</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">queryRevisions</span><span class="p">(</span>
+                <span class="n">query</span><span class="p">,</span> <span class="n">sort</span><span class="p">,</span> <span class="n">fields</span><span class="p">)</span>
+            <span class="n">lst_rev</span> <span class="o">=</span> <span class="p">[</span><span class="n">Revision</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">rev</span><span class="p">)</span> <span class="k">for</span> <span class="n">rev</span> <span class="ow">in</span> <span class="n">revs</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">lst_rev</span></div></div>
+
+
+<div class="viewcode-block" id="ArrayOfRevision"><a class="viewcode-back" href="../../pylero.html#pylero.revision.ArrayOfRevision">[docs]</a><span class="k">class</span> <span class="nc">ArrayOfRevision</span><span class="p">(</span><span class="n">BasePolarion</span><span class="p">):</span>
+    <span class="n">_obj_client</span> <span class="o">=</span> <span class="s2">&quot;builder_client&quot;</span>
+    <span class="n">_obj_struct</span> <span class="o">=</span> <span class="s2">&quot;tns4:ArrayOfRevision&quot;</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">pylero</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">pylero</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Sim Zacks and Pylero Contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,280 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pylero.wiki_page &#8212; pylero  documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for pylero.wiki_page</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf8 -*-</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">unicode_literals</span>
+<span class="kn">from</span> <span class="nn">pylero.base_polarion</span> <span class="kn">import</span> <span class="n">BasePolarion</span>
+<span class="kn">from</span> <span class="nn">pylero.subterra_uri</span> <span class="kn">import</span> <span class="n">SubterraURI</span>
+<span class="kn">from</span> <span class="nn">pylero.subterra_uri</span> <span class="kn">import</span> <span class="n">ArrayOfSubterraURI</span>
+<span class="kn">from</span> <span class="nn">pylero.project</span> <span class="kn">import</span> <span class="n">Project</span>
+<span class="kn">from</span> <span class="nn">pylero.text</span> <span class="kn">import</span> <span class="n">Text</span>
+<span class="kn">from</span> <span class="nn">pylero.user</span> <span class="kn">import</span> <span class="n">User</span>
+<span class="kn">from</span> <span class="nn">pylero.wiki_page_attachment</span> <span class="kn">import</span> <span class="n">WikiPageAttachment</span>
+<span class="kn">from</span> <span class="nn">pylero.wiki_page_attachment</span> <span class="kn">import</span> <span class="n">ArrayOfWikiPageAttachment</span>
+
+
+<div class="viewcode-block" id="WikiPage"><a class="viewcode-back" href="../../pylero.html#pylero.wiki_page.WikiPage">[docs]</a><span class="k">class</span> <span class="nc">WikiPage</span><span class="p">(</span><span class="n">BasePolarion</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Object to handle the Polarion WSDL tns3:WikiPage class</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        attachments (ArrayOfWikiPageAttachment)</span>
+<span class="sd">        author (User)</span>
+<span class="sd">        created (dateTime)</span>
+<span class="sd">        home_page_content (Text)</span>
+<span class="sd">        wiki_page_id (string)</span>
+<span class="sd">        linked_page_uris (ArrayOfSubterraURI)</span>
+<span class="sd">        location (Location)</span>
+<span class="sd">        page_location (Location)</span>
+<span class="sd">        page_name (string)</span>
+<span class="sd">        project (Project)</span>
+<span class="sd">        space_id (string)</span>
+<span class="sd">        title (string)</span>
+<span class="sd">        type (string)</span>
+<span class="sd">        updated (dateTime)</span>
+<span class="sd">        updated_by (User)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+    <span class="n">_cls_suds_map</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;attachments&quot;</span><span class="p">:</span>
+                     <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;attachments&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;is_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                      <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">WikiPageAttachment</span><span class="p">,</span>
+                      <span class="s2">&quot;arr_cls&quot;</span><span class="p">:</span> <span class="n">ArrayOfWikiPageAttachment</span><span class="p">,</span>
+                      <span class="s2">&quot;inner_field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;WikiPageAttachment&quot;</span><span class="p">},</span>
+                     <span class="s2">&quot;author&quot;</span><span class="p">:</span>
+                     <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;author&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">User</span><span class="p">},</span>
+                     <span class="s2">&quot;created&quot;</span><span class="p">:</span> <span class="s2">&quot;created&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;home_page_content&quot;</span><span class="p">:</span>
+                     <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;homePageContent&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">Text</span><span class="p">},</span>
+                     <span class="s2">&quot;wiki_page_id&quot;</span><span class="p">:</span> <span class="s2">&quot;id&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;linked_page_uris&quot;</span><span class="p">:</span>
+                     <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;linkedPageURIs&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;is_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                      <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">SubterraURI</span><span class="p">,</span>
+                      <span class="s2">&quot;arr_cls&quot;</span><span class="p">:</span> <span class="n">ArrayOfSubterraURI</span><span class="p">,</span>
+                      <span class="s2">&quot;inner_field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;SubterraURI&quot;</span><span class="p">},</span>
+                     <span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="s2">&quot;location&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;page_location&quot;</span><span class="p">:</span> <span class="s2">&quot;pageLocation&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;page_name&quot;</span><span class="p">:</span> <span class="s2">&quot;pageName&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;project&quot;</span><span class="p">:</span>
+                     <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;project&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">Project</span><span class="p">},</span>
+                     <span class="s2">&quot;space_id&quot;</span><span class="p">:</span> <span class="s2">&quot;spaceId&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;title&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;type&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;updated&quot;</span><span class="p">:</span> <span class="s2">&quot;updated&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;updated_by&quot;</span><span class="p">:</span>
+                     <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;updatedBy&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">User</span><span class="p">},</span>
+                     <span class="s2">&quot;uri&quot;</span><span class="p">:</span> <span class="s2">&quot;_uri&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;_unresolved&quot;</span><span class="p">:</span> <span class="s2">&quot;_unresolved&quot;</span><span class="p">}</span>
+    <span class="n">_obj_client</span> <span class="o">=</span> <span class="s2">&quot;tracker_client&quot;</span>
+    <span class="n">_obj_struct</span> <span class="o">=</span> <span class="s2">&quot;tns3:WikiPage&quot;</span>
+
+<div class="viewcode-block" id="WikiPage.get_wiki_pages"><a class="viewcode-back" href="../../pylero.html#pylero.wiki_page.WikiPage.get_wiki_pages">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_wiki_pages</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">space_id</span><span class="p">,</span> <span class="n">fields</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns Wiki Pages from given project and space.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            project_id: project id (not null)</span>
+<span class="sd">            space_id: space id (not null)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of WikiPage objects</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">function_name</span> <span class="o">=</span> <span class="s2">&quot;getWikiPages&quot;</span>
+        <span class="n">parms</span> <span class="o">=</span> <span class="p">[</span><span class="n">project_id</span><span class="p">,</span> <span class="n">space_id</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">fields</span><span class="p">:</span>
+            <span class="n">function_name</span> <span class="o">+=</span> <span class="s2">&quot;WithFields&quot;</span>
+            <span class="n">parms</span> <span class="o">+=</span> <span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">_convert_obj_fields_to_polarion</span><span class="p">(</span><span class="n">fields</span><span class="p">)]</span>
+        <span class="n">wikis</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">suds_wiki</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="p">,</span>
+                                 <span class="n">function_name</span><span class="p">)(</span><span class="o">*</span><span class="n">parms</span><span class="p">):</span>
+            <span class="n">wikis</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">cls</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">suds_wiki</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">wikis</span></div>
+
+<div class="viewcode-block" id="WikiPage.query"><a class="viewcode-back" href="../../pylero.html#pylero.wiki_page.WikiPage.query">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">is_sql</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;wiki_page_id&quot;</span><span class="p">],</span>
+              <span class="n">sort</span><span class="o">=</span><span class="s2">&quot;wiki_page_id&quot;</span><span class="p">,</span> <span class="n">limit</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">baseline_revision</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+              <span class="n">query_uris</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Searches for Wiki Pages .</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            query: query, either Lucene or SQL</span>
+<span class="sd">            is_sql (bool): determines if the query is SQL or Lucene</span>
+<span class="sd">            fields: list of field names to fill in the returned</span>
+<span class="sd">                     Modules/Documents (can be null). For nested structures in</span>
+<span class="sd">                     the lists you can use following syntax to include only</span>
+<span class="sd">                     subset of fields: myList.LIST.key</span>
+<span class="sd">                     (e.g. linkedWorkItems.LIST.role).</span>
+<span class="sd">                     For custom fields you can specify which fields you want to</span>
+<span class="sd">                     be filled using following syntax:</span>
+<span class="sd">                     customFields.CUSTOM_FIELD_ID (e.g. customFields.risk).</span>
+<span class="sd">                     default - list containing &quot;wiki_page_id&quot;</span>
+<span class="sd">            sort: Lucene sort string, default wiki_page_id</span>
+<span class="sd">            limit: how many results to return (-1 means everything (default))</span>
+<span class="sd">            baseline_revision (str): if populated, query done in specified rev</span>
+<span class="sd">                                     default - None</span>
+<span class="sd">            query_uris: returns a list of URI of the Modules found, instead of</span>
+<span class="sd">                        a list of WikiPage objects. default - False</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of modules</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            queryWikiPageUris</span>
+<span class="sd">            queryWikiPageUrisBySQL</span>
+<span class="sd">            queryWikiPageUrisInBaseline</span>
+<span class="sd">            queryWikiPageUrisInBaselineBySQL</span>
+<span class="sd">            queryWikiPages</span>
+<span class="sd">            queryWikiPagesBySQL</span>
+<span class="sd">            queryWikiPagesInBaseline</span>
+<span class="sd">            queryWikiPagesInBaselineBySQL</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">parms</span> <span class="o">=</span> <span class="p">[</span><span class="n">query</span><span class="p">]</span>
+        <span class="c1"># The parameters have to be listed in the specific order, based on the</span>
+        <span class="c1"># specific function called. That&#39;s why there are 2 if not is_sql</span>
+        <span class="c1"># conditions.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_sql</span><span class="p">:</span>
+            <span class="n">parms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sort</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">baseline_revision</span><span class="p">:</span>
+            <span class="n">parms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">baseline_revision</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">query_uris</span><span class="p">:</span>
+            <span class="n">p_fields</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_convert_obj_fields_to_polarion</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
+            <span class="n">parms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p_fields</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_sql</span><span class="p">:</span>
+            <span class="n">parms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">query_uris</span><span class="p">:</span>
+            <span class="n">base_name</span> <span class="o">=</span> <span class="s2">&quot;queryWikiPages&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">base_name</span> <span class="o">=</span> <span class="s2">&quot;queryWikiPageUris&quot;</span>
+        <span class="k">if</span> <span class="n">baseline_revision</span><span class="p">:</span>
+            <span class="n">base_name</span> <span class="o">+=</span> <span class="s2">&quot;InBaseline&quot;</span>
+        <span class="k">if</span> <span class="n">is_sql</span><span class="p">:</span>
+            <span class="n">base_name</span> <span class="o">+=</span> <span class="s2">&quot;BySQL&quot;</span>
+        <span class="n">wps</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="p">,</span> <span class="n">base_name</span><span class="p">)(</span><span class="o">*</span><span class="n">parms</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">query_uris</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">wps</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">lst_wp</span> <span class="o">=</span> <span class="p">[</span><span class="n">WikiPage</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">wp</span><span class="p">)</span> <span class="k">for</span> <span class="n">wp</span> <span class="ow">in</span> <span class="n">wps</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">lst_wp</span></div>
+
+<div class="viewcode-block" id="WikiPage.__init__"><a class="viewcode-back" href="../../pylero.html#pylero.wiki_page.WikiPage.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">suds_object</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Args:</span>
+<span class="sd">                fields: list of object fields to be returned in the object</span>
+
+<span class="sd">            Returns:</span>
+<span class="sd">                None</span>
+
+<span class="sd">            References:</span>
+<span class="sd">                Tracker.getWikiPageByUri</span>
+<span class="sd">                tracker.getWikiPageByUriWithFields</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">suds_object</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">uri</span><span class="p">:</span>
+            <span class="n">function_name</span> <span class="o">=</span> <span class="s2">&quot;getWikiPageByUri&quot;</span>
+            <span class="n">parms</span> <span class="o">=</span> <span class="p">[</span><span class="n">uri</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">fields</span><span class="p">:</span>
+                <span class="n">function_name</span> <span class="o">+=</span> <span class="s2">&quot;WithFields&quot;</span>
+                <span class="n">parms</span> <span class="o">+=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_convert_obj_fields_to_polarion</span><span class="p">(</span><span class="n">fields</span><span class="p">)]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="p">,</span>
+                                        <span class="n">function_name</span><span class="p">)(</span><span class="o">*</span><span class="n">parms</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">pylero</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">pylero</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Sim Zacks and Pylero Contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

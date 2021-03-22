@@ -1,0 +1,445 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Welcome to pylero’s documentation! &#8212; pylero  documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="pylero" href="modules.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="welcome-to-pyleros-documentation">
+<h1>Welcome to pylero’s documentation!<a class="headerlink" href="#welcome-to-pyleros-documentation" title="Permalink to this headline">¶</a></h1>
+<p>Welcome to Pylero, the Python wrapper for the Polarion WSDL API. The
+Pylero wrapper enables native python access to Polarion objects and
+functionality using object oriented structure and functionality. This
+allows the developers to use Pylero in a natural fashion without being
+concerned about the Polarion details.</p>
+<p>All Pylero objects inherit from BasePolarion. The objects used in the
+library are all generated from the SOAP factory class, using the python-suds
+library. The Pylero class attributes are generated dynamically as
+properties, based on a mapping dict between the pylero naming convention
+and the Polarion attribute names.</p>
+<p>The use of properties allows the pylero object attributes to be virtual with
+no need for syncing between them and the Polarion objects they are based on.</p>
+<p>The Polarion WSDL API does not implement validation/verification of data
+passed in, so the Pylero library takes care of this itself. All enums are
+validated before being sent to the server and raise an error if not using a
+valid value. A number of workflow implementations are also included, for
+example when creating a Document, it automatically creates the Heading work
+item at the same time.</p>
+<p>Polarion Work Items are configured per installation, to give native workitem
+objects (such as TestCase), the library connects to the Polarion server,
+downloads the list of workitems and creates them.</p>
+<div class="section" id="download-and-installation">
+<h2>Download and Installation:<a class="headerlink" href="#download-and-installation" title="Permalink to this headline">¶</a></h2>
+<p>Pylero is located in a git repository and can be cloned from:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/RedHatQE/pylero.git
+</pre></div>
+</div>
+<p>From the root of the project, run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python setup.py install
+</pre></div>
+</div>
+<p>If you want to make an rpm out of it:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python setup.py bdist_rpm
+</pre></div>
+</div>
+<p>Pylero must be configured (see next section) before it can be used.</p>
+</div>
+<div class="section" id="configuration">
+<h2>Configuration:<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+<p>A configuration file must be filled out, which must be located either in the
+current dir (the dir where the script is executed from) <strong>.pylero</strong>, in the
+user’s home dir <strong>~/.pylero</strong>
+Default settings are stored in <strong>LIBDIR/etc/pylero.cfg</strong>. This file should
+not be modified, as it will be overwritten with any future updates.
+Certificates should be verified automatically, but if they aren’t, you can add
+the path to your CA to the cert_path config option.
+These are the configurable values:</p>
+<div class="highlight-cfg notranslate"><div class="highlight"><pre><span></span><span class="k">[webservice]</span>
+<span class="na">url</span><span class="o">=</span><span class="s">https://{your polarion web URL}/polarion</span>
+<span class="na">svn_repo</span><span class="o">=</span><span class="s">https://{your polarion web URL}/repo</span>
+<span class="na">user</span><span class="o">=</span><span class="s">{your username}</span>
+<span class="na">password</span><span class="o">=</span><span class="s">{your password}</span>
+<span class="na">default_project</span><span class="o">=</span><span class="s">{your default project}</span>
+<span class="c1">#cert_path=/dir/to/my/cert/ca</span>
+</pre></div>
+</div>
+<p>If the password value is blank, it will prompt you for a password when you try
+to access any of the pylero objects.</p>
+<p>These can also be overridden with the following environment variables:</p>
+<div class="highlight-cfg notranslate"><div class="highlight"><pre><span></span><span class="na">POLARION_URL</span>
+<span class="na">POLARION_REPO</span>
+<span class="na">POLARION_USERNAME</span>
+<span class="na">POLARION_PASSWORD</span>
+<span class="na">POLARION_TIMEOUT</span>
+<span class="na">POLARION_PROJECT</span>
+<span class="na">POLARION_CERT_PATH</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="requirements">
+<h2>Requirements:<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
+<p>The install_requires attribute in setup.py installs the following requirements</p>
+<div class="highlight-cfg notranslate"><div class="highlight"><pre><span></span><span class="na">suds; python_version &lt; &#39;3.0&#39;</span>
+<span class="na">suds-py3; python_version &gt;</span><span class="o">=</span> <span class="s">&#39;3.0&#39;</span>
+<span class="na">requests&gt;</span><span class="o">=</span><span class="s">2.6.0</span>
+<span class="na">click</span>
+<span class="na">readline; python_version &lt;</span><span class="o">=</span> <span class="s">&#39;3.6&#39;</span>
+</pre></div>
+</div>
+<p>There is a requirements.txt file in the root directory. All requirements can
+be installed by:
+pip install -r requirements.txt</p>
+</div>
+<div class="section" id="usage">
+<h2>Usage:<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>There is a pylero script installed that opens a python shell with all the
+objects in the library already loaded:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pylero
+&gt;&gt;&gt; tr = TestRun(&quot;example&quot;, project_id=&quot;project_name&quot;)
+</pre></div>
+</div>
+<p>Alternatively, you can open a python shell and import the objects that you
+want to use:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python
+Python 2.6.6 (r266:84292, Nov 21 2013, 10:50:32)
+[GCC 4.4.7 20120313 (Red Hat 4.4.7-4)] on linux2
+Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.
+&gt;&gt;&gt; from pylero.test_run import TestRun
+&gt;&gt;&gt; tr = TestRun(&quot;example&quot;, project_id=&quot;project_name&quot;)
+</pre></div>
+</div>
+</div>
+<div class="section" id="examples">
+<h2>Examples:<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">pylero.test_run</span> <span class="kn">import</span> <span class="n">TestRun</span>
+<span class="kn">from</span> <span class="nn">pylero.test_record</span> <span class="kn">import</span> <span class="n">TestRecord</span>
+<span class="kn">from</span> <span class="nn">pylero.work_item</span> <span class="kn">import</span> <span class="n">TestCase</span><span class="p">,</span> <span class="n">Requirement</span>
+<span class="kn">from</span> <span class="nn">pylero.document</span> <span class="kn">import</span> <span class="n">Document</span>
+
+<span class="c1"># Creating a Test Run Template:</span>
+<span class="n">tr</span> <span class="o">=</span> <span class="n">TestRun</span><span class="o">.</span><span class="n">create_template</span><span class="p">(</span><span class="s2">&quot;myproj&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;Static Query Test&quot;</span><span class="p">,</span>
+                            <span class="n">parent_template_id</span><span class="o">=</span><span class="s2">&quot;Empty&quot;</span><span class="p">,</span>
+                            <span class="n">select_test_cases_by</span><span class="o">=</span><span class="s2">&quot;staticQueryResult&quot;</span><span class="p">,</span>
+                            <span class="n">query</span><span class="o">=</span><span class="s2">&quot;type:testcase AND status:approved&quot;</span><span class="p">)</span>
+
+<span class="c1"># Creating a Test Run:</span>
+<span class="n">tr</span> <span class="o">=</span> <span class="n">TestRun</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s2">&quot;myproj&quot;</span><span class="p">,</span> <span class="s2">&quot;My Test Run&quot;</span><span class="p">,</span> <span class="s2">&quot;Static Query Test&quot;</span><span class="p">)</span>
+
+<span class="c1"># changing status</span>
+<span class="n">tr</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;inprogress&quot;</span>
+
+<span class="c1"># getting and changing a custom attribute in TestRun</span>
+<span class="n">arch</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">get_custom_field</span><span class="p">(</span><span class="s2">&quot;arch&quot;</span><span class="p">)</span>
+<span class="n">arch</span> <span class="o">=</span> <span class="s2">&quot;i386&quot;</span>
+<span class="n">tr</span><span class="o">.</span><span class="n">set_custom_field</span><span class="p">(</span><span class="s2">&quot;arch&quot;</span><span class="p">,</span> <span class="n">arch</span><span class="p">)</span>
+
+<span class="c1"># saving the data to the server</span>
+<span class="n">tr</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+
+<span class="c1"># Adding a test record</span>
+<span class="n">tr</span><span class="o">.</span><span class="n">add_test_record_by_fields</span><span class="p">(</span><span class="n">test_case_id</span><span class="o">=</span><span class="s2">&quot;MYPROJ-1813&quot;</span><span class="p">,</span>
+                            <span class="n">test_result</span><span class="o">=</span><span class="s2">&quot;passed&quot;</span><span class="p">,</span>
+                            <span class="n">test_comment</span><span class="o">=</span><span class="s2">&quot;went smoothly&quot;</span><span class="p">,</span>
+                            <span class="n">executed_by</span><span class="o">=</span><span class="s2">&quot;user1&quot;</span><span class="p">,</span>
+                            <span class="n">executed</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+                            <span class="n">duration</span><span class="o">=</span><span class="mf">10.50</span><span class="p">,</span>
+                            <span class="n">defect_work_item_id</span><span class="o">=</span><span class="s2">&quot;MYPROJ-1824&quot;</span><span class="p">)</span>
+
+<span class="c1"># Getting specific WorkItems</span>
+<span class="n">tc</span> <span class="o">=</span> <span class="n">TestCase</span><span class="p">(</span><span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;myproj&quot;</span><span class="p">,</span> <span class="n">work_item_id</span><span class="o">=</span><span class="s2">&quot;MYPROJ-2015&quot;</span><span class="p">)</span>
+<span class="n">req</span> <span class="o">=</span> <span class="n">Requirement</span><span class="p">(</span><span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;myproj&quot;</span><span class="p">,</span> <span class="n">work_item_id</span><span class="o">=</span><span class="s2">&quot;MYPROJ-2019&quot;</span><span class="p">)</span>
+
+<span class="c1"># Getting required custom fields for specific Work Items</span>
+<span class="n">reqs</span> <span class="o">=</span> <span class="n">TestCase</span><span class="o">.</span><span class="n">custom_fields</span><span class="p">(</span><span class="s2">&quot;myproj&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+<span class="c1"># returns [u&#39;caseimportance&#39;, u&#39;caselevel&#39;, u&#39;caseautomation&#39;, u&#39;caseposneg&#39;]</span>
+
+<span class="n">reqs</span> <span class="o">=</span> <span class="n">Requirement</span><span class="o">.</span><span class="n">custom_fields</span><span class="p">(</span><span class="s2">&quot;myproj&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+<span class="c1"># returns [u&#39;reqtype&#39;]</span>
+
+<span class="c1"># Getting the valid values for the custom enumerations</span>
+<span class="n">tc</span><span class="o">.</span><span class="n">get_valid_field_values</span><span class="p">(</span><span class="s2">&quot;caseimportance&quot;</span><span class="p">)</span>
+<span class="c1"># returns [critical, high, medium, low]</span>
+
+<span class="c1"># Creating a specific Work Item</span>
+<span class="n">tc</span> <span class="o">=</span> <span class="n">TestCase</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s2">&quot;myproj&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;Title&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;Description&quot;</span><span class="p">,</span>
+                    <span class="n">caseimportance</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">,</span>
+                    <span class="n">caselevel</span><span class="o">=</span><span class="s2">&quot;component&quot;</span><span class="p">,</span>
+                    <span class="n">caseautomation</span><span class="o">=</span><span class="s2">&quot;notautomated&quot;</span><span class="p">,</span>
+                    <span class="n">caseposneg</span><span class="o">=</span><span class="s2">&quot;positive&quot;</span><span class="p">)</span>
+
+<span class="c1"># Note if the custom required fields are not specified, an exception will be raised</span>
+<span class="c1"># Custom field for work items are accessed like regular attributes</span>
+<span class="n">tc</span><span class="o">.</span><span class="n">caseimportance</span> <span class="o">=</span> <span class="s2">&quot;critical&quot;</span>
+
+<span class="c1"># to save changes</span>
+<span class="n">tc</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+
+<span class="c1"># Creating a document</span>
+<span class="n">doc</span> <span class="o">=</span> <span class="n">Document</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s2">&quot;myproj&quot;</span><span class="p">,</span> <span class="s2">&quot;Testing&quot;</span><span class="p">,</span> <span class="s2">&quot;API doc&quot;</span><span class="p">,</span> <span class="s2">&quot;The API Document&quot;</span><span class="p">,</span>
+                    <span class="p">[</span><span class="s2">&quot;testcase&quot;</span><span class="p">])</span>
+<span class="c1"># Adding a Functional Test Case work item to the document</span>
+<span class="n">wi</span> <span class="o">=</span> <span class="n">TestCase</span><span class="p">()</span>
+<span class="n">wi</span><span class="o">.</span><span class="n">tcmscaseid</span> <span class="o">=</span> <span class="s2">&quot;12345&quot;</span>
+<span class="n">wi</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;[GUI] Host Network QoS-&#39;named&#39;&quot;</span>
+<span class="n">wi</span><span class="o">.</span><span class="n">author</span> <span class="o">=</span> <span class="s2">&quot;user1&quot;</span>
+<span class="n">wi</span><span class="o">.</span><span class="n">tcmscategory</span> <span class="o">=</span> <span class="s2">&quot;Functional&quot;</span>
+<span class="n">wi</span><span class="o">.</span><span class="n">caseimportance</span> <span class="o">=</span> <span class="s2">&quot;critical&quot;</span>
+<span class="n">wi</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;proposed&quot;</span>
+<span class="n">wi</span><span class="o">.</span><span class="n">setup</span> <span class="o">=</span> <span class="s2">&quot;DC/Cluster/Host&quot;</span>
+<span class="n">wi</span><span class="o">.</span><span class="n">teardown</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Proceed with the VM Network QoS paradigm, that is creating Network QoS</span>
+<span class="s2">entities that can be shared between different networks - let&#39;s refer to this</span>
+<span class="s2">as &quot;&quot;named&quot;&quot; QoS. This QoS entities are created via DC&gt; QoS &gt; Host Network&quot;</span>
+<span class="s2">&quot;&quot;&quot;</span>
+<span class="n">steps</span> <span class="o">=</span> <span class="n">TestSteps</span><span class="p">()</span>
+<span class="n">steps</span><span class="o">.</span><span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;step&quot;</span><span class="p">,</span> <span class="s2">&quot;expectedResult&quot;</span><span class="p">]</span>
+<span class="n">step1</span> <span class="o">=</span> <span class="n">TestStep</span><span class="p">()</span>
+<span class="n">step1</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;This is step 1&quot;</span><span class="p">,</span> <span class="s2">&quot;Step 1 expected result&quot;</span><span class="p">]</span>
+<span class="n">step2</span> <span class="o">=</span> <span class="n">TestStep</span><span class="p">()</span>
+<span class="n">step2</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;This is step 2&quot;</span><span class="p">,</span> <span class="s2">&quot;Step 2 expected result&quot;</span><span class="p">]</span>
+<span class="n">arr_step</span> <span class="o">=</span> <span class="p">[</span><span class="n">step1</span><span class="p">,</span> <span class="n">step2</span><span class="p">]</span>
+<span class="n">steps</span><span class="o">.</span><span class="n">steps</span> <span class="o">=</span> <span class="n">arr_step</span>
+<span class="n">wi</span><span class="o">.</span><span class="n">test_steps</span> <span class="o">=</span> <span class="n">steps</span>
+<span class="n">wi</span><span class="o">.</span><span class="n">caseautomation</span> <span class="o">=</span> <span class="s2">&quot;notautomated&quot;</span>
+<span class="n">wi</span><span class="o">.</span><span class="n">caseposneg</span> <span class="o">=</span> <span class="s2">&quot;positive&quot;</span>
+<span class="n">wi</span><span class="o">.</span><span class="n">caselevel</span> <span class="o">=</span> <span class="s2">&quot;component&quot;</span>
+<span class="n">new_wi</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">create_work_item</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">wi</span><span class="p">)</span>
+
+<span class="c1"># Getting a list of documents in a space.</span>
+<span class="n">docs</span> <span class="o">=</span> <span class="n">Document</span><span class="o">.</span><span class="n">get_documents</span><span class="p">(</span><span class="n">proj</span><span class="o">=</span><span class="s2">&quot;myproj&quot;</span><span class="p">,</span> <span class="n">space</span><span class="o">=</span><span class="s2">&quot;Testing&quot;</span><span class="p">)</span>
+
+<span class="c1"># Create template from document</span>
+<span class="n">TestRun</span><span class="o">.</span><span class="n">create_template</span><span class="p">(</span><span class="s2">&quot;myproj&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;tpl_tp_12071&quot;</span><span class="p">,</span>
+                        <span class="n">select_test_cases_by</span><span class="o">=</span><span class="s2">&quot;staticLiveDoc&quot;</span><span class="p">,</span>
+                        <span class="n">doc_with_space</span><span class="o">=</span><span class="s2">&quot;Testing/tp_12071&quot;</span><span class="p">)</span>
+
+<span class="c1"># create a test run based on the template</span>
+<span class="n">tr</span> <span class="o">=</span> <span class="n">TestRun</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s2">&quot;myproj&quot;</span><span class="p">,</span> <span class="s2">&quot;tp_12071_1&quot;</span><span class="p">,</span> <span class="s2">&quot;tpl_tp_12071&quot;</span><span class="p">)</span>
+
+<span class="c1"># process a record</span>
+<span class="n">rec</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">records</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">rec</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="s2">&quot;10.0&quot;</span>
+<span class="n">rec</span><span class="o">.</span><span class="n">executed_by</span> <span class="o">=</span> <span class="s2">&quot;user1&quot;</span>
+<span class="n">rec</span><span class="o">.</span><span class="n">executed</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+<span class="n">rec</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;passed&quot;</span>
+<span class="n">wi</span> <span class="o">=</span> <span class="n">_WorkItem</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="n">rec</span><span class="o">.</span><span class="n">test_case_id</span><span class="p">)</span>
+<span class="n">steps</span> <span class="o">=</span> <span class="n">wi</span><span class="o">.</span><span class="n">get_test_steps</span><span class="p">()</span>
+<span class="n">res1</span> <span class="o">=</span> <span class="n">TestStepResult</span><span class="p">()</span>
+<span class="n">res1</span><span class="o">.</span><span class="n">comment</span> <span class="o">=</span> <span class="s2">&quot;This is the 1st result&quot;</span>
+<span class="n">res1</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;passed&quot;</span>
+<span class="n">res2</span> <span class="o">=</span> <span class="n">TestStepResult</span><span class="p">()</span>
+<span class="n">res2</span><span class="o">.</span><span class="n">comment</span> <span class="o">=</span> <span class="s2">&quot;This is the 2nd result&quot;</span>
+<span class="n">res2</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;failed&quot;</span>
+<span class="n">rec</span><span class="o">.</span><span class="n">test_step_results</span> <span class="o">=</span> <span class="p">[</span><span class="n">res1</span><span class="p">,</span> <span class="n">res2</span><span class="p">]</span>
+<span class="n">tr</span><span class="o">.</span><span class="n">add_test_record_by_object</span><span class="p">(</span><span class="n">rec</span><span class="p">)</span>
+
+<span class="c1"># update the test record status</span>
+<span class="n">tr</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;inprogress&quot;</span>
+<span class="n">tr</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+
+<span class="c1"># Adding a linked Item</span>
+<span class="c1"># TestCase MYPROJ-2828 verifies Requirement MYPROJ-11</span>
+<span class="n">tc</span> <span class="o">=</span> <span class="n">TestCase</span><span class="p">(</span><span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;MYPROJ&quot;</span><span class="p">,</span> <span class="n">work_item_id</span><span class="o">=</span><span class="s2">&quot;MYPROJ-2828&quot;</span><span class="p">)</span>
+<span class="n">tc</span><span class="o">.</span><span class="n">add_linked_item</span><span class="p">(</span><span class="s2">&quot;MYPROJ-11&quot;</span><span class="p">,</span> <span class="s2">&quot;verifies&quot;</span><span class="p">)</span>
+
+<span class="c1"># Verify it on both objects:</span>
+<span class="n">tc</span> <span class="o">=</span> <span class="n">TestCase</span><span class="p">(</span><span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;myproj&quot;</span><span class="p">,</span> <span class="n">work_item_id</span><span class="o">=</span><span class="s2">&quot;MYPROJ-2828&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">linked</span> <span class="ow">in</span> <span class="n">tc</span><span class="o">.</span><span class="n">linked_work_items</span><span class="p">:</span>
+    <span class="nb">print</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> - </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">linked</span><span class="o">.</span><span class="n">work_item_id</span><span class="p">,</span> <span class="n">linked</span><span class="o">.</span><span class="n">role</span><span class="p">)</span>
+
+<span class="n">req</span> <span class="o">=</span> <span class="n">Requirement</span><span class="p">(</span><span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;myproj&quot;</span><span class="p">,</span> <span class="n">work_item_id</span><span class="o">=</span><span class="s2">&quot;MYPROJ-11&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">linked</span> <span class="ow">in</span> <span class="n">req</span><span class="o">.</span><span class="n">linked_work_items_derived</span><span class="p">:</span>
+    <span class="nb">print</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> - </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">linked</span><span class="o">.</span><span class="n">work_item_id</span><span class="p">,</span> <span class="n">linked</span><span class="o">.</span><span class="n">role</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Contents:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">pylero</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pylero.html">pylero package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pylero.cli.html">pylero.cli package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.activity">pylero.activity module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.activity_comment">pylero.activity_comment module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.activity_custom_value">pylero.activity_custom_value module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.activity_custom_value_entry">pylero.activity_custom_value_entry module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.activity_source">pylero.activity_source module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.approval">pylero.approval module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.attachment">pylero.attachment module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.base_polarion">pylero.base_polarion module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.baseline">pylero.baseline module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.build">pylero.build module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.build_linked_work_item">pylero.build_linked_work_item module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.build_test_results">pylero.build_test_results module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.category">pylero.category module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.change">pylero.change module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.comment">pylero.comment module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.custom">pylero.custom module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.custom_field">pylero.custom_field module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.custom_field_type">pylero.custom_field_type module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.document">pylero.document module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.enum_custom_field_type">pylero.enum_custom_field_type module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.enum_option">pylero.enum_option module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.enum_option_id">pylero.enum_option_id module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.exceptions">pylero.exceptions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.externally_linked_work_item">pylero.externally_linked_work_item module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.field_diff">pylero.field_diff module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.hyperlink">pylero.hyperlink module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.imported_comment">pylero.imported_comment module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.language_definition">pylero.language_definition module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.license_info">pylero.license_info module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.linked_work_item">pylero.linked_work_item module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.module_comment">pylero.module_comment module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.plan">pylero.plan module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.plan_record">pylero.plan_record module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.plan_statistics">pylero.plan_statistics module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.planning_constraint">pylero.planning_constraint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.priority_opt">pylero.priority_opt module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.priority_option_id">pylero.priority_option_id module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.product_license">pylero.product_license module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.project">pylero.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.project_group">pylero.project_group module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.properties">pylero.properties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.property">pylero.property module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.revision">pylero.revision module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.server">pylero.server module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.session">pylero.session module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.signature">pylero.signature module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.signature_context">pylero.signature_context module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.signature_data">pylero.signature_data module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.subterra_uri">pylero.subterra_uri module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.test_record">pylero.test_record module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.test_run">pylero.test_run module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.test_run_attachment">pylero.test_run_attachment module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.test_step">pylero.test_step module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.test_step_result">pylero.test_step_result module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.test_steps">pylero.test_steps module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.tests_configuration">pylero.tests_configuration module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.text">pylero.text module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.time_point">pylero.time_point module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.user">pylero.user module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.wiki_page">pylero.wiki_page module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.wiki_page_attachment">pylero.wiki_page_attachment module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.work_item">pylero.work_item module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.work_record">pylero.work_record module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero.workflow_action">pylero.workflow_action module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylero.html#module-pylero">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">pylero</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">pylero</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+      <li>Next: <a href="modules.html" title="next chapter">pylero</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Sim Zacks and Pylero Contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

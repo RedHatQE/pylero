@@ -1,0 +1,174 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pylero.baseline &#8212; pylero  documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for pylero.baseline</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf8 -*-</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">unicode_literals</span>
+<span class="kn">from</span> <span class="nn">pylero.base_polarion</span> <span class="kn">import</span> <span class="n">BasePolarion</span>
+<span class="kn">from</span> <span class="nn">pylero.user</span> <span class="kn">import</span> <span class="n">User</span>
+<span class="kn">from</span> <span class="nn">pylero.project</span> <span class="kn">import</span> <span class="n">Project</span>
+
+
+<div class="viewcode-block" id="Baseline"><a class="viewcode-back" href="../../pylero.html#pylero.baseline.Baseline">[docs]</a><span class="k">class</span> <span class="nc">Baseline</span><span class="p">(</span><span class="n">BasePolarion</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Object to handle the Polarion WSDL tns3:Baseline class</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        author (User)</span>
+<span class="sd">        base_revision (string)</span>
+<span class="sd">        description (string)</span>
+<span class="sd">        baseline_id (string)</span>
+<span class="sd">        name (string)</span>
+<span class="sd">        project (Project)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+    <span class="n">_cls_suds_map</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;author&quot;</span><span class="p">:</span>
+                     <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;author&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">User</span><span class="p">},</span>
+                     <span class="s2">&quot;base_revision&quot;</span><span class="p">:</span> <span class="s2">&quot;baseRevision&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;description&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;baseline_id&quot;</span><span class="p">:</span> <span class="s2">&quot;id&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;project&quot;</span><span class="p">:</span>
+                     <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;project&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">Project</span><span class="p">},</span>
+                     <span class="s2">&quot;uri&quot;</span><span class="p">:</span> <span class="s2">&quot;_uri&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;_unresolved&quot;</span><span class="p">:</span> <span class="s2">&quot;_unresolved&quot;</span><span class="p">}</span>
+    <span class="n">_obj_client</span> <span class="o">=</span> <span class="s2">&quot;tracker_client&quot;</span>
+    <span class="n">_obj_struct</span> <span class="o">=</span> <span class="s2">&quot;tns3:Baseline&quot;</span>
+
+<div class="viewcode-block" id="Baseline.create"><a class="viewcode-back" href="../../pylero.html#pylero.baseline.Baseline.create">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">revision</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;class method create Creates a Baseline from head or particular</span>
+<span class="sd">        revision.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            project_id</span>
+<span class="sd">            name: baseline name (not None)</span>
+<span class="sd">            description: baseline description (can be None)</span>
+<span class="sd">            revision: revision or null value for head revision</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Baseline object</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.createBaseline</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">suds_object</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">createBaseline</span><span class="p">(</span>
+            <span class="n">project_id</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">revision</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">suds_object</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Baseline.query"><a class="viewcode-back" href="../../pylero.html#pylero.baseline.Baseline.query">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="s2">&quot;baseline_id&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Queries for baselines.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            query: the lucene query to be used.</span>
+<span class="sd">            sort: the field to be used for sorting.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of Baselines</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            Tracker.queryBaselines</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">baselines</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">suds_base</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">queryBaselines</span><span class="p">(</span>
+                <span class="n">query</span><span class="p">,</span> <span class="n">sort</span><span class="p">):</span>
+            <span class="n">baselines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Baseline</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">suds_base</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">baselines</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">pylero</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">pylero</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Sim Zacks and Pylero Contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
