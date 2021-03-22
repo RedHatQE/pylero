@@ -117,4 +117,5 @@ echo
 rm -rf docs
 $(shopt -s dotglob; mv -f $build_dir docs)
 ln -fsvr docs "doc/_build/"
+touch docs/.nojekyll
 echo "Done! Docs can be served from 'docs' folder"
