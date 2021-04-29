@@ -381,13 +381,13 @@ class Document(BasePolarion):
                 parent_uri = doc_wis[0].uri
             else:
                 parent_uri = None
-            wi_uri = self.session.tracker_client.service. \
-                createWorkItemInModule(self.uri, parent_uri, suds_wi)
-            new_wi = w_item.__class__(uri=wi_uri)
-            new_wi._changed_fields = w_item._changed_fields
-            new_wi.update()
-            new_wi = _WorkItem(uri=wi_uri)
-            return new_wi
+        wi_uri = self.session.tracker_client.service. \
+            createWorkItemInModule(self.uri, parent_uri, suds_wi)
+        new_wi = w_item.__class__(uri=wi_uri)
+        new_wi._changed_fields = w_item._changed_fields
+        new_wi.update()
+        new_wi = _WorkItem(uri=wi_uri)
+        return new_wi
 
     def delete(self):
         """delete the current document
