@@ -745,7 +745,14 @@ class BasePolarion(object):
         f = open(path, "rb")
         bdata = f.read()
         f.close()
-        return base64.b64encode(bdata)
+        bencode = base64.b64encode(bdata)
+        # Effectively turns in Python3 String
+        try:
+            # Python2
+            return bencode.encode('utf8')
+        except AttributeError:
+            # Python3
+            return bencode.decode('utf8')
 
     def _verify_obj(self):
         # verifies if the object contains a suds object from the server by
