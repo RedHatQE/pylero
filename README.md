@@ -260,3 +260,11 @@ req = Requirement(project_id="myproj", work_item_id="MYPROJ-11")
 for linked in req.linked_work_items_derived:
     print "%s - %s" % (linked.work_item_id, linked.role)
 ```
+
+## Before you commit
+
+In order to ensure you are able to pass the GitHub CI build, it is recommended that you run the following commands in the base of your pylero directory
+
+`$ pre-commit autoupdate && pre-commit run -a`
+
+Pre-commit will ensure that the changes you made are not in violation of PEP8 standards.
