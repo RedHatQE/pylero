@@ -265,6 +265,7 @@ for linked in req.linked_work_items_derived:
 
 In order to ensure you are able to pass the GitHub CI build, it is recommended that you run the following commands in the base of your pylero directory
 
+`$ pip install pre-commit`
 `$ pre-commit autoupdate && pre-commit run -a`
 
 Pre-commit will ensure that the changes you made are not in violation of PEP8 standards.
