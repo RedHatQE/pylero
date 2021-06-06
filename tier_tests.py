@@ -1,11 +1,11 @@
 from __future__ import print_function
+
+import subprocess
+import sys
 # this script execute tier testsing for pylero
 # if the first argument is "tier0" it tests tier0
 # if the first argument is "tier1" it tests tier1
 # if the first argument is 'all' it  tests tier0+tier1
-
-import subprocess
-import sys
 
 
 def get_command(x):

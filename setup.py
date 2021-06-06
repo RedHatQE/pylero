@@ -1,7 +1,7 @@
-from setuptools import setup
+import sys
 from distutils.command.install import INSTALL_SCHEMES
 
-import sys
+from setuptools import setup
 
 PACKAGE_NAME = "pylero"
 CLI_NAME = "pylero-cmd"

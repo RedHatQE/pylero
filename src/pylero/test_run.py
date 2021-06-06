@@ -1,33 +1,40 @@
 # -*- coding: utf8 -*-
-from __future__ import absolute_import, division, print_function, \
-    unicode_literals
-from pylero._compatible import classmethod,object,range, basestring
-import os
-import suds
-import datetime
-from xml.dom import minidom
-from pylero.exceptions import PyleroLibException
-from pylero.base_polarion import BasePolarion
-from pylero.test_run_attachment import TestRunAttachment
-from pylero.test_run_attachment import ArrayOfTestRunAttachment
-from pylero.enum_option_id import EnumOptionId
-from pylero.enum_option_id import ArrayOfEnumOptionId
-from pylero.test_record import TestRecord
-from pylero.test_record import ArrayOfTestRecord
-from pylero.custom import Custom
-from pylero.custom import ArrayOfCustom
-from pylero.document import Document
-from pylero.work_item import _WorkItem, TestCase
-from pylero.user import User
-from pylero.project import Project
-from pylero.text import Text
-# Plan is used in custom fields.
-from pylero.plan import Plan  # NOQA
-from pylero.base_polarion import tx_wrapper
-import requests
-from requests.auth import HTTPBasicAuth
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
 
+import datetime
+import os
+from xml.dom import minidom
+
+import requests
+import suds
+from pylero._compatible import basestring
+from pylero._compatible import classmethod
+from pylero._compatible import object
+from pylero._compatible import range
+from pylero.base_polarion import BasePolarion
+from pylero.base_polarion import tx_wrapper
+from pylero.custom import ArrayOfCustom
+from pylero.custom import Custom
+from pylero.document import Document
+from pylero.enum_option_id import ArrayOfEnumOptionId
+from pylero.enum_option_id import EnumOptionId
+from pylero.exceptions import PyleroLibException
+from pylero.plan import Plan  # NOQA
+from pylero.project import Project
+from pylero.test_record import ArrayOfTestRecord
+from pylero.test_record import TestRecord
+from pylero.test_run_attachment import ArrayOfTestRunAttachment
+from pylero.test_run_attachment import TestRunAttachment
+from pylero.text import Text
+from pylero.user import User
+from pylero.work_item import _WorkItem
+from pylero.work_item import TestCase
+from requests.auth import HTTPBasicAuth
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
+# Plan is used in custom fields.
 
 # This is to disable the InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)

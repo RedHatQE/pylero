@@ -1,15 +1,20 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 from __future__ import unicode_literals
-import unittest2
+
 import datetime
+
+import unittest2
 from pylero.document import Document
 from pylero.exceptions import PyleroLibException
-from pylero.user import User
-from pylero.test_run import TestRun
 from pylero.test_record import TestRecord
-from pylero.work_item import TestCase, Requirement
+from pylero.test_run import TestRun
 from pylero.test_steps import TestSteps
+from pylero.user import User
+from pylero.work_item import Requirement
+from pylero.work_item import TestCase
 
 USER = "user1"
 ALT_USER = "user2"

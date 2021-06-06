@@ -1,15 +1,18 @@
 # -*- coding: utf8 -*-
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 from __future__ import unicode_literals
+
 from pylero.base_polarion import BasePolarion
-from pylero.user import User
-from pylero.imported_comment import ImportedComment
-from pylero.subterra_uri import SubterraURI
-from pylero.subterra_uri import ArrayOfSubterraURI
-from pylero.signature_data import SignatureData
-from pylero.enum_option_id import EnumOptionId
 from pylero.enum_option_id import ArrayOfEnumOptionId
+from pylero.enum_option_id import EnumOptionId
+from pylero.imported_comment import ImportedComment
+from pylero.signature_data import SignatureData
+from pylero.subterra_uri import ArrayOfSubterraURI
+from pylero.subterra_uri import SubterraURI
 from pylero.text import Text
+from pylero.user import User
 
 
 class ModuleComment(BasePolarion):

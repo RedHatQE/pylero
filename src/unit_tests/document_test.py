@@ -3,11 +3,12 @@ Created on Apr 13, 2015
 
 @author: szacks
 '''
+import datetime
+
 import unittest2
 from pylero.document import Document
-from pylero.work_item import TestCase
 from pylero.test_run import TestRun
-import datetime
+from pylero.work_item import TestCase
 
 WI_ID = ""
 TIME_STAMP = datetime.datetime.now().strftime("%Y%m%d%H%M%s")
