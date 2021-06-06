@@ -1,8 +1,7 @@
 #!/usr/bin/python
-
+import click
 from pylero.cli.cmd import CmdList
 from pylero.cli.cmd import CmdUpdate
-import click
 
 
 @click.group()

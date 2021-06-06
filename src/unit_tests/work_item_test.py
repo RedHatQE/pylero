@@ -3,11 +3,13 @@ Created on Apr 15, 2015
 
 @author: szacks
 '''
-import unittest2
 import os
-from pylero.work_item import TestCase, Requirement
+
+import unittest2
 from pylero.exceptions import PyleroLibException
 from pylero.test_step import TestStep
+from pylero.work_item import Requirement
+from pylero.work_item import TestCase
 
 DEFAULT_PROJ = TestCase.default_project
 HYPERLINK = "http://www.google.com"

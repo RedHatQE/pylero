@@ -1,54 +1,59 @@
 # -*- coding: utf8 -*-
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 from __future__ import unicode_literals
-from pylero._compatible import basestring
-import suds
-import os
-import re
+
 import copy
 import json
-from pylero.exceptions import PyleroLibException
-from pylero.base_polarion import BasePolarion, Configuration
+import os
+import re
+
+import suds
+from pylero._compatible import basestring
 from pylero.approval import Approval
 from pylero.approval import ArrayOfApproval
-from pylero.attachment import Attachment
 from pylero.attachment import ArrayOfAttachment
-from pylero.user import User
-from pylero.user import ArrayOfUser
-from pylero.category import Category
+from pylero.attachment import Attachment
+from pylero.base_polarion import BasePolarion
+from pylero.base_polarion import Configuration
+from pylero.base_polarion import tx_wrapper
 from pylero.category import ArrayOfCategory
-from pylero.comment import Comment
+from pylero.category import Category
 from pylero.comment import ArrayOfComment
-from pylero.custom import Custom
+from pylero.comment import Comment
 from pylero.custom import ArrayOfCustom
+from pylero.custom import Custom
 from pylero.custom_field import CustomField
 from pylero.custom_field_type import CustomFieldType
 from pylero.enum_custom_field_type import EnumCustomFieldType
-from pylero.text import Text
-from pylero.externally_linked_work_item import ExternallyLinkedWorkItem
+from pylero.enum_option_id import ArrayOfEnumOptionId  # NOQA
+from pylero.enum_option_id import EnumOptionId
+from pylero.exceptions import PyleroLibException
 from pylero.externally_linked_work_item \
     import ArrayOfExternallyLinkedWorkItem
-from pylero.hyperlink import Hyperlink
+from pylero.externally_linked_work_item import ExternallyLinkedWorkItem
 from pylero.hyperlink import ArrayOfHyperlink
-from pylero.revision import Revision
-from pylero.revision import ArrayOfRevision
-from pylero.linked_work_item import LinkedWorkItem
+from pylero.hyperlink import Hyperlink
 from pylero.linked_work_item import ArrayOfLinkedWorkItem
-from pylero.subterra_uri import SubterraURI
-from pylero.planning_constraint import PlanningConstraint
+from pylero.linked_work_item import LinkedWorkItem
 from pylero.planning_constraint import ArrayOfPlanningConstraint
-from pylero.enum_option_id import EnumOptionId
-# ArrayOfEnumOptionId is used in dynamic code for custom fields
-from pylero.enum_option_id import ArrayOfEnumOptionId  # NOQA
+from pylero.planning_constraint import PlanningConstraint
 from pylero.priority_option_id import PriorityOptionId
 from pylero.project import Project
-from pylero.test_steps import TestSteps
+from pylero.revision import ArrayOfRevision
+from pylero.revision import Revision
+from pylero.subterra_uri import SubterraURI
 from pylero.test_step import TestStep
+from pylero.test_steps import TestSteps
+from pylero.text import Text
 from pylero.time_point import TimePoint
-from pylero.work_record import WorkRecord
+from pylero.user import ArrayOfUser
+from pylero.user import User
 from pylero.work_record import ArrayOfWorkRecord
+from pylero.work_record import WorkRecord
 from pylero.workflow_action import WorkflowAction
-from pylero.base_polarion import tx_wrapper
+# ArrayOfEnumOptionId is used in dynamic code for custom fields
 
 
 class _WorkItem(BasePolarion):
