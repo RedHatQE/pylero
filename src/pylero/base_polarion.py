@@ -18,8 +18,8 @@ from pylero._compatible import SafeConfigParser
 from pylero.exceptions import PyleroLibException
 from pylero.server import Server
 
-# classproperty is a property that works on the class level
 
+# classproperty is a property that works on the class level
 class ClassProperty(property):
     """Returns a classmethod as the getter so that the property can be used as
     a class property. This is needed so that the property can be set for all
@@ -35,13 +35,12 @@ class Configuration(object):
     LOCAL_CONFIG = os.path.expanduser("~") + "/.pylero"
     CURDIR_CONFIG = ".pylero"
     CONFIG_SECTION = "webservice"
-    # Look at ConfigParser - https://docs.python.org/2.6/library/configparser.html
+    # Look at ConfigParser
+    # https://docs.python.org/2.6/library/configparser.html
 
     def __init__(self):
         defaults = {"cachingpolicy": "0",
                     "timeout": "120"}
-
-
         config = SafeConfigParser(defaults)
         # Check for existence of config file and config_section
         if not config.read([self.GLOBAL_CONFIG, self.LOCAL_CONFIG,
@@ -49,46 +48,48 @@ class Configuration(object):
                 not config.has_section(self.CONFIG_SECTION):
             # Check for mandatory environ variables if config file is not found
             if not all(os.environ.get(item) for item in ('POLARION_URL',
-                'POLARION_REPO', 'POLARION_USERNAME', 'POLARION_PASSWORD',
-                'POLARION_PROJECT')):
+                                                         'POLARION_REPO',
+                                                         'POLARION_USERNAME',
+                                                         'POLARION_PASSWORD',
+                                                         'POLARION_PROJECT')):
                 raise PyleroLibException("The config files/ENV vars do not "
-                                        "exist or are not of the correct "
-                                        "format. Valid files are: {0}, {1} "
-                                        "or {2}" .format(self.GLOBAL_CONFIG,
-                                                self.LOCAL_CONFIG,
-                                                self.CURDIR_CONFIG))
+                                         "exist or are not of the correct "
+                                         "format. Valid files are: {0}, {1} "
+                                         "or {2}" .format(self.GLOBAL_CONFIG,
+                                                          self.LOCAL_CONFIG,
+                                                          self.CURDIR_CONFIG))
         self.server_url = os.environ.get("POLARION_URL") or \
-                     config.get(self.CONFIG_SECTION, "url")
+            config.get(self.CONFIG_SECTION, "url")
         self.repo = os.environ.get("POLARION_REPO") or \
-               config.get(self.CONFIG_SECTION, "svn_repo")
+            config.get(self.CONFIG_SECTION, "svn_repo")
         self.login = os.environ.get("POLARION_USERNAME") or \
-                config.get(self.CONFIG_SECTION, "user")
+            config.get(self.CONFIG_SECTION, "user")
         self.pwd = os.environ.get("POLARION_PASSWORD") or \
-              config.get(self.CONFIG_SECTION, "password")
+            config.get(self.CONFIG_SECTION, "password")
 
         try:
             self.timeout = os.environ.get("POLARION_TIMEOUT") or \
                     config.get(self.CONFIG_SECTION, "timeout")
-        except:
+        except Exception:
             self.timeout = config.defaults['timeout']
 
         try:
             self.timeout = int(self.timeout)
         except ValueError:
             raise PyleroLibException("The timeout value in the config"
-                                       " file must be an integer")
+                                     " file must be an integer")
         self.proj = os.environ.get("POLARION_PROJECT") or \
-               config.get(self.CONFIG_SECTION, "default_project")
+            config.get(self.CONFIG_SECTION, "default_project")
         try:
             self.cert_path = os.environ.get("POLARION_CERT_PATH") or \
                         config.get(self.CONFIG_SECTION, "cert_path")
-        except:
+        except Exception:
             self.cert_path = None
 
         if not (self.server_url and self.login and self.proj):
             raise PyleroLibException("The config files must contain "
-                                       "valid values for: url, user, "
-                                       "password and default_project")
+                                     "valid values for: url, user, "
+                                     "password and default_project")
 
 
 class Connection(object):
@@ -129,19 +130,19 @@ class Connection(object):
                     cls.session._login()
                     cls.connected = True
                 except suds.WebFault as e:
-# If we couldn't connect its because the user has typed the wrong
-# password. So we keep asking for password till we are successfully
-# connected
+                    # If we couldn't connect its because the user has typed the
+                    # wrong password. So we keep asking for password till we
+                    # are successfully connected
                     if "com.polarion.platform.security." \
                             "AuthenticationFailedException" \
                             in e.fault.faultstring:
-                        pwd = getpass("Invalid Password.\nEnter Password:")
+                        cfg.pwd = getpass("Invalid Password.\nEnter Password:")
                         cls.password_retries -= 1
                     else:
                         raise
             if not cls.password_retries:
                 raise PyleroLibException("Unable to establish pylero session "
-                        "due to 3 incorrect login attempts")
+                                         "due to 3 incorrect login attempts")
             cls.session.default_project = cfg.proj
             cls.session.user_id = cfg.login
             cls.session.password = cfg.pwd
@@ -216,7 +217,7 @@ class BasePolarion(object):
         "custom_field_types": {},
         "projects": {}
     }
-    REGEX_PROJ = "/default/(.*)\$"
+    REGEX_PROJ = r"/default/(.*)\$"
     # The id in the uri is always after the last }, at times there are multiple
     REGEX_ID = ".+}(.*)$"
     # The URI_STRUCT can be overridden in a child class when needed (for
@@ -286,7 +287,7 @@ class BasePolarion(object):
 
     @classmethod
     def get_global_roles(cls):
-        """Returns all global roles.
+        r"""Returns all global roles.
 
         Args:
             None
@@ -481,7 +482,7 @@ class BasePolarion(object):
             setattr(self._suds_object, suds_field_name, val)
         else:
             raise PyleroLibException("the value {0} is not a valid type".
-                                       format(val))
+                                     format(val))
 
     def _arr_obj_getter(self, field_name):
         """get function for attributes that reference an array of objects.
@@ -676,7 +677,7 @@ class BasePolarion(object):
                                 csm.get("additional_parms", {}))
                             self.check_valid_field_values(
                                 i, csm.get("enum_id"), additional_parms,
-                                self._wi_type if hasattr(self,"_wi_type")
+                                self._wi_type if hasattr(self, "_wi_type")
                                 else None)
                         cust.value[0].append(
                             csm["cls"]._cls_inner(i)._suds_object)
@@ -717,25 +718,25 @@ class BasePolarion(object):
         setattr(self._suds_object, field_name, value)
 
     def _check_encode(self, val):
-            """Validate @val is a UTF-8 because Polarion doesn't support not
-            UTF-8 characters. The only use case that is not taken into account
-            is when an attribute is set directly with a SUDS object. The users
-            have no way of calling this function in this case.
+        """Validate @val is a UTF-8 because Polarion doesn't support not
+        UTF-8 characters. The only use case that is not taken into account
+        is when an attribute is set directly with a SUDS object. The users
+        have no way of calling this function in this case.
 
-            Args:
-            val (string): the value that the property is being set to
-            """
-            try:
-                if not isinstance(val, type(u'')):
-                    val = val.decode('utf-8')
-                # replace chr(160) with space
-                return val.replace(u'\xa0', u' ')
-            except UnicodeError as err:
-                raise PyleroLibException(
-                    'String must be UTF-8 encoded. The following error was '
-                    'raised when converting it to unicode: {0}'
-                    .format(err)
-                )
+        Args:
+        val (string): the value that the property is being set to
+        """
+        try:
+            if not isinstance(val, type(u'')):
+                val = val.decode('utf-8')
+            # replace chr(160) with space
+            return val.replace(u'\xa0', u' ')
+        except UnicodeError as err:
+            raise PyleroLibException(
+                'String must be UTF-8 encoded. The following error was '
+                'raised when converting it to unicode: {0}'
+                .format(err)
+            )
 
     def _get_file_data(self, path):
         """Method for getting attachment data that can be passed to the soap
@@ -923,7 +924,7 @@ class BasePolarion(object):
             valid_values = self.get_valid_field_values(enum_id, control)
             if val not in valid_values:
                 raise PyleroLibException("Acceptable values for {0} are:"
-                                           "{1}".format(enum_id, valid_values))
+                                         "{1}".format(enum_id, valid_values))
 
     def get_valid_field_values(self, enum_id, control=None):
         """Gets the available enumeration options.
@@ -948,7 +949,7 @@ class BasePolarion(object):
         if not enums:
             enums = self.session.tracker_client.service. \
                 getEnumOptionsForIdWithControl(project_id, enum_id, control)
-            self._cache["enums"][enum_id]={}
+            self._cache["enums"][enum_id] = {}
             self._cache["enums"][enum_id][control] = enums
         # the _cache contains _suds_object, so the id attribute is used.
         return [enum.id for enum in enums]

@@ -4,7 +4,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from pylero._compatible import builtins
+from pylero._compatible import builtins  # noqa
 from pylero._compatible import object
 from pylero.session import Session
 

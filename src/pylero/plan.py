@@ -252,7 +252,7 @@ class Plan(BasePolarion):
         if plan_id:
             if not project_id:
                 raise PyleroLibException("When plan_id is passed in, "
-                                           "project_id is required")
+                                         "project_id is required")
             self._suds_object = self.session.planning_client.service. \
                 getPlanById(project_id, plan_id)
         elif uri:
