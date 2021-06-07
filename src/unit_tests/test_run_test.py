@@ -3,16 +3,18 @@ Created on Apr 19, 2015
 
 @author: szacks
 '''
-import unittest2
 import datetime
 import os
-from pylero.test_run import TestRun
+
+import unittest2
 from pylero.exceptions import PyleroLibException
+from pylero.plan import Plan
 from pylero.test_record import TestRecord
+from pylero.test_run import TestRun
 from pylero.test_step import TestStep
 from pylero.test_step_result import TestStepResult
-from pylero.work_item import TestCase, IncidentReport
-from pylero.plan import Plan
+from pylero.work_item import IncidentReport
+from pylero.work_item import TestCase
 
 DEFAULT_PROJ = TestRun.default_project
 TIME_STAMP = datetime.datetime.now().strftime("%Y%m%d%H%M%s")

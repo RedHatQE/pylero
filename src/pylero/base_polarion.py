@@ -1,16 +1,22 @@
 # -*- coding: utf8 -*-
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 from __future__ import unicode_literals
-from pylero._compatible import SafeConfigParser, basestring, classmethod
-import os
+
 import base64
 import copy
+import os
 import re
-import suds
-from pylero.exceptions import PyleroLibException
-from pylero.server import Server
 from functools import wraps
 from getpass import getpass
+
+import suds
+from pylero._compatible import basestring
+from pylero._compatible import classmethod
+from pylero._compatible import SafeConfigParser
+from pylero.exceptions import PyleroLibException
+from pylero.server import Server
 
 # classproperty is a property that works on the class level
 

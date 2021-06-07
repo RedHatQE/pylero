@@ -1,7 +1,7 @@
-from setuptools import setup
+import sys
 from distutils.command.install import INSTALL_SCHEMES
 
-import sys
+from setuptools import setup
 
 PACKAGE_NAME = "pylero"
 CLI_NAME = "pylero-cmd"
@@ -12,6 +12,7 @@ for scheme in list(INSTALL_SCHEMES.values()):
 
 install_requires_ = [
     'click',
+    'pre-commit',
     'requests>=2.6.0',
 ]
 

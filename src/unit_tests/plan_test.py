@@ -1,8 +1,9 @@
-import unittest2
 import datetime
 import os
-from pylero.plan import Plan
+
+import unittest2
 from pylero.exceptions import PyleroLibException
+from pylero.plan import Plan
 from pylero.work_item import Requirement
 
 TIME_STAMP = datetime.datetime.now().strftime("%Y%m%d%H%M%s")
@@ -104,4 +105,3 @@ class PlanTest(unittest2.TestCase):
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
     unittest2.main()
-

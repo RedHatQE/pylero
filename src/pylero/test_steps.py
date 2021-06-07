@@ -1,11 +1,14 @@
 # -*- coding: utf8 -*-
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 from __future__ import unicode_literals
+
 from pylero.base_polarion import BasePolarion
-from pylero.enum_option_id import EnumOptionId
 from pylero.enum_option_id import ArrayOfEnumOptionId
-from pylero.test_step import TestStep
+from pylero.enum_option_id import EnumOptionId
 from pylero.test_step import ArrayOfTestStep
+from pylero.test_step import TestStep
 
 
 class TestSteps(BasePolarion):
