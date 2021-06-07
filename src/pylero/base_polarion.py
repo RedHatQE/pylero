@@ -25,6 +25,7 @@ class ClassProperty(property):
     a class property. This is needed so that the property can be set for all
     child objects. This project currently has no need of a setter or deleter.
     """
+
     def __get__(self, instance, cls):
         return classmethod(self.fget).__get__(instance, cls)()
 
@@ -69,7 +70,7 @@ class Configuration(object):
 
         try:
             self.timeout = os.environ.get("POLARION_TIMEOUT") or \
-                    config.get(self.CONFIG_SECTION, "timeout")
+                config.get(self.CONFIG_SECTION, "timeout")
         except Exception:
             self.timeout = config.defaults['timeout']
 
@@ -82,7 +83,7 @@ class Configuration(object):
             config.get(self.CONFIG_SECTION, "default_project")
         try:
             self.cert_path = os.environ.get("POLARION_CERT_PATH") or \
-                        config.get(self.CONFIG_SECTION, "cert_path")
+                config.get(self.CONFIG_SECTION, "cert_path")
         except Exception:
             self.cert_path = None
 
@@ -274,13 +275,13 @@ class BasePolarion(object):
                 fields = [fields]
             # convert given fields to Polarion fields
             p_fields = ["%s%s" % (
-                    "customFields."
-                    if isinstance(cls._cls_suds_map[x], dict) and
-                    cls._cls_suds_map[x].get("is_custom", False)
-                    else "",
-                    cls._cls_suds_map[x]
-                    if not isinstance(cls._cls_suds_map[x], dict)
-                    else cls._cls_suds_map[x]["field_name"]) for x in fields]
+                "customFields."
+                if isinstance(cls._cls_suds_map[x], dict) and
+                cls._cls_suds_map[x].get("is_custom", False)
+                else "",
+                cls._cls_suds_map[x]
+                if not isinstance(cls._cls_suds_map[x], dict)
+                else cls._cls_suds_map[x]["field_name"]) for x in fields]
             # Omit 'URI' from URIFields
             p_fields = [(x.replace("URI", "")) for x in p_fields]
         return p_fields

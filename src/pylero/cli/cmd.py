@@ -80,7 +80,7 @@ class CmdList(object):
             workitem_list = Requirement.query(query, fields)
         elif wi_type == '':
             workitem_list = TestCase.query(query, fields) + \
-                            Requirement.query(query, fields)
+                Requirement.query(query, fields)
         else:
             print("'%s' is invalid. Use testcase or requirement" % wi_type)
             exit(0)
