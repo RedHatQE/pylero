@@ -38,7 +38,6 @@ class PriorityOptionId(BasePolarion):
         super(self.__class__, self).__init__(id, suds_object)
 
 
-
 class ArrayOfPriorityOptionId(BasePolarion):
     _obj_client = "builder_client"
     _obj_struct = "tns5:ArrayOfPriorityOptionId"

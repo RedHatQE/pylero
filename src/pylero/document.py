@@ -148,7 +148,7 @@ class Document(BasePolarion):
                document_type,
                structure_link_role="parent",
                home_page_content=""):
-                # There is no document object.
+        # There is no document object.
         # don't know what to do with the URI it returns.
         """class method create Creates a document or an old-style
         Module/Document in given location with given parameters.
@@ -483,7 +483,8 @@ class Document(BasePolarion):
             None
         """
         self._verify_obj()
-        wi = _WorkItem(project_id=self.project_id, work_item_id=work_item_id)
+        # verify that the work item passed in exists
+        _WorkItem(project_id=self.project_id, work_item_id=work_item_id)
         ref_wi_template = """<div id="polarion_wiki macro name=""" \
             """module-workitem;params=id=%s|external=true">"""
         self.home_page_content += ref_wi_template % work_item_id

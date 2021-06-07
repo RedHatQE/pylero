@@ -9,7 +9,7 @@ import ssl
 import time
 
 import suds.sax.element
-from pylero._compatible import builtins
+from pylero._compatible import builtins  # noqa
 from pylero._compatible import object
 from pylero._compatible import urlparse
 from suds.plugin import MessagePlugin
