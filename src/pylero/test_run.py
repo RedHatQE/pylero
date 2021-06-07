@@ -4,7 +4,6 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import datetime
 import os
 from xml.dom import minidom
 
@@ -12,7 +11,7 @@ import requests
 import suds
 from pylero._compatible import basestring
 from pylero._compatible import classmethod
-from pylero._compatible import object
+from pylero._compatible import object  # noqa
 from pylero._compatible import range
 from pylero.base_polarion import BasePolarion
 from pylero.base_polarion import tx_wrapper
@@ -275,7 +274,7 @@ class TestRun(BasePolarion):
                 self.query + " AND project.id:" + self.project_id)
         else:
             raise PyleroLibException("Only Test Runs based on Docs or"
-                                       " Queries can be dynamic")
+                                     " Queries can be dynamic")
         executed_ids = [rec.test_case_id for rec in self._records]
         test_recs = self._records
         for case in cases:
@@ -488,7 +487,7 @@ class TestRun(BasePolarion):
         if test_run_id:
             if not project_id:
                 raise PyleroLibException("When test_run_id is passed in, "
-                                           "project_id is required")
+                                         "project_id is required")
             self._suds_object = self.session.test_management_client.service. \
                 getTestRunById(project_id, test_run_id)
         elif uri:
@@ -639,7 +638,7 @@ class TestRun(BasePolarion):
             if test_case_id in test_record._suds_object.testCaseURI:
                 return index
         raise PyleroLibException("The Test Case is either not part of "
-                                   "this TestRun or has not been executed")
+                                 "this TestRun or has not been executed")
 
     def _status_change(self):
         # load a new object to test if the status should be changed.
@@ -668,7 +667,7 @@ class TestRun(BasePolarion):
         self._verify_obj()
         if record_index > (len(self.records) - 1):
             raise PyleroLibException("There are only {0} test records".
-                                       format(len(self.records)))
+                                     format(len(self.records)))
 
     def _verify_test_step_count(self, record_index, test_step_index):
         # verifies the number of test steps is not less then the index given.
@@ -676,7 +675,7 @@ class TestRun(BasePolarion):
         if test_step_index > \
                 (len(self.records[record_index].test_step_results) - 1):
             raise PyleroLibException("There are only {0} test records".
-                                       format(len(self.records)))
+                                     format(len(self.records)))
 
     def add_attachment_to_test_record(self, test_case_id, path, title):
         """method add_attachment_to_test_record, adds the given attachment to
@@ -1247,7 +1246,7 @@ class TestRun(BasePolarion):
                 fields += (", " if fields else "") + req
         if fields:
             raise PyleroLibException("These parameters are required: {0}".
-                                       format(fields))
+                                     format(fields))
 
     def verify_params(self, **kwargs):
         """function that checks if all the kwargs are valid attributes.
@@ -1266,4 +1265,4 @@ class TestRun(BasePolarion):
 
         if params:
             raise PyleroLibException("These parameters are unknown: {0}".
-                                       format(params))
+                                     format(params))

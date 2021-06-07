@@ -50,7 +50,7 @@ class User(BasePolarion):
 
     @classmethod
     def create_user(cls, user_id):
-        """class method create_user that creates a Polarion user.
+        r"""class method create_user that creates a Polarion user.
 
         Args:
             user_id: the id of the user to create (login name)
