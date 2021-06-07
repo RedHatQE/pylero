@@ -40,6 +40,7 @@ class SoapNull(MessagePlugin):
     Without this plugin, a number of functions that were supposed to accept
     null parameters did not work.
     """
+
     def marshalled(self, context):
         # Go through every node in the document and check if it is empty and
         # if so set the xsi:nil tag to true
