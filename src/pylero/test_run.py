@@ -5,7 +5,6 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import os
-from xml.dom import minidom
 
 import requests
 import suds
@@ -17,7 +16,9 @@ from pylero.base_polarion import BasePolarion
 from pylero.base_polarion import tx_wrapper
 from pylero.custom import ArrayOfCustom
 from pylero.custom import Custom
+from pylero.custom_field_type import CustomFieldType
 from pylero.document import Document
+from pylero.enum_custom_field_type import EnumCustomFieldType
 from pylero.enum_option_id import ArrayOfEnumOptionId
 from pylero.enum_option_id import EnumOptionId
 from pylero.exceptions import PyleroLibException
@@ -31,7 +32,6 @@ from pylero.text import Text
 from pylero.user import User
 from pylero.work_item import _WorkItem
 from pylero.work_item import TestCase
-from requests.auth import HTTPBasicAuth
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 # Plan is used in custom fields.
 
@@ -514,7 +514,7 @@ class TestRun(BasePolarion):
         The existing type Enums, must validate by instantiating the object.
 
         Args;
-            field_type - the field type passed in from the custom xml file
+            field_type - the field type passed in custom field enum_id
         Returns:
             None for base types, Text class for text types, the object to
             validate the enum for Enum objects or the key to validate the enum
@@ -522,62 +522,65 @@ class TestRun(BasePolarion):
         """
         if field_type == "text":
             return Text
-        # some custom types have a [] segment. Still unsure of how to handle
-        # those specific attributes, but for now, this will ignore them
-        split_type = field_type.split("[")[0].split(":")
-        if len(split_type) == 1:
-            # a base type
-            return None
+        if field_type.startswith("@"):
+            # an enum based on an object
+            return [globals()[x] for x in globals()
+                    if x.lower() == field_type[1:].lower()][0]
         else:
-            # an enum
-            if split_type[1].startswith("@"):
-                # an enum based on an object
-                return [globals()[x] for x in globals()
-                        if x.lower() == split_type[1][1:].lower()][0]
-            else:
-                # a regular enum
-                return split_type[1]
+            # a regular enum
+            return field_type
+
+    @classmethod
+    def get_defined_custom_field_types(cls, project_id):
+        """Gets all the custom fields defined for the specified project.
+        the custom fields are all either of type CustomFieldType or
+        EnumCustomFieldType in the case where the field is an enumeration.
+        These 2 classes are mostly interchangeable.
+
+        Args:
+            project_id: the project to get the custom fields from
+
+        Returns:
+            list of all the custom fields
+
+        References:
+            testmanagement.getDefinedTestRunCustomFieldTypes
+        """
+        if not cls._custom_field_cache[project_id]:
+            cfts = cls.session.test_management_client.service. \
+                getDefinedTestRunCustomFieldTypes(project_id)
+        else:
+            cfts = cls._custom_field_cache[project_id]
+        results = [CustomFieldType(suds_object=item)
+                   if isinstance(item,
+                                 CustomFieldType()._suds_object.__class__)
+                   else EnumCustomFieldType(suds_object=item)
+                   for item in cfts]
+        return results
 
     def _cache_custom_fields(self, project_id):
-        """Polarion API does not provide the custom fields of a TestRun.
-        As a workaround, this function connects to the SVN repo and reads the
-        custom_fields xml file and then processes it. Because the SVN function
-        takes longer then desired, this caches the custom fields, per project
+        """Polarion API provides the custom fields of a TestRun.
+        Get all custom fields and save in the dict self._custom_field_cache
 
         Args:
             project_id
         Returns
             None
         """
-        proj = Project(project_id)
-        # proj.location[8:-30] removes the default: at the beginning and
-        # .polarion/polarion-project.xml
-        # Getting the location of the verifying CA-Bundle
-        if self._session._server.cert_path:
-            cert_path = self._session._server.cert_path
-        else:
-            cert_path = False
-        file_download = requests.get("{0}{1}{2}".format(
-            self.repo, proj.location[8:-30], self.CUSTOM_FIELDS_FILE),
-            auth=HTTPBasicAuth(self.logged_in_user_id, self.session.password),
-            verify=cert_path)
-        file_content = file_download.text
-        xmldoc = minidom.parseString(file_content)
-        fields = xmldoc.getElementsByTagName("field")
         self._custom_field_cache[project_id] = {}
-        for field in fields:
-            f_type = self._custom_field_types(field.getAttribute("type"))
-            f_name = field.getAttribute("id")
-            f_req = False
-            if field.getAttribute("required") == "true":
-                f_req = True
-            f_multi = False
-            if field.getAttribute("multi") == "true":
-                f_multi = True
-            self._custom_field_cache[project_id][f_name] = {}
-            self._custom_field_cache[project_id][f_name]["type"] = f_type
-            self._custom_field_cache[project_id][f_name]["required"] = f_req
-            self._custom_field_cache[project_id][f_name]["multi"] = f_multi
+        results = self.get_defined_custom_field_types(project_id)
+        for result in results:
+            f = getattr(result, "enum_id", None)
+            key = result.cft_id
+            f_type = None
+            if f:
+                f_type = self._custom_field_types(f)
+            self._custom_field_cache[project_id][key] = {}
+            self._custom_field_cache[project_id][key]["type"] = f_type
+            self._custom_field_cache[project_id][key]["required"] = getattr(
+                    result, "required", False)
+            self._custom_field_cache[project_id][key]["multi"] = getattr(
+                    result, "multi", False)
 
     def _add_custom_fields(self, project_id):
         """ This generates object attributes, with validation, so that custom
