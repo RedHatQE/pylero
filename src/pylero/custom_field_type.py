@@ -27,6 +27,7 @@ class CustomFieldType(BasePolarion):
                      "description": "description",
                      "cft_id": "id",
                      "name": "name",
+                     "multi": "multi",
                      "required": "required",
                      "type": "type",
                      "uri": "_uri",
