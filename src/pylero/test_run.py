@@ -14,6 +14,7 @@ from pylero._compatible import object  # noqa
 from pylero._compatible import range
 from pylero.base_polarion import BasePolarion
 from pylero.base_polarion import tx_wrapper
+from pylero.build import Build  # noqa: F401
 from pylero.custom import ArrayOfCustom
 from pylero.custom import Custom
 from pylero.custom_field_type import CustomFieldType
@@ -33,6 +34,7 @@ from pylero.user import User
 from pylero.work_item import _WorkItem
 from pylero.work_item import TestCase
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
+# Build is used in custom fields.
 # Plan is used in custom fields.
 
 # This is to disable the InsecureRequestWarning
@@ -522,6 +524,9 @@ class TestRun(BasePolarion):
         """
         if field_type == "text":
             return Text
+        # some custom types have a [] segment. Still unsure of how to handle
+        # those specific attributes, but for now, this will ignore them
+        field_type = field_type.split("[")[0]
         if field_type.startswith("@"):
             # an enum based on an object
             return [globals()[x] for x in globals()
