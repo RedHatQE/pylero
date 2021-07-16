@@ -85,7 +85,6 @@ The install_requires attribute in setup.py installs the following requirements:
 ```
     suds; python_version < '3.0'
     suds-py3; python_version >= '3.0'
-    requests>=2.6.0
     click
     readline; python_version <= '3.6'
 ```

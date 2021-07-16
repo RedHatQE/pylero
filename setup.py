@@ -13,7 +13,6 @@ for scheme in list(INSTALL_SCHEMES.values()):
 install_requires_ = [
     'click',
     'pre-commit',
-    'requests>=2.6.0',
 ]
 
 if sys.version_info >= (3, 0):
