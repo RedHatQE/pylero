@@ -6,7 +6,6 @@ from __future__ import unicode_literals
 
 import os
 
-import requests
 import suds
 from pylero._compatible import basestring
 from pylero._compatible import classmethod
@@ -33,12 +32,8 @@ from pylero.text import Text
 from pylero.user import User
 from pylero.work_item import _WorkItem
 from pylero.work_item import TestCase
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
 # Build is used in custom fields.
 # Plan is used in custom fields.
-
-# This is to disable the InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 
 def generate_description(test_run, test_case, test_record):
@@ -248,8 +243,6 @@ class TestRun(BasePolarion):
     _id_field = "test_run_id"
     _obj_client = "test_management_client"
     _obj_struct = "tns3:TestRun"
-    CUSTOM_FIELDS_FILE = \
-        ".polarion/testing/configuration/testrun-custom-fields.xml"
     _custom_field_cache = {}
 
     @property
