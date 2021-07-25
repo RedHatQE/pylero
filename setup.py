@@ -3,6 +3,9 @@ from distutils.command.install import INSTALL_SCHEMES
 
 from setuptools import setup
 
+with open("README.md", "r") as handle:
+    LONG_DESCRIPTION = handle.read()
+
 PACKAGE_NAME = "pylero"
 CLI_NAME = "pylero-cmd"
 
@@ -19,10 +22,6 @@ if sys.version_info >= (3, 0):
     install_requires_.insert(0, 'suds-py3')
 else:
     install_requires_.insert(0, 'suds')
-
-# reading description from README.md
-with open("README.md", "r") as handle:
-    LONG_DESCRIPTION = handle.read()
 
 if __name__ == "__main__":
     setup(
