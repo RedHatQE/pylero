@@ -3,6 +3,9 @@ from distutils.command.install import INSTALL_SCHEMES
 
 from setuptools import setup
 
+with open("README.md", "r") as handle:
+    LONG_DESCRIPTION = handle.read()
+
 PACKAGE_NAME = "pylero"
 CLI_NAME = "pylero-cmd"
 
@@ -25,6 +28,8 @@ if __name__ == "__main__":
         name=PACKAGE_NAME,
         version='0.0.1',
         description="Python SDK for Polarion",
+        long_description=LONG_DESCRIPTION,
+        long_description_content_type='text/markdown',
         url="https://github.com/RedHatQE/pylero",
         author="%s Developers" % PACKAGE_NAME,
         author_email="szacks@redhat.com",
