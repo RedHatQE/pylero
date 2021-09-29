@@ -604,12 +604,16 @@ class BasePolarion(object):
                 elif csm.get("is_array"):
                     obj = []
                     # ArrayOf Polarion objects have a double list.
-                    for inst in custom_fld.value[0]:
-                        if csm["cls"]._cls_inner._id_field:
-                            item_inst = csm["cls"]._cls_inner(suds_object=inst)
-                            obj.append(getattr(item_inst, item_inst._id_field))
-                        else:
-                            obj.append(csm["cls"]._cls_inner(suds_object=inst))
+                    if custom_fld.value:
+                        for inst in custom_fld.value[0]:
+                            if csm["cls"]._cls_inner._id_field:
+                                item_inst = csm["cls"]._cls_inner(
+                                    suds_object=inst)
+                                obj.append(
+                                    getattr(item_inst, item_inst._id_field))
+                            else:
+                                obj.append(csm["cls"]._cls_inner(
+                                    suds_object=inst))
                 elif csm.get("cls"):
                     obj = csm["cls"](suds_object=custom_fld.value)
                 else:
