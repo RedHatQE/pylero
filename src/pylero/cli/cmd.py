@@ -324,8 +324,8 @@ class CmdUpdate(object):
                    is_template=False):
 
         run = run.strip()
-        query_ful = 'project.id:%s AND id:%s' % (TestRun.default_project,
-                                                 run)
+        query_ful = 'project.id:%s AND id:\"%s\"' % (TestRun.default_project,
+                                                     run)
 
         fields = ['query',
                   'created',
