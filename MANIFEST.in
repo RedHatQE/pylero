@@ -1,0 +1,2 @@
+include etc/pylero/pylero.cfg scripts/pylero
+recursive-include src/pylero
