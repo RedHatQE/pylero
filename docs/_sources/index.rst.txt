@@ -31,15 +31,35 @@ Polarion Work Items are configured per installation, to give native workitem
 objects (such as TestCase), the library connects to the Polarion server,
 downloads the list of workitems and creates them.
 
-Download and Installation:
-**************************
+Installation
+************
+
+Install from Pypi
+-----------------
+
+Pylero package have been published to Pypi::
+
+    https://pypi.org/project/pylero/
+
+Install Pylero Pypi package with::
+
+    $ pip install pylero
+
+By default the latest package and dependencies will be installed.
+
+Install from repo
+-----------------
+
 Pylero is located in a git repository and can be cloned from::
 
     $ git clone https://github.com/RedHatQE/pylero.git
 
 From the root of the project, run::
 
-    $ python setup.py install
+    $ pip install .
+
+Build rpm
+---------
 
 If you want to make an rpm out of it::
 
@@ -47,8 +67,8 @@ If you want to make an rpm out of it::
 
 Pylero must be configured (see next section) before it can be used.
 
-Configuration:
-**************
+Configuration
+*************
 A configuration file must be filled out, which must be located either in the
 current dir (the dir where the script is executed from) **.pylero**, in the
 user's home dir **~/.pylero**
@@ -83,8 +103,8 @@ These can also be overridden with the following environment variables:
     POLARION_PROJECT
     POLARION_CERT_PATH
 
-Requirements:
-*************
+Requirements
+************
 The install_requires attribute in setup.py installs the following requirements
 
 .. code-block:: cfg
@@ -99,8 +119,8 @@ There is a requirements.txt file in the root directory. All requirements can
 be installed by:
 pip install -r requirements.txt
 
-Usage:
-******
+Usage
+*****
 There is a pylero script installed that opens a python shell with all the
 objects in the library already loaded::
 
@@ -118,8 +138,8 @@ want to use::
     >>> tr = TestRun("example", project_id="project_name")
 
 
-Examples:
-**********
+Examples
+********
 
 .. code-block:: python
 
