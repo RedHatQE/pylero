@@ -1,7 +1,7 @@
 import sys
 from distutils.command.install import INSTALL_SCHEMES
-
 from setuptools import setup
+
 
 with open("README.md", "r") as handle:
     LONG_DESCRIPTION = handle.read()
@@ -26,7 +26,7 @@ else:
 if __name__ == "__main__":
     setup(
         name=PACKAGE_NAME,
-        version='0.0.1',
+        version='2022-02-09',
         description="Python SDK for Polarion",
         long_description=LONG_DESCRIPTION,
         long_description_content_type='text/markdown',
