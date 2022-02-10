@@ -5,6 +5,7 @@ from setuptools import setup
 
 with open("README.md", "r") as handle:
     LONG_DESCRIPTION = handle.read()
+    
 
 PACKAGE_NAME = "pylero"
 CLI_NAME = "pylero-cmd"
@@ -59,3 +60,4 @@ if __name__ == "__main__":
             'Programming Language :: Python :: 3.8',
           ]
     )
+
