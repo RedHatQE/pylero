@@ -192,9 +192,9 @@ class _WorkItem(BasePolarion):
              "cls": SubterraURI},
         "outline_number": "outlineNumber",
         "planned_end": "plannedEnd",
-        # planned_in completed in the _fix_circular_imports func
+        # planned_in completed in the _fix_circular_refs func
         "planned_in":
-            {"field_name": "plannedIn"},
+            {"field_name": "plannedInURIs"},
         "planned_start": "plannedStart",
         "planning_constraints":
             {"field_name": "planningConstraints",
