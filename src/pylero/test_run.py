@@ -641,28 +641,6 @@ class TestRun(BasePolarion):
         raise PyleroLibException("The Test Case is either not part of "
                                  "this TestRun or has not been executed")
 
-    def _status_change(self):
-        # load a new object to test if the status should be changed.
-        # can't use existing object because it doesn't include the new test rec
-        # if the status needs changing, change it in the new object, so it
-        # doesn't update any user made changes in the existing object.
-        check_tr = TestRun(uri=self.uri)
-        results = [rec.result for rec in check_tr.records if rec.result]
-        if not results:
-            status = "notrun"
-            check_tr.finished_on = None
-        elif len(results) == len(check_tr.records):
-            status = "finished"
-            # Do not touch finished_on because it can not be reverted
-            # DPP-171495 Web services: You cannot reset finishedOn in TestRun
-            # check_tr.finished_on = datetime.datetime.now()
-        else:
-            status = "inprogress"
-            check_tr.finished_on = None
-        if status != check_tr.status:
-            check_tr.status = status
-            check_tr.update()
-
     def _verify_record_count(self, record_index):
         # verifies the number of records is not less then the index given.
         self._verify_obj()
@@ -857,7 +835,7 @@ class TestRun(BasePolarion):
                                        TestCase(work_item_id=test_case_id))
         self.session.test_management_client.service.addTestRecordToTestRun(
             self.uri, suds_object)
-        self._status_change()
+        self.update()
 
     def create_summary_defect(self, defect_template_id=None):
         """method create_summary_defect, adds a new summary _WorkItem for the
@@ -1207,7 +1185,7 @@ class TestRun(BasePolarion):
                 suds_object = test_record
             self.session.test_management_client.service. \
                 updateTestRecordAtIndex(self.uri, index, suds_object)
-            self._status_change()
+            self.update()
 
     def update_wiki_content(self, content):
         """method update_wiki_content updates the wiki for the current TestRun
