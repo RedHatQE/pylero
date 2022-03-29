@@ -92,6 +92,14 @@ class Configuration(object):
                                      "valid values for: url, user, "
                                      "password and default_project")
 
+        try:
+            self.disable_manual_auth = \
+                os.environ.get("POLARION_DISABLE_MANUAL_AUTH") or \
+                config.getboolean(self.CONFIG_SECTION,
+                                  "disable_manual_auth")
+        except Exception:
+            self.disable_manual_auth = False
+
 
 class Connection(object):
     """Creates a Polarion session as a class method, so that it is used for all
@@ -137,6 +145,9 @@ class Connection(object):
                     if "com.polarion.platform.security." \
                             "AuthenticationFailedException" \
                             in e.fault.faultstring:
+                        if cfg.disable_manual_auth:
+                            raise PyleroLibException("Manual authentication "
+                                                     "is disabled")
                         cfg.pwd = getpass("Invalid Password.\nEnter Password:")
                         cls.password_retries -= 1
                     else:
