@@ -79,6 +79,7 @@ your CA to the cert_path config option.  These are the configurable values:
     password={your password}
     default_project={your default project}
     #cert_path=/dir/with/certs
+    #disable_manual_auth=False
 ```
 
 If the password value is blank, it will prompt you for a password when you try
@@ -93,6 +94,7 @@ These can also be overridden with the following environment variables:
     POLARION_TIMEOUT
     POLARION_PROJECT
     POLARION_CERT_PATH
+    POLARION_DISABLE_MANUAL_AUTH
 ```
 
 ## Requirements
