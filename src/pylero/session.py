@@ -5,6 +5,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import logging
+import re
 import ssl
 import time
 
@@ -17,7 +18,33 @@ from suds.sax.attribute import Attribute
 
 
 logger = logging.getLogger(__name__)
+# We create a logger in order to intercept log records from suds.client
+suds_logger = logging.getLogger('suds.client')
+
 CERT_PATH = None
+
+# Regular expression to catch SOAP message containing password field
+REGEX_SOAP_MESSAGE_PASSWORD_FIELD = \
+        re.compile(r'(<ns\d:password>)(.*)(</ns\d:password>).*')
+
+
+class ListenFilter(logging.Filter):
+    def filter(self, record):
+        """Determine which log records to output.
+        Returns 0 for no, nonzero for yes.
+        """
+        # We assume that this message contains the password in plaintext
+        # which as part of SOAP message
+        if '<ns' and ':password' in record.getMessage():
+            masked_record = re.sub(REGEX_SOAP_MESSAGE_PASSWORD_FIELD,
+                                   r'\1*********\3',
+                                   record.getMessage())
+            logger.critical(masked_record)
+            return False
+        return True
+
+
+suds_logger.addFilter(ListenFilter())
 
 
 # the reason why this function definition is at the top is because it is
