@@ -14,14 +14,10 @@ for scheme in list(INSTALL_SCHEMES.values()):
     scheme['data'] = '%s/%s/etc' % (scheme['purelib'], PACKAGE_NAME)
 
 install_requires_ = [
+    'suds-py3',
     'click',
     'pre-commit',
 ]
-
-if sys.version_info >= (3, 0):
-    install_requires_.insert(0, 'suds-py3')
-else:
-    install_requires_.insert(0, 'suds')
 
 if __name__ == "__main__":
     setup(
@@ -39,7 +35,7 @@ if __name__ == "__main__":
         },
         packages=[
             PACKAGE_NAME,
-            PACKAGE_NAME+".cli",
+            PACKAGE_NAME+'.cli',
         ],
         scripts=[
             'scripts/%s' % PACKAGE_NAME,
@@ -57,5 +53,7 @@ if __name__ == "__main__":
             'Programming Language :: Python :: 3',      #Specify which pyhton versions that you want to support
             'Programming Language :: Python :: 3.6',
             'Programming Language :: Python :: 3.8',
+            'Programming Language :: Python :: 3.9',
+            'Programming Language :: Python :: 3.10',
           ]
     )
