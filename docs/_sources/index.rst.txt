@@ -61,9 +61,9 @@ From the root of the project, run::
 Build rpm
 ---------
 
-If you want to make an rpm out of it::
+If you want to make an rpm, make sure you have python wheel package installed:
 
-    $ python setup.py bdist_rpm
+    $ python setup.py bdist_wheel
 
 Pylero must be configured (see next section) before it can be used.
 
