@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [2.7, 3.6, 3.8]
+        python-version: [3.6, 3.8, 3.9, "3.10"]
     steps:
       - name: Checkout Pylero
         uses: actions/checkout@v2
@@ -27,5 +27,4 @@ jobs:
           pip install -U -r requirements.txt
           pip install .
       - name: Pre Commit Checks
-        if: "!contains(matrix.python-version, '2.7')"
         uses: pre-commit/action@v2.0.0
