@@ -831,15 +831,19 @@ class TestRun(BasePolarion):
         self.add_test_record_by_object(testrec)
 
     @tx_wrapper
-    def add_test_record_by_object(self, test_record, manual_state_change=False):
+    def add_test_record_by_object(self,
+                                  test_record,
+                                  manual_state_change=False):
         """method add_test_record_by_object, adds a test record for the given
-        test case based on the TestRecord object passed in. In addition, the test run
-        is checked for completeness and the test run state will change accordingly. 
+        test case based on the TestRecord object passed in.
+        In addition, the test run is checked for completeness and the test
+        run state will change accordingly.
         Test Run states are ["notrun", "finished", "inprogress"].
 
         Args:
             test_record (TestRecord or Polarion TestRecord):
-            manual_state_change (boolean): Change the test run result automatically or manual. 
+            manual_state_change (boolean): Change test run state
+                                           automatically or manual.
 
         Returns:
             None
@@ -1179,16 +1183,21 @@ class TestRun(BasePolarion):
         self.update_test_record_by_object(test_case_id, testrec)
 
     @tx_wrapper
-    def update_test_record_by_object(self, test_case_id, test_record, manual_state_change=False):
+    def update_test_record_by_object(self,
+                                     test_case_id,
+                                     test_record,
+                                     manual_state_change=False):
         """method update_test_record_by_object, adds a test record for the
-        given test case based on the TestRecord object passed in. In addition, the test run
-        is checked for completeness and the test run state will change accordingly. 
+        given test case based on the TestRecord object passed in.
+        In addition, the test run is checked for completeness and the
+        test run state will change accordingly.
         Test Run states are ["notrun", "finished", "inprogress"].
 
         Args:
             test_case_id (str): the test case id that the record is related to.
             test_record (TestRecord or Polarion TestRecord)
-            manual_state_change (boolean): change the test run result automatically or manual. 
+            manual_state_change (boolean): Change the test
+                                           run result automatically or manual.
 
         Returns:
             None
