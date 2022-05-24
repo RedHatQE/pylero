@@ -831,12 +831,19 @@ class TestRun(BasePolarion):
         self.add_test_record_by_object(testrec)
 
     @tx_wrapper
-    def add_test_record_by_object(self, test_record):
+    def add_test_record_by_object(self,
+                                  test_record,
+                                  manual_state_change=False):
         """method add_test_record_by_object, adds a test record for the given
-        test case based on the TestRecord object passed in
+        test case based on the TestRecord object passed in.
+        In addition, the test run is checked for completeness and the test
+        run state will change accordingly.
+        Test Run states are ["notrun", "finished", "inprogress"].
 
         Args:
             test_record (TestRecord or Polarion TestRecord):
+            manual_state_change (boolean): Change test run state
+                                           automatically or manual.
 
         Returns:
             None
@@ -857,7 +864,11 @@ class TestRun(BasePolarion):
                                        TestCase(work_item_id=test_case_id))
         self.session.test_management_client.service.addTestRecordToTestRun(
             self.uri, suds_object)
-        self._status_change()
+
+        if manual_state_change:
+            self.update()
+        else:
+            self._status_change()
 
     def create_summary_defect(self, defect_template_id=None):
         """method create_summary_defect, adds a new summary _WorkItem for the
@@ -1172,13 +1183,21 @@ class TestRun(BasePolarion):
         self.update_test_record_by_object(test_case_id, testrec)
 
     @tx_wrapper
-    def update_test_record_by_object(self, test_case_id, test_record):
+    def update_test_record_by_object(self,
+                                     test_case_id,
+                                     test_record,
+                                     manual_state_change=False):
         """method update_test_record_by_object, adds a test record for the
-        given test case based on the TestRecord object passed in
+        given test case based on the TestRecord object passed in.
+        In addition, the test run is checked for completeness and the
+        test run state will change accordingly.
+        Test Run states are ["notrun", "finished", "inprogress"].
 
         Args:
             test_case_id (str): the test case id that the record is related to.
             test_record (TestRecord or Polarion TestRecord)
+            manual_state_change (boolean): Change the test
+                                           run result automatically or manual.
 
         Returns:
             None
@@ -1207,7 +1226,10 @@ class TestRun(BasePolarion):
                 suds_object = test_record
             self.session.test_management_client.service. \
                 updateTestRecordAtIndex(self.uri, index, suds_object)
-            self._status_change()
+            if manual_state_change:
+                self.update()
+            else:
+                self._status_change()
 
     def update_wiki_content(self, content):
         """method update_wiki_content updates the wiki for the current TestRun
