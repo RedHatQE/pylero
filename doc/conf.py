@@ -73,7 +73,7 @@ author = u'Sim Zacks and Pylero Contributors'
 # built documents.
 #
 # The short X.Y version.
-version = '0.0.1'
+version = '0.0.2'
 # The full version, including alpha/beta/rc tags.
 release = ''
 
