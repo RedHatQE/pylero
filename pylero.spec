@@ -7,7 +7,7 @@ Summary: Python SDK for Polarion
 Name: %{name}
 Version: %{version}
 Release: %{release}
-Source0: %{name}-%{unmangled_version}.tar.gz
+Source0: https://github.com/RedHatQE/pylero/archive/refs/tags/%{unmangled_version}.tar.gz
 License: MIT
 Group: Development/Libraries
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
@@ -46,16 +46,13 @@ objects (such as TestCase), the library connects to the Polarion server,
 downloads the list of workitems and creates them.
 
 %prep
-%setup -n %{name}-%{unmangled_version} -n %{name}-%{unmangled_version}
+%setup -q -n %{name}-%{unmangled_version} -n %{name}-%{unmangled_version}
 
 %build
 python3 setup.py build
 
 %install
 python3 setup.py install --single-version-externally-managed -O1 --root=$RPM_BUILD_ROOT --record=INSTALLED_FILES
-
-%clean
-rm -rf $RPM_BUILD_ROOT
 
 %files -f INSTALLED_FILES
 %defattr(-,root,root)
