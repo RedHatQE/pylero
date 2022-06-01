@@ -16,10 +16,14 @@ Vendor: pylero Developers <gsun@redhat.com>
 URL: https://github.com/RedHatQE/pylero
 SOURCE: %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 
+Requires: python3-%{name} == %{version}-%{release}
+Requires: python3-suds python3-click
+
 BuildArch: noarch
 BuildRequires: python3-devel
 BuildRequires: python3-suds
 BuildRequires: python3-click
+BuildRequires: python3-setuptools
 
 %global _description %{expand:
 # Pylero
@@ -60,21 +64,19 @@ Summary:        %{summary}
 %prep
 %autosetup -p1 -n %{name}-%{version}
 
-%generate_buildrequires
-%pyproject_buildrequires
-
 %build
-%pyproject_wheel
+%py3_build
 
 %install
-%pyproject_install
+%py3_install
 
-%pyproject_save_files %{name}
-
-%files -n python3-%{name} -f %{pyproject_files}
+%files -n python3-%{name}
+%{python3_sitelib}/%{name}-*.egg-info/
+%{python3_sitelib}/%{name}/
+%license LICENSE
 %doc README.md
 %{_bindir}/%{name}-cmd
-
+%exclude %{_bindir}/%{name}
 
 %changelog
 * Mon May 23 2022 Wayne Sun <gsun@redhat.com> - 0.0.2-1
