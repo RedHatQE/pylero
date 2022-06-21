@@ -5,7 +5,7 @@ Created on Apr 13, 2015
 '''
 import datetime
 
-import unittest2
+import unittest
 from pylero.document import Document
 from pylero.test_run import TestRun
 from pylero.work_item import TestCase
@@ -20,7 +20,7 @@ TEMPLATE_TITLE = "doc_tmp_test-%s" % TIME_STAMP
 TEST_RUN_TITLE = "doc_test-%s" % TIME_STAMP
 
 
-class DocumentTest(unittest2.TestCase):
+class DocumentTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -93,4 +93,4 @@ class DocumentTest(unittest2.TestCase):
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
-    unittest2.main()
+    unittest.main()

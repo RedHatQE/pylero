@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 
 import datetime
 
-import unittest2
+import unittest
 from pylero.document import Document
 from pylero.exceptions import PyleroLibException
 from pylero.test_record import TestRecord
@@ -30,7 +30,7 @@ DOC_NAME = "Document_Test-%s" % TIME_STAMP
 DEFAULT_PROJ = Document.default_project
 
 
-class AttributeTest(unittest2.TestCase):
+class AttributeTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -188,4 +188,4 @@ class AttributeTest(unittest2.TestCase):
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
-    unittest2.main()
+    unittest.main()
