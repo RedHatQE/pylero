@@ -55,7 +55,7 @@ class WorkItemTest(unittest.TestCase):
             "project.id:%s AND title:regression" % (DEFAULT_PROJ),
             fields=["work_item_id", "caseautomation"])
         tc = results3[0]
-        self.assertEquals(tc.caseautomation, "notautomated")
+        self.assertEqual(tc.caseautomation, "notautomated")
 
     def test_002_get_item(self):
         tc = TestCase(project_id=DEFAULT_PROJ,

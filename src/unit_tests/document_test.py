@@ -87,8 +87,8 @@ class DocumentTest(unittest.TestCase):
                             template=TEMPLATE_ID,
                             title=TEST_RUN_TITLE)
         TEST_RUN_ID = tr.test_run_id
-        self.assertEquals(len(tr.records), 1)
-        self.assertEquals(tr.records[0].test_case_id, WI_ID)
+        self.assertEqual(len(tr.records), 1)
+        self.assertEqual(tr.records[0].test_case_id, WI_ID)
         self.doc_create.session.tx_commit()
 
 if __name__ == "__main__":
