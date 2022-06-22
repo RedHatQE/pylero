@@ -14,7 +14,7 @@ from getpass import getpass
 import suds
 from pylero._compatible import basestring
 from pylero._compatible import classmethod
-from pylero._compatible import SafeConfigParser
+from pylero._compatible import ConfigParser
 from pylero.exceptions import PyleroLibException
 from pylero.server import Server
 
@@ -42,7 +42,7 @@ class Configuration(object):
     def __init__(self):
         defaults = {"cachingpolicy": "0",
                     "timeout": "120"}
-        config = SafeConfigParser(defaults)
+        config = ConfigParser(defaults)
         # Check for existence of config file and config_section
         if not config.read([self.GLOBAL_CONFIG, self.LOCAL_CONFIG,
                             self.CURDIR_CONFIG]) or \
@@ -598,7 +598,8 @@ class BasePolarion(object):
                 if test_steps:
                     return test_steps
         else:
-            if "customFields" not in self._suds_object:
+            if (("customFields" not in self._suds_object) or
+                    (not self._suds_object.customFields)):
                 self._suds_object.customFields = self.custom_array_obj()
             cf = self._suds_object.customFields[0]
             custom_fld = None
@@ -707,7 +708,8 @@ class BasePolarion(object):
                 raise PyleroLibException(
                     "The value must be of type {0}."
                     .format(csm["cls"].__name__))
-            if "customFields" not in self._suds_object:
+            if (("customFields" not in self._suds_object) or
+                    (not self._suds_object.customFields)):
                 self._suds_object.customFields = self.custom_array_obj()
             cf = self._suds_object.customFields[0]
             if cf:

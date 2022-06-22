@@ -1,7 +1,7 @@
 import datetime
 import os
 
-import unittest2
+import unittest
 from pylero.exceptions import PyleroLibException
 from pylero.plan import Plan
 from pylero.work_item import Requirement
@@ -16,7 +16,7 @@ ATTACH_PATH = CUR_PATH + "/refs/red_box.png"
 ATTACH_TITLE = "File"
 
 
-class PlanTest(unittest2.TestCase):
+class PlanTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -104,4 +104,4 @@ class PlanTest(unittest2.TestCase):
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
-    unittest2.main()
+    unittest.main()

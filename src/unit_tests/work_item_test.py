@@ -5,7 +5,7 @@ Created on Apr 15, 2015
 '''
 import os
 
-import unittest2
+import unittest
 from pylero.exceptions import PyleroLibException
 from pylero.test_step import TestStep
 from pylero.work_item import Requirement
@@ -17,7 +17,7 @@ CUR_PATH = os.path.dirname(os.path.abspath(__file__))
 ATTACH_PATH = CUR_PATH + "/refs/red_box.png"
 
 
-class WorkItemTest(unittest2.TestCase):
+class WorkItemTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -267,4 +267,4 @@ class WorkItemTest(unittest2.TestCase):
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
-    unittest2.main()
+    unittest.main()

@@ -9,6 +9,7 @@ import re
 import ssl
 import time
 
+import suds.client
 import suds.sax.element
 from pylero._compatible import builtins  # noqa
 from pylero._compatible import object

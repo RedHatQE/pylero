@@ -6,7 +6,7 @@ Created on Apr 19, 2015
 import datetime
 import os
 
-import unittest2
+import unittest
 from pylero.exceptions import PyleroLibException
 from pylero.plan import Plan
 from pylero.test_record import TestRecord
@@ -33,7 +33,7 @@ TITLE2 = "title2_regr-%s" % TIME_STAMP
 TEST_RUN_ID2 = "tr2_regr-%s" % TIME_STAMP
 
 
-class TestRunTest(unittest2.TestCase):
+class TestRunTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -387,4 +387,4 @@ class TestRunTest(unittest2.TestCase):
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
-    unittest2.main()
+    unittest.main()
