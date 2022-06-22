@@ -283,16 +283,16 @@ class TestRunTest(unittest2.TestCase):
         tr = TestRun.create(DEFAULT_PROJ, "querytest-%s" % TIME_STAMP,
                             "Example",
                             "querytest-%s" % TIME_STAMP, query=TIME_STAMP)
-        self.assertEquals(tr.select_test_cases_by, "dynamicQueryResult")
+        self.assertEqual(tr.select_test_cases_by, "dynamicQueryResult")
         num_recs = len(tr.records)
         test_case_id = tr.records[0].test_case_id
         tr.update_test_record_by_fields(test_case_id, "blocked", "comment",
                                         tr.logged_in_user_id,
                                         datetime.datetime.now(), 0)
         tr.reload()
-        self.assertEquals(num_recs, len(tr.records))
-        self.assertEquals(test_case_id, tr.records[0].test_case_id)
-        self.assertEquals(tr.records[0].result, "blocked")
+        self.assertEqual(num_recs, len(tr.records))
+        self.assertEqual(test_case_id, tr.records[0].test_case_id)
+        self.assertEqual(tr.records[0].result, "blocked")
 
     def test_010_search_with_custom_fields(self):
         """This test does the following:
@@ -323,7 +323,7 @@ class TestRunTest(unittest2.TestCase):
         with self.assertRaises(PyleroLibException):
             tr.plannedin = "not_valid"
         tr.plannedin = self.NEW_PLAN
-        self.assertEquals(tr.plannedin, self.NEW_PLAN)
+        self.assertEqual(tr.plannedin, self.NEW_PLAN)
         tr.update()
 
     def test_012_search_with_URI_fields(self):

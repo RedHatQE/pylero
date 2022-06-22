@@ -57,37 +57,37 @@ class PlanTest(unittest2.TestCase):
 
     def test_003_search_template(self):
         lst_res = Plan.search("id:%s" % TEMPLATE_ID, search_templates=True)
-        self.assertEquals(len(lst_res), 1)
-        self.assertEquals(lst_res[0].plan_id, TEMPLATE_ID)
+        self.assertEqual(len(lst_res), 1)
+        self.assertEqual(lst_res[0].plan_id, TEMPLATE_ID)
 
     def test_004_search_plan(self):
         lst_res = Plan.search("id:%s" % PLAN_ID)
-        self.assertEquals(len(lst_res), 1)
-        self.assertEquals(lst_res[0].plan_id, PLAN_ID)
+        self.assertEqual(len(lst_res), 1)
+        self.assertEqual(lst_res[0].plan_id, PLAN_ID)
 
     def test_005_get_plan(self):
         plan = Plan(project_id=DEFAULT_PROJ, plan_id=PLAN_ID)
-        self.assertEquals(plan.plan_id, PLAN_ID)
+        self.assertEqual(plan.plan_id, PLAN_ID)
         plan2 = Plan(uri=plan.uri)
-        self.assertEquals(plan2.plan_id, PLAN_ID)
+        self.assertEqual(plan2.plan_id, PLAN_ID)
 
     def test_006_add_items(self):
         plan = Plan(project_id=DEFAULT_PROJ, plan_id=PLAN_ID)
         plan.add_plan_items([self.NEW_REQ, self.NEW_REQ2])
         plan.reload()
-        self.assertEquals(len(plan.records), 2)
+        self.assertEqual(len(plan.records), 2)
 
     def test_007_stats(self):
         plan = Plan(project_id=DEFAULT_PROJ, plan_id=PLAN_ID)
         stats = plan.get_statistics()
-        self.assertEquals(stats.number_of_planned, 2)
+        self.assertEqual(stats.number_of_planned, 2)
 
     def test_008_remove_wi(self):
         plan = Plan(project_id=DEFAULT_PROJ, plan_id=PLAN_ID)
         plan.remove_plan_items([self.NEW_REQ])
         plan.reload()
-        self.assertEquals(len(plan.records), 1)
-        self.assertEquals(plan.records[0].item, self.NEW_REQ2)
+        self.assertEqual(len(plan.records), 1)
+        self.assertEqual(plan.records[0].item, self.NEW_REQ2)
 
     def test_009_update(self):
         plan = Plan(project_id=DEFAULT_PROJ, plan_id=PLAN_ID)
@@ -95,7 +95,7 @@ class PlanTest(unittest2.TestCase):
         plan.update()
         plan.color = ""
         plan.reload()
-        self.assertEquals(plan.color, "red")
+        self.assertEqual(plan.color, "red")
 
     def test_010_delete(self):
         Plan.delete_plans(DEFAULT_PROJ, PLAN_ID)
