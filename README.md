@@ -295,3 +295,33 @@ We recommend `autopep8` to fix any pre-commit failures by running below or you a
 $ pip install autopep8
 $ autopep8 --in-place <edited_file.py>
 ```
+
+## Fedora RPM package build
+
+### Tito
+
+[Tito](https://github.com/rpm-software-management/tito) is a tool for managing RPM based projects using git for their source code repository.
+
+The tito config dir is [.tito](./.tito)
+
+To create a new tag and automaticlly update pylero.spec with all changelog:
+
+`$ tito tag`
+
+After tag need push the tag:
+
+`git push --follow-tags`
+
+After tag been pushed a new Copr build will be automatically triggered.
+
+### Copr
+
+Fedora [Copr](https://copr.fedorainfracloud.org/) Build System help make building and managing third party package repositories easy.
+
+Each pylero new release will trigger new copr build to fedora-all, EPEL8 and EPEL9.
+
+The build is triggered by webhook defined in the project configuration.
+
+The build project on Copr is [pylero](https://copr.fedorainfracloud.org/coprs/waynesun20/pylero/).
+
+Check the target rpm package in the build to test locally.
