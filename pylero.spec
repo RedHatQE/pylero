@@ -2,21 +2,30 @@
 %define version 0.0.2
 %define unmangled_version 0.0.2
 %define release 1
+%define _unpackaged_files_terminate_build 0
 
 Summary: Python SDK for Polarion
 Name: %{name}
 Version: %{version}
 Release: %{release}
-Source0: https://github.com/RedHatQE/pylero/archive/refs/tags/%{unmangled_version}.tar.gz
 License: MIT
 Group: Development/Libraries
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 Prefix: %{_prefix}
-BuildArch: noarch
 Vendor: pylero Developers <gsun@redhat.com>
-Url: https://github.com/RedHatQE/pylero
 
-%description
+URL: https://github.com/RedHatQE/pylero
+SOURCE: %{url}/archive/%{version}/%{name}-%{version}.tar.gz
+
+Requires: python3-%{name} == %{version}-%{release}
+Requires: python3-suds python3-click
+
+BuildArch: noarch
+BuildRequires: python3-devel
+BuildRequires: python3-suds
+BuildRequires: python3-click
+BuildRequires: python3-setuptools
+
+%global _description %{expand:
 # Pylero
 
 Welcome to Pylero, the Python wrapper for the Polarion WSDL API. The Pylero
@@ -43,19 +52,31 @@ time.
 
 Polarion Work Items are configured per installation, to give native workitem
 objects (such as TestCase), the library connects to the Polarion server,
-downloads the list of workitems and creates them.
+downloads the list of workitems and creates them.}
+
+%description %_description
+
+%package -n python3-%{name}
+Summary:        %{summary}
+
+%description -n python3-%{name} %_description
 
 %prep
-%setup -q -n %{name}-%{unmangled_version} -n %{name}-%{unmangled_version}
+%autosetup -p1 -n %{name}-%{version}
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
-python3 setup.py install --single-version-externally-managed -O1 --root=$RPM_BUILD_ROOT --record=INSTALLED_FILES
+%py3_install
 
-%files -f INSTALLED_FILES
-%defattr(-,root,root)
+%files -n python3-%{name}
+%{python3_sitelib}/%{name}-*.egg-info/
+%{python3_sitelib}/%{name}/
+%license LICENSE
+%doc README.md
+%{_bindir}/%{name}-cmd
+%exclude %{_bindir}/%{name}
 
 %changelog
 * Mon May 23 2022 Wayne Sun <gsun@redhat.com> - 0.0.2-1
