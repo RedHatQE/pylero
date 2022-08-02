@@ -79,5 +79,12 @@ Summary:        %{summary}
 %exclude %{_bindir}/%{name}
 
 %changelog
+* Tue Aug 02 2022 Wayne Sun <gsun@redhat.com> 0.0.3-1
+- new package built with tito
+- Switch from suds-py3 to suds
+- Downgrade to 201x python rpm build spec
+- Remove rpm build action
+- Add Fedora rpm build section
+
 * Mon May 23 2022 Wayne Sun <gsun@redhat.com> - 0.0.2-1
 - Initial packaging
