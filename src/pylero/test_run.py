@@ -393,7 +393,7 @@ class TestRun(BasePolarion):
 
     @classmethod
     def search(cls, query, fields=["test_run_id"], sort="test_run_id",
-               limit=-1, search_templates=False, project_id=None):
+               limit=None, search_templates=False, project_id=None):
         """class method search executes the given query and returns the results
 
         Args:
@@ -406,7 +406,7 @@ class TestRun(BasePolarion):
                      parameter.
             sort: the field used to sort results, default is test_run_id
             limit (int): the maximum number of records to be returned, -1
-                         for no limit, default -1.
+                         for no limit, default None.
             search_templates (bool): if set, searches the templates
                                      instead of the test runs, default False
             project_id: if set, searches the project id, else default project
@@ -444,9 +444,11 @@ class TestRun(BasePolarion):
             function_name += "TestRuns"
         p_fields = cls._convert_obj_fields_to_polarion(fields)
         if p_fields:
-            function_name += "WithFieldsLimited"
+            function_name += "WithFields"
             parms.append(p_fields)
-        parms.append(limit)
+        if limit:
+            function_name += "Limited"
+            parms.append(limit)
         test_runs = []
         results = getattr(cls.session.test_management_client.service,
                           function_name)(*parms)
