@@ -1,5 +1,4 @@
 import os
-from distutils.command.install import INSTALL_SCHEMES
 
 from setuptools import setup
 
@@ -10,10 +9,6 @@ PACKAGE_NAME = "pylero"
 CLI_NAME = "pylero-cmd"
 RELEASE_FILE = "/etc/system-release-cpe"
 SUDS_NAME_CHANGE = False
-
-# change the data dir to be the etc dir under the package dir
-for scheme in list(INSTALL_SCHEMES.values()):
-    scheme['data'] = '%s/%s/etc' % (scheme['purelib'], PACKAGE_NAME)
 
 install_requires_ = [
     'click',
@@ -51,12 +46,10 @@ if __name__ == "__main__":
             PACKAGE_NAME,
             PACKAGE_NAME+'.cli',
         ],
+        include_package_data=True,
         scripts=[
             'scripts/%s' % PACKAGE_NAME,
             'scripts/%s' % CLI_NAME,
-        ],
-        data_files=[
-            ('', ['etc/%s/%s.cfg' % (PACKAGE_NAME, PACKAGE_NAME)])
         ],
         install_requires=install_requires_,
         classifiers=[
