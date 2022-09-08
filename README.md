@@ -66,7 +66,7 @@ A configuration file must be filled out, which must be located either in the
 current dir (the dir where the script is executed from) named **.pylero** or in
 the user's home dir **~/.pylero**
 
-Default settings are stored in **LIBDIR/etc/pylero.cfg**. This file should not
+Default settings are stored in **LIBDIR/pylero.cfg**. This file should not
 be modified, as it will be overwritten with any future updates.  Certificates
 should be verified automatically, but if they aren't, you can add the path to
 your CA to the cert_path config option.  These are the configurable values:
