@@ -38,7 +38,7 @@ if __name__ == "__main__":
         long_description_content_type="text/markdown",
         url="https://github.com/RedHatQE/pylero",
         author="%s Developers" % PACKAGE_NAME,
-        author_email="szacks@redhat.com",
+        author_email="dno-tools@redhat.com",
         license="MIT",
         package_dir={
             PACKAGE_NAME: "src/%s" % PACKAGE_NAME,
