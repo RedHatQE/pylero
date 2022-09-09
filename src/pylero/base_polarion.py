@@ -32,7 +32,7 @@ class ClassProperty(property):
 
 class Configuration(object):
     pkgdir = os.path.dirname(__file__)
-    GLOBAL_CONFIG = "%s/etc/pylero.cfg" % pkgdir
+    GLOBAL_CONFIG = "%s/pylero.cfg" % pkgdir
     LOCAL_CONFIG = os.path.expanduser("~") + "/.pylero"
     CURDIR_CONFIG = ".pylero"
     CONFIG_SECTION = "webservice"
@@ -106,7 +106,7 @@ class Connection(object):
     objects inherited by BasePolarion.
     The url, repo, user and password are read from config files, which are
     located either the current directory ./pylero, the user's dir ~/.pylero
-    or the Library config dir LIBDIR/etc/pylero.cfg
+    or the Library config dir LIBDIR/pylero.cfg
     These can also be overridden with the following environment variables:
     POLARION_URL
     POLARION_REPO

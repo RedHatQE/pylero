@@ -1,28 +1,16 @@
-%define name pylero
-%define version 0.0.3
-%define unmangled_version 0.0.3
-%define release 1
-%define _unpackaged_files_terminate_build 0
-
 Summary: Python SDK for Polarion
-Name: %{name}
-Version: %{version}
-Release: %{release}
+Name: pylero
+Version: 0.0.3
+Release: 1%{?dist}
 License: MIT
-Group: Development/Libraries
-Prefix: %{_prefix}
-Vendor: pylero Developers <gsun@redhat.com>
 
 URL: https://github.com/RedHatQE/pylero
-SOURCE: %{url}/archive/%{version}/%{name}-%{version}.tar.gz
+Source0: %{url}/archive/%{version}/pylero-%{version}.tar.gz
 
 Requires: python3-%{name} == %{version}-%{release}
-Requires: python3-suds python3-click
 
 BuildArch: noarch
 BuildRequires: python3-devel
-BuildRequires: python3-suds
-BuildRequires: python3-click
 BuildRequires: python3-setuptools
 
 %global _description %{expand:
@@ -69,6 +57,7 @@ Summary:        %{summary}
 
 %install
 %py3_install
+rm -f %{buildroot}%{_bindir}/pylero
 
 %files -n python3-%{name}
 %{python3_sitelib}/%{name}-*.egg-info/
