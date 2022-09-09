@@ -51,21 +51,25 @@ Summary:        %{summary}
 
 %prep
 %autosetup -p1 -n %{name}-%{version}
+# setuptools-scm is needed to build the source distribution, but not
+# for packaging, which *starts* from the source distribution
+sed -i -e 's., "setuptools_scm"..g' pyproject.toml
+
+%generate_buildrequires
+%pyproject_buildrequires
 
 %build
-%py3_build
+%pyproject_wheel
 
 %install
-%py3_install
+%pyproject_install
 rm -f %{buildroot}%{_bindir}/pylero
 
 %files -n python3-%{name}
-%{python3_sitelib}/%{name}-*.egg-info/
-%{python3_sitelib}/%{name}/
-%license LICENSE
 %doc README.md
+%license LICENSE
+%{python3_sitelib}/%{name}*
 %{_bindir}/%{name}-cmd
-%exclude %{_bindir}/%{name}
 
 %changelog
 * Tue Aug 02 2022 Wayne Sun <gsun@redhat.com> 0.0.3-1
