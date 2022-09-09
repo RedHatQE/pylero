@@ -51,11 +51,16 @@ From the root of the project, run:
 
 `$ pip install .`
 
-### Build rpm
+### Build pip package
 
-If you want to make an rpm, make sure you have python wheel package installed:
+After cloned the repo and in the dir:
 
-`$ python setup.py bdist_wheel`
+`$ python -m build`
+
+both wheel and bdist format will be built and the package could be found under
+dist directory.
+
+Then both files could be used to install the package with pip install locally.
 
 Pylero must be configured (see next section) before it can be used.
 
