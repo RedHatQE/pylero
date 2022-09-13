@@ -1,6 +1,6 @@
 Summary: Python SDK for Polarion
 Name: pylero
-Version: 0.0.3
+Version: 0.0.4
 Release: 1%{?dist}
 License: MIT
 
@@ -72,6 +72,18 @@ rm -f %{buildroot}%{_bindir}/pylero
 %{_bindir}/%{name}-cmd
 
 %changelog
+* Tue Sep 13 2022 Wayne Sun <gsun@redhat.com> 0.0.4-1
+- Fix EPEL9 yum suds package (gsun@redhat.com)
+- Switch back to modern rpm spec (gsun@redhat.com)
+- Using modern pypi package build system interface (gsun@redhat.com)
+- Fix the config file path (gsun@redhat.com)
+- Update contact and copyright info (gsun@redhat.com)
+- Code style update (gsun@redhat.com)
+- Remove the sample config file in data_files (gsun@redhat.com)
+- Update spec with improvement (gsun@redhat.com)
+- use cft.multi while parsing array custom fields (lgangava@redhat.com)
+- Fix testrun search method params with limit (gsun@redhat.com)
+
 * Tue Aug 02 2022 Wayne Sun <gsun@redhat.com> 0.0.3-1
 - new package built with tito
 - Switch from suds-py3 to suds
