@@ -18,8 +18,13 @@ install_requires_ = [
 if os.path.exists(RELEASE_FILE):
     with open(RELEASE_FILE) as version_file:
         version_file_content = version_file.read().split(":")
-        if (version_file_content[3] == "fedora") and (
-            int(version_file_content[4]) > 35
+        if (
+            (version_file_content[3] == "fedora")
+            and (int(version_file_content[4]) > 35)
+        ) or (
+            (version_file_content[2] == "redhat")
+            and (version_file_content[3] == "enterprise_linux")
+            and (int(version_file_content[4].split(".")[0]) > 8)
         ):
             SUDS_NAME_CHANGE = True
 
