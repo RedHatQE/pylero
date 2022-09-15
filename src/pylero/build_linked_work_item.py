@@ -15,18 +15,19 @@ class BuildLinkedWorkItem(BasePolarion):
     Attributes:
         revision (string)
         role (EnumOptionId)
-        work_item (WorkItem)
-"""
-    _cls_suds_map = {"revision": "revision",
-                     "role":
-                     {"field_name": "role",
-                      "cls": EnumOptionId,
-                      "enum_id": "workitem-link-role"},
-                     "work_item":
-                     {"field_name": "workItem",
-                      "cls": _WorkItem},
-                     "uri": "_uri",
-                     "_unresolved": "_unresolved"}
+        work_item (WorkItem)"""
+
+    _cls_suds_map = {
+        "revision": "revision",
+        "role": {
+            "field_name": "role",
+            "cls": EnumOptionId,
+            "enum_id": "workitem-link-role",
+        },
+        "work_item": {"field_name": "workItem", "cls": _WorkItem},
+        "uri": "_uri",
+        "_unresolved": "_unresolved",
+    }
     _obj_client = "builder_client"
     _obj_struct = "tns2:BuildLinkedWorkItem"
 

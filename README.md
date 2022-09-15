@@ -292,13 +292,13 @@ $ pip install pre-commit
 $ pre-commit autoupdate && pre-commit run -a
 ```
 
-Pre-commit will ensure that the changes you made are not in violation of PEP8 standards.
+Pre-commit will ensure that the changes you made are not in violation of PEP8 standards and automatically apply black fixes.
 
-We recommend `autopep8` to fix any pre-commit failures by running below or you are free to use any formatters which can resolve pre-commit failures with least possible diff.
+We recommend `black` to automatically fix any pre-commit failures.
 
 ``` python
-$ pip install autopep8
-$ autopep8 --in-place <edited_file.py>
+$ pip install black
+$ black <edited_file.py>
 ```
 
 ## Fedora RPM package build

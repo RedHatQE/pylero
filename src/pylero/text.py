@@ -18,9 +18,12 @@ class Text(BasePolarion):
                             (eg. text/html)
         content_lossy (bool):
     """
-    _cls_suds_map = {"content": "content",
-                     "content_type": "type",
-                     "content_lossy": "contentLossy"}
+
+    _cls_suds_map = {
+        "content": "content",
+        "content_type": "type",
+        "content_lossy": "contentLossy",
+    }
     _id_field = "content"
     _obj_client = "test_management_client"
     _obj_struct = "tns2:Text"
@@ -37,5 +40,6 @@ class Text(BasePolarion):
 
 class ArrayOfText(BasePolarion):
     """Object containing list of Text objects"""
+
     _obj_client = "test_management_client"
     _obj_struct = "tns2:ArrayOfText"

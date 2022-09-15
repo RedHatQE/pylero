@@ -13,12 +13,14 @@ class ImportedComment(BasePolarion):
     Attributes:
         author (string)
         created (dateTime)
-        initials (string)
-"""
-    _cls_suds_map = {"author": "author",
-                     "created": "created",
-                     "initials": "initials",
-                     "uri": "_uri",
-                     "_unresolved": "_unresolved"}
+        initials (string)"""
+
+    _cls_suds_map = {
+        "author": "author",
+        "created": "created",
+        "initials": "initials",
+        "uri": "_uri",
+        "_unresolved": "_unresolved",
+    }
     _obj_client = "test_management_client"
     _obj_struct = "tns4:ImportedComment"

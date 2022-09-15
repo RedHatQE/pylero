@@ -21,14 +21,13 @@ def revert_svn():
     svn.set_store_passwords(False)
     svn.checkout(svn_url, LOCAL_DIR)
     svn_log = svn.log(LOCAL_DIR)
-#    first_revision = svn_log[-1].revision
+    #    first_revision = svn_log[-1].revision
     for log in svn_log:
         if log.revision.number == REVERT_TO:
             break
     first_revision = log.revision
     last_revision = svn_log[0].revision
-    svn.merge(LOCAL_DIR, last_revision, LOCAL_DIR, first_revision,
-              LOCAL_DIR)
+    svn.merge(LOCAL_DIR, last_revision, LOCAL_DIR, first_revision, LOCAL_DIR)
     svn.checkin(LOCAL_DIR, "revert to original version")
     # The original Example template query has an extra colon.
     # After revert, must fix that.

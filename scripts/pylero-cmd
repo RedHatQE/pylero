@@ -10,53 +10,64 @@ def cli():
 
 
 @cli.command()
-@click.option('-d', '--document',
-              help="document with space e.g. 'space/document'")
-@click.option('-e', '--query',
-              help="query items e.g. --query='author.id:xhe'")
-@click.option('-D', '--is_document',
-              default=False,
-              is_flag=True,
-              help='flag indicating that the action will reference a document')
-@click.option('-i', '--testcase',
-              help='testcase id')
-@click.option('-l', '--links',
-              default=False,
-              is_flag=True,
-              help='flag indicating that the action will reference the links')
-@click.option('-m', '--template',
-              default=False,
-              is_flag=True,
-              help='flag indicating that the action will reference a template')
-@click.option('-p', '--plan_ids',
-              help='plan ids in project')
-@click.option('-q', '--requirement',
-              help='requirement id')
-@click.option('-r', '--run',
-              help='test run')
-@click.option('-s', '--steps',
-              default=False,
-              is_flag=True,
-              help='flag indicating that the action will reference the steps')
-@click.option('-t', '--workitem',
-              default=False,
-              is_flag=True,
-              help='flag indicating that the action will reference workitem')
-@click.option('-w', '--wi_type',
-              default='',
-              help="type of workitem. e.g testcase, requirement")
-def list(document,
-         query,
-         is_document,
-         testcase,
-         links,
-         template,
-         plan_ids,
-         requirement,
-         run,
-         steps,
-         workitem,
-         wi_type=None):
+@click.option("-d", "--document", help="document with space e.g. 'space/document'")
+@click.option("-e", "--query", help="query items e.g. --query='author.id:xhe'")
+@click.option(
+    "-D",
+    "--is_document",
+    default=False,
+    is_flag=True,
+    help="flag indicating that the action will reference a document",
+)
+@click.option("-i", "--testcase", help="testcase id")
+@click.option(
+    "-l",
+    "--links",
+    default=False,
+    is_flag=True,
+    help="flag indicating that the action will reference the links",
+)
+@click.option(
+    "-m",
+    "--template",
+    default=False,
+    is_flag=True,
+    help="flag indicating that the action will reference a template",
+)
+@click.option("-p", "--plan_ids", help="plan ids in project")
+@click.option("-q", "--requirement", help="requirement id")
+@click.option("-r", "--run", help="test run")
+@click.option(
+    "-s",
+    "--steps",
+    default=False,
+    is_flag=True,
+    help="flag indicating that the action will reference the steps",
+)
+@click.option(
+    "-t",
+    "--workitem",
+    default=False,
+    is_flag=True,
+    help="flag indicating that the action will reference workitem",
+)
+@click.option(
+    "-w", "--wi_type", default="", help="type of workitem. e.g testcase, requirement"
+)
+def list(
+    document,
+    query,
+    is_document,
+    testcase,
+    links,
+    template,
+    plan_ids,
+    requirement,
+    run,
+    steps,
+    workitem,
+    wi_type=None,
+):
     """list documents, testcases, steps of testcase, links of workitems, runs
     templates."""
 
@@ -106,80 +117,84 @@ def list(document,
         list_obj.print_plan_ids(plan_ids)
 
     else:
-        click.echo('Please get usage: pylero-cmd list --help')
+        click.echo("Please get usage: pylero-cmd list --help")
 
 
 @cli.command()
-@click.option("-a", "--assignee", default="None",
-              help="assignee of run")
-@click.option("-c", "--comment",
-              help="verdict comment of testcase in run")
-@click.option("-d", "--description",
-              help="description of run")
-@click.option("-e", "--query",
-              help="query items e.g. --query=author.id:xhe")
-@click.option("-g", "--is_document",
-              default=False,
-              is_flag=True,
-              help='flag indicating that the action will reference a document')
-@click.option("-p", "--doc_with_space",
-              help="document id with space e.g --doc_with_space=KernelQE/DOC")
-@click.option("-b", "--doc_type",
-              type=click.Choice(['generic',
-                                 'testspecification',
-                                 'requirementspecification']),
-              default='generic',
-              help="document type, default='generic'")
-@click.option("-g", "--doc_wi_type",
-              type=click.Choice(['testcase',
-                                 'requirement']),
-              default='testcase',
-              help="allowed workitem type in document, default='testcase'")
-@click.option("-f", "--doc_content",
-              default='My sample document',
-              help="HTML markup to document, default='My sample\
+@click.option("-a", "--assignee", default="None", help="assignee of run")
+@click.option("-c", "--comment", help="verdict comment of testcase in run")
+@click.option("-d", "--description", help="description of run")
+@click.option("-e", "--query", help="query items e.g. --query=author.id:xhe")
+@click.option(
+    "-g",
+    "--is_document",
+    default=False,
+    is_flag=True,
+    help="flag indicating that the action will reference a document",
+)
+@click.option(
+    "-p",
+    "--doc_with_space",
+    help="document id with space e.g --doc_with_space=KernelQE/DOC",
+)
+@click.option(
+    "-b",
+    "--doc_type",
+    type=click.Choice(["generic", "testspecification", "requirementspecification"]),
+    default="generic",
+    help="document type, default='generic'",
+)
+@click.option(
+    "-g",
+    "--doc_wi_type",
+    type=click.Choice(["testcase", "requirement"]),
+    default="testcase",
+    help="allowed workitem type in document, default='testcase'",
+)
+@click.option(
+    "-f",
+    "--doc_content",
+    default="My sample document",
+    help="HTML markup to document, default='My sample\
                     document'. It can be a html file e.g\
-                    --doc_content=/home/xhe/plan.html")
-@click.option('-D', '--debug',
-              default=True,
-              is_flag=True,
-              help='debug mode')
-@click.option("-i", "--testcase",
-              help="testcase id")
-@click.option("-m", "--template",
-              help="run template")
-@click.option("-p", "--plannedin",
-              help="plannedin in run")
-@click.option("-o", "--result",
-              type=click.Choice(['passed',
-                                 'failed',
-                                 'blocked']),
-              help="test result in run")
-@click.option("-r", "--run",
-              help="test run id")
-@click.option("-s", "--status",
-              type=click.Choice(['notrun',
-                                 'inprogress',
-                                 'finished',
-                                 'invalid']),
-              help="run status")
-def update(assignee,
-           comment,
-           description,
-           query,
-           is_document,
-           doc_with_space,
-           doc_type,
-           doc_wi_type,
-           doc_content,
-           debug,
-           testcase,
-           template,
-           plannedin,
-           result,
-           run,
-           status):
-    ''' create run(s), update results and custom fileds for run(s). '''
+                    --doc_content=/home/xhe/plan.html",
+)
+@click.option("-D", "--debug", default=True, is_flag=True, help="debug mode")
+@click.option("-i", "--testcase", help="testcase id")
+@click.option("-m", "--template", help="run template")
+@click.option("-p", "--plannedin", help="plannedin in run")
+@click.option(
+    "-o",
+    "--result",
+    type=click.Choice(["passed", "failed", "blocked"]),
+    help="test result in run",
+)
+@click.option("-r", "--run", help="test run id")
+@click.option(
+    "-s",
+    "--status",
+    type=click.Choice(["notrun", "inprogress", "finished", "invalid"]),
+    help="run status",
+)
+def update(
+    assignee,
+    comment,
+    description,
+    query,
+    is_document,
+    doc_with_space,
+    doc_type,
+    doc_wi_type,
+    doc_content,
+    debug,
+    testcase,
+    template,
+    plannedin,
+    result,
+    run,
+    status,
+):
+    """create run(s), update results and custom fileds for run(s)."""
 
     # instantiate the update object
     update_obj = CmdUpdate()
@@ -188,12 +203,12 @@ def update(assignee,
         if not doc_with_space:
             print("Exit - Missing value of --doc_with_space")
             return False
-        if '/' not in doc_with_space:
+        if "/" not in doc_with_space:
             print("Exit - 'SPACE/DOC_NAME' is required, --doc_with_space")
             return False
 
         # split string of doc_with_space
-        doc_space_list = doc_with_space.split('/')
+        doc_space_list = doc_with_space.split("/")
         space = doc_space_list[0]
         doc_name = doc_space_list[1]
 
@@ -201,35 +216,30 @@ def update(assignee,
         doc_title = doc_name
 
         # create document from string or html file
-        update_obj.update_document(space, doc_name, doc_title, doc_wi_type,
-                                   doc_type, "parent", doc_content)
+        update_obj.update_document(
+            space, doc_name, doc_title, doc_wi_type, doc_type, "parent", doc_content
+        )
 
     elif run:
         if result:
             if testcase:
                 # update one case result for runs
-                update_obj.update_1_case_result_for_run(run,
-                                                        testcase,
-                                                        result,
-                                                        assignee,
-                                                        comment)
+                update_obj.update_1_case_result_for_run(
+                    run, testcase, result, assignee, comment
+                )
             else:
                 # update all case results for runs
-                update_obj.update_all_case_results_for_runs(run,
-                                                            result,
-                                                            assignee,
-                                                            comment)
+                update_obj.update_all_case_results_for_runs(
+                    run, result, assignee, comment
+                )
         else:
             # update/create runs
-            update_obj.update_runs(run,
-                                   template,
-                                   plannedin,
-                                   assignee,
-                                   status,
-                                   description)
+            update_obj.update_runs(
+                run, template, plannedin, assignee, status, description
+            )
     else:
-        click.echo('Please get usage: pylero-cmd update --help')
+        click.echo("Please get usage: pylero-cmd update --help")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     cli()

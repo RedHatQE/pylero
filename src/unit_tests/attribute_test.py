@@ -5,8 +5,8 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import datetime
-
 import unittest
+
 from pylero.document import Document
 from pylero.exceptions import PyleroLibException
 from pylero.test_record import TestRecord
@@ -31,15 +31,20 @@ DEFAULT_PROJ = Document.default_project
 
 
 class AttributeTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         global TEST_RUN_ID
         cls.doc = Document.create(
-            DEFAULT_PROJ, "Testing", DOC_NAME,
-            "Attribute_Test", ["testcase"], "testspecification")
+            DEFAULT_PROJ,
+            "Testing",
+            DOC_NAME,
+            "Attribute_Test",
+            ["testcase"],
+            "testspecification",
+        )
         cls.testrun = TestRun.create(
-            DEFAULT_PROJ, TEST_RUN_ID, "example", TEST_RUN_TITLE)
+            DEFAULT_PROJ, TEST_RUN_ID, "example", TEST_RUN_TITLE
+        )
         TEST_RUN_ID = cls.testrun.test_run_id
         # arch is a custom field defined by global admins for test runs.
         # It is set here for a test on custom fields that requires at least two
@@ -50,21 +55,22 @@ class AttributeTest(unittest.TestCase):
         cls.testrun.arch = valid_values[1]
         cls.testrun.update()
 
-        cls.tc = TestCase.create(DEFAULT_PROJ,
-                                 "regression",
-                                 "regression",
-                                 caseimportance="high",
-                                 caselevel="component",
-                                 caseautomation="notautomated",
-                                 caseposneg="positive",
-                                 testtype="functional",
-                                 subtype1="-")
+        cls.tc = TestCase.create(
+            DEFAULT_PROJ,
+            "regression",
+            "regression",
+            caseimportance="high",
+            caselevel="component",
+            caseautomation="notautomated",
+            caseposneg="positive",
+            testtype="functional",
+            subtype1="-",
+        )
         cls.TEST_CASE_ID = cls.tc.work_item_id
 
     @classmethod
     def tearDownClass(cls):
-        doc = Document(project_id=DEFAULT_PROJ,
-                       doc_with_space="Testing/" + DOC_NAME)
+        doc = Document(project_id=DEFAULT_PROJ, doc_with_space="Testing/" + DOC_NAME)
         doc.delete()
 
     def test_basic(self):
@@ -72,8 +78,7 @@ class AttributeTest(unittest.TestCase):
         self.doc.title = "new title"
         self.assertEqual(self.doc.title, "new title")
         self.doc.update()
-        doc2 = Document(project_id=DEFAULT_PROJ,
-                        doc_with_space="Testing/" + DOC_NAME)
+        doc2 = Document(project_id=DEFAULT_PROJ, doc_with_space="Testing/" + DOC_NAME)
         self.assertEqual(doc2.title, "new title")
 
     def test_obj_writeuser(self):
@@ -96,8 +101,7 @@ class AttributeTest(unittest.TestCase):
         self.assertEqual(self.doc.status, "obsolete")
 
     def test_arr_obj(self):
-        testrun = TestRun(project_id=DEFAULT_PROJ,
-                          test_run_id=TEST_RUN_ID)
+        testrun = TestRun(project_id=DEFAULT_PROJ, test_run_id=TEST_RUN_ID)
         recs = testrun.records
         if not isinstance(recs, list):
             recs = []
@@ -112,14 +116,13 @@ class AttributeTest(unittest.TestCase):
         rec.result = "passed"
         recs.append(rec)
         testrun.records = recs
-        self.assertEqual(cnt+1, len(testrun.records))
+        self.assertEqual(cnt + 1, len(testrun.records))
         recs = testrun.records
         rec = recs[-1]
         self.assertEqual(rec.result, "passed")
 
     def test_custom_testrun(self):
-        testrun = TestRun(project_id=DEFAULT_PROJ,
-                          test_run_id=TEST_RUN_ID)
+        testrun = TestRun(project_id=DEFAULT_PROJ, test_run_id=TEST_RUN_ID)
         self.assertIsNotNone(testrun.arch)
         with self.assertRaises(PyleroLibException):
             testrun.arch = "bad"
@@ -144,8 +147,7 @@ class AttributeTest(unittest.TestCase):
         self.assertEqual(valid_values[0], testrun.arch)
 
     def test_custom_workitem(self):
-        tc2 = TestCase(project_id=DEFAULT_PROJ,
-                       work_item_id=self.TEST_CASE_ID)
+        tc2 = TestCase(project_id=DEFAULT_PROJ, work_item_id=self.TEST_CASE_ID)
         self.assertIsNotNone(tc2.caseautomation)
         with self.assertRaises(PyleroLibException):
             tc2.caseautomation = "bad"
@@ -155,35 +157,30 @@ class AttributeTest(unittest.TestCase):
         req = Requirement()
         with self.assertRaises(PyleroLibException):
             req.reqtype = "bad"
-        req.reqtype = 'functional'
+        req.reqtype = "functional"
 
     def test_uri_obj(self):
-        testrun2 = TestRun(project_id=DEFAULT_PROJ,
-                           test_run_id=TEST_RUN_ID)
+        testrun2 = TestRun(project_id=DEFAULT_PROJ, test_run_id=TEST_RUN_ID)
         self.assertEqual(testrun2.template, "example")
-        new_template = TestRun.create_template(DEFAULT_PROJ,
-                                               TEMPLATE_ID,
-                                               "example",
-                                               title=TEMPLATE_TITLE)
+        new_template = TestRun.create_template(
+            DEFAULT_PROJ, TEMPLATE_ID, "example", title=TEMPLATE_TITLE
+        )
         testrun2.template = new_template
-        self.assertEqual(testrun2.template,
-                         new_template.test_run_id)
-        self.assertNotEqual(testrun2.template,
-                            "example")
+        self.assertEqual(testrun2.template, new_template.test_run_id)
+        self.assertNotEqual(testrun2.template, "example")
 
     def test_bad_character(self):
-        """this test validates that non UTF-8 characters will cause an error
-        """
+        """this test validates that non UTF-8 characters will cause an error"""
         test_case = TestCase()
         steps = TestSteps()
         with self.assertRaises(PyleroLibException):  # check _obj_setter
-            test_case.status = u"é".encode('latin')
+            test_case.status = "é".encode("latin")
         with self.assertRaises(PyleroLibException):  # check _custom_setter
-            test_case.tcmscaseid = u"é".encode('latin')
+            test_case.tcmscaseid = "é".encode("latin")
         with self.assertRaises(PyleroLibException):  # check _regular_setter
-            test_case.title = u"é".encode('latin')
+            test_case.title = "é".encode("latin")
         with self.assertRaises(PyleroLibException):  # check _arr_obj_setter
-            steps.keys = [u"é".encode('latin')]
+            steps.keys = ["é".encode("latin")]
 
 
 if __name__ == "__main__":

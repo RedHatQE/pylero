@@ -30,37 +30,34 @@ class Comment(BasePolarion):
         title (string)
         visible_to (ArrayOfstring)
     """
-    _cls_suds_map = {"author":
-                     {"field_name": "author",
-                      "cls": User},
-                     "child_comment_uris":
-                     {"field_name": "childCommentURIs",
-                      "is_array": True,
-                      "cls": SubterraURI,
-                      "arr_cls": ArrayOfSubterraURI,
-                      "inner_field_name": "SubterraURI"},
-                     "created": "created",
-                     "comment_id": "id",
-                     "parent_comment_uri":
-                     {"field_name": "parentCommentURI",
-                      "cls": SubterraURI},
-                     "resolved": "resolved",
-                     "signature_data":
-                     {"field_name": "signatureData",
-                      "cls": SignatureData},
-                     "tags":
-                     {"field_name": "tags",
-                      "is_array": True,
-                      "cls": EnumOptionId,
-                      "arr_cls": ArrayOfEnumOptionId,
-                      "inner_field_name": "EnumOptionId"},
-                     "text":
-                     {"field_name": "text",
-                      "cls": Text},
-                     "title": "title",
-                     "visible_to": "visibleTo",
-                     "uri": "_uri",
-                     "_unresolved": "_unresolved"}
+
+    _cls_suds_map = {
+        "author": {"field_name": "author", "cls": User},
+        "child_comment_uris": {
+            "field_name": "childCommentURIs",
+            "is_array": True,
+            "cls": SubterraURI,
+            "arr_cls": ArrayOfSubterraURI,
+            "inner_field_name": "SubterraURI",
+        },
+        "created": "created",
+        "comment_id": "id",
+        "parent_comment_uri": {"field_name": "parentCommentURI", "cls": SubterraURI},
+        "resolved": "resolved",
+        "signature_data": {"field_name": "signatureData", "cls": SignatureData},
+        "tags": {
+            "field_name": "tags",
+            "is_array": True,
+            "cls": EnumOptionId,
+            "arr_cls": ArrayOfEnumOptionId,
+            "inner_field_name": "EnumOptionId",
+        },
+        "text": {"field_name": "text", "cls": Text},
+        "title": "title",
+        "visible_to": "visibleTo",
+        "uri": "_uri",
+        "_unresolved": "_unresolved",
+    }
     _obj_client = "builder_client"
     _obj_struct = "tns5:Comment"
 

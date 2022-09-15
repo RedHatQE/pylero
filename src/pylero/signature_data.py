@@ -13,11 +13,11 @@ class SignatureData(BasePolarion):
 
     Attributes:
         target_status_id (string)
-        verdict (EnumOptionId)
-"""
-    _cls_suds_map = {"target_status_id": "targetStatusId",
-                     "verdict":
-                     {"field_name": "verdict",
-                      "cls": EnumOptionId}}
+        verdict (EnumOptionId)"""
+
+    _cls_suds_map = {
+        "target_status_id": "targetStatusId",
+        "verdict": {"field_name": "verdict", "cls": EnumOptionId},
+    }
     _obj_client = "builder_client"
     _obj_struct = "tns5:SignatureData"

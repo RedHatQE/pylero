@@ -1,7 +1,7 @@
 import datetime
 import os
-
 import unittest
+
 from pylero.exceptions import PyleroLibException
 from pylero.plan import Plan
 from pylero.work_item import Requirement
@@ -17,21 +17,24 @@ ATTACH_TITLE = "File"
 
 
 class PlanTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
-        req1 = Requirement.create(DEFAULT_PROJ,
-                                  "regression",
-                                  "regression",
-                                  severity="should_have",
-                                  reqtype="functional")
+        req1 = Requirement.create(
+            DEFAULT_PROJ,
+            "regression",
+            "regression",
+            severity="should_have",
+            reqtype="functional",
+        )
 
         cls.NEW_REQ = req1.work_item_id
-        req2 = Requirement.create(DEFAULT_PROJ,
-                                  "regression",
-                                  "regression",
-                                  severity="should_have",
-                                  reqtype="functional")
+        req2 = Requirement.create(
+            DEFAULT_PROJ,
+            "regression",
+            "regression",
+            severity="should_have",
+            reqtype="functional",
+        )
         cls.NEW_REQ2 = req2.work_item_id
 
     def test_001_create_template(self):
@@ -41,7 +44,8 @@ class PlanTest(unittest.TestCase):
         The parent attribute is not returned
         """
         template = Plan.create_plan_template(
-            TEMPLATE_ID, "Regression", DEFAULT_PROJ, None)
+            TEMPLATE_ID, "Regression", DEFAULT_PROJ, None
+        )
         self.assertIsNotNone(template.plan_id)
         self.assertTrue(template.is_template)
 
@@ -50,8 +54,7 @@ class PlanTest(unittest.TestCase):
         * creates a test riun based on the template created in previous test
         * Verifies that the returned object exists and is not a template
         """
-        plan = Plan.create(
-            PLAN_ID, "Regression", DEFAULT_PROJ, None, TEMPLATE_ID)
+        plan = Plan.create(PLAN_ID, "Regression", DEFAULT_PROJ, None, TEMPLATE_ID)
         self.assertIsNotNone(plan.plan_id)
         self.assertFalse(plan.is_template)
 
@@ -101,6 +104,7 @@ class PlanTest(unittest.TestCase):
         Plan.delete_plans(DEFAULT_PROJ, PLAN_ID)
         with self.assertRaises(PyleroLibException):
             Plan(project_id=DEFAULT_PROJ, plan_id=PLAN_ID)
+
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']

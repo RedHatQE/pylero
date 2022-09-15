@@ -17,17 +17,15 @@ class Signature(BasePolarion):
         signed_revision (string)
         signer_role (string)
         verdict (EnumOptionId)
-        verdict_time (dateTime)
-"""
-    _cls_suds_map = {"verdict":
-                     {"field_name": "verdict",
-                      "cls": EnumOptionId},
-                     "signed_revision": "signedRevision",
-                     "verdict_time": "verdictTime",
-                     "signer_role": "signerRole",
-                     "signed_by":
-                     {"field_name": "signedBy",
-                      "cls": User}}
+        verdict_time (dateTime)"""
+
+    _cls_suds_map = {
+        "verdict": {"field_name": "verdict", "cls": EnumOptionId},
+        "signed_revision": "signedRevision",
+        "verdict_time": "verdictTime",
+        "signer_role": "signerRole",
+        "signed_by": {"field_name": "signedBy", "cls": User},
+    }
     _obj_client = "test_management_client"
     _obj_struct = "tns4:Signature"
 

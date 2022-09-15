@@ -28,47 +28,47 @@ class TestRecord(BasePolarion):
         result (EnumOptionId)
         test_case_revision (string)
         test_case_id (string)
-        test_step_results (ArrayOfTestStepResult)
-"""
+        test_step_results (ArrayOfTestStepResult)"""
 
     _cls_suds_map = {
-        "attachments":
-            {"field_name": "attachments",
-             "is_array": True,
-             "cls": TestRunAttachment,
-             "arr_cls": ArrayOfTestRunAttachment,
-             "inner_field_name": "TestRunAttachment"},
-        "comment":
-            {"field_name": "comment",
-             "cls": Text},
-        "defect_case_id":
-            {"field_name": "defectURI",
-             "cls": _WorkItem,
-             "named_arg": "uri",
-             "sync_field": "uri"},
+        "attachments": {
+            "field_name": "attachments",
+            "is_array": True,
+            "cls": TestRunAttachment,
+            "arr_cls": ArrayOfTestRunAttachment,
+            "inner_field_name": "TestRunAttachment",
+        },
+        "comment": {"field_name": "comment", "cls": Text},
+        "defect_case_id": {
+            "field_name": "defectURI",
+            "cls": _WorkItem,
+            "named_arg": "uri",
+            "sync_field": "uri",
+        },
         "duration": "duration",
         "executed": "executed",
-        "executed_by":
-            {"field_name": "executedByURI",
-             "cls": User,
-             "named_arg": "uri",
-             "sync_field": "uri"},
-        "result":
-            {"field_name": "result",
-             "cls": EnumOptionId,
-             "enum_id": "result"},
-        "test_case_id":
-            {"field_name": "testCaseURI",
-             "cls": _WorkItem,
-             "named_arg": "uri",
-             "sync_field": "uri"},
+        "executed_by": {
+            "field_name": "executedByURI",
+            "cls": User,
+            "named_arg": "uri",
+            "sync_field": "uri",
+        },
+        "result": {"field_name": "result", "cls": EnumOptionId, "enum_id": "result"},
+        "test_case_id": {
+            "field_name": "testCaseURI",
+            "cls": _WorkItem,
+            "named_arg": "uri",
+            "sync_field": "uri",
+        },
         "test_case_revision": "testCaseRevision",
-        "test_step_results":
-            {"field_name": "testStepResults",
-             "is_array": True,
-             "cls": TestStepResult,
-             "arr_cls": ArrayOfTestStepResult,
-             "inner_field_name": "TestStepResult"}}
+        "test_step_results": {
+            "field_name": "testStepResults",
+            "is_array": True,
+            "cls": TestStepResult,
+            "arr_cls": ArrayOfTestStepResult,
+            "inner_field_name": "TestStepResult",
+        },
+    }
     _obj_client = "test_management_client"
     _obj_struct = "tns3:TestRecord"
     _id_field = "test_case_id"
@@ -80,10 +80,12 @@ class TestRecord(BasePolarion):
     def _fix_circular_refs(self):
         # need to pass in the project_id parm to the Work Item,
         # but it is not given before instatiation
-        self._cls_suds_map["test_case_id"]["additional_parms"] = \
-            {"project_id": self.project_id}
-        self._cls_suds_map["defect_case_id"]["additional_parms"] = \
-            {"project_id": self.project_id}
+        self._cls_suds_map["test_case_id"]["additional_parms"] = {
+            "project_id": self.project_id
+        }
+        self._cls_suds_map["defect_case_id"]["additional_parms"] = {
+            "project_id": self.project_id
+        }
 
 
 class ArrayOfTestRecord(BasePolarion):

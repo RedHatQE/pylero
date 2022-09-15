@@ -14,13 +14,15 @@ class BuildTestResults(BasePolarion):
         error_count (int)
         failure_count (int)
         skipped_count (int)
-        test_count (int)
-"""
-    _cls_suds_map = {"error_count": "errorCount",
-                     "failure_count": "failureCount",
-                     "skipped_count": "skippedCount",
-                     "test_count": "testCount",
-                     "uri": "_uri",
-                     "_unresolved": "_unresolved"}
+        test_count (int)"""
+
+    _cls_suds_map = {
+        "error_count": "errorCount",
+        "failure_count": "failureCount",
+        "skipped_count": "skippedCount",
+        "test_count": "testCount",
+        "uri": "_uri",
+        "_unresolved": "_unresolved",
+    }
     _obj_client = "builder_client"
     _obj_struct = "tns2:BuildTestResults"

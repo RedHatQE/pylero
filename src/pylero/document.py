@@ -55,99 +55,100 @@ class Document(BasePolarion):
         type (EnumOptionId)
         updated (dateTime)
         updated_by (User)
-        uses_outline_numbering (boolean)
-"""
+        uses_outline_numbering (boolean)"""
 
     _cls_suds_map = {
-        "allowed_wi_types":
-            {"field_name": "allowedWITypes",
-             "is_array": True,
-             "cls": EnumOptionId,
-             "arr_cls": ArrayOfEnumOptionId,
-             "inner_field_name": "EnumOptionId",
-             "enum_id": "workitem-type"},
-        "are_links_from_parent_to_child":
-        "areLinksFromParentToChild",
-        "author":
-            {"field_name": "author",
-             "cls": User},
+        "allowed_wi_types": {
+            "field_name": "allowedWITypes",
+            "is_array": True,
+            "cls": EnumOptionId,
+            "arr_cls": ArrayOfEnumOptionId,
+            "inner_field_name": "EnumOptionId",
+            "enum_id": "workitem-type",
+        },
+        "are_links_from_parent_to_child": "areLinksFromParentToChild",
+        "author": {"field_name": "author", "cls": User},
         "auto_suspect": "autoSuspect",
-        "branched_from":
-            {"field_name": "branchedFrom"},  # populated in circ refs
+        "branched_from": {"field_name": "branchedFrom"},  # populated in circ refs
         "branched_with_query": "branchedWithQuery",
-        "comments":
-            {"field_name": "comments",
-             "is_array": True,
-             "cls": ModuleComment,
-             "arr_cls": ArrayOfModuleComment,
-             "inner_field_name": "ModuleComment"},
+        "comments": {
+            "field_name": "comments",
+            "is_array": True,
+            "cls": ModuleComment,
+            "arr_cls": ArrayOfModuleComment,
+            "inner_field_name": "ModuleComment",
+        },
         "created": "created",
         "derived_fields": "derived_fields",  # arrayOfstring?
-        "derived_from_uri":
-            {"field_name": "derivedFromURI",
-             "cls": SubterraURI},
-        "derived_from_link_role":
-            {"field_name": "derivedFromLinkRole",
-             "cls": EnumOptionId},
-        "home_page_content":
-            {"field_name": "homePageContent",
-             "cls": Text},
+        "derived_from_uri": {"field_name": "derivedFromURI", "cls": SubterraURI},
+        "derived_from_link_role": {
+            "field_name": "derivedFromLinkRole",
+            "cls": EnumOptionId,
+        },
+        "home_page_content": {"field_name": "homePageContent", "cls": Text},
         "document_id": "id",
         "space": "moduleLocation",
         "document_absolute_location": "moduleAbsoluteLocation",
         "document_folder": "moduleFolder",
         "document_name": "moduleName",
-        "project_id":
-            {"field_name": "project",
-             "cls": Project},
-        "signature_contexts":
-            {"field_name": "signatureContexts",
-             "is_array": True,
-             "cls": SignatureContext,
-             "arr_cls": ArrayOfSignatureContext,
-             "inner_field_name": "SignatureContext"},
-        "status":
-            {"field_name": "status",
-             "cls": EnumOptionId,
-             "enum_id": "documents/document-status"},
-        "structure_link_role":
-            {"field_name": "structureLinkRole",
-             "cls": EnumOptionId},
+        "project_id": {"field_name": "project", "cls": Project},
+        "signature_contexts": {
+            "field_name": "signatureContexts",
+            "is_array": True,
+            "cls": SignatureContext,
+            "arr_cls": ArrayOfSignatureContext,
+            "inner_field_name": "SignatureContext",
+        },
+        "status": {
+            "field_name": "status",
+            "cls": EnumOptionId,
+            "enum_id": "documents/document-status",
+        },
+        "structure_link_role": {"field_name": "structureLinkRole", "cls": EnumOptionId},
         "title": "title",
-        "type":
-            {"field_name": "type",
-             "cls": EnumOptionId,
-             "enum_id": "documents/document-type"},
+        "type": {
+            "field_name": "type",
+            "cls": EnumOptionId,
+            "enum_id": "documents/document-type",
+        },
         "updated": "updated",
-        "updated_by":
-            {"field_name": "updatedBy",
-             "cls": User},
+        "updated_by": {"field_name": "updatedBy", "cls": User},
         "uses_outline_numbering": "usesOutlineNumbering",
-        "custom_fields":
-            {"field_name": "customFields",
-             "is_array": True,
-             "cls": Custom,
-             "arr_cls": ArrayOfCustom,
-             "inner_field_name": "Custom"},
+        "custom_fields": {
+            "field_name": "customFields",
+            "is_array": True,
+            "cls": Custom,
+            "arr_cls": ArrayOfCustom,
+            "inner_field_name": "Custom",
+        },
         "uri": "_uri",
-        "_unresolvable": "_unresolvable"}
+        "_unresolvable": "_unresolvable",
+    }
     _obj_client = "test_management_client"
     _obj_struct = "tns4:Module"
     # The uri struct of a module is different then others because of extra
     # moduleFolder element. Also requires a substitution from # to / and back
-    URI_STRUCT = "subterra:data-service:objects:/default/" \
-                 "%(project)s${%(obj)s}{moduleFolder}%(id)s"
+    URI_STRUCT = (
+        "subterra:data-service:objects:/default/"
+        "%(project)s${%(obj)s}{moduleFolder}%(id)s"
+    )
     # must wrap lambda with classmethod so it can be used as such
     URI_ID_GET_REPLACE = classmethod(lambda cls, x: x.replace("#", "/"))
     URI_ID_SET_REPLACE = classmethod(lambda cls, x: x.replace("/", "#"))
 
     @classmethod
     @tx_wrapper
-    def create(cls, project_id, space, document_name, document_title,
-               allowed_wi_types,
-               document_type,
-               structure_link_role="parent",
-               home_page_content=""):
+    def create(
+        cls,
+        project_id,
+        space,
+        document_name,
+        document_title,
+        allowed_wi_types,
+        document_type,
+        structure_link_role="parent",
+        home_page_content="",
+    ):
         # There is no document object.
         # don't know what to do with the URI it returns.
         """class method create Creates a document or an old-style
@@ -173,13 +174,18 @@ class Document(BasePolarion):
         """
         if isinstance(allowed_wi_types, basestring):
             allowed_wi_types = [allowed_wi_types]
-        awit = [EnumOptionId(item)._suds_object
-                for item in allowed_wi_types]
+        awit = [EnumOptionId(item)._suds_object for item in allowed_wi_types]
         slr = EnumOptionId(structure_link_role)._suds_object
         try:
             uri = cls.session.tracker_client.service.createDocument(
-                project_id, space, document_name, document_title, awit,
-                slr, home_page_content)
+                project_id,
+                space,
+                document_name,
+                document_title,
+                awit,
+                slr,
+                home_page_content,
+            )
             doc = Document(uri=uri)
             doc.type = document_type
             # for some reason, when in a tx (@tx_wrapper), the
@@ -200,8 +206,8 @@ class Document(BasePolarion):
         except suds.WebFault as e:
             if "Invalid document on location Location" in e.fault.faultstring:
                 raise PyleroLibException(
-                    "Document {0}/{1} already exists".format(space,
-                                                             document_name))
+                    "Document {0}/{1} already exists".format(space, document_name)
+                )
             else:
                 raise PyleroLibException(e.fault)
 
@@ -231,15 +237,23 @@ class Document(BasePolarion):
         if p_fields:
             function_name += "WithFields"
             parms += [p_fields]
-        for suds_module in getattr(cls.session.tracker_client.service,
-                                   function_name)(*parms):
+        for suds_module in getattr(cls.session.tracker_client.service, function_name)(
+            *parms
+        ):
             docs.append(cls(suds_object=suds_module))
         return docs
 
     @classmethod
-    def query(cls, query, is_sql=False, fields=["document_id"],
-              sort="document_id", limit=-1, baseline_revision=None,
-              query_uris=False):
+    def query(
+        cls,
+        query,
+        is_sql=False,
+        fields=["document_id"],
+        sort="document_id",
+        limit=-1,
+        baseline_revision=None,
+        query_uris=False,
+    ):
         """Searches for Modules/Documents.
 
         Args:
@@ -302,8 +316,14 @@ class Document(BasePolarion):
             lst_doc = [Document(suds_object=doc) for doc in docs]
             return lst_doc
 
-    def __init__(self, project_id=None, doc_with_space=None, fields=None,
-                 uri=None, suds_object=None):
+    def __init__(
+        self,
+        project_id=None,
+        doc_with_space=None,
+        fields=None,
+        uri=None,
+        suds_object=None,
+    ):
         """constructor for the Module object. Gets the module object from the
         Polarion server based on parameters passed in.
 
@@ -341,12 +361,13 @@ class Document(BasePolarion):
             if fields:
                 function_name = "WithFields"
                 parms.append(self._convert_obj_fields_to_polarion(fields))
-            self._suds_object = getattr(self.session.tracker_client.service,
-                                        function_name)(*parms)
+            self._suds_object = getattr(
+                self.session.tracker_client.service, function_name
+            )(*parms)
             if getattr(self._suds_object, "_unresolvable", True):
                 raise PyleroLibException(
-                    "The Document {0} was not found.".format(doc_with_space or
-                                                             uri))
+                    "The Document {0} was not found.".format(doc_with_space or uri)
+                )
 
     def _fix_circular_refs(self):
         # a class can't reference itself as a class attribute.
@@ -372,19 +393,20 @@ class Document(BasePolarion):
             w_item.verify_required()
             suds_wi = w_item._suds_object
         else:
-            raise PyleroLibException(
-                "the w_item parameter must be a _WorkItem")
+            raise PyleroLibException("the w_item parameter must be a _WorkItem")
         if parent_id:
-            parent_uri = _WorkItem(work_item_id=parent_id,
-                                   project_id=self.project_id).uri
+            parent_uri = _WorkItem(
+                work_item_id=parent_id, project_id=self.project_id
+            ).uri
         else:
             doc_wis = self.get_work_items(None, False, None)
             if doc_wis:
                 parent_uri = doc_wis[0].uri
             else:
                 parent_uri = None
-        wi_uri = self.session.tracker_client.service. \
-            createWorkItemInModule(self.uri, parent_uri, suds_wi)
+        wi_uri = self.session.tracker_client.service.createWorkItemInModule(
+            self.uri, parent_uri, suds_wi
+        )
         new_wi = w_item.__class__(uri=wi_uri)
         new_wi._changed_fields = w_item._changed_fields
         new_wi.update()
@@ -403,8 +425,9 @@ class Document(BasePolarion):
         self._verify_obj()
         self.session.tracker_client.service.deleteModule(self.uri)
 
-    def get_work_items(self, parent_work_item_id, deep,
-                       fields=["work_item_id", "type"]):
+    def get_work_items(
+        self, parent_work_item_id, deep, fields=["work_item_id", "type"]
+    ):
         """Returns work items (with given fields set) contained in given
         Module/Document under given parent (if specified).
 
@@ -426,20 +449,23 @@ class Document(BasePolarion):
         """
         self._verify_obj()
         if parent_work_item_id:
-            parent_uri = _WorkItem(work_item_id=parent_work_item_id,
-                                   project_id=self.project_id).uri
+            parent_uri = _WorkItem(
+                work_item_id=parent_work_item_id, project_id=self.project_id
+            ).uri
         else:
             parent_uri = None
         p_fields = _WorkItem._convert_obj_fields_to_polarion(fields)
-        suds_wi = self.session.tracker_client.service. \
-            getModuleWorkItems(self.uri, parent_uri, deep, p_fields)
+        suds_wi = self.session.tracker_client.service.getModuleWorkItems(
+            self.uri, parent_uri, deep, p_fields
+        )
         work_items = []
         for w_item in suds_wi:
             work_items.append(_WorkItem(suds_object=w_item))
         return work_items
 
-    def move_work_item_here(self, work_item_id, parent_id, position=-1,
-                            retain_flow=True):
+    def move_work_item_here(
+        self, work_item_id, parent_id, position=-1, retain_flow=True
+    ):
         """Moves a work item to a specific position in a Document. If the work
         item is not yet inside the Document it will be moved into the Document.
 
@@ -469,7 +495,8 @@ class Document(BasePolarion):
         else:
             parent_uri = None
         self.session.tracker_client.service.moveWorkItemToDocument(
-            wi.uri, self.uri, parent_uri, position, retain_flow)
+            wi.uri, self.uri, parent_uri, position, retain_flow
+        )
 
     def add_referenced_work_item(self, work_item_id):
         """Adds a work item to the document as a referenced work_item to the
@@ -485,8 +512,10 @@ class Document(BasePolarion):
         self._verify_obj()
         # verify that the work item passed in exists
         _WorkItem(project_id=self.project_id, work_item_id=work_item_id)
-        ref_wi_template = """<div id="polarion_wiki macro name=""" \
+        ref_wi_template = (
+            """<div id="polarion_wiki macro name="""
             """module-workitem;params=id=%s|external=true">"""
+        )
         self.home_page_content += ref_wi_template % work_item_id
         self.update()
 

@@ -18,19 +18,19 @@ class WikiPageAttachment(BasePolarion):
         length (long)
         title (string)
         updated (dateTime)
-        url (string)
-"""
-    _cls_suds_map = {"author":
-                     {"field_name": "author",
-                      "cls": User},
-                     "file_name": "fileName",
-                     "wiki_page_attachment_id": "id",
-                     "length": "length",
-                     "title": "title",
-                     "updated": "updated",
-                     "url": "url",
-                     "uri": "_uri",
-                     "_unresolved": "_unresolved"}
+        url (string)"""
+
+    _cls_suds_map = {
+        "author": {"field_name": "author", "cls": User},
+        "file_name": "fileName",
+        "wiki_page_attachment_id": "id",
+        "length": "length",
+        "title": "title",
+        "updated": "updated",
+        "url": "url",
+        "uri": "_uri",
+        "_unresolved": "_unresolved",
+    }
     _obj_client = "tracker_client"
     _obj_struct = "tns3:WikiPageAttachment"
 

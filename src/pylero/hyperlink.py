@@ -13,13 +13,16 @@ class Hyperlink(BasePolarion):
 
     Attributes:
         role (EnumOptionId)
-        uri (string)
-"""
+        uri (string)"""
+
     _cls_suds_map = {
-        "role": {"field_name": "role",
-                 "cls": EnumOptionId,
-                 "enum_id": "hyperlink-role"},
-        "uri": "uri"}
+        "role": {
+            "field_name": "role",
+            "cls": EnumOptionId,
+            "enum_id": "hyperlink-role",
+        },
+        "uri": "uri",
+    }
     _obj_client = "builder_client"
     _obj_struct = "tns5:Hyperlink"
 

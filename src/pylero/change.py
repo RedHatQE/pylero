@@ -19,14 +19,17 @@ class Change(BasePolarion):
         revision (string)
         user (string)
     """
-    _cls_suds_map = {"creation": "creation",
-                     "date": "date",
-                     "diffs": "diffs",
-                     "empty": "empty",
-                     "invalid": "invalid",
-                     "revision": "revision",
-                     "user": "user",
-                     "uri": "_uri",
-                     "_unresolved": "_unresolved"}
+
+    _cls_suds_map = {
+        "creation": "creation",
+        "date": "date",
+        "diffs": "diffs",
+        "empty": "empty",
+        "invalid": "invalid",
+        "revision": "revision",
+        "user": "user",
+        "uri": "_uri",
+        "_unresolved": "_unresolved",
+    }
     _obj_client = "tracker_client"
     _obj_struct = "tns3:Change"

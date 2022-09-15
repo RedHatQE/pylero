@@ -34,7 +34,7 @@ except ImportError:
 try:
     string_types = (str, unicode)
 except NameError:
-    string_types = (str, )
+    string_types = (str,)
 
 try:
     from __builtin__ import basestring

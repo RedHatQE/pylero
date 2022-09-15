@@ -12,11 +12,13 @@ class Property(BasePolarion):
 
     Attributes:
         key (string)
-        value (string)
-"""
-    _cls_suds_map = {"key": "key",
-                     "value": "value",
-                     "uri": "_uri",
-                     "_unresolved": "_unresolved"}
+        value (string)"""
+
+    _cls_suds_map = {
+        "key": "key",
+        "value": "value",
+        "uri": "_uri",
+        "_unresolved": "_unresolved",
+    }
     _obj_client = "builder_client"
     _obj_struct = "tns4:property"

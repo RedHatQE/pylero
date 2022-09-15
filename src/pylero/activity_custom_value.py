@@ -11,10 +11,8 @@ class ActivityCustomValue(BasePolarion):
     """Object to handle the Polarion WSDL tns3:ActivityCustomValue class
 
     Attributes:
-        values (ArrayOf_xsd_string)
-"""
-    _cls_suds_map = {"values": "values",
-                     "uri": "_uri",
-                     "_unresolved": "_unresolved"}
+        values (ArrayOf_xsd_string)"""
+
+    _cls_suds_map = {"values": "values", "uri": "_uri", "_unresolved": "_unresolved"}
     _obj_client = "tracker_client"
     _obj_struct = "tns3:ActivityCustomValue"

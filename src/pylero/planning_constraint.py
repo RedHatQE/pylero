@@ -13,14 +13,14 @@ class PlanningConstraint(BasePolarion):
 
     Attributes:
         constraint (EnumOptionId)
-        date (dateTime)
-"""
-    _cls_suds_map = {"constraint":
-                     {"field_name": "constraint",
-                      "cls": EnumOptionId},
-                     "date": "date",
-                     "uri": "_uri",
-                     "_unresolved": "_unresolved"}
+        date (dateTime)"""
+
+    _cls_suds_map = {
+        "constraint": {"field_name": "constraint", "cls": EnumOptionId},
+        "date": "date",
+        "uri": "_uri",
+        "_unresolved": "_unresolved",
+    }
     _obj_client = "builder_client"
     _obj_struct = "tns5:PlanningConstraint"
 

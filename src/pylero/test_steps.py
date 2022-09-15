@@ -16,22 +16,26 @@ class TestSteps(BasePolarion):
 
     Attributes:
         keys (ArrayOfEnumOptionId)
-        steps (ArrayOfTestStep)
-"""
-    _cls_suds_map = {"keys":
-                     {"field_name": "keys",
-                      "is_array": True,
-                      "cls": EnumOptionId,
-                      "arr_cls": ArrayOfEnumOptionId,
-                      "inner_field_name": "EnumOptionId",
-                      "enum_id": "testing/test-step-keys"},
-                     "steps":
-                     {"field_name": "steps",
-                      "is_array": True,
-                      "cls": TestStep,
-                      "arr_cls": ArrayOfTestStep,
-                      "inner_field_name": "TestStep"},
-                     "uri": "_uri",
-                     "_unresolved": "_unresolved"}
+        steps (ArrayOfTestStep)"""
+
+    _cls_suds_map = {
+        "keys": {
+            "field_name": "keys",
+            "is_array": True,
+            "cls": EnumOptionId,
+            "arr_cls": ArrayOfEnumOptionId,
+            "inner_field_name": "EnumOptionId",
+            "enum_id": "testing/test-step-keys",
+        },
+        "steps": {
+            "field_name": "steps",
+            "is_array": True,
+            "cls": TestStep,
+            "arr_cls": ArrayOfTestStep,
+            "inner_field_name": "TestStep",
+        },
+        "uri": "_uri",
+        "_unresolved": "_unresolved",
+    }
     _obj_client = "test_management_client"
     _obj_struct = "tns3:TestSteps"

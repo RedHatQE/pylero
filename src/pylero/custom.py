@@ -13,13 +13,12 @@ class Custom(BasePolarion):
 
     Attributes:
         key (string)
-        value (EnumOptionId)
-"""
-    _cls_suds_map = {"key": "key",
-                     "value":
-                     {"field_name": "value",
-                      "cls": EnumOptionId}
-                     }
+        value (EnumOptionId)"""
+
+    _cls_suds_map = {
+        "key": "key",
+        "value": {"field_name": "value", "cls": EnumOptionId},
+    }
     _obj_client = "test_management_client"
     _obj_struct = "tns4:Custom"
 

@@ -19,22 +19,25 @@ class Revision(BasePolarion):
         linked_work_item_uris (ArrayOfSubterraURI)
         message (string)
         name (string)
-        repository_name (string)
-"""
-    _cls_suds_map = {"author": "author",
-                     "created": "created",
-                     "internal_commit": "internalCommit",
-                     "linked_work_item_uris":
-                     {"field_name": "linkedWorkItemURIs",
-                      "is_array": True,
-                      "cls": SubterraURI,
-                      "arr_cls": ArrayOfSubterraURI,
-                      "inner_field_name": "SubterraURI"},
-                     "message": "message",
-                     "name": "name",
-                     "repository_name": "repositoryName",
-                     "uri": "_uri",
-                     "_unresolved": "_unresolved"}
+        repository_name (string)"""
+
+    _cls_suds_map = {
+        "author": "author",
+        "created": "created",
+        "internal_commit": "internalCommit",
+        "linked_work_item_uris": {
+            "field_name": "linkedWorkItemURIs",
+            "is_array": True,
+            "cls": SubterraURI,
+            "arr_cls": ArrayOfSubterraURI,
+            "inner_field_name": "SubterraURI",
+        },
+        "message": "message",
+        "name": "name",
+        "repository_name": "repositoryName",
+        "uri": "_uri",
+        "_unresolved": "_unresolved",
+    }
     _obj_client = "builder_client"
     _obj_struct = "tns4:Revision"
 
@@ -65,10 +68,12 @@ class Revision(BasePolarion):
         """
         if query_uris:
             return cls.session.tracker_client.service.queryRevisionUris(
-                query, sort, False)
+                query, sort, False
+            )
         else:
             revs = cls.session.tracker_client.service.queryRevisions(
-                query, sort, fields)
+                query, sort, fields
+            )
             lst_rev = [Revision(suds_object=rev) for rev in revs]
             return lst_rev
 
