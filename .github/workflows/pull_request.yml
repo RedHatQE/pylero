@@ -29,3 +29,4 @@ jobs:
 
       - name: Pre Commit Checks
         uses: pre-commit/action@v3.0.0
+        if: ${{ matrix.python-version != '3.6' }}
