@@ -29,43 +29,38 @@ class ModuleComment(BasePolarion):
         resolved (boolean)
         signature_data (SignatureData)
         tags (ArrayOfEnumOptionId)
-        text (Text)
-"""
-    _cls_suds_map = {"author":
-                     {"field_name": "author",
-                      "cls": User},
-                     "child_comment_uris":
-                     {"field_name": "childCommentURIs",
-                      "is_array": True,
-                      "cls": SubterraURI,
-                      "arr_cls": ArrayOfSubterraURI,
-                      "inner_field_name": "SubterraURI"},
-                     "created": "created",
-                     "module_comment_id": "id",
-                     "imported_comment":
-                     {"field_name": "importedComment",
-                      "cls": ImportedComment},
-                     "parent_comment_uri":
-                     {"field_name": "parentCommentURI",
-                      "cls": SubterraURI},
-                     "referred_work_item_uri":
-                     {"field_name": "referredWorkItemURI",
-                      "cls": SubterraURI},
-                     "resolved": "resolved",
-                     "signature_data":
-                     {"field_name": "signatureData",
-                      "cls": SignatureData},
-                     "tags":
-                     {"field_name": "tags",
-                      "is_array": True,
-                      "cls": EnumOptionId,
-                      "arr_cls": ArrayOfEnumOptionId,
-                      "inner_field_name": "EnumOptionId"},
-                     "text":
-                     {"field_name": "text",
-                      "cls": Text},
-                     "uri": "_uri",
-                     "_unresolved": "_unresolved"}
+        text (Text)"""
+
+    _cls_suds_map = {
+        "author": {"field_name": "author", "cls": User},
+        "child_comment_uris": {
+            "field_name": "childCommentURIs",
+            "is_array": True,
+            "cls": SubterraURI,
+            "arr_cls": ArrayOfSubterraURI,
+            "inner_field_name": "SubterraURI",
+        },
+        "created": "created",
+        "module_comment_id": "id",
+        "imported_comment": {"field_name": "importedComment", "cls": ImportedComment},
+        "parent_comment_uri": {"field_name": "parentCommentURI", "cls": SubterraURI},
+        "referred_work_item_uri": {
+            "field_name": "referredWorkItemURI",
+            "cls": SubterraURI,
+        },
+        "resolved": "resolved",
+        "signature_data": {"field_name": "signatureData", "cls": SignatureData},
+        "tags": {
+            "field_name": "tags",
+            "is_array": True,
+            "cls": EnumOptionId,
+            "arr_cls": ArrayOfEnumOptionId,
+            "inner_field_name": "EnumOptionId",
+        },
+        "text": {"field_name": "text", "cls": Text},
+        "uri": "_uri",
+        "_unresolved": "_unresolved",
+    }
     _obj_client = "test_management_client"
     _obj_struct = "tns4:ModuleComment"
 

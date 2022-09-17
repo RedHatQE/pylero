@@ -13,10 +13,8 @@ class CustomField(BasePolarion):
     Attributes:
         key (string)
         parent_item_uri (string)
-        value (anyType)
-"""
-    _cls_suds_map = {"key": "key",
-                     "parent_item_uri": "parentItemURI",
-                     "value": "value"}
+        value (anyType)"""
+
+    _cls_suds_map = {"key": "key", "parent_item_uri": "parentItemURI", "value": "value"}
     _obj_client = "tracker_client"
     _obj_struct = "tns3:CustomField"

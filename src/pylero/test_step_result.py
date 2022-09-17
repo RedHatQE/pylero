@@ -17,23 +17,25 @@ class TestStepResult(BasePolarion):
     Attributes:
         attachments (ArrayOfTestRunAttachment)
         comment (Text)
-        result (EnumOptionId)
-"""
-    _cls_suds_map = {"attachments":
-                     {"field_name": "attachments",
-                      "is_array": True,
-                      "cls": TestRunAttachment,
-                      "arr_cls": ArrayOfTestRunAttachment,
-                      "inner_field_name": "TestRunAttachment"},
-                     "comment":
-                     {"field_name": "comment",
-                      "cls": Text},
-                     "result":
-                     {"field_name": "result",
-                      "cls": EnumOptionId,
-                      "enum_id": "testing/test-result"},
-                     "uri": "_uri",
-                     "_unresolved": "_unresolved"}
+        result (EnumOptionId)"""
+
+    _cls_suds_map = {
+        "attachments": {
+            "field_name": "attachments",
+            "is_array": True,
+            "cls": TestRunAttachment,
+            "arr_cls": ArrayOfTestRunAttachment,
+            "inner_field_name": "TestRunAttachment",
+        },
+        "comment": {"field_name": "comment", "cls": Text},
+        "result": {
+            "field_name": "result",
+            "cls": EnumOptionId,
+            "enum_id": "testing/test-result",
+        },
+        "uri": "_uri",
+        "_unresolved": "_unresolved",
+    }
     _obj_client = "test_management_client"
     _obj_struct = "tns3:TestStepResult"
 

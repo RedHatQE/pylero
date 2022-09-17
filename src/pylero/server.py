@@ -14,8 +14,16 @@ class Server(object):
     session that is used to connect to the server.
     """
 
-    def __init__(self, url, login, password, default_project=None,
-                 relogin_timeout=60, timeout=120, cert_path=None):
+    def __init__(
+        self,
+        url,
+        login,
+        password,
+        default_project=None,
+        relogin_timeout=60,
+        timeout=120,
+        cert_path=None,
+    ):
         """An object that defines the properties of the Polarion server to
         connect to.
 

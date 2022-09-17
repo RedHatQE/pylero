@@ -23,21 +23,23 @@ class ProductLicense(BasePolarion):
         license_format (string)
         license_profile (string)
         mac_address (string)
-        named_license_data (ArrayOf_tns3_LicenseInfo)
-"""
-    _cls_suds_map = {"concurrent_license_data": "concurrent_license_data",
-                     "customer_company": "customerCompany",
-                     "customer_email": "customerEmail",
-                     "customer_name": "customerName",
-                     "date_created": "dateCreated",
-                     "expiration_date": "expirationDate",
-                     "generated_by": "generatedBy",
-                     "ip_address": "ipAddress",
-                     "license_format": "licenseFormat",
-                     "license_profile": "licenseProfile",
-                     "mac_address": "macAddress",
-                     "named_license_data": "named_license_data",
-                     "uri": "_uri",
-                     "_unresolved": "_unresolved"}
+        named_license_data (ArrayOf_tns3_LicenseInfo)"""
+
+    _cls_suds_map = {
+        "concurrent_license_data": "concurrent_license_data",
+        "customer_company": "customerCompany",
+        "customer_email": "customerEmail",
+        "customer_name": "customerName",
+        "date_created": "dateCreated",
+        "expiration_date": "expirationDate",
+        "generated_by": "generatedBy",
+        "ip_address": "ipAddress",
+        "license_format": "licenseFormat",
+        "license_profile": "licenseProfile",
+        "mac_address": "macAddress",
+        "named_license_data": "named_license_data",
+        "uri": "_uri",
+        "_unresolved": "_unresolved",
+    }
     _obj_client = "security_client"
     _obj_struct = "tns3:ProductLicense"

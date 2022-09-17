@@ -14,15 +14,15 @@ class Category(BasePolarion):
     Attributes:
         description (Text)
         category_id (string)
-        name (string)
-"""
-    _cls_suds_map = {"description":
-                     {"field_name": "description",
-                      "cls": Text},
-                     "category_id": "id",
-                     "name": "name",
-                     "uri": "_uri",
-                     "_unresolved": "_unresolved"}
+        name (string)"""
+
+    _cls_suds_map = {
+        "description": {"field_name": "description", "cls": Text},
+        "category_id": "id",
+        "name": "name",
+        "uri": "_uri",
+        "_unresolved": "_unresolved",
+    }
     _obj_client = "builder_client"
     _obj_struct = "tns5:Category"
     _id_field = "category_id"

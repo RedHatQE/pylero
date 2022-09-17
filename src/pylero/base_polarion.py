@@ -40,63 +40,78 @@ class Configuration(object):
     # https://docs.python.org/2.6/library/configparser.html
 
     def __init__(self):
-        defaults = {"cachingpolicy": "0",
-                    "timeout": "120"}
+        defaults = {"cachingpolicy": "0", "timeout": "120"}
         config = ConfigParser(defaults)
         # Check for existence of config file and config_section
-        if not config.read([self.GLOBAL_CONFIG, self.LOCAL_CONFIG,
-                            self.CURDIR_CONFIG]) or \
-                not config.has_section(self.CONFIG_SECTION):
+        if not config.read(
+            [self.GLOBAL_CONFIG, self.LOCAL_CONFIG, self.CURDIR_CONFIG]
+        ) or not config.has_section(self.CONFIG_SECTION):
             # Check for mandatory environ variables if config file is not found
-            if not all(os.environ.get(item) for item in ('POLARION_URL',
-                                                         'POLARION_REPO',
-                                                         'POLARION_USERNAME',
-                                                         'POLARION_PASSWORD',
-                                                         'POLARION_PROJECT')):
-                raise PyleroLibException("The config files/ENV vars do not "
-                                         "exist or are not of the correct "
-                                         "format. Valid files are: {0}, {1} "
-                                         "or {2}" .format(self.GLOBAL_CONFIG,
-                                                          self.LOCAL_CONFIG,
-                                                          self.CURDIR_CONFIG))
-        self.server_url = os.environ.get("POLARION_URL") or \
-            config.get(self.CONFIG_SECTION, "url")
-        self.repo = os.environ.get("POLARION_REPO") or \
-            config.get(self.CONFIG_SECTION, "svn_repo")
-        self.login = os.environ.get("POLARION_USERNAME") or \
-            config.get(self.CONFIG_SECTION, "user")
-        self.pwd = os.environ.get("POLARION_PASSWORD") or \
-            config.get(self.CONFIG_SECTION, "password")
+            if not all(
+                os.environ.get(item)
+                for item in (
+                    "POLARION_URL",
+                    "POLARION_REPO",
+                    "POLARION_USERNAME",
+                    "POLARION_PASSWORD",
+                    "POLARION_PROJECT",
+                )
+            ):
+                raise PyleroLibException(
+                    "The config files/ENV vars do not "
+                    "exist or are not of the correct "
+                    "format. Valid files are: {0}, {1} "
+                    "or {2}".format(
+                        self.GLOBAL_CONFIG, self.LOCAL_CONFIG, self.CURDIR_CONFIG
+                    )
+                )
+        self.server_url = os.environ.get("POLARION_URL") or config.get(
+            self.CONFIG_SECTION, "url"
+        )
+        self.repo = os.environ.get("POLARION_REPO") or config.get(
+            self.CONFIG_SECTION, "svn_repo"
+        )
+        self.login = os.environ.get("POLARION_USERNAME") or config.get(
+            self.CONFIG_SECTION, "user"
+        )
+        self.pwd = os.environ.get("POLARION_PASSWORD") or config.get(
+            self.CONFIG_SECTION, "password"
+        )
 
         try:
-            self.timeout = os.environ.get("POLARION_TIMEOUT") or \
-                config.get(self.CONFIG_SECTION, "timeout")
+            self.timeout = os.environ.get("POLARION_TIMEOUT") or config.get(
+                self.CONFIG_SECTION, "timeout"
+            )
         except Exception:
-            self.timeout = config.defaults['timeout']
+            self.timeout = config.defaults["timeout"]
 
         try:
             self.timeout = int(self.timeout)
         except ValueError:
-            raise PyleroLibException("The timeout value in the config"
-                                     " file must be an integer")
-        self.proj = os.environ.get("POLARION_PROJECT") or \
-            config.get(self.CONFIG_SECTION, "default_project")
+            raise PyleroLibException(
+                "The timeout value in the config" " file must be an integer"
+            )
+        self.proj = os.environ.get("POLARION_PROJECT") or config.get(
+            self.CONFIG_SECTION, "default_project"
+        )
         try:
-            self.cert_path = os.environ.get("POLARION_CERT_PATH") or \
-                config.get(self.CONFIG_SECTION, "cert_path")
+            self.cert_path = os.environ.get("POLARION_CERT_PATH") or config.get(
+                self.CONFIG_SECTION, "cert_path"
+            )
         except Exception:
             self.cert_path = None
 
         if not (self.server_url and self.login and self.proj):
-            raise PyleroLibException("The config files must contain "
-                                     "valid values for: url, user, "
-                                     "password and default_project")
+            raise PyleroLibException(
+                "The config files must contain "
+                "valid values for: url, user, "
+                "password and default_project"
+            )
 
         try:
-            self.disable_manual_auth = \
-                os.environ.get("POLARION_DISABLE_MANUAL_AUTH") or \
-                config.getboolean(self.CONFIG_SECTION,
-                                  "disable_manual_auth")
+            self.disable_manual_auth = os.environ.get(
+                "POLARION_DISABLE_MANUAL_AUTH"
+            ) or config.getboolean(self.CONFIG_SECTION, "disable_manual_auth")
         except Exception:
             self.disable_manual_auth = False
 
@@ -115,6 +130,7 @@ class Connection(object):
     POLARION_TIMEOUT
     POLARION_PROJECT
     """
+
     connected = False
     session = None
     password_retries = 3
@@ -126,15 +142,16 @@ class Connection(object):
             # if the password is not supplied in the config file, ask the user
             # for it
             if not cfg.pwd:
-                cfg.pwd = getpass(
-                    "Password not in config file.\nEnter Password:")
+                cfg.pwd = getpass("Password not in config file.\nEnter Password:")
             while not cls.connected and cls.password_retries:
                 try:
                     srv = Server(
                         cfg.server_url,
-                        cfg.login, cfg.pwd,
+                        cfg.login,
+                        cfg.pwd,
                         timeout=cfg.timeout,
-                        cert_path=cfg.cert_path)
+                        cert_path=cfg.cert_path,
+                    )
                     cls.session = srv.session()
                     cls.session._login()
                     cls.connected = True
@@ -142,19 +159,23 @@ class Connection(object):
                     # If we couldn't connect its because the user has typed the
                     # wrong password. So we keep asking for password till we
                     # are successfully connected
-                    if "com.polarion.platform.security." \
-                            "AuthenticationFailedException" \
-                            in e.fault.faultstring:
+                    if (
+                        "com.polarion.platform.security."
+                        "AuthenticationFailedException" in e.fault.faultstring
+                    ):
                         if cfg.disable_manual_auth:
-                            raise PyleroLibException("Manual authentication "
-                                                     "is disabled")
+                            raise PyleroLibException(
+                                "Manual authentication " "is disabled"
+                            )
                         cfg.pwd = getpass("Invalid Password.\nEnter Password:")
                         cls.password_retries -= 1
                     else:
                         raise
             if not cls.password_retries:
-                raise PyleroLibException("Unable to establish pylero session "
-                                         "due to 3 incorrect login attempts")
+                raise PyleroLibException(
+                    "Unable to establish pylero session "
+                    "due to 3 incorrect login attempts"
+                )
             cls.session.default_project = cfg.proj
             cls.session.user_id = cfg.login
             cls.session.password = cfg.pwd
@@ -186,6 +207,7 @@ def tx_wrapper(func):
             if new_tx and self.session.tx_in():
                 self.session.tx_rollback()
             raise
+
     return inner
 
 
@@ -218,25 +240,21 @@ class BasePolarion(object):
         default_project (str): The user's default project, to be used when
                           project_id is needed and there is none given
     """
+
     _cls_suds_map = {}
     _id_field = None
     _obj_client = None
     _obj_struct = None
     _session = None
     _default_project = None
-    _cache = {
-        "enums": {},
-        "custom_field_types": {},
-        "projects": {}
-    }
+    _cache = {"enums": {}, "custom_field_types": {}, "projects": {}}
     REGEX_PROJ = r"/default/(.*)\$"
     # The id in the uri is always after the last }, at times there are multiple
     REGEX_ID = ".+}(.*)$"
     # The URI_STRUCT can be overridden in a child class when needed (for
     # example, Documents). Also if there is need for a replace in the child
     # class the URI_ID lambda attributes should be overridden
-    URI_STRUCT = "subterra:data-service:objects:/default/" \
-                 "%(project)s${%(obj)s}%(id)s"
+    URI_STRUCT = "subterra:data-service:objects:/default/" "%(project)s${%(obj)s}%(id)s"
     # must wrap lambda with classmethod so it can be used as such
     URI_ID_GET_REPLACE = classmethod(lambda cls, x: x)
     URI_ID_SET_REPLACE = classmethod(lambda cls, x: x)
@@ -285,17 +303,21 @@ class BasePolarion(object):
             if not isinstance(fields, list):
                 fields = [fields]
             # convert given fields to Polarion fields
-            p_fields = ["%s%s" % (
-                "customFields."
-                if isinstance(cls._cls_suds_map[x], dict) and
-                cls._cls_suds_map[x].get("is_custom", False)
-                else "",
-                cls._cls_suds_map[x]
-                if not isinstance(cls._cls_suds_map[x], dict)
-                else cls._cls_suds_map[x]["field_name"]) for x in fields]
+            p_fields = [
+                "%s%s"
+                % (
+                    "customFields."
+                    if isinstance(cls._cls_suds_map[x], dict)
+                    and cls._cls_suds_map[x].get("is_custom", False)
+                    else "",
+                    cls._cls_suds_map[x]
+                    if not isinstance(cls._cls_suds_map[x], dict)
+                    else cls._cls_suds_map[x]["field_name"],
+                )
+                for x in fields
+            ]
             # Omit 'URIs' and 'URI' from URIFields
-            p_fields = [(x.replace("URIs", "").replace("URI", ""))
-                        for x in p_fields]
+            p_fields = [(x.replace("URIs", "").replace("URI", "")) for x in p_fields]
         return p_fields
 
     @classmethod
@@ -329,7 +351,8 @@ class BasePolarion(object):
             Security.hasCurrentUserPermission
         """
         return cls.session.security_client.service.hasCurrentuserPermission(
-            permission, project_id)
+            permission, project_id
+        )
 
     def __init__(self, obj_id=None, suds_object=None):
         # cls_suds_map must be available for some parameters on the class
@@ -348,7 +371,9 @@ class BasePolarion(object):
         if obj_id and not self._id_field:
             raise PyleroLibException(
                 "{0} only accepts a suds object, not an obj_id".format(
-                    self.__class__.__name))
+                    self.__class__.__name
+                )
+            )
         if suds_object:
             self._suds_object = suds_object
         else:
@@ -384,40 +409,69 @@ class BasePolarion(object):
                 #    use getattr and setattr
                 if isinstance(self._cls_suds_map[key], dict):
                     if "is_custom" in self._cls_suds_map[key]:
-                        setattr(self.__class__, key, property(
-                            lambda self, field_name=key:
-                                self._custom_getter(field_name),
-                            lambda self, val, field_name=key:
-                                self._custom_setter(val, field_name)))
+                        setattr(
+                            self.__class__,
+                            key,
+                            property(
+                                lambda self, field_name=key: self._custom_getter(
+                                    field_name
+                                ),
+                                lambda self, val, field_name=key: self._custom_setter(
+                                    val, field_name
+                                ),
+                            ),
+                        )
                     elif "is_array" in self._cls_suds_map[key]:
-                        setattr(self.__class__, key, property(
-                            lambda self, field_name=key:
-                                self._arr_obj_getter(field_name),
-                            lambda self, val, field_name=key:
-                                self._arr_obj_setter(val, field_name)))
+                        setattr(
+                            self.__class__,
+                            key,
+                            property(
+                                lambda self, field_name=key: self._arr_obj_getter(
+                                    field_name
+                                ),
+                                lambda self, val, field_name=key: self._arr_obj_setter(
+                                    val, field_name
+                                ),
+                            ),
+                        )
                     else:
-                        setattr(self.__class__, key, property(
-                            lambda self, field_name=key:
-                                self._obj_getter(field_name),
-                            lambda self, val, field_name=key:
-                                self._obj_setter(val, field_name)))
+                        setattr(
+                            self.__class__,
+                            key,
+                            property(
+                                lambda self, field_name=key: self._obj_getter(
+                                    field_name
+                                ),
+                                lambda self, val, field_name=key: self._obj_setter(
+                                    val, field_name
+                                ),
+                            ),
+                        )
                 else:
-                    setattr(self.__class__, key, property(
-                        # if the attribute doesn't exist in the current object
-                        # return None
-                        lambda self, suds_key=self._cls_suds_map[key]:
-                            getattr(self._suds_object, suds_key, None),
-                        lambda self, value, suds_key=self._cls_suds_map[key]:
-                            self._regular_setter(value, suds_key)))
-# after all properties are defined set the id field to the value passed in.
+                    setattr(
+                        self.__class__,
+                        key,
+                        property(
+                            # if the attribute doesn't exist in the current object
+                            # return None
+                            lambda self, suds_key=self._cls_suds_map[key]: getattr(
+                                self._suds_object, suds_key, None
+                            ),
+                            lambda self, value, suds_key=self._cls_suds_map[
+                                key
+                            ]: self._regular_setter(value, suds_key),
+                        ),
+                    )
+        # after all properties are defined set the id field to the value passed in.
         if obj_id is not None:
             setattr(self, self._id_field, obj_id)
 
     def _get_suds_object(self):
         """Returns the WSDL object as created by the Polarion WSDL factory"""
         if self._obj_client and self._obj_struct:
-            self._suds_object = getattr(self.session, self._obj_client). \
-                factory.create(self._obj_struct)
+            self._suds_object = getattr(self.session, self._obj_client).factory.create(
+                self._obj_struct
+            )
         else:
             self._suds_object = None
 
@@ -433,8 +487,7 @@ class BasePolarion(object):
         """
         csm = self._cls_suds_map[field_name]
         named_arg = csm.get("named_arg", "suds_object")
-        suds_field_val = getattr(
-            self._suds_object, csm.get("field_name", ""), None)
+        suds_field_val = getattr(self._suds_object, csm.get("field_name", ""), None)
         cls_obj = csm["cls"]
         if suds_field_val:
             if named_arg == "uri" and cls_obj._id_field:
@@ -474,18 +527,19 @@ class BasePolarion(object):
             val = self._check_encode(val)
             if enum_id and val not in enum_override:
                 self.check_valid_field_values(
-                    val, enum_id, {},
-                    self._wi_type if hasattr(self, "_wi_type") else None)
+                    val,
+                    enum_id,
+                    {},
+                    self._wi_type if hasattr(self, "_wi_type") else None,
+                )
         if not sync_field:
             sync_field = "_suds_object"
         if isinstance(val, basestring) or val is None:
             add_parms[obj_cls._id_field] = val
             obj = obj_cls(**add_parms)
-            setattr(self._suds_object, suds_field_name,
-                    getattr(obj, sync_field))
+            setattr(self._suds_object, suds_field_name, getattr(obj, sync_field))
         elif isinstance(val, obj_cls):
-            setattr(self._suds_object, suds_field_name,
-                    getattr(val, sync_field))
+            setattr(self._suds_object, suds_field_name, getattr(val, sync_field))
         elif isinstance(val, obj_cls()._suds_object.__class__):
             obj = obj_cls()
             if sync_field in obj._cls_suds_map:
@@ -494,8 +548,7 @@ class BasePolarion(object):
                 val = getattr(val, suds_sync_field)
             setattr(self._suds_object, suds_field_name, val)
         else:
-            raise PyleroLibException("the value {0} is not a valid type".
-                                     format(val))
+            raise PyleroLibException("the value {0} is not a valid type".format(val))
 
     def _arr_obj_getter(self, field_name):
         """get function for attributes that reference an array of objects.
@@ -532,15 +585,14 @@ class BasePolarion(object):
         arr_inst = csm.get("arr_cls")()
         obj_inst = csm.get("cls")()
         # obj_attach =
-        if not isinstance(val,
-                          (list, arr_inst.__class__,
-                           arr_inst._suds_object.__class__)):
-            raise PyleroLibException(
-                "{0}s must be a list of {1}").format(
-                    csm["field_name"], obj_inst.__class__.__name__)
+        if not isinstance(
+            val, (list, arr_inst.__class__, arr_inst._suds_object.__class__)
+        ):
+            raise PyleroLibException("{0}s must be a list of {1}").format(
+                csm["field_name"], obj_inst.__class__.__name__
+            )
         elif not val:
-            setattr(
-                self._suds_object, csm["field_name"], arr_inst._suds_object)
+            setattr(self._suds_object, csm["field_name"], arr_inst._suds_object)
         elif isinstance(val, arr_inst._suds_object.__class__):
             setattr(self._suds_object, csm["field_name"], val)
         elif isinstance(val, arr_inst.__class__):
@@ -554,27 +606,28 @@ class BasePolarion(object):
                     val = [csm["cls"](item) for item in val]
 
                 if isinstance(val[0], obj_inst._suds_object.__class__):
-                    setattr(getattr(self._suds_object, csm["field_name"]),
-                            csm["inner_field_name"], val)
+                    setattr(
+                        getattr(self._suds_object, csm["field_name"]),
+                        csm["inner_field_name"],
+                        val,
+                    )
                 else:
-                    setattr(self._suds_object, csm["field_name"],
-                            arr_inst._suds_object)
+                    setattr(self._suds_object, csm["field_name"], arr_inst._suds_object)
                     for item in val:
-                        getattr(getattr(self._suds_object, csm["field_name"]),
-                                csm["inner_field_name"]).append(
-                                    item._suds_object)
+                        getattr(
+                            getattr(self._suds_object, csm["field_name"]),
+                            csm["inner_field_name"],
+                        ).append(item._suds_object)
 
     def custom_obj(self):
         # This returns a custom Polarion object. It can't use the Custom class
         # as that is a child of this class.
-        return self.session.test_management_client.factory.create(
-            "tns4:Custom")
+        return self.session.test_management_client.factory.create("tns4:Custom")
 
     def custom_array_obj(self):
         # This returns a custom Polarion object. It can't use the Custom class
         # as that is a child of this class.
-        return self.session.test_management_client.factory.create(
-            "tns4:ArrayOfCustom")
+        return self.session.test_management_client.factory.create("tns4:ArrayOfCustom")
 
     def _custom_getter(self, field_name):
         """Works with custom fields that has attributes stored differently
@@ -591,15 +644,15 @@ class BasePolarion(object):
         csm = self._cls_suds_map[field_name]
         if field_name == "test_steps":
             if self._changed_fields.get("testSteps"):
-                return csm["cls"](
-                    suds_object=self._changed_fields.get("testSteps"))
+                return csm["cls"](suds_object=self._changed_fields.get("testSteps"))
             else:
                 test_steps = self.get_test_steps()
                 if test_steps:
                     return test_steps
         else:
-            if (("customFields" not in self._suds_object) or
-                    (not self._suds_object.customFields)):
+            if ("customFields" not in self._suds_object) or (
+                not self._suds_object.customFields
+            ):
                 self._suds_object.customFields = self.custom_array_obj()
             cf = self._suds_object.customFields[0]
             custom_fld = None
@@ -609,8 +662,7 @@ class BasePolarion(object):
                 if match:
                     custom_fld = match[0]
             if not custom_fld and self.uri:
-                custom_fld = self.get_custom_field(
-                    csm["field_name"])._suds_object
+                custom_fld = self.get_custom_field(csm["field_name"])._suds_object
             if custom_fld:
                 if isinstance(custom_fld, basestring):
                     obj = custom_fld
@@ -620,13 +672,10 @@ class BasePolarion(object):
                     if custom_fld.value:
                         for inst in custom_fld.value[0]:
                             if csm["cls"]._cls_inner._id_field:
-                                item_inst = csm["cls"]._cls_inner(
-                                    suds_object=inst)
-                                obj.append(
-                                    getattr(item_inst, item_inst._id_field))
+                                item_inst = csm["cls"]._cls_inner(suds_object=inst)
+                                obj.append(getattr(item_inst, item_inst._id_field))
                             else:
-                                obj.append(csm["cls"]._cls_inner(
-                                    suds_object=inst))
+                                obj.append(csm["cls"]._cls_inner(suds_object=inst))
                 elif csm.get("cls"):
                     obj = csm["cls"](suds_object=custom_fld.value)
                 else:
@@ -657,7 +706,8 @@ class BasePolarion(object):
                 self._changed_fields[csm["field_name"]] = val
             else:
                 raise PyleroLibException(
-                    "The value must be a {0}".format(csm["cls"].__name__))
+                    "The value must be a {0}".format(csm["cls"].__name__)
+                )
         # move the custom fields to within the object, otherwise each custom
         # field is a seperate SVN commit. testSteps, does not work unless it
         # is uploaded using the set_test_steps function.
@@ -666,22 +716,20 @@ class BasePolarion(object):
             cust.key = csm["field_name"]
             if val is None:
                 cust.value = None
-            elif (not csm.get("cls") or isinstance(val, basestring)) \
-                    and not csm.get("is_array"):
+            elif (not csm.get("cls") or isinstance(val, basestring)) and not csm.get(
+                "is_array"
+            ):
                 # if there is no cls specified, val can be a bool, int, ...
                 # if val is a string, it may be used to instantiate the class
                 if isinstance(val, basestring):
                     val = self._check_encode(val)
-                if csm.get("enum_id") and \
-                        val not in csm.get("enum_override", []):
+                if csm.get("enum_id") and val not in csm.get("enum_override", []):
                     # uses deepcopy, to not affect other instances of the class
-                    additional_parms = copy.deepcopy(
-                        csm.get("additional_parms", {}))
-                    self.check_valid_field_values(val, csm.get("enum_id"),
-                                                  additional_parms,
-                                                  csm.get("control"))
-                cust.value = csm["cls"](val)._suds_object if csm.get("cls") \
-                    else val
+                    additional_parms = copy.deepcopy(csm.get("additional_parms", {}))
+                    self.check_valid_field_values(
+                        val, csm.get("enum_id"), additional_parms, csm.get("control")
+                    )
+                cust.value = csm["cls"](val)._suds_object if csm.get("cls") else val
             elif csm.get("is_array"):
                 if not isinstance(val, list):
                     raise PyleroLibException("value must be a list")
@@ -692,13 +740,15 @@ class BasePolarion(object):
                             # uses deepcopy, to not affect other instances
                             # of the class
                             additional_parms = copy.deepcopy(
-                                csm.get("additional_parms", {}))
+                                csm.get("additional_parms", {})
+                            )
                             self.check_valid_field_values(
-                                i, csm.get("enum_id"), additional_parms,
-                                self._wi_type if hasattr(self, "_wi_type")
-                                else None)
-                        cust.value[0].append(
-                            csm["cls"]._cls_inner(i)._suds_object)
+                                i,
+                                csm.get("enum_id"),
+                                additional_parms,
+                                self._wi_type if hasattr(self, "_wi_type") else None,
+                            )
+                        cust.value[0].append(csm["cls"]._cls_inner(i)._suds_object)
 
             elif isinstance(val, csm["cls"]):
                 cust.value = val._suds_object
@@ -706,10 +756,11 @@ class BasePolarion(object):
                 cust.value = val
             else:
                 raise PyleroLibException(
-                    "The value must be of type {0}."
-                    .format(csm["cls"].__name__))
-            if (("customFields" not in self._suds_object) or
-                    (not self._suds_object.customFields)):
+                    "The value must be of type {0}.".format(csm["cls"].__name__)
+                )
+            if ("customFields" not in self._suds_object) or (
+                not self._suds_object.customFields
+            ):
                 self._suds_object.customFields = self.custom_array_obj()
             cf = self._suds_object.customFields[0]
             if cf:
@@ -746,15 +797,14 @@ class BasePolarion(object):
         val (string): the value that the property is being set to
         """
         try:
-            if not isinstance(val, type(u'')):
-                val = val.decode('utf-8')
+            if not isinstance(val, type("")):
+                val = val.decode("utf-8")
             # replace chr(160) with space
-            return val.replace(u'\xa0', u' ')
+            return val.replace("\xa0", " ")
         except UnicodeError as err:
             raise PyleroLibException(
-                'String must be UTF-8 encoded. The following error was '
-                'raised when converting it to unicode: {0}'
-                .format(err)
+                "String must be UTF-8 encoded. The following error was "
+                "raised when converting it to unicode: {0}".format(err)
             )
 
     def _get_file_data(self, path):
@@ -775,18 +825,19 @@ class BasePolarion(object):
         # Effectively turns in Python3 String
         try:
             # Python2
-            return bencode.encode('utf8')
+            return bencode.encode("utf8")
         except AttributeError:
             # Python3
-            return bencode.decode('utf8')
+            return bencode.decode("utf8")
 
     def _verify_obj(self):
         # verifies if the object contains a suds object from the server by
         # checking if the uri field is populated. If no URI it didn't come from
         # the server
         if not getattr(self, "uri", None):
-            raise PyleroLibException("There is no {0} loaded".format(
-                self.__class__.__name__))
+            raise PyleroLibException(
+                "There is no {0} loaded".format(self.__class__.__name__)
+            )
 
     def can_add_element_to_key(self, key):
         """Checks if the current user can add elements to the collection at
@@ -802,8 +853,7 @@ class BasePolarion(object):
             Security.canAddElementToKey
         """
         self._verify_obj()
-        return self.session.security_client.service.canAddElementToKey(
-            self.uri, key)
+        return self.session.security_client.service.canAddElementToKey(self.uri, key)
 
     def can_delete_instance(self):
         """Checks if the current user can delete the current object
@@ -897,7 +947,8 @@ class BasePolarion(object):
         """
         self._verify_obj()
         return self.session.security_client.service.canRemoveElementFromKey(
-            self.uri, key)
+            self.uri, key
+        )
 
     def get_location(self):
         """Returns the location of the current object. In the context of this
@@ -916,8 +967,7 @@ class BasePolarion(object):
         self._verify_obj()
         return self.session.security_client.service.getLocationForURI(self.uri)
 
-    def check_valid_field_values(self, val, enum_id, additional_parms,
-                                 control=None):
+    def check_valid_field_values(self, val, enum_id, additional_parms, control=None):
         """verifies id the value passed in is valid for the enum or object
         passed in. for example, if we want to see if a valid user is given,
         this will try to instantiate the User class with the given parameter
@@ -937,13 +987,14 @@ class BasePolarion(object):
                 enum_id(val, **additional_parms)
             except Exception:
                 raise PyleroLibException(
-                    "{0} is not a valid value for {1}"
-                    .format(val, enum_id.__name__))
+                    "{0} is not a valid value for {1}".format(val, enum_id.__name__)
+                )
         else:
             valid_values = self.get_valid_field_values(enum_id, control)
             if val not in valid_values:
-                raise PyleroLibException("Acceptable values for {0} are:"
-                                         "{1}".format(enum_id, valid_values))
+                raise PyleroLibException(
+                    "Acceptable values for {0} are:" "{1}".format(enum_id, valid_values)
+                )
 
     def get_valid_field_values(self, enum_id, control=None):
         """Gets the available enumeration options.
@@ -966,8 +1017,9 @@ class BasePolarion(object):
         if enum_base:
             enums = enum_base.get(control)
         if not enums:
-            enums = self.session.tracker_client.service. \
-                getEnumOptionsForIdWithControl(project_id, enum_id, control)
+            enums = self.session.tracker_client.service.getEnumOptionsForIdWithControl(
+                project_id, enum_id, control
+            )
             self._cache["enums"][enum_id] = {}
             self._cache["enums"][enum_id][control] = enums
         # the _cache contains _suds_object, so the id attribute is used.

@@ -15,19 +15,21 @@ class LinkedWorkItem(BasePolarion):
         revision (string)
         role (EnumOptionId)
         suspect (boolean)
-        work_item_id (string)
-"""
+        work_item_id (string)"""
+
     _cls_suds_map = {
         "revision": "revision",
-        "role":
-            {"field_name": "role",
-             "cls": EnumOptionId,
-             "enum_id": "workitem-link-role"},
+        "role": {
+            "field_name": "role",
+            "cls": EnumOptionId,
+            "enum_id": "workitem-link-role",
+        },
         "suspect": "suspect",
-        "work_item_id":  # class added in _fix_circular_refs function
-            {"field_name": "workItemURI",
-             "named_arg": "uri",
-             "sync_field": "uri"}
+        "work_item_id": {  # class added in _fix_circular_refs function
+            "field_name": "workItemURI",
+            "named_arg": "uri",
+            "sync_field": "uri",
+        },
     }
     _obj_client = "builder_client"
     _obj_struct = "tns5:LinkedWorkItem"
@@ -42,9 +44,11 @@ class LinkedWorkItem(BasePolarion):
         # need to pass in the project_id parm to the Work Item,
         # but it is not given before instantiation
         from pylero.work_item import _WorkItem
+
         self._cls_suds_map["work_item_id"]["cls"] = _WorkItem
-        self._cls_suds_map["work_item_id"]["additional_parms"] = \
-            {"project_id": self.project_id}
+        self._cls_suds_map["work_item_id"]["additional_parms"] = {
+            "project_id": self.project_id
+        }
 
 
 class ArrayOfLinkedWorkItem(BasePolarion):

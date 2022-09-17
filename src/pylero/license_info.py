@@ -12,11 +12,13 @@ class LicenseInfo(BasePolarion):
 
     Attributes:
         license (string)
-        slots (int)
-"""
-    _cls_suds_map = {"license": "license",
-                     "slots": "slots",
-                     "uri": "_uri",
-                     "_unresolved": "_unresolved"}
+        slots (int)"""
+
+    _cls_suds_map = {
+        "license": "license",
+        "slots": "slots",
+        "uri": "_uri",
+        "_unresolved": "_unresolved",
+    }
     _obj_client = "security_client"
     _obj_struct = "tns3:LicenseInfo"

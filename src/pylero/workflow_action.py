@@ -19,19 +19,19 @@ class WorkflowAction(BasePolarion):
         required_features (ArrayOf_xsd_string)
         suggested_features (ArrayOf_xsd_string)
         target_status (EnumOptionId)
-        unavailability_message (string)
-"""
-    _cls_suds_map = {"action_id": "actionId",
-                     "action_name": "actionName",
-                     "cleaned_features": "cleaned_features",
-                     "native_action_id": "nativeActionId",
-                     "required_features": "requiredFeatures",
-                     "suggested_features": "suggestedFeatures",
-                     "target_status":
-                     {"field_name": "targetStatus",
-                      "cls": EnumOptionId},
-                     "unavailability_message": "unavailabilityMessage",
-                     "uri": "_uri",
-                     "_unresolved": "_unresolved"}
+        unavailability_message (string)"""
+
+    _cls_suds_map = {
+        "action_id": "actionId",
+        "action_name": "actionName",
+        "cleaned_features": "cleaned_features",
+        "native_action_id": "nativeActionId",
+        "required_features": "requiredFeatures",
+        "suggested_features": "suggestedFeatures",
+        "target_status": {"field_name": "targetStatus", "cls": EnumOptionId},
+        "unavailability_message": "unavailabilityMessage",
+        "uri": "_uri",
+        "_unresolved": "_unresolved",
+    }
     _obj_client = "tracker_client"
     _obj_struct = "tns3:WorkflowAction"

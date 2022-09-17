@@ -32,43 +32,39 @@ class WikiPage(BasePolarion):
         title (string)
         type (string)
         updated (dateTime)
-        updated_by (User)
-"""
-    _cls_suds_map = {"attachments":
-                     {"field_name": "attachments",
-                      "is_array": True,
-                      "cls": WikiPageAttachment,
-                      "arr_cls": ArrayOfWikiPageAttachment,
-                      "inner_field_name": "WikiPageAttachment"},
-                     "author":
-                     {"field_name": "author",
-                      "cls": User},
-                     "created": "created",
-                     "home_page_content":
-                     {"field_name": "homePageContent",
-                      "cls": Text},
-                     "wiki_page_id": "id",
-                     "linked_page_uris":
-                     {"field_name": "linkedPageURIs",
-                      "is_array": True,
-                      "cls": SubterraURI,
-                      "arr_cls": ArrayOfSubterraURI,
-                      "inner_field_name": "SubterraURI"},
-                     "location": "location",
-                     "page_location": "pageLocation",
-                     "page_name": "pageName",
-                     "project":
-                     {"field_name": "project",
-                      "cls": Project},
-                     "space_id": "spaceId",
-                     "title": "title",
-                     "type": "type",
-                     "updated": "updated",
-                     "updated_by":
-                     {"field_name": "updatedBy",
-                      "cls": User},
-                     "uri": "_uri",
-                     "_unresolved": "_unresolved"}
+        updated_by (User)"""
+
+    _cls_suds_map = {
+        "attachments": {
+            "field_name": "attachments",
+            "is_array": True,
+            "cls": WikiPageAttachment,
+            "arr_cls": ArrayOfWikiPageAttachment,
+            "inner_field_name": "WikiPageAttachment",
+        },
+        "author": {"field_name": "author", "cls": User},
+        "created": "created",
+        "home_page_content": {"field_name": "homePageContent", "cls": Text},
+        "wiki_page_id": "id",
+        "linked_page_uris": {
+            "field_name": "linkedPageURIs",
+            "is_array": True,
+            "cls": SubterraURI,
+            "arr_cls": ArrayOfSubterraURI,
+            "inner_field_name": "SubterraURI",
+        },
+        "location": "location",
+        "page_location": "pageLocation",
+        "page_name": "pageName",
+        "project": {"field_name": "project", "cls": Project},
+        "space_id": "spaceId",
+        "title": "title",
+        "type": "type",
+        "updated": "updated",
+        "updated_by": {"field_name": "updatedBy", "cls": User},
+        "uri": "_uri",
+        "_unresolved": "_unresolved",
+    }
     _obj_client = "tracker_client"
     _obj_struct = "tns3:WikiPage"
 
@@ -89,15 +85,23 @@ class WikiPage(BasePolarion):
             function_name += "WithFields"
             parms += [cls._convert_obj_fields_to_polarion(fields)]
         wikis = []
-        for suds_wiki in getattr(cls.session.tracker_client.service,
-                                 function_name)(*parms):
+        for suds_wiki in getattr(cls.session.tracker_client.service, function_name)(
+            *parms
+        ):
             wikis.append(cls(suds_object=suds_wiki))
         return wikis
 
     @classmethod
-    def query(cls, query, is_sql=False, fields=["wiki_page_id"],
-              sort="wiki_page_id", limit=-1, baseline_revision=None,
-              query_uris=False):
+    def query(
+        cls,
+        query,
+        is_sql=False,
+        fields=["wiki_page_id"],
+        sort="wiki_page_id",
+        limit=-1,
+        baseline_revision=None,
+        query_uris=False,
+    ):
         """Searches for Wiki Pages .
 
         Args:
@@ -162,15 +166,15 @@ class WikiPage(BasePolarion):
 
     def __init__(self, fields=None, uri=None, suds_object=None):
         """
-            Args:
-                fields: list of object fields to be returned in the object
+        Args:
+            fields: list of object fields to be returned in the object
 
-            Returns:
-                None
+        Returns:
+            None
 
-            References:
-                Tracker.getWikiPageByUri
-                tracker.getWikiPageByUriWithFields
+        References:
+            Tracker.getWikiPageByUri
+            tracker.getWikiPageByUriWithFields
         """
         super(self.__class__, self).__init__(suds_object=suds_object)
         if uri:
@@ -179,5 +183,6 @@ class WikiPage(BasePolarion):
             if fields:
                 function_name += "WithFields"
                 parms += [self._convert_obj_fields_to_polarion(fields)]
-            self._suds_object = getattr(self.session.tracker_client.service,
-                                        function_name)(*parms)
+            self._suds_object = getattr(
+                self.session.tracker_client.service, function_name
+            )(*parms)

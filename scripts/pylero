@@ -22,19 +22,19 @@ else:
 
 
 def main():
-    EXCLUDE_MODULES = ['test_classes', 'embedding', 'interface', 'server',
-                       'session']
+    EXCLUDE_MODULES = ["test_classes", "embedding", "interface", "server", "session"]
     _class_names = []
     for lstmods in pkgutil.iter_modules([pylero.__path__[0]]):
         the_mod = lstmods[1]
         if the_mod not in EXCLUDE_MODULES:
-            imp_mod = __import__("pylero.{0}".format(the_mod), fromlist=[''])
+            imp_mod = __import__("pylero.{0}".format(the_mod), fromlist=[""])
         for cls in inspect.getmembers(imp_mod, inspect.isclass):
             globals()[cls[0]] = cls[1]
             if cls[0] not in _class_names:
                 _class_names.append(cls[0])
     _class_names.sort()
 
+
 if __name__ == "__main__":
     main()
-    os.environ['PYTHONINSPECT'] = "yes"
+    os.environ["PYTHONINSPECT"] = "yes"

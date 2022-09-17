@@ -29,35 +29,33 @@ class Project(BasePolarion):
         project_group (ProjectGroup)
         project_id (string)
         start (date)
-        tracker_prefix (string)
-"""
-    _cls_suds_map = {"active": "active",
-                     "description":
-                     {"field_name": "description",
-                      "cls": Text},
-                     "finish": "finish",
-                     "lead":
-                     {"field_name": "lead",
-                      "cls": User},
-                     "location": "location",
-                     "lock_work_records_date": "lockWorkRecordsDate",
-                     "name": "name",
-                     "project_group":
-                     {"field_name": "projectGroupURI",
-                      # cls is defined in _fix_circular_refs function
-                      "named_arg": "uri",
-                      "sync_field": "uri"},
-                     "project_id": "id",
-                     "start": "start",
-                     "tracker_prefix": "trackerPrefix",
-                     "uri": "_uri",
-                     "_unresolved": "_unresolved"}
+        tracker_prefix (string)"""
+
+    _cls_suds_map = {
+        "active": "active",
+        "description": {"field_name": "description", "cls": Text},
+        "finish": "finish",
+        "lead": {"field_name": "lead", "cls": User},
+        "location": "location",
+        "lock_work_records_date": "lockWorkRecordsDate",
+        "name": "name",
+        "project_group": {
+            "field_name": "projectGroupURI",
+            # cls is defined in _fix_circular_refs function
+            "named_arg": "uri",
+            "sync_field": "uri",
+        },
+        "project_id": "id",
+        "start": "start",
+        "tracker_prefix": "trackerPrefix",
+        "uri": "_uri",
+        "_unresolved": "_unresolved",
+    }
     _id_field = "project_id"
     _obj_client = "project_client"
     _obj_struct = "tns2:Project"
 
-    URI_STRUCT = "subterra:data-service:objects:/default/" \
-                 "%(id)s${%(obj)s}%(id)s"
+    URI_STRUCT = "subterra:data-service:objects:/default/" "%(id)s${%(obj)s}%(id)s"
 
     @classmethod
     def get_context_roles(cls, location):
@@ -74,8 +72,7 @@ class Project(BasePolarion):
         """
         return cls.session.security_client.service.getContextRoles(location)
 
-    def __init__(self, project_id=None, suds_object=None, location=None,
-                 uri=None):
+    def __init__(self, project_id=None, suds_object=None, location=None, uri=None):
         """Project constructor.
 
         Args:
@@ -104,15 +101,16 @@ class Project(BasePolarion):
             if project:
                 self._suds_object = copy.deepcopy(project)
             else:
-                self._suds_object = self.session.project_client.service. \
-                    getProject(project_id)
+                self._suds_object = self.session.project_client.service.getProject(
+                    project_id
+                )
                 self._cache["projects"][project_id] = self._suds_object
         elif location:
-            self._suds_object = self.session.project_client.service. \
-                getProjectatLocation(location)
+            self._suds_object = (
+                self.session.project_client.service.getProjectatLocation(location)
+            )
         elif uri:
-            self._suds_object = self.session.project_client.service. \
-                getProjectByURI(uri)
+            self._suds_object = self.session.project_client.service.getProjectByURI(uri)
         if project_id or location or uri:
             if getattr(self._suds_object, "_unresolvable", True):
                 raise PyleroLibException("The Project was not found.")
@@ -121,10 +119,11 @@ class Project(BasePolarion):
         # The module references ProjectGroup, which references this class
         # This is not allowed, so the self reference is defined here.
         from pylero.project_group import ProjectGroup
+
         self._cls_suds_map["project_group"]["cls"] = ProjectGroup
 
     def get_categories(self):
-        """ method get_categories retrieves a list of Category objects
+        """method get_categories retrieves a list of Category objects
 
         Args:
             None
@@ -137,8 +136,9 @@ class Project(BasePolarion):
         """
         self._verify_obj()
         categories = []
-        for suds_cat in self.session.tracker_client.service. \
-                getCategories(self.project_id):
+        for suds_cat in self.session.tracker_client.service.getCategories(
+            self.project_id
+        ):
             categories.append(Category(suds_object=suds_cat))
         return categories
 
@@ -156,7 +156,8 @@ class Project(BasePolarion):
         """
         self._verify_obj()
         return self.session.tracker_client.service.getDefinedCustomFieldkeys(
-            self.project_id, work_item_type_id)
+            self.project_id, work_item_type_id
+        )
 
     def get_defined_custom_field_type(self, work_item_type_id, key):
         """method get_defined_custom_field_type gets custom field definition
@@ -173,8 +174,9 @@ class Project(BasePolarion):
             Tracker.getDefinedCustomFieldType
         """
         self._verify_obj()
-        suds_custom = self.session.tracker_client.service. \
-            getDefinedCustomFieldType(self._uri, work_item_type_id, key)
+        suds_custom = self.session.tracker_client.service.getDefinedCustomFieldType(
+            self._uri, work_item_type_id, key
+        )
         return CustomFieldType(suds_object=suds_custom)
 
     def get_defined_custom_field_types(self, work_item_type_id):
@@ -192,8 +194,11 @@ class Project(BasePolarion):
         """
         self._verify_obj()
         customs = []
-        for suds_custom in self.session.tracker_client.service. \
-                getDefinedCustomFieldType(self._uri, work_item_type_id):
+        for (
+            suds_custom
+        ) in self.session.tracker_client.service.getDefinedCustomFieldType(
+            self._uri, work_item_type_id
+        ):
             customs.append(CustomFieldType(suds_object=suds_custom))
         return customs
 
@@ -210,8 +215,7 @@ class Project(BasePolarion):
             Tracker.getDocumentLocations
         """
         self._verify_obj()
-        return self.session.tracker_client.service. \
-            getDocumentLocations(self.project_id)
+        return self.session.tracker_client.service.getDocumentLocations(self.project_id)
 
     def get_document_spaces(self):
         """Gets the Module/Document spaces for the project.
@@ -226,8 +230,7 @@ class Project(BasePolarion):
             Tracker.getDocumentSpaces
         """
         self._verify_obj()
-        return self.session.tracker_client.service. \
-            getDocumentSpaces(self.project_id)
+        return self.session.tracker_client.service.getDocumentSpaces(self.project_id)
 
     def get_project_users(self):
         """Gets users of the project
@@ -243,8 +246,9 @@ class Project(BasePolarion):
         """
         self._verify_obj()
         users = []
-        for suds_user in self.session.project_client.service. \
-                getProjectUsers(self.project_id):
+        for suds_user in self.session.project_client.service.getProjectUsers(
+            self.project_id
+        ):
             users.append(User(suds_object=suds_user))
 
     def get_test_steps_configuration(self):
@@ -261,8 +265,11 @@ class Project(BasePolarion):
             TestManagement.getTestStepsConfiguration
         """
         self._verify_obj()
-        config_steps = self.session.test_management_client.service. \
-            getTestStepsConfiguration(self.project_id)
+        config_steps = (
+            self.session.test_management_client.service.getTestStepsConfiguration(
+                self.project_id
+            )
+        )
         return config_steps[0]
 
     def get_tests_configuration(self):
@@ -279,8 +286,11 @@ class Project(BasePolarion):
             TestManagement.getTestsConfiguration
         """
         self._verify_obj()
-        tests_config = self.session.test_management_client.service. \
-            getTestsConfiguration(self.project_id)
+        tests_config = (
+            self.session.test_management_client.service.getTestsConfiguration(
+                self.project_id
+            )
+        )
         return TestsConfiguration(suds_object=tests_config)
 
     def get_wiki_spaces(self):
@@ -296,5 +306,4 @@ class Project(BasePolarion):
             Tracker.getWikiSpaces
         """
         self._verify_obj()
-        return self.session.tracker_client.service.getWikiSpaces(
-            self.project_id)
+        return self.session.tracker_client.service.getWikiSpaces(self.project_id)

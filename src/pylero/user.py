@@ -21,29 +21,31 @@ class User(BasePolarion):
         user_id (string)
         name (string)
         vote_uris (ArrayOfSubterraURI)
-        watche_uris (ArrayOfSubterraURI)
-"""
-    _cls_suds_map = {"description":
-                     {"field_name": "description",
-                      "cls": Text},
-                     "disabled_notifications": "disabledNotifications",
-                     "email": "email",
-                     "user_id": "id",
-                     "name": "name",
-                     "vote_uris":
-                     {"field_name": "voteURIs",
-                      "is_array": True,
-                      "cls": SubterraURI,
-                      "arr_cls": ArrayOfSubterraURI,
-                      "inner_field_name": "SubterraURI"},
-                     "watche_uris":
-                     {"field_name": "watcheURIs",
-                      "is_array": True,
-                      "cls": SubterraURI,
-                      "arr_cls": ArrayOfSubterraURI,
-                      "inner_field_name": "SubterraURI"},
-                     "uri": "_uri",
-                     "_unresolved": "_unresolved"}
+        watche_uris (ArrayOfSubterraURI)"""
+
+    _cls_suds_map = {
+        "description": {"field_name": "description", "cls": Text},
+        "disabled_notifications": "disabledNotifications",
+        "email": "email",
+        "user_id": "id",
+        "name": "name",
+        "vote_uris": {
+            "field_name": "voteURIs",
+            "is_array": True,
+            "cls": SubterraURI,
+            "arr_cls": ArrayOfSubterraURI,
+            "inner_field_name": "SubterraURI",
+        },
+        "watche_uris": {
+            "field_name": "watcheURIs",
+            "is_array": True,
+            "cls": SubterraURI,
+            "arr_cls": ArrayOfSubterraURI,
+            "inner_field_name": "SubterraURI",
+        },
+        "uri": "_uri",
+        "_unresolved": "_unresolved",
+    }
     _id_field = "user_id"
     _obj_client = "project_client"
     _obj_struct = "tns2:User"
@@ -119,17 +121,16 @@ class User(BasePolarion):
             Project.getUserByUri
         """
         super(self.__class__, self).__init__(user_id, suds_object)
-# user_id will be null if called from the get_users class function
+        # user_id will be null if called from the get_users class function
         if user_id or uri:
             if user_id:
-                self._suds_object = \
-                    self.session.project_client.service.getUser(user_id)
+                self._suds_object = self.session.project_client.service.getUser(user_id)
             elif uri:
-                self._suds_object = self.session.project_client.service. \
-                    getUserByUri(uri)
+                self._suds_object = self.session.project_client.service.getUserByUri(
+                    uri
+                )
             if getattr(self._suds_object, "_unresolvable", True):
-                raise PyleroLibException(
-                    "The user {0} was not found.".format(user_id))
+                raise PyleroLibException("The user {0} was not found.".format(user_id))
 
     def get_context_roles(self, location):
         """Returns the context (project) roles for the user at given location.
@@ -145,7 +146,8 @@ class User(BasePolarion):
         """
         self._verify_obj()
         return self.session.security_client.service.getContextRolesForUser(
-            self.user_id, location)
+            self.user_id, location
+        )
 
     def get_roles(self, location):
         """Returns all global and context roles for the context at given
@@ -162,9 +164,10 @@ class User(BasePolarion):
         """
         self._verify_obj()
         return self.session.security_client.service.getRolesForUser(
-            self.user_id, location)
+            self.user_id, location
+        )
 
-# getUserAvatarURL parameter is misnamed in the docs. it really takes user id.
+    # getUserAvatarURL parameter is misnamed in the docs. it really takes user id.
     def get_user_avatar_url(self):
         """method get_user_avatar_url, returns a string with the relative URL
         of the user's avatar.
@@ -179,8 +182,7 @@ class User(BasePolarion):
             Project.getUserAvatarURL
         """
         if self.user_id:
-            return self.session.project_client.service.getUserAvatarURL(
-                self.user_id)
+            return self.session.project_client.service.getUserAvatarURL(self.user_id)
         else:
             raise PyleroLibException("The user object is empty")
 
@@ -199,9 +201,9 @@ class User(BasePolarion):
             Security.hasPermission
         """
         self._verify_obj()
-        return self.session.security_client.service.hasPermission(self.user_id,
-                                                                  permission,
-                                                                  project_id)
+        return self.session.security_client.service.hasPermission(
+            self.user_id, permission, project_id
+        )
 
     def update(self):
         """method update, updates Polarion with the User attributes

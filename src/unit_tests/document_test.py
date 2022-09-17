@@ -1,11 +1,11 @@
-'''
+"""
 Created on Apr 13, 2015
 
 @author: szacks
-'''
+"""
 import datetime
-
 import unittest
+
 from pylero.document import Document
 from pylero.test_run import TestRun
 from pylero.work_item import TestCase
@@ -21,12 +21,16 @@ TEST_RUN_TITLE = "doc_test-%s" % TIME_STAMP
 
 
 class DocumentTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         cls.doc_create = Document.create(
-            Document.default_project, "Testing", DOC_NAME,
-            "Document_Test", ["testcase"], "testspecification")
+            Document.default_project,
+            "Testing",
+            DOC_NAME,
+            "Document_Test",
+            ["testcase"],
+            "testspecification",
+        )
 
     def test_002_get_documents(self):
         lst_doc = Document.get_documents(Document.default_project, "Testing")
@@ -34,14 +38,14 @@ class DocumentTest(unittest.TestCase):
         self.assertIsInstance(doc, Document)
 
     def test_003_query(self):
-        lst_doc = Document.query("project.id:" + Document.default_project,
-                                 limit=10)
+        lst_doc = Document.query("project.id:" + Document.default_project, limit=10)
         doc = lst_doc[0]
         self.assertIsInstance(doc, Document)
 
     def test_004_get_name(self):
-        self.doc_get1 = Document(project_id=Document.default_project,
-                                 doc_with_space="Testing/" + DOC_NAME)
+        self.doc_get1 = Document(
+            project_id=Document.default_project, doc_with_space="Testing/" + DOC_NAME
+        )
         self.assertIsInstance(self.doc_get1, Document)
 
     def test_005_get_uri(self):
@@ -77,19 +81,24 @@ class DocumentTest(unittest.TestCase):
         global TEST_RUN_ID
         doc_with_space = self.doc_create.space
         self.doc_create.session.tx_begin()
-        tmp = TestRun.create_template(project_id=Document.default_project,
-                                template_id=TEMPLATE_ID,
-                                doc_with_space=doc_with_space,
-                                title=TEMPLATE_TITLE)
+        tmp = TestRun.create_template(
+            project_id=Document.default_project,
+            template_id=TEMPLATE_ID,
+            doc_with_space=doc_with_space,
+            title=TEMPLATE_TITLE,
+        )
         TEMPLATE_ID = tmp.test_run_id
-        tr = TestRun.create(project_id=Document.default_project,
-                            test_run_id=TEST_RUN_ID,
-                            template=TEMPLATE_ID,
-                            title=TEST_RUN_TITLE)
+        tr = TestRun.create(
+            project_id=Document.default_project,
+            test_run_id=TEST_RUN_ID,
+            template=TEMPLATE_ID,
+            title=TEST_RUN_TITLE,
+        )
         TEST_RUN_ID = tr.test_run_id
         self.assertEqual(len(tr.records), 1)
         self.assertEqual(tr.records[0].test_case_id, WI_ID)
         self.doc_create.session.tx_commit()
+
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']

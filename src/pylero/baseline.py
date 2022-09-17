@@ -18,20 +18,18 @@ class Baseline(BasePolarion):
         description (string)
         baseline_id (string)
         name (string)
-        project (Project)
-"""
-    _cls_suds_map = {"author":
-                     {"field_name": "author",
-                      "cls": User},
-                     "base_revision": "baseRevision",
-                     "description": "description",
-                     "baseline_id": "id",
-                     "name": "name",
-                     "project":
-                     {"field_name": "project",
-                      "cls": Project},
-                     "uri": "_uri",
-                     "_unresolved": "_unresolved"}
+        project (Project)"""
+
+    _cls_suds_map = {
+        "author": {"field_name": "author", "cls": User},
+        "base_revision": "baseRevision",
+        "description": "description",
+        "baseline_id": "id",
+        "name": "name",
+        "project": {"field_name": "project", "cls": Project},
+        "uri": "_uri",
+        "_unresolved": "_unresolved",
+    }
     _obj_client = "tracker_client"
     _obj_struct = "tns3:Baseline"
 
@@ -53,7 +51,8 @@ class Baseline(BasePolarion):
             Tracker.createBaseline
         """
         suds_object = cls.session.tracker_client.service.createBaseline(
-            project_id, name, description, revision)
+            project_id, name, description, revision
+        )
         return cls(suds_object=suds_object)
 
     @classmethod
@@ -71,7 +70,6 @@ class Baseline(BasePolarion):
             Tracker.queryBaselines
         """
         baselines = []
-        for suds_base in cls.session.tracker_client.service.queryBaselines(
-                query, sort):
+        for suds_base in cls.session.tracker_client.service.queryBaselines(query, sort):
             baselines.append(Baseline(suds_object=suds_base))
         return baselines

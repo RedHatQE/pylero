@@ -13,12 +13,14 @@ class ActivitySource(BasePolarion):
     Attributes:
         activity_source_id (string)
         prefix (string)
-        types (ArrayOf_xsd_string)
-"""
-    _cls_suds_map = {"activity_source_id": "id",
-                     "prefix": "prefix",
-                     "types": "types",
-                     "uri": "_uri",
-                     "_unresolved": "_unresolved"}
+        types (ArrayOf_xsd_string)"""
+
+    _cls_suds_map = {
+        "activity_source_id": "id",
+        "prefix": "prefix",
+        "types": "types",
+        "uri": "_uri",
+        "_unresolved": "_unresolved",
+    }
     _obj_client = "tracker_client"
     _obj_struct = "tns3:ActivitySource"

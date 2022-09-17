@@ -52,37 +52,36 @@ class Plan(BasePolarion):
         started_on (dateTime)
         status (EnumOptionId)
         template_uri (SubterraURI)
-        updated (dateTime)
-"""
+        updated (dateTime)"""
+
     _cls_suds_map = {
-        "allowed_types":
-            {"field_name": "allowedTypes",
-             "is_array": True,
-             "cls": EnumOptionId,
-             "arr_cls": ArrayOfEnumOptionId,
-             "inner_field_name": "EnumOptionId",
-             "enum_id": "workitem-type"},
-        "author":
-            {"field_name": "authorURI",
-             "cls": User,
-             "named_arg": "uri",
-             "sync_field": "uri"},
-        "calculation_type":
-            {"field_name": "calculationType",
-             "cls": EnumOptionId},
+        "allowed_types": {
+            "field_name": "allowedTypes",
+            "is_array": True,
+            "cls": EnumOptionId,
+            "arr_cls": ArrayOfEnumOptionId,
+            "inner_field_name": "EnumOptionId",
+            "enum_id": "workitem-type",
+        },
+        "author": {
+            "field_name": "authorURI",
+            "cls": User,
+            "named_arg": "uri",
+            "sync_field": "uri",
+        },
+        "calculation_type": {"field_name": "calculationType", "cls": EnumOptionId},
         "capacity": "capacity",
         "color": "color",
         "created": "created",
-        "custom_fields":
-            {"field_name": "customFields",
-             "is_array": True,
-             "cls": Custom,
-             "arr_cls": ArrayOfCustom,
-             "inner_field_name": "Custom"},
+        "custom_fields": {
+            "field_name": "customFields",
+            "is_array": True,
+            "cls": Custom,
+            "arr_cls": ArrayOfCustom,
+            "inner_field_name": "Custom",
+        },
         "default_estimate": "defaultEstimate",
-        "description":
-            {"field_name": "description",
-             "cls": Text},
+        "description": {"field_name": "description", "cls": Text},
         "due_date": "dueDate",
         "estimation_field": "estimationField",
         "finished_on": "finishedOn",
@@ -99,29 +98,28 @@ class Plan(BasePolarion):
         "plan_id": "id",
         "previous_time_spent": "previousTimeSpent",
         "prioritization_field": "prioritizationField",
-        "project_id":
-            {"field_name": "projectURI",
-             "cls": Project,
-             "named_arg": "uri",
-             "sync_field": "uri"},
-        "records":
-            {"field_name": "records",
-             "is_array": True,
-             "cls": PlanRecord,
-             "arr_cls": ArrayOfPlanRecord,
-             "inner_field_name": "PlanRecord"},
+        "project_id": {
+            "field_name": "projectURI",
+            "cls": Project,
+            "named_arg": "uri",
+            "sync_field": "uri",
+        },
+        "records": {
+            "field_name": "records",
+            "is_array": True,
+            "cls": PlanRecord,
+            "arr_cls": ArrayOfPlanRecord,
+            "inner_field_name": "PlanRecord",
+        },
         "sort_order": "sortOrder",
         "start_date": "startDate",
         "started_on": "startedOn",
-        "status":
-            {"field_name": "status",
-             "cls": EnumOptionId},
-        "template_uri":
-            {"field_name": "templateURI",
-             "cls": SubterraURI},
+        "status": {"field_name": "status", "cls": EnumOptionId},
+        "template_uri": {"field_name": "templateURI", "cls": SubterraURI},
         "updated": "updated",
         "uri": "_uri",
-        "_unresolved": "_unresolved"}
+        "_unresolved": "_unresolved",
+    }
     _obj_client = "planning_client"
     _obj_struct = "tns4:Plan"
     _id_field = "plan_id"
@@ -143,16 +141,13 @@ class Plan(BasePolarion):
         References:
             Planning.createPlan
         """
-        uri = cls.session.planning_client.service.createPlan(project_id,
-                                                             plan_name,
-                                                             plan_id,
-                                                             parent_id,
-                                                             template_id)
+        uri = cls.session.planning_client.service.createPlan(
+            project_id, plan_name, plan_id, parent_id, template_id
+        )
         return Plan(uri=uri)
 
     @classmethod
-    def create_plan_template(cls, template_id, template_name, project_id,
-                             parent_id):
+    def create_plan_template(cls, template_id, template_name, project_id, parent_id):
         """Creates a new plan template
 
         Args:
@@ -169,7 +164,8 @@ class Plan(BasePolarion):
             Planning.createPlanTemplate
         """
         uri = cls.session.planning_client.service.createPlanTemplate(
-            project_id, template_name, template_id, parent_id)
+            project_id, template_name, template_id, parent_id
+        )
         return Plan(uri=uri)
 
     @classmethod
@@ -189,8 +185,7 @@ class Plan(BasePolarion):
         cls.session.planning_client.service.deletePlans(project_id, plan_ids)
 
     @classmethod
-    def search(cls, query, sort="plan_id", limit=-1, fields=[],
-               search_templates=False):
+    def search(cls, query, sort="plan_id", limit=-1, fields=[], search_templates=False):
         """search plans or plan templates
 
         Args
@@ -217,20 +212,22 @@ class Plan(BasePolarion):
             function_name = "searchPlans"
         if fields:
             function_name += "WithFields"
-        p_sort = cls._cls_suds_map[sort] if not isinstance(
-            cls._cls_suds_map[sort], dict) else \
-            cls._cls_suds_map[sort]["field_name"]
-        parms = [query, p_sort, limit] + \
-            ([cls._convert_obj_fields_to_polarion(fields)]
-             if fields else [])
+        p_sort = (
+            cls._cls_suds_map[sort]
+            if not isinstance(cls._cls_suds_map[sort], dict)
+            else cls._cls_suds_map[sort]["field_name"]
+        )
+        parms = [query, p_sort, limit] + (
+            [cls._convert_obj_fields_to_polarion(fields)] if fields else []
+        )
         plans = []
-        for sud_plan in getattr(cls.session.planning_client.service,
-                                function_name)(*parms):
+        for sud_plan in getattr(cls.session.planning_client.service, function_name)(
+            *parms
+        ):
             plans.append(Plan(suds_object=sud_plan))
         return plans
 
-    def __init__(self, plan_id=None, project_id=None, uri=None,
-                 suds_object=None):
+    def __init__(self, plan_id=None, project_id=None, uri=None, suds_object=None):
         """Plan Constructor
 
         Args:
@@ -247,29 +244,28 @@ class Plan(BasePolarion):
             Planning.getPlanById
             Planning.getPlanByUri
         """
-        super(self.__class__, self).__init__(obj_id=plan_id,
-                                             suds_object=suds_object)
+        super(self.__class__, self).__init__(obj_id=plan_id, suds_object=suds_object)
         if plan_id:
             if not project_id:
-                raise PyleroLibException("When plan_id is passed in, "
-                                         "project_id is required")
-            self._suds_object = self.session.planning_client.service. \
-                getPlanById(project_id, plan_id)
+                raise PyleroLibException(
+                    "When plan_id is passed in, " "project_id is required"
+                )
+            self._suds_object = self.session.planning_client.service.getPlanById(
+                project_id, plan_id
+            )
         elif uri:
-            self._suds_object = self.session.planning_client.service. \
-                getPlanByUri(uri)
+            self._suds_object = self.session.planning_client.service.getPlanByUri(uri)
         if plan_id or uri:
             if getattr(self._suds_object, "_unresolvable", True):
-                raise PyleroLibException(
-                    "The Plan {0} was not found.".format(plan_id))
+                raise PyleroLibException("The Plan {0} was not found.".format(plan_id))
 
-# The parent variable is commented out, see above for explanation.
-# in the event that the parent atrtribute becomes relevant, this function will
-# need to be uncommented out as well
-#    def _fix_circular_refs(self):
-#        # The module references itself as a class attribute, which is not
-#        # allowed, so the self reference is defined here.
-#        self._cls_suds_map["parent"]["cls"] = self.__class__
+    # The parent variable is commented out, see above for explanation.
+    # in the event that the parent atrtribute becomes relevant, this function will
+    # need to be uncommented out as well
+    #    def _fix_circular_refs(self):
+    #        # The module references itself as a class attribute, which is not
+    #        # allowed, so the self reference is defined here.
+    #        self._cls_suds_map["parent"]["cls"] = self.__class__
 
     def add_plan_items(self, work_items):
         """Add plan records to the plan.
@@ -287,7 +283,8 @@ class Plan(BasePolarion):
         if work_items:
             if not isinstance(work_items, list):
                 raise PyleroLibException(
-                    "work_items must be a list of _WorkItem objects")
+                    "work_items must be a list of _WorkItem objects"
+                )
         p_items = []
         for item in work_items:
             wi = _WorkItem(self.project_id, work_item_id=item)
@@ -307,8 +304,7 @@ class Plan(BasePolarion):
             Planning.getPlanStatistics
         """
         self._verify_obj()
-        suds_stat = self.session.planning_client.service.getPlanStatistics(
-            self.uri)
+        suds_stat = self.session.planning_client.service.getPlanStatistics(self.uri)
         return PlanStatistics(suds_object=suds_stat)
 
     def get_wiki_content(self):
@@ -324,8 +320,7 @@ class Plan(BasePolarion):
             Planning.getPlanWikiContent
         """
         self._verify_obj()
-        suds_obj = self.session.planning_client.service.getPlanWikiContent(
-            self.uri)
+        suds_obj = self.session.planning_client.service.getPlanWikiContent(self.uri)
         return Text(suds_object=suds_obj)
 
     def remove_plan_items(self, work_items):
@@ -344,7 +339,8 @@ class Plan(BasePolarion):
         if work_items:
             if not isinstance(work_items, list):
                 raise PyleroLibException(
-                    "work_items must be a list of _WorkItem objects")
+                    "work_items must be a list of _WorkItem objects"
+                )
         p_items = []
         for item in work_items:
             wi = _WorkItem(self.project_id, work_item_id=item)
@@ -374,8 +370,7 @@ class Plan(BasePolarion):
                 suds_content = content
         else:
             suds_content = suds.null()
-        self.session.planning_client.service. \
-            setPlanWikiContent(self.uri, suds_content)
+        self.session.planning_client.service.setPlanWikiContent(self.uri, suds_content)
 
     def update(self):
         """updates the server with the current plan content

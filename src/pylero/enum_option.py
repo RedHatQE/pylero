@@ -19,19 +19,19 @@ class EnumOption(BasePolarion):
         name (string)
         phantom (boolean)
         properties (Properties)
-        sequence_number (int)
-"""
-    _cls_suds_map = {"default": "default",
-                     "enum_id": "enumId",
-                     "hidden": "hidden",
-                     "enum_option_id": "id",
-                     "name": "name",
-                     "phantom": "phantom",
-                     "properties":
-                     {"field_name": "properties",
-                      "cls": Properties},
-                     "sequence_number": "sequenceNumber",
-                     "uri": "_uri",
-                     "_unresolved": "_unresolved"}
+        sequence_number (int)"""
+
+    _cls_suds_map = {
+        "default": "default",
+        "enum_id": "enumId",
+        "hidden": "hidden",
+        "enum_option_id": "id",
+        "name": "name",
+        "phantom": "phantom",
+        "properties": {"field_name": "properties", "cls": Properties},
+        "sequence_number": "sequenceNumber",
+        "uri": "_uri",
+        "_unresolved": "_unresolved",
+    }
     _obj_client = "builder_client"
     _obj_struct = "tns5:EnumOption"

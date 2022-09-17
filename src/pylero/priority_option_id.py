@@ -11,17 +11,14 @@ class PriorityOptionId(BasePolarion):
     """Object to handle the Polarion WSDL tns5:PriorityOptionId class
 
     Attributes:
-        id (string)
-"""
-    _cls_suds_map = {"id": "id",
-                     "uri": "_uri",
-                     "_unresolved": "_unresolved"}
+        id (string)"""
+
+    _cls_suds_map = {"id": "id", "uri": "_uri", "_unresolved": "_unresolved"}
     _id_field = "id"
     _obj_client = "builder_client"
     _obj_struct = "tns5:PriorityOptionId"
 
-    def __init__(self, id=None, uri=None,
-                 suds_object=None):
+    def __init__(self, id=None, uri=None, suds_object=None):
         """PriorityOptionID Constructor
 
         Args:

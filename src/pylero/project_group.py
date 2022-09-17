@@ -18,22 +18,23 @@ class ProjectGroup(BasePolarion):
         location (Location)
         name (string)
         parent_uri (SubterraURI)
-        project_ids (ArrayOfstring)
-"""
-    _cls_suds_map = {"group_uris":
-                     {"field_name": "groupURIs",
-                      "is_array": True,
-                      "cls": SubterraURI,
-                      "arr_cls": ArrayOfSubterraURI,
-                      "inner_field_name": "SubterraURI"},
-                     "location": "location",
-                     "name": "name",
-                     "parent_uri":
-                     {"field_name": "parentURI",
-                      "cls": SubterraURI},
-                     "project_ids": "projectIDs",
-                     "uri": "_uri",
-                     "_unresolved": "_unresolved"}
+        project_ids (ArrayOfstring)"""
+
+    _cls_suds_map = {
+        "group_uris": {
+            "field_name": "groupURIs",
+            "is_array": True,
+            "cls": SubterraURI,
+            "arr_cls": ArrayOfSubterraURI,
+            "inner_field_name": "SubterraURI",
+        },
+        "location": "location",
+        "name": "name",
+        "parent_uri": {"field_name": "parentURI", "cls": SubterraURI},
+        "project_ids": "projectIDs",
+        "uri": "_uri",
+        "_unresolved": "_unresolved",
+    }
     _obj_client = "project_client"
     _obj_struct = "tns2:ProjectGroup"
 
@@ -50,8 +51,7 @@ class ProjectGroup(BasePolarion):
         References:
             Project.getRootProjectGroup
         """
-        return cls(suds_object=cls.session.project_client.service.
-                   getRootProjectGroup())
+        return cls(suds_object=cls.session.project_client.service.getRootProjectGroup())
 
     def __init__(self, uri=None, location=None, suds_object=None):
         """ProjectGroup constructor.
@@ -73,11 +73,11 @@ class ProjectGroup(BasePolarion):
         """
         super(self.__class__, self).__init__(suds_object=suds_object)
         if uri:
-            self._suds_object = self.session.project_client.service. \
-                getProjectGroup(uri)
+            self._suds_object = self.session.project_client.service.getProjectGroup(uri)
         elif location:
-            self._suds_object = self.session.project_client.service. \
-                getProjectGroupAtLocation(location)
+            self._suds_object = (
+                self.session.project_client.service.getProjectGroupAtLocation(location)
+            )
 
     def get_contained_groups(self):
         """Gets all project groups located directly below the project group.
@@ -93,8 +93,9 @@ class ProjectGroup(BasePolarion):
         """
         self._verify_obj()
         groups = []
-        for suds_group in self.session.project_client.service. \
-                getContainedGroups(self.uri):
+        for suds_group in self.session.project_client.service.getContainedGroups(
+            self.uri
+        ):
             groups.append(self.__class__(suds_object=suds_group))
         return groups
 
@@ -112,8 +113,9 @@ class ProjectGroup(BasePolarion):
         """
         self._verify_obj()
         projects = []
-        for suds_project in self.session.project_client.service. \
-                getContainedProjects(self.uri):
+        for suds_project in self.session.project_client.service.getContainedProjects(
+            self.uri
+        ):
             projects.append(Project(suds_object=suds_project))
         return projects
 
@@ -131,7 +133,8 @@ class ProjectGroup(BasePolarion):
         """
         self._verify_obj()
         projects = []
-        for suds_project in self.session.project_client.service. \
-                getDeepContainedProjects(self.uri):
+        for (
+            suds_project
+        ) in self.session.project_client.service.getDeepContainedProjects(self.uri):
             projects.append(Project(suds_object=suds_project))
         return projects

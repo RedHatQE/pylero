@@ -1,12 +1,12 @@
-'''
+"""
 Created on Apr 19, 2015
 
 @author: szacks
-'''
+"""
 import datetime
 import os
-
 import unittest
+
 from pylero.exceptions import PyleroLibException
 from pylero.plan import Plan
 from pylero.test_record import TestRecord
@@ -34,34 +34,39 @@ TEST_RUN_ID2 = "tr2_regr-%s" % TIME_STAMP
 
 
 class TestRunTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
-        tc1 = TestCase.create(DEFAULT_PROJ,
-                              "regression",
-                              "regression",
-                              caseimportance="high",
-                              caselevel="component",
-                              caseautomation="notautomated",
-                              caseposneg="positive",
-                              testtype="functional",
-                              subtype1="-")
+        tc1 = TestCase.create(
+            DEFAULT_PROJ,
+            "regression",
+            "regression",
+            caseimportance="high",
+            caselevel="component",
+            caseautomation="notautomated",
+            caseposneg="positive",
+            testtype="functional",
+            subtype1="-",
+        )
         cls.NEW_TEST_CASE = tc1.work_item_id
-        tc2 = TestCase.create(DEFAULT_PROJ,
-                              "regression",
-                              "regression",
-                              caseimportance="high",
-                              caselevel="component",
-                              caseautomation="notautomated",
-                              caseposneg="positive",
-                              testtype="functional",
-                              subtype1="-")
+        tc2 = TestCase.create(
+            DEFAULT_PROJ,
+            "regression",
+            "regression",
+            caseimportance="high",
+            caselevel="component",
+            caseautomation="notautomated",
+            caseposneg="positive",
+            testtype="functional",
+            subtype1="-",
+        )
         cls.NEW_TEST_CASE2 = tc2.work_item_id
-        Plan.create(plan_id=PLAN_ID,
-                    plan_name="regression",
-                    project_id=DEFAULT_PROJ,
-                    parent_id=None,
-                    template_id="release")
+        Plan.create(
+            plan_id=PLAN_ID,
+            plan_name="regression",
+            project_id=DEFAULT_PROJ,
+            parent_id=None,
+            template_id="release",
+        )
         cls.NEW_PLAN = PLAN_ID
 
     def test_001_create_template(self):
@@ -74,20 +79,28 @@ class TestRunTest(unittest.TestCase):
         """
         global TEMPLATE_ID
         template = TestRun.create_template(
-            DEFAULT_PROJ, TEMPLATE_ID, "Empty", title=TEMPLATE_TITLE,
-            arch="i386")
+            DEFAULT_PROJ, TEMPLATE_ID, "Empty", title=TEMPLATE_TITLE, arch="i386"
+        )
         TEMPLATE_ID = template.test_run_id
         self.assertIsNotNone(template.test_run_id)
         self.assertTrue(template.is_template)
         self.assertEqual(template.arch, "i386")
         with self.assertRaises(PyleroLibException):
             template = TestRun.create_template(
-                DEFAULT_PROJ, TEMPLATE_ID + "1", "Empty", TEMPLATE_TITLE + "1",
-                arch="BAD")
+                DEFAULT_PROJ,
+                TEMPLATE_ID + "1",
+                "Empty",
+                TEMPLATE_TITLE + "1",
+                arch="BAD",
+            )
         with self.assertRaises(PyleroLibException):
             template = TestRun.create_template(
-                DEFAULT_PROJ, TEMPLATE_ID + "2", "Empty", TEMPLATE_TITLE + "2",
-                notaparm="BAD")
+                DEFAULT_PROJ,
+                TEMPLATE_ID + "2",
+                "Empty",
+                TEMPLATE_TITLE + "2",
+                notaparm="BAD",
+            )
 
     def test_002_create_run(self):
         """This test does the following:
@@ -95,8 +108,7 @@ class TestRunTest(unittest.TestCase):
         * Verifies that the returned object exists and is not a template
         """
         global TEST_RUN_ID
-        tr = TestRun.create(
-            DEFAULT_PROJ, TEST_RUN_ID, TEMPLATE_ID, TEST_RUN_TITLE)
+        tr = TestRun.create(DEFAULT_PROJ, TEST_RUN_ID, TEMPLATE_ID, TEST_RUN_TITLE)
         TEST_RUN_ID = tr.test_run_id
         self.assertIsNotNone(tr.test_run_id)
         self.assertFalse(tr.is_template)
@@ -154,37 +166,54 @@ class TestRunTest(unittest.TestCase):
         tr = TestRun(project_id=DEFAULT_PROJ, test_run_id=TEST_RUN_ID)
         with self.assertRaises(PyleroLibException):
             tr.add_test_record_by_fields(
-                self.NEW_TEST_CASE, "invalid", "No Comment",
-                tr.logged_in_user_id, datetime.datetime.now(), "50.5")
+                self.NEW_TEST_CASE,
+                "invalid",
+                "No Comment",
+                tr.logged_in_user_id,
+                datetime.datetime.now(),
+                "50.5",
+            )
         tr.add_test_record_by_fields(
-            self.NEW_TEST_CASE, "passed", "No Comment", tr.logged_in_user_id,
-            datetime.datetime.now(), "50.5")
+            self.NEW_TEST_CASE,
+            "passed",
+            "No Comment",
+            tr.logged_in_user_id,
+            datetime.datetime.now(),
+            "50.5",
+        )
         tr.reload()
         self.assertEqual(tr.status, "finished")
         # test that the same case cannot be added multiple times.
         with self.assertRaises(PyleroLibException):
             tr.add_test_record_by_fields(
-                self.NEW_TEST_CASE, "passed", "No Comment",
-                tr.logged_in_user_id, datetime.datetime.now(), "50.5")
+                self.NEW_TEST_CASE,
+                "passed",
+                "No Comment",
+                tr.logged_in_user_id,
+                datetime.datetime.now(),
+                "50.5",
+            )
         tr.reload()
         rec = tr.records[-1]
-        tr.add_attachment_to_test_record(
-            rec.test_case_id, ATTACH_PATH, ATTACH_TITLE)
+        tr.add_attachment_to_test_record(rec.test_case_id, ATTACH_PATH, ATTACH_TITLE)
         tr.reload()
         rec = tr.records[-1]
         self.assertTrue(len(rec.attachments) == 1)
         self.assertEqual(rec.attachments[0].title, ATTACH_TITLE)
-        tr.delete_attachment_from_test_record(rec.test_case_id,
-                                              rec.attachments[0].filename)
+        tr.delete_attachment_from_test_record(
+            rec.test_case_id, rec.attachments[0].filename
+        )
         tr.reload()
         rec = tr.records[-1]
         self.assertEqual(rec.attachments, [])
-        tr.update_test_record_by_fields(rec.test_case_id,
-                                        rec.result,
-                                        "Yes Comment",
-                                        rec.executed_by,
-                                        rec.executed,
-                                        rec.duration)
+        tr.update_test_record_by_fields(
+            rec.test_case_id,
+            rec.result,
+            "Yes Comment",
+            rec.executed_by,
+            rec.executed,
+            rec.duration,
+        )
         tr.reload()
         rec = tr.records[-1]
         self.assertEqual(rec.comment, "Yes Comment")
@@ -272,23 +301,35 @@ class TestRunTest(unittest.TestCase):
         * reloads
         * verifies that the record has been added
         """
-        TestCase.create(DEFAULT_PROJ,
-                        TIME_STAMP, "regression",
-                        caseimportance="high",
-                        caselevel="component",
-                        caseautomation="notautomated",
-                        caseposneg="positive",
-                        testtype="functional",
-                        subtype1="-")
-        tr = TestRun.create(DEFAULT_PROJ, "querytest-%s" % TIME_STAMP,
-                            "Example",
-                            "querytest-%s" % TIME_STAMP, query=TIME_STAMP)
+        TestCase.create(
+            DEFAULT_PROJ,
+            TIME_STAMP,
+            "regression",
+            caseimportance="high",
+            caselevel="component",
+            caseautomation="notautomated",
+            caseposneg="positive",
+            testtype="functional",
+            subtype1="-",
+        )
+        tr = TestRun.create(
+            DEFAULT_PROJ,
+            "querytest-%s" % TIME_STAMP,
+            "Example",
+            "querytest-%s" % TIME_STAMP,
+            query=TIME_STAMP,
+        )
         self.assertEqual(tr.select_test_cases_by, "dynamicQueryResult")
         num_recs = len(tr.records)
         test_case_id = tr.records[0].test_case_id
-        tr.update_test_record_by_fields(test_case_id, "blocked", "comment",
-                                        tr.logged_in_user_id,
-                                        datetime.datetime.now(), 0)
+        tr.update_test_record_by_fields(
+            test_case_id,
+            "blocked",
+            "comment",
+            tr.logged_in_user_id,
+            datetime.datetime.now(),
+            0,
+        )
         tr.reload()
         self.assertEqual(num_recs, len(tr.records))
         self.assertEqual(test_case_id, tr.records[0].test_case_id)
@@ -348,9 +389,7 @@ class TestRunTest(unittest.TestCase):
         * Verifies that an Incident Report was Created
         """
         tr = TestRun(project_id=DEFAULT_PROJ, test_run_id=TEST_RUN_ID)
-        tests = [["Test 1", "Result 1"],
-                 ["Test 2", "Result 2"],
-                 ["Test 3", "Result 3"]]
+        tests = [["Test 1", "Result 1"], ["Test 2", "Result 2"], ["Test 3", "Result 3"]]
         set_steps = []
         for test in tests:
             ts = TestStep()
@@ -380,8 +419,7 @@ class TestRunTest(unittest.TestCase):
         linked_work_items = tc.linked_work_items_derived
         idx = len(linked_work_items) - 1
         item_id = linked_work_items[idx].work_item_id
-        incident = IncidentReport(project_id=DEFAULT_PROJ,
-                                  work_item_id=item_id)
+        incident = IncidentReport(project_id=DEFAULT_PROJ, work_item_id=item_id)
         self.assertIsNotNone(incident)
 
 

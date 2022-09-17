@@ -13,13 +13,13 @@ class ActivityCustomValueEntry(BasePolarion):
 
     Attributes:
         custom_values (ActivityCustomValue)
-        key (string)
-"""
-    _cls_suds_map = {"custom_values":
-                     {"field_name": "customValues",
-                      "cls": ActivityCustomValue},
-                     "key": "key",
-                     "uri": "_uri",
-                     "_unresolved": "_unresolved"}
+        key (string)"""
+
+    _cls_suds_map = {
+        "custom_values": {"field_name": "customValues", "cls": ActivityCustomValue},
+        "key": "key",
+        "uri": "_uri",
+        "_unresolved": "_unresolved",
+    }
     _obj_client = "tracker_client"
     _obj_struct = "tns3:ActivityCustomValueEntry"

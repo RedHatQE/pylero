@@ -13,15 +13,17 @@ class TestStep(BasePolarion):
     """Object to handle the Polarion WSDL tns3:TestStep class
 
     Attributes:
-        values (ArrayOfText)
-"""
+        values (ArrayOfText)"""
+
     _cls_suds_map = {
-        "values":
-            {"field_name": "values",
-             "is_array": True,
-             "cls": Text,
-             "arr_cls": ArrayOfText,
-             "inner_field_name": "Text"}}
+        "values": {
+            "field_name": "values",
+            "is_array": True,
+            "cls": Text,
+            "arr_cls": ArrayOfText,
+            "inner_field_name": "Text",
+        }
+    }
     _obj_client = "test_management_client"
     _obj_struct = "tns3:TestStep"
 

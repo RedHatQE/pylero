@@ -30,35 +30,36 @@ class Build(BasePolarion):
         linked_work_items (ArrayOfBuildLinkedWorkItem)
         local_deployment_space_name (string)
         log_files (ArrayOfLocation)
-        start_time (dateTime)
-"""
-    _cls_suds_map = {"author":
-                     {"field_name": "author",
-                      "cls": User},
-                     "bir_location": "birLocation",
-                     "build_descriptor_name": "buildDescriptorName",
-                     "build_stamp": "buildStamp",
-                     "build_status": "buildStatus",
-                     "build_tag": "buildTag",
-                     "build_test_results":
-                     {"field_name": "buildTestResults",
-                      "cls": BuildTestResults},
-                     "calculation_descriptor_name":
-                     "calculationDescriptorName",
-                     "creation_time": "creationTime",
-                     "finish_time": "finishTime",
-                     "build_id": "id",
-                     "job_id": "jobId",
-                     "linked_work_items":
-                     {"field_name": "linkedWorkItems",
-                      "is_array": True,
-                      "cls": BuildLinkedWorkItem,
-                      "arr_cls": ArrayOfBuildLinkedWorkItem,
-                      "inner_field_name": "BuildLinkedWorkItem"},
-                     "local_deployment_space_name": "localDeploymentSpaceName",
-                     "log_files": "logFiles",
-                     "start_time": "startTime",
-                     "uri": "_uri",
-                     "_unresolved": "_unresolved"}
+        start_time (dateTime)"""
+
+    _cls_suds_map = {
+        "author": {"field_name": "author", "cls": User},
+        "bir_location": "birLocation",
+        "build_descriptor_name": "buildDescriptorName",
+        "build_stamp": "buildStamp",
+        "build_status": "buildStatus",
+        "build_tag": "buildTag",
+        "build_test_results": {
+            "field_name": "buildTestResults",
+            "cls": BuildTestResults,
+        },
+        "calculation_descriptor_name": "calculationDescriptorName",
+        "creation_time": "creationTime",
+        "finish_time": "finishTime",
+        "build_id": "id",
+        "job_id": "jobId",
+        "linked_work_items": {
+            "field_name": "linkedWorkItems",
+            "is_array": True,
+            "cls": BuildLinkedWorkItem,
+            "arr_cls": ArrayOfBuildLinkedWorkItem,
+            "inner_field_name": "BuildLinkedWorkItem",
+        },
+        "local_deployment_space_name": "localDeploymentSpaceName",
+        "log_files": "logFiles",
+        "start_time": "startTime",
+        "uri": "_uri",
+        "_unresolved": "_unresolved",
+    }
     _obj_client = "builder_client"
     _obj_struct = "tns2:Build"

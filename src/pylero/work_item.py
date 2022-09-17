@@ -29,8 +29,7 @@ from pylero.enum_custom_field_type import EnumCustomFieldType
 from pylero.enum_option_id import ArrayOfEnumOptionId  # NOQA
 from pylero.enum_option_id import EnumOptionId
 from pylero.exceptions import PyleroLibException
-from pylero.externally_linked_work_item \
-    import ArrayOfExternallyLinkedWorkItem
+from pylero.externally_linked_work_item import ArrayOfExternallyLinkedWorkItem
 from pylero.externally_linked_work_item import ExternallyLinkedWorkItem
 from pylero.hyperlink import ArrayOfHyperlink
 from pylero.hyperlink import Hyperlink
@@ -52,6 +51,7 @@ from pylero.user import User
 from pylero.work_record import ArrayOfWorkRecord
 from pylero.work_record import WorkRecord
 from pylero.workflow_action import WorkflowAction
+
 # ArrayOfEnumOptionId is used in dynamic code for custom fields
 
 
@@ -98,157 +98,160 @@ class _WorkItem(BasePolarion):
         type (EnumOptionId)
         updated (dateTime)
         work_item_id (string)
-        work_records (ArrayOfWorkRecord)
-"""
+        work_records (ArrayOfWorkRecord)"""
+
     _cls_suds_map = {
-        "approvals":
-            {"field_name": "approvals",
-             "is_array": True,
-             "cls": Approval,
-             "arr_cls": ArrayOfApproval,
-             "inner_field_name": "Approval"},
-        "assignee":
-            {"field_name": "assignee",
-             "is_array": True,
-             "cls": User,
-             "arr_cls": ArrayOfUser,
-             "inner_field_name": "User"},
-        "attachments":
-            {"field_name": "attachments",
-             "is_array": True,
-             "cls": Attachment,
-             "arr_cls": ArrayOfAttachment,
-             "inner_field_name": "Attachment"},
-        "author":
-            {"field_name": "author",
-             "cls": User},
+        "approvals": {
+            "field_name": "approvals",
+            "is_array": True,
+            "cls": Approval,
+            "arr_cls": ArrayOfApproval,
+            "inner_field_name": "Approval",
+        },
+        "assignee": {
+            "field_name": "assignee",
+            "is_array": True,
+            "cls": User,
+            "arr_cls": ArrayOfUser,
+            "inner_field_name": "User",
+        },
+        "attachments": {
+            "field_name": "attachments",
+            "is_array": True,
+            "cls": Attachment,
+            "arr_cls": ArrayOfAttachment,
+            "inner_field_name": "Attachment",
+        },
+        "author": {"field_name": "author", "cls": User},
         "auto_suspect": "autoSuspect",
-        "categories":
-            {"field_name": "categories",
-             "is_array": True,
-             "cls": Category,
-             "arr_cls": ArrayOfCategory,
-             "inner_field_name": "Category"},
-        "comments":
-            {"field_name": "comments",
-             "is_array": True,
-             "cls": Comment,
-             "arr_cls": ArrayOfComment,
-             "inner_field_name": "Comment"},
+        "categories": {
+            "field_name": "categories",
+            "is_array": True,
+            "cls": Category,
+            "arr_cls": ArrayOfCategory,
+            "inner_field_name": "Category",
+        },
+        "comments": {
+            "field_name": "comments",
+            "is_array": True,
+            "cls": Comment,
+            "arr_cls": ArrayOfComment,
+            "inner_field_name": "Comment",
+        },
         "created": "created",
         # the custom field attribute has been changed to be a protected attr.
         # All interaction with custom fields should be done directly with the
         # derived attribute.
-        "_custom_fields":
-            {"field_name": "customFields",
-             "is_array": True,
-             "cls": Custom,
-             "arr_cls": ArrayOfCustom,
-             "inner_field_name": "Custom"},
-        "description":
-            {"field_name": "description",
-             "cls": Text},
+        "_custom_fields": {
+            "field_name": "customFields",
+            "is_array": True,
+            "cls": Custom,
+            "arr_cls": ArrayOfCustom,
+            "inner_field_name": "Custom",
+        },
+        "description": {"field_name": "description", "cls": Text},
         "due_date": "dueDate",
-        "externally_linked_work_items":
-            {"field_name": "externallyLinkedWorkItems",
-             "is_array": True,
-             "cls": ExternallyLinkedWorkItem,
-             "arr_cls": ArrayOfExternallyLinkedWorkItem,
-             "inner_field_name": "ExternallyLinkedWorkItem"},
-        "hyperlinks":
-            {"field_name": "hyperlinks",
-             "is_array": True,
-             "cls": Hyperlink,
-             "arr_cls": ArrayOfHyperlink,
-             "inner_field_name": "Hyperlink"},
+        "externally_linked_work_items": {
+            "field_name": "externallyLinkedWorkItems",
+            "is_array": True,
+            "cls": ExternallyLinkedWorkItem,
+            "arr_cls": ArrayOfExternallyLinkedWorkItem,
+            "inner_field_name": "ExternallyLinkedWorkItem",
+        },
+        "hyperlinks": {
+            "field_name": "hyperlinks",
+            "is_array": True,
+            "cls": Hyperlink,
+            "arr_cls": ArrayOfHyperlink,
+            "inner_field_name": "Hyperlink",
+        },
         "initial_estimate": "initialEstimate",
-        "linked_revisions":
-            {"field_name": "linkedRevisions",
-             "is_array": True,
-             "cls": Revision,
-             "arr_cls": ArrayOfRevision,
-             "inner_field_name": "Revision"},
-        "linked_revisions_derived":
-            {"field_name": "linkedRevisionsDerived",
-             "is_array": True,
-             "cls": Revision,
-             "arr_cls": ArrayOfRevision,
-             "inner_field_name": "Revision"},
-        "linked_work_items":
-            {"field_name": "linkedWorkItems",
-             "is_array": True,
-             "cls": LinkedWorkItem,
-             "arr_cls": ArrayOfLinkedWorkItem,
-             "inner_field_name": "LinkedWorkItem"},
-        "linked_work_items_derived":
-            {"field_name": "linkedWorkItemsDerived",
-             "is_array": True,
-             "cls": LinkedWorkItem,
-             "arr_cls": ArrayOfLinkedWorkItem,
-             "inner_field_name": "LinkedWorkItem"},
+        "linked_revisions": {
+            "field_name": "linkedRevisions",
+            "is_array": True,
+            "cls": Revision,
+            "arr_cls": ArrayOfRevision,
+            "inner_field_name": "Revision",
+        },
+        "linked_revisions_derived": {
+            "field_name": "linkedRevisionsDerived",
+            "is_array": True,
+            "cls": Revision,
+            "arr_cls": ArrayOfRevision,
+            "inner_field_name": "Revision",
+        },
+        "linked_work_items": {
+            "field_name": "linkedWorkItems",
+            "is_array": True,
+            "cls": LinkedWorkItem,
+            "arr_cls": ArrayOfLinkedWorkItem,
+            "inner_field_name": "LinkedWorkItem",
+        },
+        "linked_work_items_derived": {
+            "field_name": "linkedWorkItemsDerived",
+            "is_array": True,
+            "cls": LinkedWorkItem,
+            "arr_cls": ArrayOfLinkedWorkItem,
+            "inner_field_name": "LinkedWorkItem",
+        },
         "location": "location",
-        "module_uri":
-            {"field_name": "moduleURI",
-             "cls": SubterraURI},
+        "module_uri": {"field_name": "moduleURI", "cls": SubterraURI},
         "outline_number": "outlineNumber",
         "planned_end": "plannedEnd",
         # planned_in completed in the _fix_circular_refs func
-        "planned_in":
-            {"field_name": "plannedInURIs"},
+        "planned_in": {"field_name": "plannedInURIs"},
         "planned_start": "plannedStart",
-        "planning_constraints":
-            {"field_name": "planningConstraints",
-             "is_array": True,
-             "cls": PlanningConstraint,
-             "arr_cls": ArrayOfPlanningConstraint,
-             "inner_field_name": "PlanningConstraint"},
-        "previous_status":
-            {"field_name": "previousStatus",
-             "cls": EnumOptionId,
-             "enum_id": "status"},
+        "planning_constraints": {
+            "field_name": "planningConstraints",
+            "is_array": True,
+            "cls": PlanningConstraint,
+            "arr_cls": ArrayOfPlanningConstraint,
+            "inner_field_name": "PlanningConstraint",
+        },
+        "previous_status": {
+            "field_name": "previousStatus",
+            "cls": EnumOptionId,
+            "enum_id": "status",
+        },
         # priority is technically an enum, but it also accepts other values,
         # so we didn't include it here. If you want to enforce the enum in
         # the code, add "enum_id": "priority" to the prioirity dict
-        "priority":
-            {"field_name": "priority",
-             "cls": PriorityOptionId},
-        "project_id":
-            {"field_name": "project",
-             "cls": Project},
+        "priority": {"field_name": "priority", "cls": PriorityOptionId},
+        "project_id": {"field_name": "project", "cls": Project},
         "remaining_estimate": "remainingEstimate",
-        "resolution":
-            {"field_name": "resolution",
-             "cls": EnumOptionId,
-             "enum_id": "resolution"},
+        "resolution": {
+            "field_name": "resolution",
+            "cls": EnumOptionId,
+            "enum_id": "resolution",
+        },
         "resolved_on": "resolvedOn",
-        "severity":
-            {"field_name": "severity",
-             "cls": EnumOptionId,
-             "enum_id": "severity"},
-        "status":
-            {"field_name": "status",
-             "cls": EnumOptionId,
-             "enum_id": "status"},
-        "time_point":
-            {"field_name": "timePoint",
-             "cls": TimePoint},
+        "severity": {
+            "field_name": "severity",
+            "cls": EnumOptionId,
+            "enum_id": "severity",
+        },
+        "status": {"field_name": "status", "cls": EnumOptionId, "enum_id": "status"},
+        "time_point": {"field_name": "timePoint", "cls": TimePoint},
         "time_spent": "timeSpent",
         "title": "title",
-        "type":
-            {"field_name": "type",
-             "cls": EnumOptionId,
-             "enum_id": "workitem-type",
-             "enum_override": ["heading"]},
+        "type": {
+            "field_name": "type",
+            "cls": EnumOptionId,
+            "enum_id": "workitem-type",
+            "enum_override": ["heading"],
+        },
         "updated": "updated",
         "work_item_id": "id",
-        "work_records":
-            {"field_name": "workRecords",
-             "is_array": True,
-             "cls": WorkRecord,
-             "arr_cls": ArrayOfWorkRecord,
-             "inner_field_name": "WorkRecord"},
+        "work_records": {
+            "field_name": "workRecords",
+            "is_array": True,
+            "cls": WorkRecord,
+            "arr_cls": ArrayOfWorkRecord,
+            "inner_field_name": "WorkRecord",
+        },
         "uri": "_uri",
-        "_unresolved": "_unresolved"}
+        "_unresolved": "_unresolved",
+    }
     _id_field = "work_item_id"
     _obj_client = "tracker_client"
     _obj_struct = "tns3:WorkItem"
@@ -287,8 +290,7 @@ class _WorkItem(BasePolarion):
         wi.status = status
         for field in kwargs:
             setattr(wi, field, kwargs[field])
-        wi_uri = cls.session.tracker_client.service.createWorkItem(
-            wi._suds_object)
+        wi_uri = cls.session.tracker_client.service.createWorkItem(wi._suds_object)
         new_wi = cls(uri=wi_uri)
         return new_wi
 
@@ -325,22 +327,31 @@ class _WorkItem(BasePolarion):
             tracker.getDefinedCustomFieldTypes
         """
         if not cls._cache["custom_field_types"].get(wi_type):
-            cfts = cls.session.tracker_client.service. \
-                getDefinedCustomFieldTypes(project_id, wi_type)
+            cfts = cls.session.tracker_client.service.getDefinedCustomFieldTypes(
+                project_id, wi_type
+            )
             cls._cache["custom_field_types"][wi_type] = cfts
         else:
             cfts = cls._cache["custom_field_types"].get(wi_type)
-        results = [CustomFieldType(suds_object=item)
-                   if isinstance(item,
-                                 CustomFieldType()._suds_object.__class__)
-                   else EnumCustomFieldType(suds_object=item)
-                   for item in cfts]
+        results = [
+            CustomFieldType(suds_object=item)
+            if isinstance(item, CustomFieldType()._suds_object.__class__)
+            else EnumCustomFieldType(suds_object=item)
+            for item in cfts
+        ]
         return results
 
     @classmethod
-    def query(cls, query, is_sql=False, fields=["work_item_id"],
-              sort="work_item_id", limit=-1, baseline_revision=None,
-              query_uris=False):
+    def query(
+        cls,
+        query,
+        is_sql=False,
+        fields=["work_item_id"],
+        sort="work_item_id",
+        limit=-1,
+        baseline_revision=None,
+        query_uris=False,
+    ):
         """Searches for Work Items.
 
         Notes:
@@ -428,8 +439,15 @@ class _WorkItem(BasePolarion):
             lst_wi = [cls(suds_object=wi) for wi in wis]
             return lst_wi
 
-    def __init__(self, project_id=None, work_item_id=None, suds_object=None,
-                 uri=None, fields=None, revision=None):
+    def __init__(
+        self,
+        project_id=None,
+        work_item_id=None,
+        suds_object=None,
+        uri=None,
+        fields=None,
+        revision=None,
+    ):
         """WorkItem constructor.
 
         Args:
@@ -470,19 +488,26 @@ class _WorkItem(BasePolarion):
             parms = []
             if work_item_id:
                 function_name += "Id" if not p_fields else "IdsWithFields"
-                parms = [project_id, work_item_id] + \
-                    ([p_fields] if p_fields else [])
+                parms = [project_id, work_item_id] + ([p_fields] if p_fields else [])
             elif uri:
-                function_name += "Uri" + ("InRevision" if revision else "") + \
-                    ("WithFields" if p_fields else "")
-                parms = [uri] + ([revision] if revision else []) + \
-                    ([p_fields] if p_fields else [])
-            self._suds_object = getattr(self.session.tracker_client.service,
-                                        function_name)(*parms)
+                function_name += (
+                    "Uri"
+                    + ("InRevision" if revision else "")
+                    + ("WithFields" if p_fields else "")
+                )
+                parms = (
+                    [uri]
+                    + ([revision] if revision else [])
+                    + ([p_fields] if p_fields else [])
+                )
+            self._suds_object = getattr(
+                self.session.tracker_client.service, function_name
+            )(*parms)
         if not suds_object:
             if getattr(self._suds_object, "_unresolvable", True):
                 raise PyleroLibException(
-                    "The WorkItem {0} was not found.".format(work_item_id))
+                    "The WorkItem {0} was not found.".format(work_item_id)
+                )
         # if it is a suds object, only relevant fields are passed in.
         if not self.project_id and not suds_object:
             self.project_id = self.default_project
@@ -493,6 +518,7 @@ class _WorkItem(BasePolarion):
         # allowed, so the self reference is defined here.
         from pylero.plan import Plan
         from pylero.plan import ArrayOfPlan
+
         self._cls_suds_map["planned_in"]["is_array"] = True
         self._cls_suds_map["planned_in"]["cls"] = Plan
         self._cls_suds_map["planned_in"]["arr_cls"] = ArrayOfPlan
@@ -516,8 +542,7 @@ class _WorkItem(BasePolarion):
         allowed = self.get_allowed_approvers()
         allowed_ids = [u.user_id for u in allowed]
         if approvee_id not in (allowed_ids):
-            raise PyleroLibException("%s is not an allowed assignee" %
-                                     approvee_id)
+            raise PyleroLibException("%s is not an allowed assignee" % approvee_id)
         self.session.tracker_client.service.addApprovee(self.uri, approvee_id)
 
     def add_assignee(self, assignee_id):
@@ -537,33 +562,29 @@ class _WorkItem(BasePolarion):
         allowed = self.get_allowed_assignees()
         allowed_ids = [u.user_id for u in allowed]
         if assignee_id not in (allowed_ids):
-            raise PyleroLibException("%s is not an allowed assignee" %
-                                     assignee_id)
-        return self.session.tracker_client.service.addAssignee(self.uri,
-                                                               assignee_id)
+            raise PyleroLibException("%s is not an allowed assignee" % assignee_id)
+        return self.session.tracker_client.service.addAssignee(self.uri, assignee_id)
 
     def add_category(self, category_id):
         """method add_category adds a category to the current _WorkItem
-    The category passed in must be a defined category in the current project
+        The category passed in must be a defined category in the current project
 
-        Args:
-            category_id (str): id of the category to add
+            Args:
+                category_id (str): id of the category to add
 
-        Returns:
-            bool
+            Returns:
+                bool
 
-        References:
-            Tracker.addCategoy
+            References:
+                Tracker.addCategoy
         """
         self._verify_obj()
         proj = Project(self.project_id)
         cats = proj.get_categories()
         cat_ids = [cat.category_id for cat in cats]
         if category_id not in cat_ids:
-            raise PyleroLibException("the category_id must be one of: %s" %
-                                     cat_ids)
-        return self.session.tracker_client.service.addCategory(self.uri,
-                                                               category_id)
+            raise PyleroLibException("the category_id must be one of: %s" % cat_ids)
+        return self.session.tracker_client.service.addCategory(self.uri, category_id)
 
     def add_external_linked_revision(self, repository_name, revision_id):
         """method add_external_linked_revision links a revision from external
@@ -581,7 +602,8 @@ class _WorkItem(BasePolarion):
         """
         self._verify_obj()
         return self.session.tracker_client.service.addExternalLinkedRevision(
-            self.uri, repository_name, revision_id)
+            self.uri, repository_name, revision_id
+        )
 
     def add_hyperlink(self, url, role):
         """method add_hyperlink adds a hyperlink to a _WorkItem
@@ -600,10 +622,10 @@ class _WorkItem(BasePolarion):
         self.check_valid_field_values(role, "hyperlink-role", {})
         suds_role = EnumOptionId(role)._suds_object
         return self.session.tracker_client.service.addHyperlink(
-            self.uri, url, suds_role)
+            self.uri, url, suds_role
+        )
 
-    def add_linked_item(self, linked_work_item_id, role,
-                        revision=None, suspect=None):
+    def add_linked_item(self, linked_work_item_id, role, revision=None, suspect=None):
         """method add_linked_item adds a linked _WorkItem to current _WorkItem
         The linking is done to the "child" object. For example, if you have a
         Test Case that verifies a requirement, you would add the
@@ -631,16 +653,16 @@ class _WorkItem(BasePolarion):
         self._verify_obj()
         # validates the role. Will raise PyleroLibException if invalid
         self.check_valid_field_values(role, "workitem-link-role", {})
-        wi_linked = _WorkItem(work_item_id=linked_work_item_id,
-                              project_id=self.project_id)
+        wi_linked = _WorkItem(
+            work_item_id=linked_work_item_id, project_id=self.project_id
+        )
         enum_role = EnumOptionId(role)._suds_object
         function_name = "addLinkedItem"
         parms = [self.uri, wi_linked.uri, enum_role]
         if revision:
             function_name += "WithRev"
             parms += [revision, suspect]
-        return getattr(self.session.tracker_client.service,
-                       function_name)(*parms)
+        return getattr(self.session.tracker_client.service, function_name)(*parms)
 
     def add_linked_revision(self, revision):
         """method add_linked_revision links a revision to the current _WorkItem
@@ -655,8 +677,7 @@ class _WorkItem(BasePolarion):
             Tracker.addLinkedRevision
         """
         self._verify_obj()
-        return self.session.tracker_client.service.addLinkedRevision(self.uri,
-                                                                     revision)
+        return self.session.tracker_client.service.addLinkedRevision(self.uri, revision)
 
     def create_attachment(self, path, title):
         """method create_attachment adds the given attachment to the current
@@ -675,8 +696,9 @@ class _WorkItem(BasePolarion):
         self._verify_obj()
         data = self._get_file_data(path)
         filename = os.path.basename(path)
-        self.session.tracker_client.service. \
-            createAttachment(self.uri, filename, title, data)
+        self.session.tracker_client.service.createAttachment(
+            self.uri, filename, title, data
+        )
 
     def create_comment(self, content):
         """method create_comment adds a comment to the current _WorkItem
@@ -702,11 +724,11 @@ class _WorkItem(BasePolarion):
         else:
             suds_content = suds.null()
 
-        self.session.tracker_client.service.createComment(self.uri,
-                                                          suds_content)
+        self.session.tracker_client.service.createComment(self.uri, suds_content)
 
-    def create_work_record(self, user_id, date_worked, time_spent,
-                           record_type=None, record_comment=None):
+    def create_work_record(
+        self, user_id, date_worked, time_spent, record_type=None, record_comment=None
+    ):
         """Creates a work record
 
         Args:
@@ -752,8 +774,7 @@ class _WorkItem(BasePolarion):
             Tracker.deleteAttachment
         """
         self._verify_obj()
-        self.session.tracker_client.service.deleteAttachment(
-            self.uri, attachment_id)
+        self.session.tracker_client.service.deleteAttachment(self.uri, attachment_id)
 
     def do_auto_suspect(self):
         """Triggers auto suspect.
@@ -804,7 +825,8 @@ class _WorkItem(BasePolarion):
         self.check_valid_field_values(status, "approval-status", {})
         suds_status = EnumOptionId(status)._suds_object
         self.session.tracker_client.service.editApproval(
-            self.uri, approvee_id, suds_status)
+            self.uri, approvee_id, suds_status
+        )
 
     def get_allowed_approvers(self):
         """Gets all allowed approvers"
@@ -819,8 +841,9 @@ class _WorkItem(BasePolarion):
             Tracker.getAllowedApprovers
         """
         users = []
-        for suds_user in self.session.tracker_client.service. \
-                getAllowedApprovers(self.uri):
+        for suds_user in self.session.tracker_client.service.getAllowedApprovers(
+            self.uri
+        ):
             users.append(User(suds_object=suds_user))
         return users
 
@@ -837,8 +860,9 @@ class _WorkItem(BasePolarion):
             Tracker.getAllowedAssignees
         """
         users = []
-        for suds_user in self.session.tracker_client.service. \
-                getAllowedAssignees(self.uri):
+        for suds_user in self.session.tracker_client.service.getAllowedAssignees(
+            self.uri
+        ):
             users.append(User(suds_object=suds_user))
         return users
 
@@ -858,8 +882,9 @@ class _WorkItem(BasePolarion):
         """
         self._verify_obj()
         actions = []
-        for suds_action in self.session.tracker_client.service. \
-                getAvailableActions(self.uri):
+        for suds_action in self.session.tracker_client.service.getAvailableActions(
+            self.uri
+        ):
             actions.append(WorkflowAction(suds_object=suds_action))
         return actions
 
@@ -878,8 +903,9 @@ class _WorkItem(BasePolarion):
         """
         self._verify_obj()
         linked_work_items = []
-        for suds_lwi in self.session.tracker_client.service. \
-                getBackLinkedWorkitems(self.uri):
+        for suds_lwi in self.session.tracker_client.service.getBackLinkedWorkitems(
+            self.uri
+        ):
             linked_work_items.append(LinkedWorkItem(suds_object=suds_lwi))
         return linked_work_items
 
@@ -896,8 +922,7 @@ class _WorkItem(BasePolarion):
             Tracker.getCustomField
         """
         self._verify_obj()
-        suds_custom = self.session.tracker_client.service.getCustomField(
-            self.uri, key)
+        suds_custom = self.session.tracker_client.service.getCustomField(self.uri, key)
         return CustomField(suds_object=suds_custom)
 
     def get_custom_field_keys(self):
@@ -931,7 +956,8 @@ class _WorkItem(BasePolarion):
         """
         self._verify_obj()
         suds_custom = self.session.tracker_client.service.getCustomFieldType(
-            self.uri, key)
+            self.uri, key
+        )
         return CustomFieldType(suds_object=suds_custom)
 
     def get_custom_field_types(self):
@@ -949,8 +975,9 @@ class _WorkItem(BasePolarion):
         """
         self._verify_obj()
         custom_types = []
-        for suds_custom in self.session.tracker_client.service. \
-                getCustomFieldTypes(self.uri):
+        for suds_custom in self.session.tracker_client.service.getCustomFieldTypes(
+            self.uri
+        ):
             custom_types.append(CustomFieldType(suds_object=suds_custom))
 
     def get_enum_control_key_for_id(self, enum_id):
@@ -966,7 +993,8 @@ class _WorkItem(BasePolarion):
             Tracker.getEnumControlKeyForId
         """
         return self.session.tracker_client.service.getEnumControlKeyForId(
-            self.project_id, enum_id)
+            self.project_id, enum_id
+        )
 
     def get_enum_control_key_for_key(self, key):
         """Gets the enumeration control key for the specified work item key.
@@ -982,7 +1010,8 @@ class _WorkItem(BasePolarion):
             Tracker.getEnumControlKeyForId
         """
         return self.session.tracker_client.service.getEnumControlKeyForId(
-            self.project_id, key)
+            self.project_id, key
+        )
 
     def get_initial_workflow_action(self, work_item_type=None):
         """Gets the initial workflow action for the specified object, returns
@@ -1005,8 +1034,7 @@ class _WorkItem(BasePolarion):
         if work_item_type:
             function_name += "ForProjectAndType"
             parm += [work_item_type]
-        suds_action = getattr(self.session.tracker_client.service,
-                              function_name)(*parm)
+        suds_action = getattr(self.session.tracker_client.service, function_name)(*parm)
         return WorkflowAction(suds_object=suds_action)
 
     def get_test_steps(self):
@@ -1022,8 +1050,7 @@ class _WorkItem(BasePolarion):
             Tracker.getTestSteps
         """
         self._verify_obj()
-        suds_ts = self.session.test_management_client.service. \
-            getTestSteps(self.uri)
+        suds_ts = self.session.test_management_client.service.getTestSteps(self.uri)
         return TestSteps(suds_object=suds_ts)
 
     def get_unavailable_actions(self):
@@ -1044,8 +1071,9 @@ class _WorkItem(BasePolarion):
         """
         self._verify_obj()
         actions = []
-        for suds_action in self.session.tracker_client.service. \
-                getUnavailableActions(self.uri):
+        for suds_action in self.session.tracker_client.service.getUnavailableActions(
+            self.uri
+        ):
             actions.append(WorkflowAction(suds_object=suds_action))
         return actions
 
@@ -1063,8 +1091,7 @@ class _WorkItem(BasePolarion):
             Tracker.performWorkflowAction
         """
         self._verify_obj()
-        self.session.tracker_client.service.performWorkflowAction(self.uri,
-                                                                  action_id)
+        self.session.tracker_client.service.performWorkflowAction(self.uri, action_id)
 
     def remove_assignee(self, assignee_id):
         """removes an assignee from the _WorkItem.
@@ -1079,8 +1106,7 @@ class _WorkItem(BasePolarion):
             Tracker.removeAssignee
         """
         self._verify_obj()
-        return self.session.tracker_client.service.removeAssignee(self.uri,
-                                                                  assignee_id)
+        return self.session.tracker_client.service.removeAssignee(self.uri, assignee_id)
 
     def remove_category(self, category_id):
         """removes a category from the _WorkItem.
@@ -1095,8 +1121,7 @@ class _WorkItem(BasePolarion):
             Tracker.removeCategory
         """
         self._verify_obj()
-        return self.session.tracker_client.service.removeCategory(self.uri,
-                                                                  category_id)
+        return self.session.tracker_client.service.removeCategory(self.uri, category_id)
 
     def remove_external_linked_revision(self, repository_name, revision_id):
         """Removes a revision from external repository.
@@ -1112,9 +1137,9 @@ class _WorkItem(BasePolarion):
             Tracker.removeExternalLinkedRevision
         """
         self._verify_obj()
-        return self.session.tracker_client.service. \
-            removeExternalLinkedRevision(self.uri, repository_name,
-                                         revision_id)
+        return self.session.tracker_client.service.removeExternalLinkedRevision(
+            self.uri, repository_name, revision_id
+        )
 
     def remove_externally_linked_item(self, linked_external_workitem_id, role):
         """Removes an externally linked work item.
@@ -1131,8 +1156,9 @@ class _WorkItem(BasePolarion):
         """
         self._verify_obj()
         external_wi = _WorkItem(uri=linked_external_workitem_id)
-        return self.session.tracker_client.service. \
-            removeExternallyLinkedItem(self.uri, external_wi.uri, role)
+        return self.session.tracker_client.service.removeExternallyLinkedItem(
+            self.uri, external_wi.uri, role
+        )
 
     def remove_hyperlink(self, url):
         """Removes a hyperlink from the _WorkItem
@@ -1147,8 +1173,7 @@ class _WorkItem(BasePolarion):
             Tracker.removeHyperlink
         """
         self._verify_obj()
-        return self.session.tracker_client.service. \
-            removeHyperlink(self.uri, url)
+        return self.session.tracker_client.service.removeHyperlink(self.uri, url)
 
     def remove_linked_item(self, linked_item_id, role):
         """Removes a linked work item.
@@ -1164,11 +1189,11 @@ class _WorkItem(BasePolarion):
             Tracker.removeLinkedItem
         """
         self._verify_obj()
-        wi_linked = _WorkItem(work_item_id=linked_item_id,
-                              project_id=self.project_id)
+        wi_linked = _WorkItem(work_item_id=linked_item_id, project_id=self.project_id)
         enum_role = EnumOptionId(role)._suds_object
-        return self.session.tracker_client.service. \
-            removeLinkedItem(self.uri, wi_linked.uri, enum_role)
+        return self.session.tracker_client.service.removeLinkedItem(
+            self.uri, wi_linked.uri, enum_role
+        )
 
     def remove_linked_revision(self, revision_id):
         """Removes a revision
@@ -1183,8 +1208,9 @@ class _WorkItem(BasePolarion):
             Tracker.removeLinkedRevision
         """
         self._verify_obj()
-        return self.session.tracker_client.service. \
-            removeLinkedRevision(self.uri, revision_id)
+        return self.session.tracker_client.service.removeLinkedRevision(
+            self.uri, revision_id
+        )
 
     def remove_planning_constraint(self, constraint_date, constraint):
         """Removes a planning constraint
@@ -1200,8 +1226,9 @@ class _WorkItem(BasePolarion):
             Tracker.removePlaningConstraint
         """
         self._verify_obj()
-        return self.session.tracker_client.service. \
-            removePlaningConstraint(self.uri, constraint_date, constraint)
+        return self.session.tracker_client.service.removePlaningConstraint(
+            self.uri, constraint_date, constraint
+        )
 
     def reset_workflow(self):
         """resets the workflow for the current object. Performs initial action
@@ -1276,13 +1303,11 @@ class _WorkItem(BasePolarion):
             parm = []
             if isinstance(test_steps[0], TestStep):
                 parm = [item._suds_object for item in test_steps]
-            elif isinstance(test_steps[0], TestStep().
-                            _suds_object.__class__):
+            elif isinstance(test_steps[0], TestStep()._suds_object.__class__):
                 parm = test_steps
         else:
             raise PyleroLibException("Expecting a list of testStep objects")
-        self.session.test_management_client.service.setTestSteps(self.uri,
-                                                                 parm)
+        self.session.test_management_client.service.setTestSteps(self.uri, parm)
 
     def update(self):
         """Update the server with the current _WorkItem data
@@ -1320,14 +1345,14 @@ class _WorkItem(BasePolarion):
         self._verify_obj()
         data = self._get_file_data(path)
         filename = os.path.basename(path)
-        self.session.tracker_client.service. \
-            updateAttachment(self.uri, attachment_id, filename, title, data)
+        self.session.tracker_client.service.updateAttachment(
+            self.uri, attachment_id, filename, title, data
+        )
 
     def verify_required(self):
         for field in self._required_fields:
             if not getattr(self, field):
-                raise PyleroLibException(
-                    "{0} is a required field".format(field))
+                raise PyleroLibException("{0} is a required field".format(field))
 
     def which_test_runs(self):
         """Gives the user a list of TestRun objects that the current WorkItem
@@ -1341,6 +1366,7 @@ class _WorkItem(BasePolarion):
         """
         # import done in the function so as not to cause circular refs
         from pylero.test_run import TestRun
+
         return TestRun.search(self.work_item_id)
 
 
@@ -1349,6 +1375,7 @@ class _SpecificWorkItem(_WorkItem):
     that is different per WorkItem type. Classes that inherit from this class
     must define the _wi_type class attribute as a minimum.
     """
+
     _wi_type = ""
     _got_custom_fields = False
     _required_fields = []
@@ -1376,17 +1403,17 @@ class _SpecificWorkItem(_WorkItem):
             if req not in kwargs:
                 fields += (", " if fields else "") + req
         if fields:
-            raise PyleroLibException("These parameters are required: {0}".
-                                     format(fields))
+            raise PyleroLibException(
+                "These parameters are required: {0}".format(fields)
+            )
         for field in kwargs:
-            if field not in cls._all_custom_fields and \
-                    field not in cls._cls_suds_map:
+            if field not in cls._all_custom_fields and field not in cls._cls_suds_map:
                 fields += (", " if fields else "") + field
         if fields:
-            raise PyleroLibException("These parameters are unknown: {0}".
-                                     format(fields))
+            raise PyleroLibException("These parameters are unknown: {0}".format(fields))
         return super(_SpecificWorkItem, cls).create(
-            project_id, cls._wi_type, title, desc, status, **kwargs)
+            project_id, cls._wi_type, title, desc, status, **kwargs
+        )
 
     @classmethod
     def get_custom_fields(cls, project_id):
@@ -1402,14 +1429,18 @@ class _SpecificWorkItem(_WorkItem):
         """
         cls._required_fields = []
         cls._all_custom_fields = []
-        cfts = cls.get_defined_custom_field_types(project_id,
-                                                  cls._wi_type)
+        cfts = cls.get_defined_custom_field_types(project_id, cls._wi_type)
         for cft in cfts:
             # convert the custom field name to use code convention, where
             # possible
-            split_name = re.findall('[a-zA-Z][^A-Z]*', cft.cft_id)
-            local_name = "_".join(split_name).replace("_U_R_I", "_uri"). \
-                replace("_W_I", "_wi").replace("_I_D", "_id").lower()
+            split_name = re.findall("[a-zA-Z][^A-Z]*", cft.cft_id)
+            local_name = (
+                "_".join(split_name)
+                .replace("_U_R_I", "_uri")
+                .replace("_W_I", "_wi")
+                .replace("_I_D", "_id")
+                .lower()
+            )
             cls._all_custom_fields.append(local_name)
             cls._cls_suds_map[local_name] = {}
             cls._cls_suds_map[local_name]["field_name"] = cft.cft_id
@@ -1419,11 +1450,8 @@ class _SpecificWorkItem(_WorkItem):
             # for all object types, I need special processing.
             parse_type = cft.type.split(":")
             if parse_type[0].startswith("ns"):
-                cls._cls_suds_map[local_name]["cls"] = \
-                    globals()[parse_type[1]]
-            cls._cls_suds_map[local_name]["enum_id"] = getattr(cft,
-                                                               "enum_id",
-                                                               None)
+                cls._cls_suds_map[local_name]["cls"] = globals()[parse_type[1]]
+            cls._cls_suds_map[local_name]["enum_id"] = getattr(cft, "enum_id", None)
             cls._cls_suds_map[local_name]["is_custom"] = True
             cls._cls_suds_map[local_name]["control"] = cls._wi_type
             if cft.multi:
@@ -1434,9 +1462,16 @@ class _SpecificWorkItem(_WorkItem):
         return None
 
     @classmethod
-    def query(cls, query, fields=["work_item_id"],
-              sort="work_item_id", limit=-1, baseline_revision=None,
-              query_uris=False, project_id=None):
+    def query(
+        cls,
+        query,
+        fields=["work_item_id"],
+        sort="work_item_id",
+        limit=-1,
+        baseline_revision=None,
+        query_uris=False,
+        project_id=None,
+    ):
         """Function overrides the query function in the _WorkItem class. It
         only accepts Lucene queries, specifically queries the specific type of
         work item and the default project. To search other projects, there is a
@@ -1490,13 +1525,23 @@ class _SpecificWorkItem(_WorkItem):
             cls.get_custom_fields(project_id or cls.default_project)
         if query:
             query += " AND "
-        query += "type:%s AND project.id:%s" % \
-            (cls._wi_type, project_id or cls.default_project)
+        query += "type:%s AND project.id:%s" % (
+            cls._wi_type,
+            project_id or cls.default_project,
+        )
         return super(_SpecificWorkItem, cls).query(
-            query, False, fields, sort, limit, baseline_revision, query_uris)
+            query, False, fields, sort, limit, baseline_revision, query_uris
+        )
 
-    def __init__(self, project_id=None, work_item_id=None, suds_object=None,
-                 uri=None, fields=None, revision=None):
+    def __init__(
+        self,
+        project_id=None,
+        work_item_id=None,
+        suds_object=None,
+        uri=None,
+        fields=None,
+        revision=None,
+    ):
         """In this constructor, it adds the custom fields per WorkItem type to
         the _cls_suds_map along with the is_custom and is_enum fields.
         In the property builder of the base class, it defines special behavior
@@ -1506,14 +1551,15 @@ class _SpecificWorkItem(_WorkItem):
             project_id = self.default_project
         self._changed_fields = {}
         self.get_custom_fields(project_id)
-        super(_SpecificWorkItem, self).__init__(project_id, work_item_id,
-                                                suds_object, uri, fields,
-                                                revision)
+        super(_SpecificWorkItem, self).__init__(
+            project_id, work_item_id, suds_object, uri, fields, revision
+        )
         if not self.type:
             self.type = self._wi_type
         if self.type != self._wi_type:
-            raise PyleroLibException("This is of type {0}, not type {1}".
-                                     format(self.type, self._wi_type))
+            raise PyleroLibException(
+                "This is of type {0}, not type {1}".format(self.type, self._wi_type)
+            )
 
     @tx_wrapper
     def update(self):
@@ -1539,10 +1585,13 @@ for item in bp._cache["enums"]["workitem-type"][None]:
     workitems[item.id] = item.name.replace(" ", "")
 
 for wi in workitems:
-    newclass = type(str(workitems[wi]),
-                    (_SpecificWorkItem,),
-                    {"_wi_type": wi,
-                     "_cls_suds_map":
-                        copy.deepcopy(_SpecificWorkItem._cls_suds_map)})
+    newclass = type(
+        str(workitems[wi]),
+        (_SpecificWorkItem,),
+        {
+            "_wi_type": wi,
+            "_cls_suds_map": copy.deepcopy(_SpecificWorkItem._cls_suds_map),
+        },
+    )
     # Add the class to the module's namespace
     globals()[str(workitems[wi])] = newclass
