@@ -1,20 +1,17 @@
-Name: pylero
-Version: 0.0.4
-Release: 1%{?dist}
-Summary: Python SDK for Polarion
+Name:           python-pylero
+Version:        0.0.4
+Release:        1%{?dist}
+Summary:        Python SDK for Polarion
 
-License: MIT
-URL: https://github.com/RedHatQE/pylero
-Source0: %{url}/archive/%{version}/pylero-%{version}.tar.gz
+License:        MIT
+URL:            https://github.com/RedHatQE/pylero
+Source:         %{url}/archive/%{version}/pylero-%{version}.tar.gz
 
-BuildArch: noarch
-BuildRequires: python3-devel
-BuildRequires: python3-setuptools
+BuildArch:      noarch
+BuildRequires:  python3-devel
 
 %global _description %{expand:
-# Pylero
-
-Welcome to Pylero, the Python wrapper for the Polarion WSDL API. The Pylero
+This is Pylero, the Python wrapper for the Polarion WSDL API. The Pylero
 wrapper enables native python access to Polarion objects and functionality
 using object oriented structure and functionality. This allows the devlopers to
 use Pylero in a natural fashion without being concerned about the Polarion
@@ -42,32 +39,39 @@ downloads the list of workitems and creates them.}
 
 %description %_description
 
-%package -n python3-%{name}
+%package -n python3-pylero
 Summary:        %{summary}
 
-%description -n python3-%{name} %_description
+%description -n python3-pylero %_description
+
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
-# setuptools-scm is needed to build the source distribution, but not
-# for packaging, which *starts* from the source distribution
-sed -i -e 's., "setuptools_scm"..g' pyproject.toml
+%autosetup -p1 -n pylero-%{version}
+
 
 %generate_buildrequires
 %pyproject_buildrequires
 
+
 %build
 %pyproject_wheel
 
+
 %install
 %pyproject_install
-rm -f %{buildroot}%{_bindir}/pylero
 
-%files -n python3-%{name}
+%pyproject_save_files pylero
+
+
+%check
+%pyproject_check_import -t
+
+
+%files -n python3-pylero -f %{pyproject_files}
 %doc README.md
-%license LICENSE
-%{python3_sitelib}/%{name}*
-%{_bindir}/%{name}-cmd
+%{_bindir}/pylero
+%{_bindir}/pylero-cmd
+
 
 %changelog
 * Tue Sep 13 2022 Wayne Sun <gsun@redhat.com> 0.0.4-1
