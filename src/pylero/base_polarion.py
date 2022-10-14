@@ -562,9 +562,15 @@ class BasePolarion(object):
         csm = self._cls_suds_map[field_name]
         if getattr(self._suds_object, csm["field_name"], None):
             obj_lst = []
+            project_id = getattr(self._suds_object, "project", None)
+            if project_id:
+                project_id = project_id["id"]
             # ArrayOf Polarion objects have a double list.
             for inst in getattr(self._suds_object, csm["field_name"])[0]:
-                obj_lst.append(csm["cls"](suds_object=inst))
+                csm_obj = csm["cls"](suds_object=inst)
+                if getattr(csm_obj, "project_id", None) and project_id:
+                    setattr(csm_obj, "project_id", project_id)
+                obj_lst.append(csm_obj)
             return obj_lst
         else:
             return []
