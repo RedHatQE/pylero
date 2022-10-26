@@ -2,7 +2,7 @@
 
 Welcome to Pylero, the Python wrapper for the Polarion WSDL API. The Pylero
 wrapper enables native python access to Polarion objects and functionality
-using object oriented structure and functionality. This allows the devlopers to
+using object oriented structure and functionality. This allows the developers to
 use Pylero in a natural fashion without being concerned about the Polarion
 details.
 
