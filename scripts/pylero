@@ -20,6 +20,51 @@ else:
     # `readline` on python > 3.6 resulting in Traceback at times
     import readline
 
+USAGE = """\
+Welcome to Pylero, the Python wrapper for the Polarion WSDL API. The Pylero
+wrapper enables native python access to Polarion objects and functionality
+using object oriented structure and functionality. This allows the developers to
+use Pylero in a natural fashion without being concerned about the Polarion
+details.
+
+A configuration file must be filled out, which must be located either in the
+current dir (the dir where the script is executed from) named **.pylero** or in
+the user's home dir ~/.pylero
+
+Default settings are stored in LIBDIR/pylero.cfg. This file should not
+be modified, as it will be overwritten with any future updates.  Certificates
+should be verified automatically, but if they aren't, you can add the path to
+your CA to the cert_path config option.  These are the configurable values:
+
+    [webservice]
+    url=https://{your polarion web URL}/polarion
+    svn_repo=https://{your polarion web URL}/repo
+    user={your username}
+    password={your password}
+    default_project={your default project}
+    #cert_path=/dir/with/certs
+    #disable_manual_auth=False
+
+If the password value is blank, it will prompt you for a password when you try
+to access any of the pylero objects.
+
+These can also be overridden with the following environment variables:
+    POLARION_URL
+    POLARION_REPO
+    POLARION_USERNAME
+    POLARION_PASSWORD
+    POLARION_TIMEOUT
+    POLARION_PROJECT
+    POLARION_CERT_PATH
+    POLARION_DISABLE_MANUAL_AUTH
+"""
+
+
+def parse_args():
+    if len(sys.argv) == 2 and sys.argv[1] in ("-h", "--help"):
+        print(USAGE)
+        sys.exit(0)
+
 
 def main():
     EXCLUDE_MODULES = ["test_classes", "embedding", "interface", "server", "session"]
@@ -36,5 +81,6 @@ def main():
 
 
 if __name__ == "__main__":
+    parse_args()
     main()
     os.environ["PYTHONINSPECT"] = "yes"
