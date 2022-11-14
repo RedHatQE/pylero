@@ -63,8 +63,16 @@ Summary:        %{summary}
 %pyproject_save_files pylero
 
 
+%global _pylero_import_exclude %{expand:
+-e pylero.build -e pylero.build_linked_work_item -e pylero.cli.cmd -e pylero.document
+-e pylero.plan -e pylero.plan_record -e pylero.test_record -e pylero.test_run
+-e pylero.work_item
+}
+
 %check
-%pyproject_check_import -t
+# If the Polarion server URL is not specified in config some libraries will
+# fail to import, so exclude the modules which require the server url
+%pyproject_check_import %_pylero_import_exclude
 
 
 %files -n python3-pylero -f %{pyproject_files}
