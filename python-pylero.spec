@@ -1,5 +1,5 @@
 Name:           python-pylero
-Version:        0.0.4
+Version:        0.0.5
 Release:        1%{?dist}
 Summary:        Python SDK for Polarion
 
@@ -82,6 +82,10 @@ Summary:        %{summary}
 
 
 %changelog
+* Wed Dec 21 2022 Wayne Sun <gsun@redhat.com> 0.0.5-1
+- Rename spec to python-pylero
+- Bug fixes
+
 * Tue Sep 13 2022 Wayne Sun <gsun@redhat.com> 0.0.4-1
 - Fix EPEL9 yum suds package (gsun@redhat.com)
 - Switch back to modern rpm spec (gsun@redhat.com)
