@@ -37,7 +37,7 @@ else:
 if __name__ == "__main__":
     setup(
         name=PACKAGE_NAME,
-        version="0.0.4",
+        version="0.0.5",
         description="Python SDK for Polarion",
         long_description=LONG_DESCRIPTION,
         long_description_content_type="text/markdown",
