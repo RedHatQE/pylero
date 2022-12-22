@@ -191,8 +191,7 @@ class Plan(BasePolarion):
         Args
             query
             sort
-            limit: the maximum number of records to be returned,
-                   -1 for no limit.
+            limit: the maximum number of records to be returned, -1 for no limit.
             fields: list of the fields requested.
 
         Returns:
