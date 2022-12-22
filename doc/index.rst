@@ -58,12 +58,14 @@ From the root of the project, run::
 
     $ pip install .
 
-Build rpm
----------
+Install on Fedora & EPEL
+--------------------------
 
-If you want to make an rpm out of it::
+If you are on Fedora or RHEL::
 
-    $ python setup.py bdist_rpm
+    $ yum install python3-pylero
+
+You could also use rpmbuild to build RPM with python-pylero.spec.
 
 Pylero must be configured (see next section) before it can be used.
 

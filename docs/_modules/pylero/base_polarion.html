@@ -6,12 +6,14 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>pylero.base_polarion &#8212; pylero  documentation</title>
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
    
@@ -32,90 +34,121 @@
             
   <h1>Source code for pylero.base_polarion</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf8 -*-</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">unicode_literals</span>
-<span class="kn">from</span> <span class="nn">pylero._compatible</span> <span class="kn">import</span> <span class="n">SafeConfigParser</span><span class="p">,</span> <span class="n">basestring</span><span class="p">,</span> <span class="nb">classmethod</span>
-<span class="kn">import</span> <span class="nn">os</span>
+
 <span class="kn">import</span> <span class="nn">base64</span>
 <span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">suds</span>
-<span class="kn">from</span> <span class="nn">pylero.exceptions</span> <span class="kn">import</span> <span class="n">PyleroLibException</span>
-<span class="kn">from</span> <span class="nn">pylero.server</span> <span class="kn">import</span> <span class="n">Server</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
 <span class="kn">from</span> <span class="nn">getpass</span> <span class="kn">import</span> <span class="n">getpass</span>
 
-<span class="c1"># classproperty is a property that works on the class level</span>
+<span class="kn">import</span> <span class="nn">suds</span>
+<span class="kn">from</span> <span class="nn">pylero._compatible</span> <span class="kn">import</span> <span class="n">basestring</span>
+<span class="kn">from</span> <span class="nn">pylero._compatible</span> <span class="kn">import</span> <span class="nb">classmethod</span>
+<span class="kn">from</span> <span class="nn">pylero._compatible</span> <span class="kn">import</span> <span class="n">ConfigParser</span>
+<span class="kn">from</span> <span class="nn">pylero.exceptions</span> <span class="kn">import</span> <span class="n">PyleroLibException</span>
+<span class="kn">from</span> <span class="nn">pylero.server</span> <span class="kn">import</span> <span class="n">Server</span>
 
+
+<span class="c1"># classproperty is a property that works on the class level</span>
 <div class="viewcode-block" id="ClassProperty"><a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.ClassProperty">[docs]</a><span class="k">class</span> <span class="nc">ClassProperty</span><span class="p">(</span><span class="nb">property</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Returns a classmethod as the getter so that the property can be used as</span>
 <span class="sd">    a class property. This is needed so that the property can be set for all</span>
 <span class="sd">    child objects. This project currently has no need of a setter or deleter.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="bp">cls</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">classmethod</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fget</span><span class="p">)</span><span class="o">.</span><span class="fm">__get__</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)()</span></div>
 
 
 <div class="viewcode-block" id="Configuration"><a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.Configuration">[docs]</a><span class="k">class</span> <span class="nc">Configuration</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="n">pkgdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
-    <span class="n">GLOBAL_CONFIG</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/etc/pylero.cfg&quot;</span> <span class="o">%</span> <span class="n">pkgdir</span>
+    <span class="n">GLOBAL_CONFIG</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/pylero.cfg&quot;</span> <span class="o">%</span> <span class="n">pkgdir</span>
     <span class="n">LOCAL_CONFIG</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&quot;~&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;/.pylero&quot;</span>
     <span class="n">CURDIR_CONFIG</span> <span class="o">=</span> <span class="s2">&quot;.pylero&quot;</span>
     <span class="n">CONFIG_SECTION</span> <span class="o">=</span> <span class="s2">&quot;webservice&quot;</span>
-    <span class="c1"># Look at ConfigParser - https://docs.python.org/2.6/library/configparser.html</span>
+    <span class="c1"># Look at ConfigParser</span>
+    <span class="c1"># https://docs.python.org/2.6/library/configparser.html</span>
 
 <div class="viewcode-block" id="Configuration.__init__"><a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.Configuration.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">defaults</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;cachingpolicy&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;timeout&quot;</span><span class="p">:</span> <span class="s2">&quot;120&quot;</span><span class="p">}</span>
-
-
-        <span class="n">config</span> <span class="o">=</span> <span class="n">SafeConfigParser</span><span class="p">(</span><span class="n">defaults</span><span class="p">)</span>
+        <span class="n">defaults</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;cachingpolicy&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;timeout&quot;</span><span class="p">:</span> <span class="s2">&quot;120&quot;</span><span class="p">}</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">ConfigParser</span><span class="p">(</span><span class="n">defaults</span><span class="p">)</span>
         <span class="c1"># Check for existence of config file and config_section</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">read</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">GLOBAL_CONFIG</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">LOCAL_CONFIG</span><span class="p">,</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">CURDIR_CONFIG</span><span class="p">])</span> <span class="ow">or</span> \
-                <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">has_section</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CONFIG_SECTION</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">read</span><span class="p">(</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">GLOBAL_CONFIG</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">LOCAL_CONFIG</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">CURDIR_CONFIG</span><span class="p">]</span>
+        <span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">has_section</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CONFIG_SECTION</span><span class="p">):</span>
             <span class="c1"># Check for mandatory environ variables if config file is not found</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;POLARION_URL&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;POLARION_REPO&#39;</span><span class="p">,</span> <span class="s1">&#39;POLARION_USERNAME&#39;</span><span class="p">,</span> <span class="s1">&#39;POLARION_PASSWORD&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;POLARION_PROJECT&#39;</span><span class="p">)):</span>
-                <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span><span class="s2">&quot;The config files/ENV vars do not &quot;</span>
-                                        <span class="s2">&quot;exist or are not of the correct &quot;</span>
-                                        <span class="s2">&quot;format. Valid files are: </span><span class="si">{0}</span><span class="s2">, </span><span class="si">{1}</span><span class="s2"> &quot;</span>
-                                        <span class="s2">&quot;or </span><span class="si">{2}</span><span class="s2">&quot;</span> <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">GLOBAL_CONFIG</span><span class="p">,</span>
-                                                <span class="bp">self</span><span class="o">.</span><span class="n">LOCAL_CONFIG</span><span class="p">,</span>
-                                                <span class="bp">self</span><span class="o">.</span><span class="n">CURDIR_CONFIG</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">server_url</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;POLARION_URL&quot;</span><span class="p">)</span> <span class="ow">or</span> \
-                     <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CONFIG_SECTION</span><span class="p">,</span> <span class="s2">&quot;url&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">repo</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;POLARION_REPO&quot;</span><span class="p">)</span> <span class="ow">or</span> \
-               <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CONFIG_SECTION</span><span class="p">,</span> <span class="s2">&quot;svn_repo&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">login</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;POLARION_USERNAME&quot;</span><span class="p">)</span> <span class="ow">or</span> \
-                <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CONFIG_SECTION</span><span class="p">,</span> <span class="s2">&quot;user&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;POLARION_PASSWORD&quot;</span><span class="p">)</span> <span class="ow">or</span> \
-              <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CONFIG_SECTION</span><span class="p">,</span> <span class="s2">&quot;password&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="p">(</span>
+                    <span class="s2">&quot;POLARION_URL&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;POLARION_REPO&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;POLARION_USERNAME&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;POLARION_PASSWORD&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;POLARION_PROJECT&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">):</span>
+                <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span>
+                    <span class="s2">&quot;The config files/ENV vars do not &quot;</span>
+                    <span class="s2">&quot;exist or are not of the correct &quot;</span>
+                    <span class="s2">&quot;format. Valid files are: </span><span class="si">{0}</span><span class="s2">, </span><span class="si">{1}</span><span class="s2"> &quot;</span>
+                    <span class="s2">&quot;or </span><span class="si">{2}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">GLOBAL_CONFIG</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">LOCAL_CONFIG</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">CURDIR_CONFIG</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">server_url</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;POLARION_URL&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">CONFIG_SECTION</span><span class="p">,</span> <span class="s2">&quot;url&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">repo</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;POLARION_REPO&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">CONFIG_SECTION</span><span class="p">,</span> <span class="s2">&quot;svn_repo&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">login</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;POLARION_USERNAME&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">CONFIG_SECTION</span><span class="p">,</span> <span class="s2">&quot;user&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;POLARION_PASSWORD&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">CONFIG_SECTION</span><span class="p">,</span> <span class="s2">&quot;password&quot;</span>
+        <span class="p">)</span>
 
         <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;POLARION_TIMEOUT&quot;</span><span class="p">)</span> <span class="ow">or</span> \
-                    <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CONFIG_SECTION</span><span class="p">,</span> <span class="s2">&quot;timeout&quot;</span><span class="p">)</span>
-        <span class="k">except</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">defaults</span><span class="p">()[</span><span class="s1">&#39;timeout&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;POLARION_TIMEOUT&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">CONFIG_SECTION</span><span class="p">,</span> <span class="s2">&quot;timeout&quot;</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">defaults</span><span class="p">[</span><span class="s2">&quot;timeout&quot;</span><span class="p">]</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span><span class="s2">&quot;The timeout value in the config&quot;</span>
-                                       <span class="s2">&quot; file must be an integer&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">proj</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;POLARION_PROJECT&quot;</span><span class="p">)</span> <span class="ow">or</span> \
-               <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CONFIG_SECTION</span><span class="p">,</span> <span class="s2">&quot;default_project&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span>
+                <span class="s2">&quot;The timeout value in the config&quot;</span> <span class="s2">&quot; file must be an integer&quot;</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proj</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;POLARION_PROJECT&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">CONFIG_SECTION</span><span class="p">,</span> <span class="s2">&quot;default_project&quot;</span>
+        <span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cert_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;POLARION_CERT_PATH&quot;</span><span class="p">)</span> <span class="ow">or</span> \
-                        <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CONFIG_SECTION</span><span class="p">,</span> <span class="s2">&quot;cert_path&quot;</span><span class="p">)</span>
-        <span class="k">except</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cert_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;POLARION_CERT_PATH&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">CONFIG_SECTION</span><span class="p">,</span> <span class="s2">&quot;cert_path&quot;</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cert_path</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">server_url</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">login</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">proj</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span><span class="s2">&quot;The config files must contain &quot;</span>
-                                       <span class="s2">&quot;valid values for: url, user, &quot;</span>
-                                       <span class="s2">&quot;password and default_project&quot;</span><span class="p">)</span></div></div>
+            <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span>
+                <span class="s2">&quot;The config files must contain &quot;</span>
+                <span class="s2">&quot;valid values for: url, user, &quot;</span>
+                <span class="s2">&quot;password and default_project&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">disable_manual_auth</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="s2">&quot;POLARION_DISABLE_MANUAL_AUTH&quot;</span>
+            <span class="p">)</span> <span class="ow">or</span> <span class="n">config</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CONFIG_SECTION</span><span class="p">,</span> <span class="s2">&quot;disable_manual_auth&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">disable_manual_auth</span> <span class="o">=</span> <span class="kc">False</span></div></div>
 
 
 <div class="viewcode-block" id="Connection"><a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.Connection">[docs]</a><span class="k">class</span> <span class="nc">Connection</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -123,7 +156,7 @@
 <span class="sd">    objects inherited by BasePolarion.</span>
 <span class="sd">    The url, repo, user and password are read from config files, which are</span>
 <span class="sd">    located either the current directory ./pylero, the user&#39;s dir ~/.pylero</span>
-<span class="sd">    or the Library config dir LIBDIR/etc/pylero.cfg</span>
+<span class="sd">    or the Library config dir LIBDIR/pylero.cfg</span>
 <span class="sd">    These can also be overridden with the following environment variables:</span>
 <span class="sd">    POLARION_URL</span>
 <span class="sd">    POLARION_REPO</span>
@@ -132,6 +165,7 @@
 <span class="sd">    POLARION_TIMEOUT</span>
 <span class="sd">    POLARION_PROJECT</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">connected</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">session</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">password_retries</span> <span class="o">=</span> <span class="mi">3</span>
@@ -143,32 +177,40 @@
             <span class="c1"># if the password is not supplied in the config file, ask the user</span>
             <span class="c1"># for it</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">cfg</span><span class="o">.</span><span class="n">pwd</span><span class="p">:</span>
-                <span class="n">cfg</span><span class="o">.</span><span class="n">pwd</span> <span class="o">=</span> <span class="n">getpass</span><span class="p">(</span>
-                    <span class="s2">&quot;Password not in config file.</span><span class="se">\n</span><span class="s2">Enter Password:&quot;</span><span class="p">)</span>
+                <span class="n">cfg</span><span class="o">.</span><span class="n">pwd</span> <span class="o">=</span> <span class="n">getpass</span><span class="p">(</span><span class="s2">&quot;Password not in config file.</span><span class="se">\n</span><span class="s2">Enter Password:&quot;</span><span class="p">)</span>
             <span class="k">while</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">connected</span> <span class="ow">and</span> <span class="bp">cls</span><span class="o">.</span><span class="n">password_retries</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">srv</span> <span class="o">=</span> <span class="n">Server</span><span class="p">(</span>
                         <span class="n">cfg</span><span class="o">.</span><span class="n">server_url</span><span class="p">,</span>
-                        <span class="n">cfg</span><span class="o">.</span><span class="n">login</span><span class="p">,</span> <span class="n">cfg</span><span class="o">.</span><span class="n">pwd</span><span class="p">,</span>
+                        <span class="n">cfg</span><span class="o">.</span><span class="n">login</span><span class="p">,</span>
+                        <span class="n">cfg</span><span class="o">.</span><span class="n">pwd</span><span class="p">,</span>
                         <span class="n">timeout</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">timeout</span><span class="p">,</span>
-                        <span class="n">cert_path</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">cert_path</span><span class="p">)</span>
+                        <span class="n">cert_path</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">cert_path</span><span class="p">,</span>
+                    <span class="p">)</span>
                     <span class="bp">cls</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">srv</span><span class="o">.</span><span class="n">session</span><span class="p">()</span>
                     <span class="bp">cls</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">_login</span><span class="p">()</span>
                     <span class="bp">cls</span><span class="o">.</span><span class="n">connected</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="k">except</span> <span class="n">suds</span><span class="o">.</span><span class="n">WebFault</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-<span class="c1"># If we couldn&#39;t connect its because the user has typed the wrong</span>
-<span class="c1"># password. So we keep asking for password till we are successfully</span>
-<span class="c1"># connected</span>
-                    <span class="k">if</span> <span class="s2">&quot;com.polarion.platform.security.&quot;</span> \
-                            <span class="s2">&quot;AuthenticationFailedException&quot;</span> \
-                            <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">fault</span><span class="o">.</span><span class="n">faultstring</span><span class="p">:</span>
-                        <span class="n">pwd</span> <span class="o">=</span> <span class="n">getpass</span><span class="p">(</span><span class="s2">&quot;Invalid Password.</span><span class="se">\n</span><span class="s2">Enter Password:&quot;</span><span class="p">)</span>
+                    <span class="c1"># If we couldn&#39;t connect its because the user has typed the</span>
+                    <span class="c1"># wrong password. So we keep asking for password till we</span>
+                    <span class="c1"># are successfully connected</span>
+                    <span class="k">if</span> <span class="p">(</span>
+                        <span class="s2">&quot;com.polarion.platform.security.&quot;</span>
+                        <span class="s2">&quot;AuthenticationFailedException&quot;</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">fault</span><span class="o">.</span><span class="n">faultstring</span>
+                    <span class="p">):</span>
+                        <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">disable_manual_auth</span><span class="p">:</span>
+                            <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span>
+                                <span class="s2">&quot;Manual authentication &quot;</span> <span class="s2">&quot;is disabled&quot;</span>
+                            <span class="p">)</span>
+                        <span class="n">cfg</span><span class="o">.</span><span class="n">pwd</span> <span class="o">=</span> <span class="n">getpass</span><span class="p">(</span><span class="s2">&quot;Invalid Password.</span><span class="se">\n</span><span class="s2">Enter Password:&quot;</span><span class="p">)</span>
                         <span class="bp">cls</span><span class="o">.</span><span class="n">password_retries</span> <span class="o">-=</span> <span class="mi">1</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="k">raise</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">password_retries</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span><span class="s2">&quot;Unable to establish pylero session &quot;</span>
-                        <span class="s2">&quot;due to 3 incorrect login attempts&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span>
+                    <span class="s2">&quot;Unable to establish pylero session &quot;</span>
+                    <span class="s2">&quot;due to 3 incorrect login attempts&quot;</span>
+                <span class="p">)</span>
             <span class="bp">cls</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">default_project</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">proj</span>
             <span class="bp">cls</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">user_id</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">login</span>
             <span class="bp">cls</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">pwd</span>
@@ -200,6 +242,7 @@
             <span class="k">if</span> <span class="n">new_tx</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tx_in</span><span class="p">():</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tx_rollback</span><span class="p">()</span>
             <span class="k">raise</span>
+
     <span class="k">return</span> <span class="n">inner</span></div>
 
 
@@ -232,25 +275,21 @@
 <span class="sd">        default_project (str): The user&#39;s default project, to be used when</span>
 <span class="sd">                          project_id is needed and there is none given</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">_cls_suds_map</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">_id_field</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">_obj_client</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">_obj_struct</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">_session</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">_default_project</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">_cache</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;enums&quot;</span><span class="p">:</span> <span class="p">{},</span>
-        <span class="s2">&quot;custom_field_types&quot;</span><span class="p">:</span> <span class="p">{},</span>
-        <span class="s2">&quot;projects&quot;</span><span class="p">:</span> <span class="p">{}</span>
-    <span class="p">}</span>
-    <span class="n">REGEX_PROJ</span> <span class="o">=</span> <span class="s2">&quot;/default/(.*)\$&quot;</span>
+    <span class="n">_cache</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;enums&quot;</span><span class="p">:</span> <span class="p">{},</span> <span class="s2">&quot;custom_field_types&quot;</span><span class="p">:</span> <span class="p">{},</span> <span class="s2">&quot;projects&quot;</span><span class="p">:</span> <span class="p">{}}</span>
+    <span class="n">REGEX_PROJ</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;/default/(.*)\$&quot;</span>
     <span class="c1"># The id in the uri is always after the last }, at times there are multiple</span>
     <span class="n">REGEX_ID</span> <span class="o">=</span> <span class="s2">&quot;.+}(.*)$&quot;</span>
     <span class="c1"># The URI_STRUCT can be overridden in a child class when needed (for</span>
     <span class="c1"># example, Documents). Also if there is need for a replace in the child</span>
     <span class="c1"># class the URI_ID lambda attributes should be overridden</span>
-    <span class="n">URI_STRUCT</span> <span class="o">=</span> <span class="s2">&quot;subterra:data-service:objects:/default/&quot;</span> \
-                 <span class="s2">&quot;</span><span class="si">%(project)s</span><span class="s2">${</span><span class="si">%(obj)s</span><span class="s2">}</span><span class="si">%(id)s</span><span class="s2">&quot;</span>
+    <span class="n">URI_STRUCT</span> <span class="o">=</span> <span class="s2">&quot;subterra:data-service:objects:/default/&quot;</span> <span class="s2">&quot;</span><span class="si">%(project)s</span><span class="s2">${</span><span class="si">%(obj)s</span><span class="s2">}</span><span class="si">%(id)s</span><span class="s2">&quot;</span>
     <span class="c1"># must wrap lambda with classmethod so it can be used as such</span>
     <span class="n">URI_ID_GET_REPLACE</span> <span class="o">=</span> <span class="nb">classmethod</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">)</span>
     <span class="n">URI_ID_SET_REPLACE</span> <span class="o">=</span> <span class="nb">classmethod</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">)</span>
@@ -299,21 +338,26 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
                 <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="n">fields</span><span class="p">]</span>
             <span class="c1"># convert given fields to Polarion fields</span>
-            <span class="n">p_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;</span><span class="si">%s%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="n">p_fields</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="s2">&quot;</span><span class="si">%s%s</span><span class="s2">&quot;</span>
+                <span class="o">%</span> <span class="p">(</span>
                     <span class="s2">&quot;customFields.&quot;</span>
-                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="n">x</span><span class="p">],</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span>
-                    <span class="bp">cls</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_custom&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="n">x</span><span class="p">],</span> <span class="nb">dict</span><span class="p">)</span>
+                    <span class="ow">and</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_custom&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
                     <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
                     <span class="bp">cls</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="n">x</span><span class="p">]</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="n">x</span><span class="p">],</span> <span class="nb">dict</span><span class="p">)</span>
-                    <span class="k">else</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="s2">&quot;field_name&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">]</span>
-            <span class="c1"># Omit &#39;URI&#39; from URIFields</span>
-            <span class="n">p_fields</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;URI&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">p_fields</span><span class="p">]</span>
+                    <span class="k">else</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="s2">&quot;field_name&quot;</span><span class="p">],</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">fields</span>
+            <span class="p">]</span>
+            <span class="c1"># Omit &#39;URIs&#39; and &#39;URI&#39; from URIFields</span>
+            <span class="n">p_fields</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;URIs&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;URI&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">p_fields</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">p_fields</span>
 
 <div class="viewcode-block" id="BasePolarion.get_global_roles"><a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.BasePolarion.get_global_roles">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">get_global_roles</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns all global roles.</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns all global roles.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            None</span>
@@ -342,7 +386,8 @@
 <span class="sd">            Security.hasCurrentUserPermission</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">security_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">hasCurrentuserPermission</span><span class="p">(</span>
-            <span class="n">permission</span><span class="p">,</span> <span class="n">project_id</span><span class="p">)</span></div>
+            <span class="n">permission</span><span class="p">,</span> <span class="n">project_id</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="BasePolarion.__init__"><a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.BasePolarion.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">suds_object</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># cls_suds_map must be available for some parameters on the class</span>
@@ -361,7 +406,9 @@
         <span class="k">if</span> <span class="n">obj_id</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id_field</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span>
                 <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2"> only accepts a suds object, not an obj_id&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">__name</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">__name</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="n">suds_object</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span> <span class="o">=</span> <span class="n">suds_object</span>
         <span class="k">else</span><span class="p">:</span>
@@ -397,40 +444,69 @@
                 <span class="c1">#    use getattr and setattr</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
                     <span class="k">if</span> <span class="s2">&quot;is_custom&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="n">key</span><span class="p">]:</span>
-                        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="nb">property</span><span class="p">(</span>
-                            <span class="k">lambda</span> <span class="bp">self</span><span class="p">,</span> <span class="n">field_name</span><span class="o">=</span><span class="n">key</span><span class="p">:</span>
-                                <span class="bp">self</span><span class="o">.</span><span class="n">_custom_getter</span><span class="p">(</span><span class="n">field_name</span><span class="p">),</span>
-                            <span class="k">lambda</span> <span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">field_name</span><span class="o">=</span><span class="n">key</span><span class="p">:</span>
-                                <span class="bp">self</span><span class="o">.</span><span class="n">_custom_setter</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">field_name</span><span class="p">)))</span>
+                        <span class="nb">setattr</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span>
+                            <span class="n">key</span><span class="p">,</span>
+                            <span class="nb">property</span><span class="p">(</span>
+                                <span class="k">lambda</span> <span class="bp">self</span><span class="p">,</span> <span class="n">field_name</span><span class="o">=</span><span class="n">key</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_custom_getter</span><span class="p">(</span>
+                                    <span class="n">field_name</span>
+                                <span class="p">),</span>
+                                <span class="k">lambda</span> <span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">field_name</span><span class="o">=</span><span class="n">key</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_custom_setter</span><span class="p">(</span>
+                                    <span class="n">val</span><span class="p">,</span> <span class="n">field_name</span>
+                                <span class="p">),</span>
+                            <span class="p">),</span>
+                        <span class="p">)</span>
                     <span class="k">elif</span> <span class="s2">&quot;is_array&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="n">key</span><span class="p">]:</span>
-                        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="nb">property</span><span class="p">(</span>
-                            <span class="k">lambda</span> <span class="bp">self</span><span class="p">,</span> <span class="n">field_name</span><span class="o">=</span><span class="n">key</span><span class="p">:</span>
-                                <span class="bp">self</span><span class="o">.</span><span class="n">_arr_obj_getter</span><span class="p">(</span><span class="n">field_name</span><span class="p">),</span>
-                            <span class="k">lambda</span> <span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">field_name</span><span class="o">=</span><span class="n">key</span><span class="p">:</span>
-                                <span class="bp">self</span><span class="o">.</span><span class="n">_arr_obj_setter</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">field_name</span><span class="p">)))</span>
+                        <span class="nb">setattr</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span>
+                            <span class="n">key</span><span class="p">,</span>
+                            <span class="nb">property</span><span class="p">(</span>
+                                <span class="k">lambda</span> <span class="bp">self</span><span class="p">,</span> <span class="n">field_name</span><span class="o">=</span><span class="n">key</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_arr_obj_getter</span><span class="p">(</span>
+                                    <span class="n">field_name</span>
+                                <span class="p">),</span>
+                                <span class="k">lambda</span> <span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">field_name</span><span class="o">=</span><span class="n">key</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_arr_obj_setter</span><span class="p">(</span>
+                                    <span class="n">val</span><span class="p">,</span> <span class="n">field_name</span>
+                                <span class="p">),</span>
+                            <span class="p">),</span>
+                        <span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="nb">property</span><span class="p">(</span>
-                            <span class="k">lambda</span> <span class="bp">self</span><span class="p">,</span> <span class="n">field_name</span><span class="o">=</span><span class="n">key</span><span class="p">:</span>
-                                <span class="bp">self</span><span class="o">.</span><span class="n">_obj_getter</span><span class="p">(</span><span class="n">field_name</span><span class="p">),</span>
-                            <span class="k">lambda</span> <span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">field_name</span><span class="o">=</span><span class="n">key</span><span class="p">:</span>
-                                <span class="bp">self</span><span class="o">.</span><span class="n">_obj_setter</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">field_name</span><span class="p">)))</span>
+                        <span class="nb">setattr</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span>
+                            <span class="n">key</span><span class="p">,</span>
+                            <span class="nb">property</span><span class="p">(</span>
+                                <span class="k">lambda</span> <span class="bp">self</span><span class="p">,</span> <span class="n">field_name</span><span class="o">=</span><span class="n">key</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj_getter</span><span class="p">(</span>
+                                    <span class="n">field_name</span>
+                                <span class="p">),</span>
+                                <span class="k">lambda</span> <span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">field_name</span><span class="o">=</span><span class="n">key</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj_setter</span><span class="p">(</span>
+                                    <span class="n">val</span><span class="p">,</span> <span class="n">field_name</span>
+                                <span class="p">),</span>
+                            <span class="p">),</span>
+                        <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="nb">property</span><span class="p">(</span>
-                        <span class="c1"># if the attribute doesn&#39;t exist in the current object</span>
-                        <span class="c1"># return None</span>
-                        <span class="k">lambda</span> <span class="bp">self</span><span class="p">,</span> <span class="n">suds_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="n">key</span><span class="p">]:</span>
-                            <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">,</span> <span class="n">suds_key</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-                        <span class="k">lambda</span> <span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">suds_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="n">key</span><span class="p">]:</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">_regular_setter</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">suds_key</span><span class="p">)))</span>
-<span class="c1"># after all properties are defined set the id field to the value passed in.</span>
+                    <span class="nb">setattr</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span>
+                        <span class="n">key</span><span class="p">,</span>
+                        <span class="nb">property</span><span class="p">(</span>
+                            <span class="c1"># if the attribute doesn&#39;t exist in the current object</span>
+                            <span class="c1"># return None</span>
+                            <span class="k">lambda</span> <span class="bp">self</span><span class="p">,</span> <span class="n">suds_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="n">key</span><span class="p">]:</span> <span class="nb">getattr</span><span class="p">(</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">,</span> <span class="n">suds_key</span><span class="p">,</span> <span class="kc">None</span>
+                            <span class="p">),</span>
+                            <span class="k">lambda</span> <span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">suds_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span>
+                                <span class="n">key</span>
+                            <span class="p">]:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_regular_setter</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">suds_key</span><span class="p">),</span>
+                        <span class="p">),</span>
+                    <span class="p">)</span>
+        <span class="c1"># after all properties are defined set the id field to the value passed in.</span>
         <span class="k">if</span> <span class="n">obj_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id_field</span><span class="p">,</span> <span class="n">obj_id</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_get_suds_object</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Returns the WSDL object as created by the Polarion WSDL factory&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj_client</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj_struct</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj_client</span><span class="p">)</span><span class="o">.</span> \
-                <span class="n">factory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj_struct</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj_client</span><span class="p">)</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_obj_struct</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -446,8 +522,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">csm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span>
         <span class="n">named_arg</span> <span class="o">=</span> <span class="n">csm</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;named_arg&quot;</span><span class="p">,</span> <span class="s2">&quot;suds_object&quot;</span><span class="p">)</span>
-        <span class="n">suds_field_val</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">,</span> <span class="n">csm</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;field_name&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">suds_field_val</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">,</span> <span class="n">csm</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;field_name&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">cls_obj</span> <span class="o">=</span> <span class="n">csm</span><span class="p">[</span><span class="s2">&quot;cls&quot;</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">suds_field_val</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">named_arg</span> <span class="o">==</span> <span class="s2">&quot;uri&quot;</span> <span class="ow">and</span> <span class="n">cls_obj</span><span class="o">.</span><span class="n">_id_field</span><span class="p">:</span>
@@ -487,18 +562,19 @@
             <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_encode</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">enum_id</span> <span class="ow">and</span> <span class="n">val</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">enum_override</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">check_valid_field_values</span><span class="p">(</span>
-                    <span class="n">val</span><span class="p">,</span> <span class="n">enum_id</span><span class="p">,</span> <span class="p">{},</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_wi_type</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_wi_type&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="n">val</span><span class="p">,</span>
+                    <span class="n">enum_id</span><span class="p">,</span>
+                    <span class="p">{},</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_wi_type</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_wi_type&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">sync_field</span><span class="p">:</span>
             <span class="n">sync_field</span> <span class="o">=</span> <span class="s2">&quot;_suds_object&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">basestring</span><span class="p">)</span> <span class="ow">or</span> <span class="n">val</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">add_parms</span><span class="p">[</span><span class="n">obj_cls</span><span class="o">.</span><span class="n">_id_field</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
             <span class="n">obj</span> <span class="o">=</span> <span class="n">obj_cls</span><span class="p">(</span><span class="o">**</span><span class="n">add_parms</span><span class="p">)</span>
-            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">,</span> <span class="n">suds_field_name</span><span class="p">,</span>
-                    <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">sync_field</span><span class="p">))</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">,</span> <span class="n">suds_field_name</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">sync_field</span><span class="p">))</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">obj_cls</span><span class="p">):</span>
-            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">,</span> <span class="n">suds_field_name</span><span class="p">,</span>
-                    <span class="nb">getattr</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">sync_field</span><span class="p">))</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">,</span> <span class="n">suds_field_name</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">sync_field</span><span class="p">))</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">obj_cls</span><span class="p">()</span><span class="o">.</span><span class="n">_suds_object</span><span class="o">.</span><span class="vm">__class__</span><span class="p">):</span>
             <span class="n">obj</span> <span class="o">=</span> <span class="n">obj_cls</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">sync_field</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">:</span>
@@ -507,8 +583,7 @@
                 <span class="n">val</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">suds_sync_field</span><span class="p">)</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">,</span> <span class="n">suds_field_name</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span><span class="s2">&quot;the value </span><span class="si">{0}</span><span class="s2"> is not a valid type&quot;</span><span class="o">.</span>
-                                       <span class="nb">format</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span><span class="s2">&quot;the value </span><span class="si">{0}</span><span class="s2"> is not a valid type&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">_arr_obj_getter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;get function for attributes that reference an array of objects.</span>
@@ -522,9 +597,15 @@
         <span class="n">csm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">,</span> <span class="n">csm</span><span class="p">[</span><span class="s2">&quot;field_name&quot;</span><span class="p">],</span> <span class="kc">None</span><span class="p">):</span>
             <span class="n">obj_lst</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">project_id</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">,</span> <span class="s2">&quot;project&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">project_id</span><span class="p">:</span>
+                <span class="n">project_id</span> <span class="o">=</span> <span class="n">project_id</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
             <span class="c1"># ArrayOf Polarion objects have a double list.</span>
             <span class="k">for</span> <span class="n">inst</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">,</span> <span class="n">csm</span><span class="p">[</span><span class="s2">&quot;field_name&quot;</span><span class="p">])[</span><span class="mi">0</span><span class="p">]:</span>
-                <span class="n">obj_lst</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">csm</span><span class="p">[</span><span class="s2">&quot;cls&quot;</span><span class="p">](</span><span class="n">suds_object</span><span class="o">=</span><span class="n">inst</span><span class="p">))</span>
+                <span class="n">csm_obj</span> <span class="o">=</span> <span class="n">csm</span><span class="p">[</span><span class="s2">&quot;cls&quot;</span><span class="p">](</span><span class="n">suds_object</span><span class="o">=</span><span class="n">inst</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">csm_obj</span><span class="p">,</span> <span class="s2">&quot;project_id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="n">project_id</span><span class="p">:</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="n">csm_obj</span><span class="p">,</span> <span class="s2">&quot;project_id&quot;</span><span class="p">,</span> <span class="n">project_id</span><span class="p">)</span>
+                <span class="n">obj_lst</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">csm_obj</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">obj_lst</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[]</span>
@@ -545,15 +626,14 @@
         <span class="n">arr_inst</span> <span class="o">=</span> <span class="n">csm</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;arr_cls&quot;</span><span class="p">)()</span>
         <span class="n">obj_inst</span> <span class="o">=</span> <span class="n">csm</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cls&quot;</span><span class="p">)()</span>
         <span class="c1"># obj_attach =</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span>
-                          <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">arr_inst</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span>
-                           <span class="n">arr_inst</span><span class="o">.</span><span class="n">_suds_object</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span>
-                <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2">s must be a list of </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="n">csm</span><span class="p">[</span><span class="s2">&quot;field_name&quot;</span><span class="p">],</span> <span class="n">obj_inst</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="n">val</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">arr_inst</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">arr_inst</span><span class="o">.</span><span class="n">_suds_object</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{0}</span><span class="s2">s must be a list of </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">csm</span><span class="p">[</span><span class="s2">&quot;field_name&quot;</span><span class="p">],</span> <span class="n">obj_inst</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+            <span class="p">)</span>
         <span class="k">elif</span> <span class="ow">not</span> <span class="n">val</span><span class="p">:</span>
-            <span class="nb">setattr</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">,</span> <span class="n">csm</span><span class="p">[</span><span class="s2">&quot;field_name&quot;</span><span class="p">],</span> <span class="n">arr_inst</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">)</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">,</span> <span class="n">csm</span><span class="p">[</span><span class="s2">&quot;field_name&quot;</span><span class="p">],</span> <span class="n">arr_inst</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">arr_inst</span><span class="o">.</span><span class="n">_suds_object</span><span class="o">.</span><span class="vm">__class__</span><span class="p">):</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">,</span> <span class="n">csm</span><span class="p">[</span><span class="s2">&quot;field_name&quot;</span><span class="p">],</span> <span class="n">val</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">arr_inst</span><span class="o">.</span><span class="vm">__class__</span><span class="p">):</span>
@@ -567,27 +647,28 @@
                     <span class="n">val</span> <span class="o">=</span> <span class="p">[</span><span class="n">csm</span><span class="p">[</span><span class="s2">&quot;cls&quot;</span><span class="p">](</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">val</span><span class="p">]</span>
 
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">obj_inst</span><span class="o">.</span><span class="n">_suds_object</span><span class="o">.</span><span class="vm">__class__</span><span class="p">):</span>
-                    <span class="nb">setattr</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">,</span> <span class="n">csm</span><span class="p">[</span><span class="s2">&quot;field_name&quot;</span><span class="p">]),</span>
-                            <span class="n">csm</span><span class="p">[</span><span class="s2">&quot;inner_field_name&quot;</span><span class="p">],</span> <span class="n">val</span><span class="p">)</span>
+                    <span class="nb">setattr</span><span class="p">(</span>
+                        <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">,</span> <span class="n">csm</span><span class="p">[</span><span class="s2">&quot;field_name&quot;</span><span class="p">]),</span>
+                        <span class="n">csm</span><span class="p">[</span><span class="s2">&quot;inner_field_name&quot;</span><span class="p">],</span>
+                        <span class="n">val</span><span class="p">,</span>
+                    <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">,</span> <span class="n">csm</span><span class="p">[</span><span class="s2">&quot;field_name&quot;</span><span class="p">],</span>
-                            <span class="n">arr_inst</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">)</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">,</span> <span class="n">csm</span><span class="p">[</span><span class="s2">&quot;field_name&quot;</span><span class="p">],</span> <span class="n">arr_inst</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">)</span>
                     <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">val</span><span class="p">:</span>
-                        <span class="nb">getattr</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">,</span> <span class="n">csm</span><span class="p">[</span><span class="s2">&quot;field_name&quot;</span><span class="p">]),</span>
-                                <span class="n">csm</span><span class="p">[</span><span class="s2">&quot;inner_field_name&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                                    <span class="n">item</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">)</span>
+                        <span class="nb">getattr</span><span class="p">(</span>
+                            <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">,</span> <span class="n">csm</span><span class="p">[</span><span class="s2">&quot;field_name&quot;</span><span class="p">]),</span>
+                            <span class="n">csm</span><span class="p">[</span><span class="s2">&quot;inner_field_name&quot;</span><span class="p">],</span>
+                        <span class="p">)</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">)</span>
 
 <div class="viewcode-block" id="BasePolarion.custom_obj"><a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.BasePolarion.custom_obj">[docs]</a>    <span class="k">def</span> <span class="nf">custom_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># This returns a custom Polarion object. It can&#39;t use the Custom class</span>
         <span class="c1"># as that is a child of this class.</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
-            <span class="s2">&quot;tns4:Custom&quot;</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s2">&quot;tns4:Custom&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BasePolarion.custom_array_obj"><a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.BasePolarion.custom_array_obj">[docs]</a>    <span class="k">def</span> <span class="nf">custom_array_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># This returns a custom Polarion object. It can&#39;t use the Custom class</span>
         <span class="c1"># as that is a child of this class.</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
-            <span class="s2">&quot;tns4:ArrayOfCustom&quot;</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s2">&quot;tns4:ArrayOfCustom&quot;</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_custom_getter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Works with custom fields that has attributes stored differently</span>
@@ -604,14 +685,15 @@
         <span class="n">csm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">field_name</span> <span class="o">==</span> <span class="s2">&quot;test_steps&quot;</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_changed_fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;testSteps&quot;</span><span class="p">):</span>
-                <span class="k">return</span> <span class="n">csm</span><span class="p">[</span><span class="s2">&quot;cls&quot;</span><span class="p">](</span>
-                    <span class="n">suds_object</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_changed_fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;testSteps&quot;</span><span class="p">))</span>
+                <span class="k">return</span> <span class="n">csm</span><span class="p">[</span><span class="s2">&quot;cls&quot;</span><span class="p">](</span><span class="n">suds_object</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_changed_fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;testSteps&quot;</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">test_steps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_test_steps</span><span class="p">()</span>
                 <span class="k">if</span> <span class="n">test_steps</span><span class="p">:</span>
                     <span class="k">return</span> <span class="n">test_steps</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s2">&quot;customFields&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;customFields&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+                <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="o">.</span><span class="n">customFields</span>
+            <span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="o">.</span><span class="n">customFields</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">custom_array_obj</span><span class="p">()</span>
             <span class="n">cf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="o">.</span><span class="n">customFields</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">custom_fld</span> <span class="o">=</span> <span class="kc">None</span>
@@ -621,20 +703,20 @@
                 <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
                     <span class="n">custom_fld</span> <span class="o">=</span> <span class="n">match</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">custom_fld</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">:</span>
-                <span class="n">custom_fld</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_custom_field</span><span class="p">(</span>
-                    <span class="n">csm</span><span class="p">[</span><span class="s2">&quot;field_name&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">_suds_object</span>
+                <span class="n">custom_fld</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_custom_field</span><span class="p">(</span><span class="n">csm</span><span class="p">[</span><span class="s2">&quot;field_name&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">_suds_object</span>
             <span class="k">if</span> <span class="n">custom_fld</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">custom_fld</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span>
                     <span class="n">obj</span> <span class="o">=</span> <span class="n">custom_fld</span>
                 <span class="k">elif</span> <span class="n">csm</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_array&quot;</span><span class="p">):</span>
                     <span class="n">obj</span> <span class="o">=</span> <span class="p">[]</span>
                     <span class="c1"># ArrayOf Polarion objects have a double list.</span>
-                    <span class="k">for</span> <span class="n">inst</span> <span class="ow">in</span> <span class="n">custom_fld</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
-                        <span class="k">if</span> <span class="n">csm</span><span class="p">[</span><span class="s2">&quot;cls&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">_cls_inner</span><span class="o">.</span><span class="n">_id_field</span><span class="p">:</span>
-                            <span class="n">item_inst</span> <span class="o">=</span> <span class="n">csm</span><span class="p">[</span><span class="s2">&quot;cls&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">_cls_inner</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">inst</span><span class="p">)</span>
-                            <span class="n">obj</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">item_inst</span><span class="p">,</span> <span class="n">item_inst</span><span class="o">.</span><span class="n">_id_field</span><span class="p">))</span>
-                        <span class="k">else</span><span class="p">:</span>
-                            <span class="n">obj</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">csm</span><span class="p">[</span><span class="s2">&quot;cls&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">_cls_inner</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">inst</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="n">custom_fld</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">inst</span> <span class="ow">in</span> <span class="n">custom_fld</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                            <span class="k">if</span> <span class="n">csm</span><span class="p">[</span><span class="s2">&quot;cls&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">_cls_inner</span><span class="o">.</span><span class="n">_id_field</span><span class="p">:</span>
+                                <span class="n">item_inst</span> <span class="o">=</span> <span class="n">csm</span><span class="p">[</span><span class="s2">&quot;cls&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">_cls_inner</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">inst</span><span class="p">)</span>
+                                <span class="n">obj</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">item_inst</span><span class="p">,</span> <span class="n">item_inst</span><span class="o">.</span><span class="n">_id_field</span><span class="p">))</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">obj</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">csm</span><span class="p">[</span><span class="s2">&quot;cls&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">_cls_inner</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">inst</span><span class="p">))</span>
                 <span class="k">elif</span> <span class="n">csm</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cls&quot;</span><span class="p">):</span>
                     <span class="n">obj</span> <span class="o">=</span> <span class="n">csm</span><span class="p">[</span><span class="s2">&quot;cls&quot;</span><span class="p">](</span><span class="n">suds_object</span><span class="o">=</span><span class="n">custom_fld</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
@@ -665,7 +747,8 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_changed_fields</span><span class="p">[</span><span class="n">csm</span><span class="p">[</span><span class="s2">&quot;field_name&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">val</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span>
-                    <span class="s2">&quot;The value must be a </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">csm</span><span class="p">[</span><span class="s2">&quot;cls&quot;</span><span class="p">]</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
+                    <span class="s2">&quot;The value must be a </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">csm</span><span class="p">[</span><span class="s2">&quot;cls&quot;</span><span class="p">]</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+                <span class="p">)</span>
         <span class="c1"># move the custom fields to within the object, otherwise each custom</span>
         <span class="c1"># field is a seperate SVN commit. testSteps, does not work unless it</span>
         <span class="c1"># is uploaded using the set_test_steps function.</span>
@@ -674,22 +757,20 @@
             <span class="n">cust</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">csm</span><span class="p">[</span><span class="s2">&quot;field_name&quot;</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">cust</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="k">elif</span> <span class="p">(</span><span class="ow">not</span> <span class="n">csm</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cls&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">basestring</span><span class="p">))</span> \
-                    <span class="ow">and</span> <span class="ow">not</span> <span class="n">csm</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_array&quot;</span><span class="p">):</span>
+            <span class="k">elif</span> <span class="p">(</span><span class="ow">not</span> <span class="n">csm</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cls&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">basestring</span><span class="p">))</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">csm</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="s2">&quot;is_array&quot;</span>
+            <span class="p">):</span>
                 <span class="c1"># if there is no cls specified, val can be a bool, int, ...</span>
                 <span class="c1"># if val is a string, it may be used to instantiate the class</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span>
                     <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_encode</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">csm</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;enum_id&quot;</span><span class="p">)</span> <span class="ow">and</span> \
-                        <span class="n">val</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">csm</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;enum_override&quot;</span><span class="p">,</span> <span class="p">[]):</span>
+                <span class="k">if</span> <span class="n">csm</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;enum_id&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">val</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">csm</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;enum_override&quot;</span><span class="p">,</span> <span class="p">[]):</span>
                     <span class="c1"># uses deepcopy, to not affect other instances of the class</span>
-                    <span class="n">additional_parms</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span>
-                        <span class="n">csm</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;additional_parms&quot;</span><span class="p">,</span> <span class="p">{}))</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">check_valid_field_values</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">csm</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;enum_id&quot;</span><span class="p">),</span>
-                                                  <span class="n">additional_parms</span><span class="p">,</span>
-                                                  <span class="n">csm</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;control&quot;</span><span class="p">))</span>
-                <span class="n">cust</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">csm</span><span class="p">[</span><span class="s2">&quot;cls&quot;</span><span class="p">](</span><span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">_suds_object</span> <span class="k">if</span> <span class="n">csm</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cls&quot;</span><span class="p">)</span> \
-                    <span class="k">else</span> <span class="n">val</span>
+                    <span class="n">additional_parms</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">csm</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;additional_parms&quot;</span><span class="p">,</span> <span class="p">{}))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">check_valid_field_values</span><span class="p">(</span>
+                        <span class="n">val</span><span class="p">,</span> <span class="n">csm</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;enum_id&quot;</span><span class="p">),</span> <span class="n">additional_parms</span><span class="p">,</span> <span class="n">csm</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;control&quot;</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="n">cust</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">csm</span><span class="p">[</span><span class="s2">&quot;cls&quot;</span><span class="p">](</span><span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">_suds_object</span> <span class="k">if</span> <span class="n">csm</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cls&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">val</span>
             <span class="k">elif</span> <span class="n">csm</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_array&quot;</span><span class="p">):</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
                     <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span><span class="s2">&quot;value must be a list&quot;</span><span class="p">)</span>
@@ -700,13 +781,15 @@
                             <span class="c1"># uses deepcopy, to not affect other instances</span>
                             <span class="c1"># of the class</span>
                             <span class="n">additional_parms</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span>
-                                <span class="n">csm</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;additional_parms&quot;</span><span class="p">,</span> <span class="p">{}))</span>
+                                <span class="n">csm</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;additional_parms&quot;</span><span class="p">,</span> <span class="p">{})</span>
+                            <span class="p">)</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">check_valid_field_values</span><span class="p">(</span>
-                                <span class="n">i</span><span class="p">,</span> <span class="n">csm</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;enum_id&quot;</span><span class="p">),</span> <span class="n">additional_parms</span><span class="p">,</span>
-                                <span class="bp">self</span><span class="o">.</span><span class="n">_wi_type</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s2">&quot;_wi_type&quot;</span><span class="p">)</span>
-                                <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
-                        <span class="n">cust</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                            <span class="n">csm</span><span class="p">[</span><span class="s2">&quot;cls&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">_cls_inner</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">)</span>
+                                <span class="n">i</span><span class="p">,</span>
+                                <span class="n">csm</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;enum_id&quot;</span><span class="p">),</span>
+                                <span class="n">additional_parms</span><span class="p">,</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">_wi_type</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_wi_type&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                            <span class="p">)</span>
+                        <span class="n">cust</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">csm</span><span class="p">[</span><span class="s2">&quot;cls&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">_cls_inner</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">)</span>
 
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">csm</span><span class="p">[</span><span class="s2">&quot;cls&quot;</span><span class="p">]):</span>
                 <span class="n">cust</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">_suds_object</span>
@@ -714,16 +797,18 @@
                 <span class="n">cust</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">val</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span>
-                    <span class="s2">&quot;The value must be of type </span><span class="si">{0}</span><span class="s2">.&quot;</span>
-                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">csm</span><span class="p">[</span><span class="s2">&quot;cls&quot;</span><span class="p">]</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
-            <span class="k">if</span> <span class="s2">&quot;customFields&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">:</span>
+                    <span class="s2">&quot;The value must be of type </span><span class="si">{0}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">csm</span><span class="p">[</span><span class="s2">&quot;cls&quot;</span><span class="p">]</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;customFields&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+                <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="o">.</span><span class="n">customFields</span>
+            <span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="o">.</span><span class="n">customFields</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">custom_array_obj</span><span class="p">()</span>
             <span class="n">cf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="o">.</span><span class="n">customFields</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">cf</span><span class="p">:</span>
                 <span class="c1"># check if the custom field already exists and modify it.</span>
                 <span class="n">match</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">cf</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">csm</span><span class="p">[</span><span class="s2">&quot;field_name&quot;</span><span class="p">]]</span>
                 <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
-                    <span class="n">match</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">cust</span><span class="o">.</span><span class="n">value</span>
+                    <span class="k">match</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">cust</span><span class="o">.</span><span class="n">value</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">cf</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cust</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_custom_fields</span> <span class="o">=</span> <span class="n">cf</span>
@@ -744,25 +829,24 @@
         <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_check_encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
-            <span class="sd">&quot;&quot;&quot;Validate @val is a UTF-8 because Polarion doesn&#39;t support not</span>
-<span class="sd">            UTF-8 characters. The only use case that is not taken into account</span>
-<span class="sd">            is when an attribute is set directly with a SUDS object. The users</span>
-<span class="sd">            have no way of calling this function in this case.</span>
+        <span class="sd">&quot;&quot;&quot;Validate @val is a UTF-8 because Polarion doesn&#39;t support not</span>
+<span class="sd">        UTF-8 characters. The only use case that is not taken into account</span>
+<span class="sd">        is when an attribute is set directly with a SUDS object. The users</span>
+<span class="sd">        have no way of calling this function in this case.</span>
 
-<span class="sd">            Args:</span>
-<span class="sd">            val (string): the value that the property is being set to</span>
-<span class="sd">            &quot;&quot;&quot;</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;&#39;</span><span class="p">)):</span>
-                    <span class="n">val</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
-                <span class="c1"># replace chr(160) with space</span>
-                <span class="k">return</span> <span class="n">val</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;</span><span class="se">\xa0</span><span class="s1">&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">UnicodeError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span>
-                    <span class="s1">&#39;String must be UTF-8 encoded. The following error was &#39;</span>
-                    <span class="s1">&#39;raised when converting it to unicode: </span><span class="si">{0}</span><span class="s1">&#39;</span>
-                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
-                <span class="p">)</span>
+<span class="sd">        Args:</span>
+<span class="sd">        val (string): the value that the property is being set to</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)):</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+            <span class="c1"># replace chr(160) with space</span>
+            <span class="k">return</span> <span class="n">val</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\xa0</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">UnicodeError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span>
+                <span class="s2">&quot;String must be UTF-8 encoded. The following error was &quot;</span>
+                <span class="s2">&quot;raised when converting it to unicode: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+            <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_get_file_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Method for getting attachment data that can be passed to the soap</span>
@@ -778,15 +862,23 @@
         <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span>
         <span class="n">bdata</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
         <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">bdata</span><span class="p">)</span>
+        <span class="n">bencode</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">bdata</span><span class="p">)</span>
+        <span class="c1"># Effectively turns in Python3 String</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Python2</span>
+            <span class="k">return</span> <span class="n">bencode</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="c1"># Python3</span>
+            <span class="k">return</span> <span class="n">bencode</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_verify_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># verifies if the object contains a suds object from the server by</span>
         <span class="c1"># checking if the uri field is populated. If no URI it didn&#39;t come from</span>
         <span class="c1"># the server</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;uri&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span><span class="s2">&quot;There is no </span><span class="si">{0}</span><span class="s2"> loaded&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span>
+                <span class="s2">&quot;There is no </span><span class="si">{0}</span><span class="s2"> loaded&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+            <span class="p">)</span>
 
 <div class="viewcode-block" id="BasePolarion.can_add_element_to_key"><a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.BasePolarion.can_add_element_to_key">[docs]</a>    <span class="k">def</span> <span class="nf">can_add_element_to_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Checks if the current user can add elements to the collection at</span>
@@ -802,8 +894,7 @@
 <span class="sd">            Security.canAddElementToKey</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">security_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">canAddElementToKey</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">security_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">canAddElementToKey</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BasePolarion.can_delete_instance"><a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.BasePolarion.can_delete_instance">[docs]</a>    <span class="k">def</span> <span class="nf">can_delete_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Checks if the current user can delete the current object</span>
@@ -897,7 +988,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">security_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">canRemoveElementFromKey</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">key</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="BasePolarion.get_location"><a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.BasePolarion.get_location">[docs]</a>    <span class="k">def</span> <span class="nf">get_location</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Returns the location of the current object. In the context of this</span>
@@ -916,8 +1008,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">security_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">getLocationForURI</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BasePolarion.check_valid_field_values"><a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.BasePolarion.check_valid_field_values">[docs]</a>    <span class="k">def</span> <span class="nf">check_valid_field_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">enum_id</span><span class="p">,</span> <span class="n">additional_parms</span><span class="p">,</span>
-                                 <span class="n">control</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="BasePolarion.check_valid_field_values"><a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.BasePolarion.check_valid_field_values">[docs]</a>    <span class="k">def</span> <span class="nf">check_valid_field_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">enum_id</span><span class="p">,</span> <span class="n">additional_parms</span><span class="p">,</span> <span class="n">control</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;verifies id the value passed in is valid for the enum or object</span>
 <span class="sd">        passed in. for example, if we want to see if a valid user is given,</span>
 <span class="sd">        this will try to instantiate the User class with the given parameter</span>
@@ -937,13 +1028,14 @@
                 <span class="n">enum_id</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="o">**</span><span class="n">additional_parms</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span>
-                    <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2"> is not a valid value for </span><span class="si">{1}</span><span class="s2">&quot;</span>
-                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">enum_id</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
+                    <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2"> is not a valid value for </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">enum_id</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+                <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">valid_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_valid_field_values</span><span class="p">(</span><span class="n">enum_id</span><span class="p">,</span> <span class="n">control</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">val</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">valid_values</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span><span class="s2">&quot;Acceptable values for </span><span class="si">{0}</span><span class="s2"> are:&quot;</span>
-                                           <span class="s2">&quot;</span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">enum_id</span><span class="p">,</span> <span class="n">valid_values</span><span class="p">))</span></div>
+                <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span>
+                    <span class="s2">&quot;Acceptable values for </span><span class="si">{0}</span><span class="s2"> are:&quot;</span> <span class="s2">&quot;</span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">enum_id</span><span class="p">,</span> <span class="n">valid_values</span><span class="p">)</span>
+                <span class="p">)</span></div>
 
 <div class="viewcode-block" id="BasePolarion.get_valid_field_values"><a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.BasePolarion.get_valid_field_values">[docs]</a>    <span class="k">def</span> <span class="nf">get_valid_field_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enum_id</span><span class="p">,</span> <span class="n">control</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Gets the available enumeration options.</span>
@@ -966,9 +1058,10 @@
         <span class="k">if</span> <span class="n">enum_base</span><span class="p">:</span>
             <span class="n">enums</span> <span class="o">=</span> <span class="n">enum_base</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">control</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">enums</span><span class="p">:</span>
-            <span class="n">enums</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
-                <span class="n">getEnumOptionsForIdWithControl</span><span class="p">(</span><span class="n">project_id</span><span class="p">,</span> <span class="n">enum_id</span><span class="p">,</span> <span class="n">control</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;enums&quot;</span><span class="p">][</span><span class="n">enum_id</span><span class="p">]</span><span class="o">=</span><span class="p">{}</span>
+            <span class="n">enums</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">getEnumOptionsForIdWithControl</span><span class="p">(</span>
+                <span class="n">project_id</span><span class="p">,</span> <span class="n">enum_id</span><span class="p">,</span> <span class="n">control</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;enums&quot;</span><span class="p">][</span><span class="n">enum_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="s2">&quot;enums&quot;</span><span class="p">][</span><span class="n">enum_id</span><span class="p">][</span><span class="n">control</span><span class="p">]</span> <span class="o">=</span> <span class="n">enums</span>
         <span class="c1"># the _cache contains _suds_object, so the id attribute is used.</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">enum</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">enum</span> <span class="ow">in</span> <span class="n">enums</span><span class="p">]</span></div>
@@ -1024,12 +1117,12 @@
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -1046,7 +1139,7 @@
       &copy;2021, Sim Zacks and Pylero Contributors.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.3.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

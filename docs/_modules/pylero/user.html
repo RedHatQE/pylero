@@ -6,12 +6,14 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>pylero.user &#8212; pylero  documentation</title>
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
    
@@ -32,13 +34,16 @@
             
   <h1>Source code for pylero.user</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf8 -*-</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">unicode_literals</span>
+
 <span class="kn">from</span> <span class="nn">pylero.base_polarion</span> <span class="kn">import</span> <span class="n">BasePolarion</span>
-<span class="kn">from</span> <span class="nn">pylero.text</span> <span class="kn">import</span> <span class="n">Text</span>
-<span class="kn">from</span> <span class="nn">pylero.subterra_uri</span> <span class="kn">import</span> <span class="n">SubterraURI</span>
-<span class="kn">from</span> <span class="nn">pylero.subterra_uri</span> <span class="kn">import</span> <span class="n">ArrayOfSubterraURI</span>
 <span class="kn">from</span> <span class="nn">pylero.exceptions</span> <span class="kn">import</span> <span class="n">PyleroLibException</span>
+<span class="kn">from</span> <span class="nn">pylero.subterra_uri</span> <span class="kn">import</span> <span class="n">ArrayOfSubterraURI</span>
+<span class="kn">from</span> <span class="nn">pylero.subterra_uri</span> <span class="kn">import</span> <span class="n">SubterraURI</span>
+<span class="kn">from</span> <span class="nn">pylero.text</span> <span class="kn">import</span> <span class="n">Text</span>
 
 
 <div class="viewcode-block" id="User"><a class="viewcode-back" href="../../pylero.html#pylero.user.User">[docs]</a><span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">BasePolarion</span><span class="p">):</span>
@@ -51,36 +56,38 @@
 <span class="sd">        user_id (string)</span>
 <span class="sd">        name (string)</span>
 <span class="sd">        vote_uris (ArrayOfSubterraURI)</span>
-<span class="sd">        watche_uris (ArrayOfSubterraURI)</span>
-<span class="sd">&quot;&quot;&quot;</span>
-    <span class="n">_cls_suds_map</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;description&quot;</span><span class="p">:</span>
-                     <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;description&quot;</span><span class="p">,</span>
-                      <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">Text</span><span class="p">},</span>
-                     <span class="s2">&quot;disabled_notifications&quot;</span><span class="p">:</span> <span class="s2">&quot;disabledNotifications&quot;</span><span class="p">,</span>
-                     <span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="s2">&quot;email&quot;</span><span class="p">,</span>
-                     <span class="s2">&quot;user_id&quot;</span><span class="p">:</span> <span class="s2">&quot;id&quot;</span><span class="p">,</span>
-                     <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span>
-                     <span class="s2">&quot;vote_uris&quot;</span><span class="p">:</span>
-                     <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;voteURIs&quot;</span><span class="p">,</span>
-                      <span class="s2">&quot;is_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-                      <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">SubterraURI</span><span class="p">,</span>
-                      <span class="s2">&quot;arr_cls&quot;</span><span class="p">:</span> <span class="n">ArrayOfSubterraURI</span><span class="p">,</span>
-                      <span class="s2">&quot;inner_field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;SubterraURI&quot;</span><span class="p">},</span>
-                     <span class="s2">&quot;watche_uris&quot;</span><span class="p">:</span>
-                     <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;watcheURIs&quot;</span><span class="p">,</span>
-                      <span class="s2">&quot;is_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-                      <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">SubterraURI</span><span class="p">,</span>
-                      <span class="s2">&quot;arr_cls&quot;</span><span class="p">:</span> <span class="n">ArrayOfSubterraURI</span><span class="p">,</span>
-                      <span class="s2">&quot;inner_field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;SubterraURI&quot;</span><span class="p">},</span>
-                     <span class="s2">&quot;uri&quot;</span><span class="p">:</span> <span class="s2">&quot;_uri&quot;</span><span class="p">,</span>
-                     <span class="s2">&quot;_unresolved&quot;</span><span class="p">:</span> <span class="s2">&quot;_unresolved&quot;</span><span class="p">}</span>
+<span class="sd">        watche_uris (ArrayOfSubterraURI)&quot;&quot;&quot;</span>
+
+    <span class="n">_cls_suds_map</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">Text</span><span class="p">},</span>
+        <span class="s2">&quot;disabled_notifications&quot;</span><span class="p">:</span> <span class="s2">&quot;disabledNotifications&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="s2">&quot;email&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;user_id&quot;</span><span class="p">:</span> <span class="s2">&quot;id&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;vote_uris&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;voteURIs&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;is_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">SubterraURI</span><span class="p">,</span>
+            <span class="s2">&quot;arr_cls&quot;</span><span class="p">:</span> <span class="n">ArrayOfSubterraURI</span><span class="p">,</span>
+            <span class="s2">&quot;inner_field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;SubterraURI&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;watche_uris&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;watcheURIs&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;is_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">SubterraURI</span><span class="p">,</span>
+            <span class="s2">&quot;arr_cls&quot;</span><span class="p">:</span> <span class="n">ArrayOfSubterraURI</span><span class="p">,</span>
+            <span class="s2">&quot;inner_field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;SubterraURI&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;uri&quot;</span><span class="p">:</span> <span class="s2">&quot;_uri&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_unresolved&quot;</span><span class="p">:</span> <span class="s2">&quot;_unresolved&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
     <span class="n">_id_field</span> <span class="o">=</span> <span class="s2">&quot;user_id&quot;</span>
     <span class="n">_obj_client</span> <span class="o">=</span> <span class="s2">&quot;project_client&quot;</span>
     <span class="n">_obj_struct</span> <span class="o">=</span> <span class="s2">&quot;tns2:User&quot;</span>
 
 <div class="viewcode-block" id="User.create_user"><a class="viewcode-back" href="../../pylero.html#pylero.user.User.create_user">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">user_id</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;class method create_user that creates a Polarion user.</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;class method create_user that creates a Polarion user.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            user_id: the id of the user to create (login name)</span>
@@ -149,17 +156,16 @@
 <span class="sd">            Project.getUserByUri</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="n">suds_object</span><span class="p">)</span>
-<span class="c1"># user_id will be null if called from the get_users class function</span>
+        <span class="c1"># user_id will be null if called from the get_users class function</span>
         <span class="k">if</span> <span class="n">user_id</span> <span class="ow">or</span> <span class="n">uri</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">user_id</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span> <span class="o">=</span> \
-                    <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">project_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">getUser</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">project_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">getUser</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">uri</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">project_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
-                    <span class="n">getUserByUri</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">project_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">getUserByUri</span><span class="p">(</span>
+                    <span class="n">uri</span>
+                <span class="p">)</span>
             <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">,</span> <span class="s2">&quot;_unresolvable&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span>
-                    <span class="s2">&quot;The user </span><span class="si">{0}</span><span class="s2"> was not found.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">user_id</span><span class="p">))</span></div>
+                <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span><span class="s2">&quot;The user </span><span class="si">{0}</span><span class="s2"> was not found.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">user_id</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="User.get_context_roles"><a class="viewcode-back" href="../../pylero.html#pylero.user.User.get_context_roles">[docs]</a>    <span class="k">def</span> <span class="nf">get_context_roles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Returns the context (project) roles for the user at given location.</span>
@@ -175,7 +181,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">security_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">getContextRolesForUser</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span><span class="p">,</span> <span class="n">location</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span><span class="p">,</span> <span class="n">location</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="User.get_roles"><a class="viewcode-back" href="../../pylero.html#pylero.user.User.get_roles">[docs]</a>    <span class="k">def</span> <span class="nf">get_roles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Returns all global and context roles for the context at given</span>
@@ -192,9 +199,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">security_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">getRolesForUser</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span><span class="p">,</span> <span class="n">location</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span><span class="p">,</span> <span class="n">location</span>
+        <span class="p">)</span></div>
 
-<span class="c1"># getUserAvatarURL parameter is misnamed in the docs. it really takes user id.</span>
+    <span class="c1"># getUserAvatarURL parameter is misnamed in the docs. it really takes user id.</span>
 <div class="viewcode-block" id="User.get_user_avatar_url"><a class="viewcode-back" href="../../pylero.html#pylero.user.User.get_user_avatar_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_user_avatar_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;method get_user_avatar_url, returns a string with the relative URL</span>
 <span class="sd">        of the user&#39;s avatar.</span>
@@ -209,8 +217,7 @@
 <span class="sd">            Project.getUserAvatarURL</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">project_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">getUserAvatarURL</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">project_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">getUserAvatarURL</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user_id</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span><span class="s2">&quot;The user object is empty&quot;</span><span class="p">)</span></div>
 
@@ -229,9 +236,9 @@
 <span class="sd">            Security.hasPermission</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">security_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">hasPermission</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user_id</span><span class="p">,</span>
-                                                                  <span class="n">permission</span><span class="p">,</span>
-                                                                  <span class="n">project_id</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">security_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">hasPermission</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span><span class="p">,</span> <span class="n">permission</span><span class="p">,</span> <span class="n">project_id</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="User.update"><a class="viewcode-back" href="../../pylero.html#pylero.user.User.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;method update, updates Polarion with the User attributes</span>
@@ -291,12 +298,12 @@
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -313,7 +320,7 @@
       &copy;2021, Sim Zacks and Pylero Contributors.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.3.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
