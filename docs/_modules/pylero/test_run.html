@@ -6,12 +6,14 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>pylero.test_run &#8212; pylero  documentation</title>
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
    
@@ -32,116 +34,139 @@
             
   <h1>Source code for pylero.test_run</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf8 -*-</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span><span class="p">,</span> \
-    <span class="n">unicode_literals</span>
-<span class="kn">from</span> <span class="nn">pylero._compatible</span> <span class="kn">import</span> <span class="nb">classmethod</span><span class="p">,</span><span class="nb">object</span><span class="p">,</span><span class="nb">range</span><span class="p">,</span> <span class="n">basestring</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">unicode_literals</span>
+
 <span class="kn">import</span> <span class="nn">os</span>
+
 <span class="kn">import</span> <span class="nn">suds</span>
-<span class="kn">import</span> <span class="nn">datetime</span>
-<span class="kn">from</span> <span class="nn">xml.dom</span> <span class="kn">import</span> <span class="n">minidom</span>
-<span class="kn">from</span> <span class="nn">pylero.exceptions</span> <span class="kn">import</span> <span class="n">PyleroLibException</span>
+<span class="kn">from</span> <span class="nn">pylero._compatible</span> <span class="kn">import</span> <span class="n">basestring</span>
+<span class="kn">from</span> <span class="nn">pylero._compatible</span> <span class="kn">import</span> <span class="nb">classmethod</span>
+<span class="kn">from</span> <span class="nn">pylero._compatible</span> <span class="kn">import</span> <span class="nb">object</span>  <span class="c1"># noqa</span>
+<span class="kn">from</span> <span class="nn">pylero._compatible</span> <span class="kn">import</span> <span class="nb">range</span>
 <span class="kn">from</span> <span class="nn">pylero.base_polarion</span> <span class="kn">import</span> <span class="n">BasePolarion</span>
-<span class="kn">from</span> <span class="nn">pylero.test_run_attachment</span> <span class="kn">import</span> <span class="n">TestRunAttachment</span>
-<span class="kn">from</span> <span class="nn">pylero.test_run_attachment</span> <span class="kn">import</span> <span class="n">ArrayOfTestRunAttachment</span>
-<span class="kn">from</span> <span class="nn">pylero.enum_option_id</span> <span class="kn">import</span> <span class="n">EnumOptionId</span>
-<span class="kn">from</span> <span class="nn">pylero.enum_option_id</span> <span class="kn">import</span> <span class="n">ArrayOfEnumOptionId</span>
-<span class="kn">from</span> <span class="nn">pylero.test_record</span> <span class="kn">import</span> <span class="n">TestRecord</span>
-<span class="kn">from</span> <span class="nn">pylero.test_record</span> <span class="kn">import</span> <span class="n">ArrayOfTestRecord</span>
-<span class="kn">from</span> <span class="nn">pylero.custom</span> <span class="kn">import</span> <span class="n">Custom</span>
-<span class="kn">from</span> <span class="nn">pylero.custom</span> <span class="kn">import</span> <span class="n">ArrayOfCustom</span>
-<span class="kn">from</span> <span class="nn">pylero.document</span> <span class="kn">import</span> <span class="n">Document</span>
-<span class="kn">from</span> <span class="nn">pylero.work_item</span> <span class="kn">import</span> <span class="n">_WorkItem</span><span class="p">,</span> <span class="n">TestCase</span>
-<span class="kn">from</span> <span class="nn">pylero.user</span> <span class="kn">import</span> <span class="n">User</span>
-<span class="kn">from</span> <span class="nn">pylero.project</span> <span class="kn">import</span> <span class="n">Project</span>
-<span class="kn">from</span> <span class="nn">pylero.text</span> <span class="kn">import</span> <span class="n">Text</span>
-<span class="c1"># Plan is used in custom fields.</span>
-<span class="kn">from</span> <span class="nn">pylero.plan</span> <span class="kn">import</span> <span class="n">Plan</span>  <span class="c1"># NOQA</span>
 <span class="kn">from</span> <span class="nn">pylero.base_polarion</span> <span class="kn">import</span> <span class="n">tx_wrapper</span>
-<span class="kn">import</span> <span class="nn">requests</span>
-<span class="kn">from</span> <span class="nn">requests.auth</span> <span class="kn">import</span> <span class="n">HTTPBasicAuth</span>
+<span class="kn">from</span> <span class="nn">pylero.build</span> <span class="kn">import</span> <span class="n">Build</span>  <span class="c1"># noqa: F401</span>
+<span class="kn">from</span> <span class="nn">pylero.custom</span> <span class="kn">import</span> <span class="n">ArrayOfCustom</span>
+<span class="kn">from</span> <span class="nn">pylero.custom</span> <span class="kn">import</span> <span class="n">Custom</span>
+<span class="kn">from</span> <span class="nn">pylero.custom_field_type</span> <span class="kn">import</span> <span class="n">CustomFieldType</span>
+<span class="kn">from</span> <span class="nn">pylero.document</span> <span class="kn">import</span> <span class="n">Document</span>
+<span class="kn">from</span> <span class="nn">pylero.enum_custom_field_type</span> <span class="kn">import</span> <span class="n">EnumCustomFieldType</span>
+<span class="kn">from</span> <span class="nn">pylero.enum_option_id</span> <span class="kn">import</span> <span class="n">ArrayOfEnumOptionId</span>
+<span class="kn">from</span> <span class="nn">pylero.enum_option_id</span> <span class="kn">import</span> <span class="n">EnumOptionId</span>
+<span class="kn">from</span> <span class="nn">pylero.exceptions</span> <span class="kn">import</span> <span class="n">PyleroLibException</span>
+<span class="kn">from</span> <span class="nn">pylero.plan</span> <span class="kn">import</span> <span class="n">Plan</span>  <span class="c1"># NOQA</span>
+<span class="kn">from</span> <span class="nn">pylero.project</span> <span class="kn">import</span> <span class="n">Project</span>
+<span class="kn">from</span> <span class="nn">pylero.test_record</span> <span class="kn">import</span> <span class="n">ArrayOfTestRecord</span>
+<span class="kn">from</span> <span class="nn">pylero.test_record</span> <span class="kn">import</span> <span class="n">TestRecord</span>
+<span class="kn">from</span> <span class="nn">pylero.test_run_attachment</span> <span class="kn">import</span> <span class="n">ArrayOfTestRunAttachment</span>
+<span class="kn">from</span> <span class="nn">pylero.test_run_attachment</span> <span class="kn">import</span> <span class="n">TestRunAttachment</span>
+<span class="kn">from</span> <span class="nn">pylero.text</span> <span class="kn">import</span> <span class="n">Text</span>
+<span class="kn">from</span> <span class="nn">pylero.user</span> <span class="kn">import</span> <span class="n">User</span>
+<span class="kn">from</span> <span class="nn">pylero.work_item</span> <span class="kn">import</span> <span class="n">_WorkItem</span>
+<span class="kn">from</span> <span class="nn">pylero.work_item</span> <span class="kn">import</span> <span class="n">TestCase</span>
 
-<span class="kn">from</span> <span class="nn">requests.packages.urllib3.exceptions</span> <span class="kn">import</span> <span class="n">InsecureRequestWarning</span>
-
-<span class="c1"># This is to disable the InsecureRequestWarning</span>
-<span class="n">requests</span><span class="o">.</span><span class="n">packages</span><span class="o">.</span><span class="n">urllib3</span><span class="o">.</span><span class="n">disable_warnings</span><span class="p">(</span><span class="n">InsecureRequestWarning</span><span class="p">)</span>
+<span class="c1"># Build is used in custom fields.</span>
+<span class="c1"># Plan is used in custom fields.</span>
 
 
 <div class="viewcode-block" id="generate_description"><a class="viewcode-back" href="../../pylero.html#pylero.test_run.generate_description">[docs]</a><span class="k">def</span> <span class="nf">generate_description</span><span class="p">(</span><span class="n">test_run</span><span class="p">,</span> <span class="n">test_case</span><span class="p">,</span> <span class="n">test_record</span><span class="p">):</span>
-    <span class="n">tr_html</span> <span class="o">=</span> <span class="s2">&quot;&lt;b&gt;Test Run:&lt;/b&gt; &lt;span id=</span><span class="se">\&quot;</span><span class="s2">link</span><span class="se">\&quot;</span><span class="s2"> class=    &quot;</span> \
-              <span class="s2">&quot;</span><span class="se">\&quot;</span><span class="s2">polarion-rte-link</span><span class="se">\&quot;</span><span class="s2"> data-type=</span><span class="se">\&quot;</span><span class="s2">testRun</span><span class="se">\&quot;</span><span class="s2"> &quot;</span> \
-              <span class="s2">&quot;data-item-id=</span><span class="se">\&quot;</span><span class="si">{0}</span><span class="se">\&quot;</span><span class="s2"> data-option-id=</span><span class="se">\&quot;</span><span class="s2">long</span><span class="se">\&quot;</span><span class="s2">&gt;&quot;</span> \
-              <span class="s2">&quot;&lt;/span&gt;&lt;br/&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_run</span><span class="o">.</span><span class="n">test_run_id</span><span class="p">)</span>
-    <span class="n">tc_html</span> <span class="o">=</span> <span class="s2">&quot;&lt;b&gt;Test Case:&lt;/b&gt; &lt;span id=</span><span class="se">\&quot;</span><span class="s2">link</span><span class="se">\&quot;</span><span class="s2"> class=&quot;</span> \
-              <span class="s2">&quot;</span><span class="se">\&quot;</span><span class="s2">polarion-rte-link</span><span class="se">\&quot;</span><span class="s2"> data-type=</span><span class="se">\&quot;</span><span class="s2">workItem</span><span class="se">\&quot;</span><span class="s2"> &quot;</span> \
-              <span class="s2">&quot;data-item-id=</span><span class="se">\&quot;</span><span class="si">{0}</span><span class="se">\&quot;</span><span class="s2"> data-option-id=</span><span class="se">\&quot;</span><span class="s2">long</span><span class="se">\&quot;</span><span class="s2">&gt;&lt;/span&gt;&quot;</span> \
-              <span class="s2">&quot;&lt;br/&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_case</span><span class="o">.</span><span class="n">work_item_id</span><span class="p">)</span>
-    <span class="n">table_cell_style</span> <span class="o">=</span> <span class="s2">&quot;style=</span><span class="se">\&quot;</span><span class="s2">text-align: left; padding: 10px; &quot;</span> \
-                       <span class="s2">&quot;vertical-align: top; background-color: #ffffff;</span><span class="se">\&quot;</span><span class="s2">&quot;</span>
-    <span class="n">table_row_style</span> <span class="o">=</span> <span class="s2">&quot;style=</span><span class="se">\&quot;</span><span class="s2">border-bottom: 1px solid #f0f0f0;</span><span class="se">\&quot;</span><span class="s2">&quot;</span>
-    <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;#&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;span title=</span><span class="se">\&quot;</span><span class="s2">Step</span><span class="se">\&quot;</span><span class="s2">&gt;Step&lt;/span&gt;&quot;</span><span class="p">,</span>
-               <span class="s2">&quot;&lt;span title=</span><span class="se">\&quot;</span><span class="s2">Expected Result</span><span class="se">\&quot;</span><span class="s2">&gt;Expected Result&lt;/span&gt;&quot;</span><span class="p">,</span>
-               <span class="s2">&quot;Actual Result&quot;</span><span class="p">]</span>
-    <span class="n">test_step_results</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;passed&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;span title=</span><span class="se">\&quot;</span><span class="s2">Results met expected results&quot;</span>
-                                   <span class="s2">&quot;</span><span class="se">\&quot;</span><span class="s2">&gt;&lt;span style=</span><span class="se">\&quot;</span><span class="s2">white-space:nowrap;</span><span class="se">\&quot;</span><span class="s2">&gt;&lt;im&quot;</span>
-                                   <span class="s2">&quot;g src=</span><span class="se">\&quot;</span><span class="s2">/polarion/icons/default/enums/test&quot;</span>
-                                   <span class="s2">&quot;run_status_passed.png</span><span class="se">\&quot;</span><span class="s2"> style=</span><span class="se">\&quot;</span><span class="s2">vertical-a&quot;</span>
-                                   <span class="s2">&quot;lign:text-bottom;border:0px;margin-right:2&quot;</span>
-                                   <span class="s2">&quot;px;</span><span class="se">\&quot;</span><span class="s2"> class=</span><span class="se">\&quot;</span><span class="s2">polarion-no-style-cleanup</span><span class="se">\&quot;</span><span class="s2">/&quot;</span>
-                                   <span class="s2">&quot;&gt;&lt;/span&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
-                         <span class="s2">&quot;failed&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;span title=</span><span class="se">\&quot;</span><span class="s2">Results did not meet expecte&quot;</span>
-                                   <span class="s2">&quot;d results</span><span class="se">\&quot;</span><span class="s2">&gt;&lt;span style=</span><span class="se">\&quot;</span><span class="s2">white-space:nowr&quot;</span>
-                                   <span class="s2">&quot;ap;</span><span class="se">\&quot;</span><span class="s2">&gt;&lt;img src=</span><span class="se">\&quot;</span><span class="s2">/polarion/icons/default/e&quot;</span>
-                                   <span class="s2">&quot;nums/testrun_status_failed.png</span><span class="se">\&quot;</span><span class="s2"> style=</span><span class="se">\&quot;</span><span class="s2">v&quot;</span>
-                                   <span class="s2">&quot;ertical-align:text-bottom;border:0px;margi&quot;</span>
-                                   <span class="s2">&quot;n-right:2px;</span><span class="se">\&quot;</span><span class="s2"> class=</span><span class="se">\&quot;</span><span class="s2">polarion-no-style-c&quot;</span>
-                                   <span class="s2">&quot;leanup</span><span class="se">\&quot;</span><span class="s2">/&gt;&lt;/span&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
-                         <span class="s2">&quot;blocked&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;span title=</span><span class="se">\&quot;</span><span class="s2">Errors in the product preve&quot;</span>
-                                    <span class="s2">&quot;nted test from being executed</span><span class="se">\&quot;</span><span class="s2">&gt;&lt;span sty&quot;</span>
-                                    <span class="s2">&quot;le=</span><span class="se">\&quot;</span><span class="s2">white-space:nowrap;</span><span class="se">\&quot;</span><span class="s2">&gt;&lt;img src=</span><span class="se">\&quot;</span><span class="s2">/po&quot;</span>
-                                    <span class="s2">&quot;larion/icons/default/enums/testrun_status&quot;</span>
-                                    <span class="s2">&quot;_blocked.png</span><span class="se">\&quot;</span><span class="s2"> style=</span><span class="se">\&quot;</span><span class="s2">vertical-align:tex&quot;</span>
-                                    <span class="s2">&quot;t-bottom;border:0px;margin-right:2px;</span><span class="se">\&quot;</span><span class="s2"> c&quot;</span>
-                                    <span class="s2">&quot;lass=</span><span class="se">\&quot;</span><span class="s2">polarion-no-style-cleanup</span><span class="se">\&quot;</span><span class="s2">/&gt;&quot;</span>
-                                    <span class="s2">&quot;&lt;/span&gt;&lt;/span&gt;&quot;</span><span class="p">}</span>
-    <span class="n">table_header</span> <span class="o">=</span> <span class="s2">&quot;&lt;table class=</span><span class="se">\&quot;</span><span class="s2">polarion-no-style-cleanup</span><span class="se">\&quot;</span><span class="s2"> style=</span><span class="se">\&quot;</span><span class="s2">border&quot;</span>\
-                   <span class="s2">&quot;-collapse: collapse;</span><span class="se">\&quot;</span><span class="s2">&gt;&lt;tr style=</span><span class="se">\&quot;</span><span class="s2">text-align: left; &quot;</span> \
-                   <span class="s2">&quot;white-space: nowrap; color: #757575; border-bottom: 1px &quot;</span> \
-                   <span class="s2">&quot;solid #d2d7da; background-color: #ffffff;</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="si">{0}</span><span class="s2">&lt;/tr&gt;&quot;</span> \
-        <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;&lt;th </span><span class="si">{0}</span><span class="s2">&gt;</span><span class="si">{1}</span><span class="s2">&lt;/th&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">table_cell_style</span><span class="p">,</span> <span class="n">column</span><span class="p">)</span>
-                         <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">]))</span>
-    <span class="n">verdict</span> <span class="o">=</span> <span class="s2">&quot;&lt;/table&gt;&lt;table style=</span><span class="se">\&quot;</span><span class="s2">margin-bottom: 15px; ;border-collapse: &quot;</span>\
-              <span class="s2">&quot;collapse; width:100%; ;margin-top: 13px;</span><span class="se">\&quot;</span><span class="s2"> class=</span><span class="se">\&quot;</span><span class="s2">polarion-no&quot;</span>\
-              <span class="s2">&quot;-style-cleanup</span><span class="se">\&quot;</span><span class="s2">&gt;&lt;tr&gt;&lt;th style=</span><span class="se">\&quot;</span><span class="s2">width: 80%; text-align: left;&quot;</span>\
-              <span class="s2">&quot; background-color: #ffffff;</span><span class="se">\&quot;</span><span class="s2">&gt;Test Case Verdict:&lt;/th&gt;&lt;/tr&gt;&lt;tr&gt;&quot;</span>\
-              <span class="s2">&quot;&lt;td style=</span><span class="se">\&quot;</span><span class="s2">vertical-align: top;</span><span class="se">\&quot;</span><span class="s2">&gt;&lt;span style=</span><span class="se">\&quot;</span><span class="s2">font-weight: &quot;</span>\
-              <span class="s2">&quot;bold;</span><span class="se">\&quot;</span><span class="s2">&gt;&lt;span style=</span><span class="se">\&quot;</span><span class="s2">color: #C30000;</span><span class="se">\&quot;</span><span class="s2">&gt;&lt;span title=</span><span class="se">\&quot;</span><span class="s2">Results &quot;</span>\
-              <span class="s2">&quot;did not meet expected results</span><span class="se">\&quot;</span><span class="s2">&gt;&lt;span style=</span><span class="se">\&quot;</span><span class="s2">white-space:&quot;</span> \
-              <span class="s2">&quot;nowrap;</span><span class="se">\&quot;</span><span class="s2">&gt;&lt;img src=</span><span class="se">\&quot;</span><span class="s2">/polarion/icons/default/enums/testrun_&quot;</span> \
-              <span class="s2">&quot;status_failed.png</span><span class="se">\&quot;</span><span class="s2"> style=</span><span class="se">\&quot;</span><span class="s2">vertical-align:text-bottom;border:&quot;</span>\
-              <span class="s2">&quot;0px;margin-right:2px;</span><span class="se">\&quot;</span><span class="s2"> class=</span><span class="se">\&quot;</span><span class="s2">polarion-no-style-cleanup</span><span class="se">\&quot;</span><span class="s2">/&gt;&quot;</span> \
-              <span class="s2">&quot;&lt;/span&gt;Failed&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span&gt; </span><span class="si">{0}</span><span class="s2">&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;&quot;</span> \
-              <span class="s2">&quot;&lt;/table&gt;&quot;</span> \
-        <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_record</span><span class="o">.</span><span class="n">comment</span><span class="p">)</span>
+    <span class="n">tr_html</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;&lt;b&gt;Test Run:&lt;/b&gt; &lt;span id=&quot;link&quot; class=    &#39;</span>
+        <span class="s1">&#39;&quot;polarion-rte-link&quot; data-type=&quot;testRun&quot; &#39;</span>
+        <span class="s1">&#39;data-item-id=&quot;</span><span class="si">{0}</span><span class="s1">&quot; data-option-id=&quot;long&quot;&gt;&#39;</span>
+        <span class="s2">&quot;&lt;/span&gt;&lt;br/&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_run</span><span class="o">.</span><span class="n">test_run_id</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">tc_html</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;&lt;b&gt;Test Case:&lt;/b&gt; &lt;span id=&quot;link&quot; class=&#39;</span>
+        <span class="s1">&#39;&quot;polarion-rte-link&quot; data-type=&quot;workItem&quot; &#39;</span>
+        <span class="s1">&#39;data-item-id=&quot;</span><span class="si">{0}</span><span class="s1">&quot; data-option-id=&quot;long&quot;&gt;&lt;/span&gt;&#39;</span>
+        <span class="s2">&quot;&lt;br/&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_case</span><span class="o">.</span><span class="n">work_item_id</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">table_cell_style</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;style=&quot;text-align: left; padding: 10px; &#39;</span>
+        <span class="s1">&#39;vertical-align: top; background-color: #ffffff;&quot;&#39;</span>
+    <span class="p">)</span>
+    <span class="n">table_row_style</span> <span class="o">=</span> <span class="s1">&#39;style=&quot;border-bottom: 1px solid #f0f0f0;&quot;&#39;</span>
+    <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;#&quot;</span><span class="p">,</span>
+        <span class="s1">&#39;&lt;span title=&quot;Step&quot;&gt;Step&lt;/span&gt;&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;&lt;span title=&quot;Expected Result&quot;&gt;Expected Result&lt;/span&gt;&#39;</span><span class="p">,</span>
+        <span class="s2">&quot;Actual Result&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="n">test_step_results</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;passed&quot;</span><span class="p">:</span> <span class="s1">&#39;&lt;span title=&quot;Results met expected results&#39;</span>
+        <span class="s1">&#39;&quot;&gt;&lt;span style=&quot;white-space:nowrap;&quot;&gt;&lt;im&#39;</span>
+        <span class="s1">&#39;g src=&quot;/polarion/icons/default/enums/test&#39;</span>
+        <span class="s1">&#39;run_status_passed.png&quot; style=&quot;vertical-a&#39;</span>
+        <span class="s2">&quot;lign:text-bottom;border:0px;margin-right:2&quot;</span>
+        <span class="s1">&#39;px;&quot; class=&quot;polarion-no-style-cleanup&quot;/&#39;</span>
+        <span class="s2">&quot;&gt;&lt;/span&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;failed&quot;</span><span class="p">:</span> <span class="s1">&#39;&lt;span title=&quot;Results did not meet expecte&#39;</span>
+        <span class="s1">&#39;d results&quot;&gt;&lt;span style=&quot;white-space:nowr&#39;</span>
+        <span class="s1">&#39;ap;&quot;&gt;&lt;img src=&quot;/polarion/icons/default/e&#39;</span>
+        <span class="s1">&#39;nums/testrun_status_failed.png&quot; style=&quot;v&#39;</span>
+        <span class="s2">&quot;ertical-align:text-bottom;border:0px;margi&quot;</span>
+        <span class="s1">&#39;n-right:2px;&quot; class=&quot;polarion-no-style-c&#39;</span>
+        <span class="s1">&#39;leanup&quot;/&gt;&lt;/span&gt;&lt;/span&gt;&#39;</span><span class="p">,</span>
+        <span class="s2">&quot;blocked&quot;</span><span class="p">:</span> <span class="s1">&#39;&lt;span title=&quot;Errors in the product preve&#39;</span>
+        <span class="s1">&#39;nted test from being executed&quot;&gt;&lt;span sty&#39;</span>
+        <span class="s1">&#39;le=&quot;white-space:nowrap;&quot;&gt;&lt;img src=&quot;/po&#39;</span>
+        <span class="s2">&quot;larion/icons/default/enums/testrun_status&quot;</span>
+        <span class="s1">&#39;_blocked.png&quot; style=&quot;vertical-align:tex&#39;</span>
+        <span class="s1">&#39;t-bottom;border:0px;margin-right:2px;&quot; c&#39;</span>
+        <span class="s1">&#39;lass=&quot;polarion-no-style-cleanup&quot;/&gt;&#39;</span>
+        <span class="s2">&quot;&lt;/span&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">table_header</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;&lt;table class=&quot;polarion-no-style-cleanup&quot; style=&quot;border&#39;</span>
+        <span class="s1">&#39;-collapse: collapse;&quot;&gt;&lt;tr style=&quot;text-align: left; &#39;</span>
+        <span class="s2">&quot;white-space: nowrap; color: #757575; border-bottom: 1px &quot;</span>
+        <span class="s1">&#39;solid #d2d7da; background-color: #ffffff;&quot;&gt;</span><span class="si">{0}</span><span class="s1">&lt;/tr&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="s2">&quot;&lt;th </span><span class="si">{0}</span><span class="s2">&gt;</span><span class="si">{1}</span><span class="s2">&lt;/th&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">table_cell_style</span><span class="p">,</span> <span class="n">column</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">columns</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">verdict</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;&lt;/table&gt;&lt;table style=&quot;margin-bottom: 15px; ;border-collapse: &#39;</span>
+        <span class="s1">&#39;collapse; width:100%; ;margin-top: 13px;&quot; class=&quot;polarion-no&#39;</span>
+        <span class="s1">&#39;-style-cleanup&quot;&gt;&lt;tr&gt;&lt;th style=&quot;width: 80%; text-align: left;&#39;</span>
+        <span class="s1">&#39; background-color: #ffffff;&quot;&gt;Test Case Verdict:&lt;/th&gt;&lt;/tr&gt;&lt;tr&gt;&#39;</span>
+        <span class="s1">&#39;&lt;td style=&quot;vertical-align: top;&quot;&gt;&lt;span style=&quot;font-weight: &#39;</span>
+        <span class="s1">&#39;bold;&quot;&gt;&lt;span style=&quot;color: #C30000;&quot;&gt;&lt;span title=&quot;Results &#39;</span>
+        <span class="s1">&#39;did not meet expected results&quot;&gt;&lt;span style=&quot;white-space:&#39;</span>
+        <span class="s1">&#39;nowrap;&quot;&gt;&lt;img src=&quot;/polarion/icons/default/enums/testrun_&#39;</span>
+        <span class="s1">&#39;status_failed.png&quot; style=&quot;vertical-align:text-bottom;border:&#39;</span>
+        <span class="s1">&#39;0px;margin-right:2px;&quot; class=&quot;polarion-no-style-cleanup&quot;/&gt;&#39;</span>
+        <span class="s2">&quot;&lt;/span&gt;Failed&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span&gt; </span><span class="si">{0}</span><span class="s2">&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;&quot;</span>
+        <span class="s2">&quot;&lt;/table&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_record</span><span class="o">.</span><span class="n">comment</span><span class="p">)</span>
+    <span class="p">)</span>
     <span class="n">table_rows</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">test_record</span><span class="o">.</span><span class="n">test_step_results</span><span class="p">)):</span>
-        <span class="n">table_rows</span> <span class="o">+=</span> <span class="s2">&quot;&lt;tr </span><span class="si">{0}</span><span class="s2">&gt;&quot;</span> \
-                      <span class="s2">&quot;&lt;td </span><span class="si">{1}</span><span class="s2">&gt;</span><span class="si">{2}</span><span class="s2">&lt;/td&gt;&quot;</span> \
-                      <span class="s2">&quot;&lt;td </span><span class="si">{1}</span><span class="s2">&gt;</span><span class="si">{3}</span><span class="s2">&lt;/td&gt;&quot;</span> \
-                      <span class="s2">&quot;&lt;td </span><span class="si">{1}</span><span class="s2">&gt;</span><span class="si">{4}</span><span class="s2">&lt;/td&gt;&quot;</span> \
-                      <span class="s2">&quot;&lt;td </span><span class="si">{1}</span><span class="s2">&gt;</span><span class="si">{5}</span><span class="s2">&lt;/td&gt;&quot;</span> \
-                      <span class="s2">&quot;&lt;td </span><span class="si">{1}</span><span class="s2">&gt;</span><span class="si">{6}</span><span class="s2">&lt;/td&gt;&quot;</span> \
-                      <span class="s2">&quot;&lt;/tr&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">table_row_style</span><span class="p">,</span>
-                                     <span class="n">table_cell_style</span><span class="p">,</span>
-                                     <span class="n">test_step_results</span><span class="o">.</span>
-                                     <span class="n">get</span><span class="p">(</span><span class="n">test_record</span><span class="o">.</span><span class="n">test_step_results</span><span class="p">[</span><span class="n">step</span><span class="p">]</span>
-                                         <span class="o">.</span><span class="n">result</span><span class="p">),</span>
-                                     <span class="n">step</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
-                                     <span class="n">test_case</span><span class="o">.</span><span class="n">test_steps</span><span class="o">.</span><span class="n">steps</span><span class="p">[</span><span class="n">step</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                                     <span class="o">.</span><span class="n">content</span><span class="p">,</span>
-                                     <span class="n">test_case</span><span class="o">.</span><span class="n">test_steps</span><span class="o">.</span><span class="n">steps</span><span class="p">[</span><span class="n">step</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-                                     <span class="o">.</span><span class="n">content</span><span class="p">,</span>
-                                     <span class="n">test_record</span><span class="o">.</span><span class="n">test_step_results</span><span class="p">[</span><span class="n">step</span><span class="p">]</span>
-                                     <span class="o">.</span><span class="n">comment</span><span class="p">)</span>
+        <span class="n">table_rows</span> <span class="o">+=</span> <span class="p">(</span>
+            <span class="s2">&quot;&lt;tr </span><span class="si">{0}</span><span class="s2">&gt;&quot;</span>
+            <span class="s2">&quot;&lt;td </span><span class="si">{1}</span><span class="s2">&gt;</span><span class="si">{2}</span><span class="s2">&lt;/td&gt;&quot;</span>
+            <span class="s2">&quot;&lt;td </span><span class="si">{1}</span><span class="s2">&gt;</span><span class="si">{3}</span><span class="s2">&lt;/td&gt;&quot;</span>
+            <span class="s2">&quot;&lt;td </span><span class="si">{1}</span><span class="s2">&gt;</span><span class="si">{4}</span><span class="s2">&lt;/td&gt;&quot;</span>
+            <span class="s2">&quot;&lt;td </span><span class="si">{1}</span><span class="s2">&gt;</span><span class="si">{5}</span><span class="s2">&lt;/td&gt;&quot;</span>
+            <span class="s2">&quot;&lt;td </span><span class="si">{1}</span><span class="s2">&gt;</span><span class="si">{6}</span><span class="s2">&lt;/td&gt;&quot;</span>
+            <span class="s2">&quot;&lt;/tr&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">table_row_style</span><span class="p">,</span>
+                <span class="n">table_cell_style</span><span class="p">,</span>
+                <span class="n">test_step_results</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">test_record</span><span class="o">.</span><span class="n">test_step_results</span><span class="p">[</span><span class="n">step</span><span class="p">]</span><span class="o">.</span><span class="n">result</span><span class="p">),</span>
+                <span class="n">step</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="n">test_case</span><span class="o">.</span><span class="n">test_steps</span><span class="o">.</span><span class="n">steps</span><span class="p">[</span><span class="n">step</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">content</span><span class="p">,</span>
+                <span class="n">test_case</span><span class="o">.</span><span class="n">test_steps</span><span class="o">.</span><span class="n">steps</span><span class="p">[</span><span class="n">step</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">content</span><span class="p">,</span>
+                <span class="n">test_record</span><span class="o">.</span><span class="n">test_step_results</span><span class="p">[</span><span class="n">step</span><span class="p">]</span><span class="o">.</span><span class="n">comment</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
     <span class="n">content</span> <span class="o">=</span> <span class="n">tr_html</span> <span class="o">+</span> <span class="n">tc_html</span> <span class="o">+</span> <span class="n">table_header</span> <span class="o">+</span> <span class="n">table_rows</span> <span class="o">+</span> <span class="n">verdict</span>
 
     <span class="k">return</span> <span class="n">content</span></div>
@@ -149,11 +174,11 @@
 
 <div class="viewcode-block" id="create_incident_report"><a class="viewcode-back" href="../../pylero.html#pylero.test_run.create_incident_report">[docs]</a><span class="k">def</span> <span class="nf">create_incident_report</span><span class="p">(</span><span class="n">test_run</span><span class="p">,</span> <span class="n">test_record</span><span class="p">,</span> <span class="n">test_case</span><span class="p">):</span>
     <span class="n">project_id</span> <span class="o">=</span> <span class="n">test_run</span><span class="o">.</span><span class="n">project_id</span>
-    <span class="n">status</span> <span class="o">=</span> <span class="s1">&#39;open&#39;</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;open&quot;</span>
     <span class="n">project</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="n">project_id</span><span class="p">)</span>
     <span class="n">tconf</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">get_tests_configuration</span><span class="p">()</span>
     <span class="n">defectWorkItemType</span> <span class="o">=</span> <span class="n">tconf</span><span class="o">.</span><span class="n">defect_work_item_type</span>
-    <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;Failed: &#39;</span> <span class="o">+</span> <span class="n">test_case</span><span class="o">.</span><span class="n">title</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Failed: &quot;</span> <span class="o">+</span> <span class="n">test_case</span><span class="o">.</span><span class="n">title</span>
     <span class="n">description</span> <span class="o">=</span> <span class="n">generate_description</span><span class="p">(</span><span class="n">test_run</span><span class="p">,</span> <span class="n">test_case</span><span class="p">,</span> <span class="n">test_record</span><span class="p">)</span>
     <span class="n">kwarg_dict</span> <span class="o">=</span> <span class="p">{}</span>
 
@@ -162,8 +187,9 @@
     <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">tconf</span><span class="o">.</span><span class="n">fields_to_copy_from_test_run_to_linked_defect</span><span class="o">.</span><span class="n">property</span><span class="p">:</span>
         <span class="n">kwarg_dict</span><span class="p">[</span><span class="n">prop</span><span class="o">.</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">test_run</span><span class="p">,</span> <span class="n">prop</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
 
-    <span class="n">incident_report</span> <span class="o">=</span> <span class="n">_WorkItem</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">project_id</span><span class="p">,</span> <span class="n">defectWorkItemType</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span>
-                                       <span class="n">description</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="o">**</span><span class="n">kwarg_dict</span><span class="p">)</span>
+    <span class="n">incident_report</span> <span class="o">=</span> <span class="n">_WorkItem</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+        <span class="n">project_id</span><span class="p">,</span> <span class="n">defectWorkItemType</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="o">**</span><span class="n">kwarg_dict</span>
+    <span class="p">)</span>
     <span class="n">incident_report</span><span class="o">.</span><span class="n">add_linked_item</span><span class="p">(</span><span class="n">test_case</span><span class="o">.</span><span class="n">work_item_id</span><span class="p">,</span> <span class="s2">&quot;triggered_by&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">incident_report</span><span class="o">.</span><span class="n">work_item_id</span></div>
 
@@ -202,84 +228,92 @@
 <span class="sd">        updated</span>
 <span class="sd">        custom_fields</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">_cls_suds_map</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;attachments&quot;</span><span class="p">:</span>
-            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;attachments&quot;</span><span class="p">,</span>
-             <span class="s2">&quot;is_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">TestRunAttachment</span><span class="p">,</span>
-             <span class="s2">&quot;arr_cls&quot;</span><span class="p">:</span> <span class="n">ArrayOfTestRunAttachment</span><span class="p">,</span>
-             <span class="s2">&quot;inner_field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;TestRunAttachment&quot;</span><span class="p">},</span>
-        <span class="s2">&quot;author&quot;</span><span class="p">:</span>
-            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;authorURI&quot;</span><span class="p">,</span>
-             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">User</span><span class="p">,</span>
-             <span class="s2">&quot;named_arg&quot;</span><span class="p">:</span> <span class="s2">&quot;uri&quot;</span><span class="p">,</span>
-             <span class="s2">&quot;sync_field&quot;</span><span class="p">:</span> <span class="s2">&quot;uri&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;attachments&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;attachments&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;is_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">TestRunAttachment</span><span class="p">,</span>
+            <span class="s2">&quot;arr_cls&quot;</span><span class="p">:</span> <span class="n">ArrayOfTestRunAttachment</span><span class="p">,</span>
+            <span class="s2">&quot;inner_field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;TestRunAttachment&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;author&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;authorURI&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">User</span><span class="p">,</span>
+            <span class="s2">&quot;named_arg&quot;</span><span class="p">:</span> <span class="s2">&quot;uri&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;sync_field&quot;</span><span class="p">:</span> <span class="s2">&quot;uri&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
         <span class="s2">&quot;created&quot;</span><span class="p">:</span> <span class="s2">&quot;created&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;document&quot;</span><span class="p">:</span>
-            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;document&quot;</span><span class="p">,</span>
-             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">Document</span><span class="p">},</span>
+        <span class="s2">&quot;document&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;document&quot;</span><span class="p">,</span> <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">Document</span><span class="p">},</span>
         <span class="s2">&quot;finished_on&quot;</span><span class="p">:</span> <span class="s2">&quot;finishedOn&quot;</span><span class="p">,</span>
         <span class="s2">&quot;group_id&quot;</span><span class="p">:</span> <span class="s2">&quot;groupId&quot;</span><span class="p">,</span>
         <span class="s2">&quot;test_run_id&quot;</span><span class="p">:</span> <span class="s2">&quot;id&quot;</span><span class="p">,</span>
         <span class="s2">&quot;is_template&quot;</span><span class="p">:</span> <span class="s2">&quot;isTemplate&quot;</span><span class="p">,</span>
         <span class="s2">&quot;keep_in_history&quot;</span><span class="p">:</span> <span class="s2">&quot;keepInHistory&quot;</span><span class="p">,</span>
         <span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="s2">&quot;location&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;project_id&quot;</span><span class="p">:</span>
-            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;projectURI&quot;</span><span class="p">,</span>
-             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">Project</span><span class="p">,</span>
-             <span class="s2">&quot;named_arg&quot;</span><span class="p">:</span> <span class="s2">&quot;uri&quot;</span><span class="p">,</span>
-             <span class="s2">&quot;sync_field&quot;</span><span class="p">:</span> <span class="s2">&quot;uri&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;project_id&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;projectURI&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">Project</span><span class="p">,</span>
+            <span class="s2">&quot;named_arg&quot;</span><span class="p">:</span> <span class="s2">&quot;uri&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;sync_field&quot;</span><span class="p">:</span> <span class="s2">&quot;uri&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
         <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="s2">&quot;query&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;_records&quot;</span><span class="p">:</span>
-            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;records&quot;</span><span class="p">,</span>
-             <span class="s2">&quot;is_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">TestRecord</span><span class="p">,</span>
-             <span class="s2">&quot;arr_cls&quot;</span><span class="p">:</span> <span class="n">ArrayOfTestRecord</span><span class="p">,</span>
-             <span class="s2">&quot;inner_field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;TestRecord&quot;</span><span class="p">},</span>
-        <span class="s2">&quot;select_test_cases_by&quot;</span><span class="p">:</span>
-            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;selectTestCasesBy&quot;</span><span class="p">,</span>
-             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">EnumOptionId</span><span class="p">,</span>
-             <span class="s2">&quot;enum_id&quot;</span><span class="p">:</span> <span class="s2">&quot;testrun-selectTestCasesBy&quot;</span><span class="p">},</span>
-        <span class="s2">&quot;status&quot;</span><span class="p">:</span>
-            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;status&quot;</span><span class="p">,</span>
-             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">EnumOptionId</span><span class="p">,</span>
-             <span class="s2">&quot;enum_id&quot;</span><span class="p">:</span> <span class="s2">&quot;testing/testrun-status&quot;</span><span class="p">},</span>
-        <span class="s2">&quot;summary_defect&quot;</span><span class="p">:</span>
-            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;summaryDefectURI&quot;</span><span class="p">,</span>
-             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">_WorkItem</span><span class="p">,</span>
-             <span class="s2">&quot;named_arg&quot;</span><span class="p">:</span> <span class="s2">&quot;uri&quot;</span><span class="p">,</span>
-             <span class="s2">&quot;sync_field&quot;</span><span class="p">:</span> <span class="s2">&quot;uri&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;_records&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;records&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;is_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">TestRecord</span><span class="p">,</span>
+            <span class="s2">&quot;arr_cls&quot;</span><span class="p">:</span> <span class="n">ArrayOfTestRecord</span><span class="p">,</span>
+            <span class="s2">&quot;inner_field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;TestRecord&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;select_test_cases_by&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;selectTestCasesBy&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">EnumOptionId</span><span class="p">,</span>
+            <span class="s2">&quot;enum_id&quot;</span><span class="p">:</span> <span class="s2">&quot;testrun-selectTestCasesBy&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;status&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">EnumOptionId</span><span class="p">,</span>
+            <span class="s2">&quot;enum_id&quot;</span><span class="p">:</span> <span class="s2">&quot;testing/testrun-status&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;summary_defect&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;summaryDefectURI&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">_WorkItem</span><span class="p">,</span>
+            <span class="s2">&quot;named_arg&quot;</span><span class="p">:</span> <span class="s2">&quot;uri&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;sync_field&quot;</span><span class="p">:</span> <span class="s2">&quot;uri&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
         <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;title&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;template&quot;</span><span class="p">:</span>
-            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;templateURI&quot;</span><span class="p">,</span>
-             <span class="s2">&quot;named_arg&quot;</span><span class="p">:</span> <span class="s2">&quot;uri&quot;</span><span class="p">,</span>
-             <span class="s2">&quot;sync_field&quot;</span><span class="p">:</span> <span class="s2">&quot;uri&quot;</span><span class="p">},</span>
-        <span class="s2">&quot;type&quot;</span><span class="p">:</span>
-            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;type&quot;</span><span class="p">,</span>
-             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">EnumOptionId</span><span class="p">,</span>
-             <span class="s2">&quot;enum_id&quot;</span><span class="p">:</span> <span class="s2">&quot;testing/testrun-type&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;templateURI&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;named_arg&quot;</span><span class="p">:</span> <span class="s2">&quot;uri&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;sync_field&quot;</span><span class="p">:</span> <span class="s2">&quot;uri&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;type&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">EnumOptionId</span><span class="p">,</span>
+            <span class="s2">&quot;enum_id&quot;</span><span class="p">:</span> <span class="s2">&quot;testing/testrun-type&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
         <span class="s2">&quot;updated&quot;</span><span class="p">:</span> <span class="s2">&quot;updated&quot;</span><span class="p">,</span>
         <span class="c1"># the custom field attribute has been changed to be a protected attr.</span>
         <span class="c1"># All interaction with custom fields should be done directly with the</span>
         <span class="c1"># derived attribute.</span>
-        <span class="s2">&quot;_custom_fields&quot;</span><span class="p">:</span>
-            <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;customFields&quot;</span><span class="p">,</span>
-             <span class="s2">&quot;is_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-             <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">Custom</span><span class="p">,</span>
-             <span class="s2">&quot;arr_cls&quot;</span><span class="p">:</span> <span class="n">ArrayOfCustom</span><span class="p">,</span>
-             <span class="s2">&quot;inner_field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Custom&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;_custom_fields&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;customFields&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;is_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">Custom</span><span class="p">,</span>
+            <span class="s2">&quot;arr_cls&quot;</span><span class="p">:</span> <span class="n">ArrayOfCustom</span><span class="p">,</span>
+            <span class="s2">&quot;inner_field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Custom&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
         <span class="s2">&quot;uri&quot;</span><span class="p">:</span> <span class="s2">&quot;_uri&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;_unresolvable&quot;</span><span class="p">:</span> <span class="s2">&quot;_unresolvable&quot;</span><span class="p">}</span>
+        <span class="s2">&quot;_unresolvable&quot;</span><span class="p">:</span> <span class="s2">&quot;_unresolvable&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
     <span class="n">_id_field</span> <span class="o">=</span> <span class="s2">&quot;test_run_id&quot;</span>
     <span class="n">_obj_client</span> <span class="o">=</span> <span class="s2">&quot;test_management_client&quot;</span>
     <span class="n">_obj_struct</span> <span class="o">=</span> <span class="s2">&quot;tns3:TestRun&quot;</span>
-    <span class="n">CUSTOM_FIELDS_FILE</span> <span class="o">=</span> \
-        <span class="s2">&quot;.polarion/testing/configuration/testrun-custom-fields.xml&quot;</span>
     <span class="n">_custom_field_cache</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">records</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; function to return all the test records of a TestRun.</span>
+        <span class="sd">&quot;&quot;&quot;function to return all the test records of a TestRun.</span>
 <span class="sd">        The records array for dynamic queries/documents only includes executed</span>
 <span class="sd">        records. This returns the unexecuted ones as well.</span>
 
@@ -297,18 +331,16 @@
         <span class="k">if</span> <span class="s2">&quot;Doc&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_test_cases_by</span><span class="p">:</span>
             <span class="n">cases</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">document</span><span class="o">.</span><span class="n">get_work_items</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="k">elif</span> <span class="s2">&quot;Query&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_test_cases_by</span><span class="p">:</span>
-            <span class="n">cases</span> <span class="o">=</span> <span class="n">_WorkItem</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">query</span> <span class="o">+</span> <span class="s2">&quot; AND project.id:&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_id</span><span class="p">)</span>
+            <span class="n">cases</span> <span class="o">=</span> <span class="n">_WorkItem</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">query</span> <span class="o">+</span> <span class="s2">&quot; AND project.id:&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_id</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span><span class="s2">&quot;Only Test Runs based on Docs or&quot;</span>
-                                       <span class="s2">&quot; Queries can be dynamic&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span>
+                <span class="s2">&quot;Only Test Runs based on Docs or&quot;</span> <span class="s2">&quot; Queries can be dynamic&quot;</span>
+            <span class="p">)</span>
         <span class="n">executed_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">rec</span><span class="o">.</span><span class="n">test_case_id</span> <span class="k">for</span> <span class="n">rec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_records</span><span class="p">]</span>
         <span class="n">test_recs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_records</span>
         <span class="k">for</span> <span class="n">case</span> <span class="ow">in</span> <span class="n">cases</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">case</span><span class="o">.</span><span class="n">work_item_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">executed_ids</span> \
-                    <span class="ow">and</span> <span class="n">case</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="s2">&quot;heading&quot;</span><span class="p">:</span>
-                <span class="n">test_recs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="n">TestRecord</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_id</span><span class="p">,</span> <span class="n">case</span><span class="o">.</span><span class="n">work_item_id</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">case</span><span class="o">.</span><span class="n">work_item_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">executed_ids</span> <span class="ow">and</span> <span class="n">case</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="s2">&quot;heading&quot;</span><span class="p">:</span>
+                <span class="n">test_recs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">TestRecord</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_id</span><span class="p">,</span> <span class="n">case</span><span class="o">.</span><span class="n">work_item_id</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">test_recs</span>
 
     <span class="nd">@records</span><span class="o">.</span><span class="n">setter</span>
@@ -317,8 +349,7 @@
 
 <div class="viewcode-block" id="TestRun.create"><a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.create">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="nd">@tx_wrapper</span>
-    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">test_run_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-               <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">test_run_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;class method create for creating a new test run in Polarion</span>
 
 <span class="sd">        Args:</span>
@@ -350,12 +381,13 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">template</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span><span class="s2">&quot;Template is required&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">title</span><span class="p">:</span>
-            <span class="n">uri</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span>\
-                <span class="n">createTestRunWithTitle</span><span class="p">(</span>
-                    <span class="n">project_id</span><span class="p">,</span> <span class="n">test_run_id</span> <span class="ow">or</span> <span class="n">title</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">template</span><span class="p">)</span>
+            <span class="n">uri</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">createTestRunWithTitle</span><span class="p">(</span>
+                <span class="n">project_id</span><span class="p">,</span> <span class="n">test_run_id</span> <span class="ow">or</span> <span class="n">title</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">template</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">uri</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">createTestRun</span><span class="p">(</span>
-                <span class="n">project_id</span><span class="p">,</span> <span class="n">test_run_id</span><span class="p">,</span> <span class="n">template</span><span class="p">)</span>
+                <span class="n">project_id</span><span class="p">,</span> <span class="n">test_run_id</span><span class="p">,</span> <span class="n">template</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="n">uri</span><span class="p">:</span>
             <span class="n">run</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="n">uri</span><span class="p">)</span>
             <span class="n">run</span><span class="o">.</span><span class="n">verify_params</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -368,10 +400,16 @@
 
 <div class="viewcode-block" id="TestRun.create_template"><a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.create_template">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="nd">@tx_wrapper</span>
-    <span class="k">def</span> <span class="nf">create_template</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">template_id</span><span class="p">,</span>
-                        <span class="n">parent_template_id</span><span class="o">=</span><span class="s2">&quot;Empty&quot;</span><span class="p">,</span>
-                        <span class="n">select_test_cases_by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                        <span class="n">doc_with_space</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>  <span class="c1"># , test_case_ids=[]):</span>
+    <span class="k">def</span> <span class="nf">create_template</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">project_id</span><span class="p">,</span>
+        <span class="n">template_id</span><span class="p">,</span>
+        <span class="n">parent_template_id</span><span class="o">=</span><span class="s2">&quot;Empty&quot;</span><span class="p">,</span>
+        <span class="n">select_test_cases_by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">doc_with_space</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>  <span class="c1"># , test_case_ids=[]):</span>
         <span class="c1"># see comment below regarding test_case)ids.</span>
         <span class="sd">&quot;&quot;&quot;class method create_template for creating a new template in Polarion</span>
 
@@ -413,7 +451,7 @@
             <span class="n">tr</span><span class="o">.</span><span class="n">query</span> <span class="o">=</span> <span class="n">query</span>
         <span class="k">if</span> <span class="n">doc_with_space</span><span class="p">:</span>
             <span class="n">tr</span><span class="o">.</span><span class="n">document</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">project_id</span><span class="p">,</span> <span class="n">doc_with_space</span><span class="p">)</span>
-<span class="c1"># TODO: This should work as soon as Polarion implements Change Request REQ-6334</span>
+        <span class="c1"># TODO: This should work as soon as Polarion implements Change Request REQ-6334</span>
         <span class="c1">#        if test_case_ids:</span>
         <span class="c1">#            for test_case_id in test_case_ids:</span>
         <span class="c1">#                tr.add_test_record_by_object(testrec.TestRecord(</span>
@@ -424,8 +462,15 @@
         <span class="k">return</span> <span class="n">TestRun</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">test_run_id</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="n">project_id</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestRun.search"><a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.search">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;test_run_id&quot;</span><span class="p">],</span> <span class="n">sort</span><span class="o">=</span><span class="s2">&quot;test_run_id&quot;</span><span class="p">,</span>
-               <span class="n">limit</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">search_templates</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">query</span><span class="p">,</span>
+        <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;test_run_id&quot;</span><span class="p">],</span>
+        <span class="n">sort</span><span class="o">=</span><span class="s2">&quot;test_run_id&quot;</span><span class="p">,</span>
+        <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">search_templates</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">project_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;class method search executes the given query and returns the results</span>
 
 <span class="sd">        Args:</span>
@@ -438,7 +483,7 @@
 <span class="sd">                     parameter.</span>
 <span class="sd">            sort: the field used to sort results, default is test_run_id</span>
 <span class="sd">            limit (int): the maximum number of records to be returned, -1</span>
-<span class="sd">                         for no limit, default -1.</span>
+<span class="sd">                         for no limit, default None.</span>
 <span class="sd">            search_templates (bool): if set, searches the templates</span>
 <span class="sd">                                     instead of the test runs, default False</span>
 <span class="sd">            project_id: if set, searches the project id, else default project</span>
@@ -456,9 +501,9 @@
 <span class="sd">            test_management.searchTestRunsWithFieldsLimited</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-<span class="c1"># The Polarion functions with limited seem to be the same as without limited</span>
-<span class="c1">#    when -1 is passed in as limit. Because of this, the wrapper will not</span>
-<span class="c1">#    implement the functions without limited.</span>
+        <span class="c1"># The Polarion functions with limited seem to be the same as without limited</span>
+        <span class="c1">#    when -1 is passed in as limit. Because of this, the wrapper will not</span>
+        <span class="c1">#    implement the functions without limited.</span>
         <span class="n">project_id</span> <span class="o">=</span> <span class="n">project_id</span> <span class="ow">or</span> <span class="bp">cls</span><span class="o">.</span><span class="n">default_project</span>
         <span class="n">query</span> <span class="o">+=</span> <span class="s2">&quot; AND project.id:</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">project_id</span><span class="p">)</span>
 
@@ -466,9 +511,11 @@
         <span class="c1"># doing so setting all the class attribute (including &#39;customFields&#39;).</span>
         <span class="n">TestRun</span><span class="p">(</span><span class="n">project_id</span><span class="o">=</span><span class="n">project_id</span><span class="p">)</span>
         <span class="n">function_name</span> <span class="o">=</span> <span class="s2">&quot;search&quot;</span>
-        <span class="n">p_sort</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="n">sort</span><span class="p">]</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
-            <span class="bp">cls</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="n">sort</span><span class="p">],</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> \
-            <span class="bp">cls</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="n">sort</span><span class="p">][</span><span class="s2">&quot;field_name&quot;</span><span class="p">]</span>
+        <span class="n">p_sort</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="n">sort</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="n">sort</span><span class="p">],</span> <span class="nb">dict</span><span class="p">)</span>
+            <span class="k">else</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="n">sort</span><span class="p">][</span><span class="s2">&quot;field_name&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
         <span class="n">parms</span> <span class="o">=</span> <span class="p">[</span><span class="n">query</span><span class="p">,</span> <span class="n">p_sort</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">search_templates</span><span class="p">:</span>
             <span class="n">function_name</span> <span class="o">+=</span> <span class="s2">&quot;TestRunTemplates&quot;</span>
@@ -476,19 +523,21 @@
             <span class="n">function_name</span> <span class="o">+=</span> <span class="s2">&quot;TestRuns&quot;</span>
         <span class="n">p_fields</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_convert_obj_fields_to_polarion</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">p_fields</span><span class="p">:</span>
-            <span class="n">function_name</span> <span class="o">+=</span> <span class="s2">&quot;WithFieldsLimited&quot;</span>
+            <span class="n">function_name</span> <span class="o">+=</span> <span class="s2">&quot;WithFields&quot;</span>
             <span class="n">parms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p_fields</span><span class="p">)</span>
-        <span class="n">parms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">limit</span><span class="p">:</span>
+            <span class="n">function_name</span> <span class="o">+=</span> <span class="s2">&quot;Limited&quot;</span>
+            <span class="n">parms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span>
         <span class="n">test_runs</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">results</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="p">,</span>
-                          <span class="n">function_name</span><span class="p">)(</span><span class="o">*</span><span class="n">parms</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="p">,</span> <span class="n">function_name</span><span class="p">)(</span>
+            <span class="o">*</span><span class="n">parms</span>
+        <span class="p">)</span>
         <span class="k">for</span> <span class="n">suds_obj</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
             <span class="n">tr</span> <span class="o">=</span> <span class="n">TestRun</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">suds_obj</span><span class="p">)</span>
             <span class="n">test_runs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tr</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">test_runs</span></div>
 
-<div class="viewcode-block" id="TestRun.__init__"><a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_run_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">suds_object</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">uri</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="TestRun.__init__"><a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_run_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">suds_object</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;TestRun constructor.</span>
 
 <span class="sd">        Args:</span>
@@ -513,17 +562,23 @@
         <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">test_run_id</span><span class="p">,</span> <span class="n">suds_object</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">test_run_id</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">project_id</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span><span class="s2">&quot;When test_run_id is passed in, &quot;</span>
-                                           <span class="s2">&quot;project_id is required&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
-                <span class="n">getTestRunById</span><span class="p">(</span><span class="n">project_id</span><span class="p">,</span> <span class="n">test_run_id</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span>
+                    <span class="s2">&quot;When test_run_id is passed in, &quot;</span> <span class="s2">&quot;project_id is required&quot;</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">getTestRunById</span><span class="p">(</span>
+                    <span class="n">project_id</span><span class="p">,</span> <span class="n">test_run_id</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
         <span class="k">elif</span> <span class="n">uri</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
-                <span class="n">getTestRunByUri</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">getTestRunByUri</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="n">test_run_id</span> <span class="ow">or</span> <span class="n">uri</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">,</span> <span class="s2">&quot;_unresolvable&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span>
-                    <span class="s2">&quot;The Test Run </span><span class="si">{0}</span><span class="s2"> was not found.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_run_id</span><span class="p">))</span></div>
+                    <span class="s2">&quot;The Test Run </span><span class="si">{0}</span><span class="s2"> was not found.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_run_id</span><span class="p">)</span>
+                <span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_fix_circular_refs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># a class can&#39;t reference itself as a class attribute so it is</span>
@@ -541,7 +596,7 @@
 <span class="sd">        The existing type Enums, must validate by instantiating the object.</span>
 
 <span class="sd">        Args;</span>
-<span class="sd">            field_type - the field type passed in from the custom xml file</span>
+<span class="sd">            field_type - the field type passed in custom field enum_id</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            None for base types, Text class for text types, the object to</span>
 <span class="sd">            validate the enum for Enum objects or the key to validate the enum</span>
@@ -551,63 +606,74 @@
             <span class="k">return</span> <span class="n">Text</span>
         <span class="c1"># some custom types have a [] segment. Still unsure of how to handle</span>
         <span class="c1"># those specific attributes, but for now, this will ignore them</span>
-        <span class="n">split_type</span> <span class="o">=</span> <span class="n">field_type</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;[&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">split_type</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="c1"># a base type</span>
-            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">field_type</span> <span class="o">=</span> <span class="n">field_type</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;[&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">field_type</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">):</span>
+            <span class="c1"># an enum based on an object</span>
+            <span class="k">return</span> <span class="p">[</span>
+                <span class="nb">globals</span><span class="p">()[</span><span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">()</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">field_type</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="p">][</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># an enum</span>
-            <span class="k">if</span> <span class="n">split_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">):</span>
-                <span class="c1"># an enum based on an object</span>
-                <span class="k">return</span> <span class="p">[</span><span class="nb">globals</span><span class="p">()[</span><span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">()</span>
-                        <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">split_type</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">lower</span><span class="p">()][</span><span class="mi">0</span><span class="p">]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># a regular enum</span>
-                <span class="k">return</span> <span class="n">split_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="c1"># a regular enum</span>
+            <span class="k">return</span> <span class="n">field_type</span>
+
+<div class="viewcode-block" id="TestRun.get_defined_custom_field_types"><a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.get_defined_custom_field_types">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_defined_custom_field_types</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">project_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets all the custom fields defined for the specified project.</span>
+<span class="sd">        the custom fields are all either of type CustomFieldType or</span>
+<span class="sd">        EnumCustomFieldType in the case where the field is an enumeration.</span>
+<span class="sd">        These 2 classes are mostly interchangeable.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            project_id: the project to get the custom fields from</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of all the custom fields</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            testmanagement.getDefinedTestRunCustomFieldTypes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_custom_field_cache</span><span class="p">[</span><span class="n">project_id</span><span class="p">]:</span>
+            <span class="n">cfts</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">getDefinedTestRunCustomFieldTypes</span><span class="p">(</span>
+                <span class="n">project_id</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cfts</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_custom_field_cache</span><span class="p">[</span><span class="n">project_id</span><span class="p">]</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">CustomFieldType</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">item</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">CustomFieldType</span><span class="p">()</span><span class="o">.</span><span class="n">_suds_object</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
+            <span class="k">else</span> <span class="n">EnumCustomFieldType</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">item</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">cfts</span>
+        <span class="p">]</span>
+        <span class="k">return</span> <span class="n">results</span></div>
 
     <span class="k">def</span> <span class="nf">_cache_custom_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_id</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Polarion API does not provide the custom fields of a TestRun.</span>
-<span class="sd">        As a workaround, this function connects to the SVN repo and reads the</span>
-<span class="sd">        custom_fields xml file and then processes it. Because the SVN function</span>
-<span class="sd">        takes longer then desired, this caches the custom fields, per project</span>
+        <span class="sd">&quot;&quot;&quot;Polarion API provides the custom fields of a TestRun.</span>
+<span class="sd">        Get all custom fields and save in the dict self._custom_field_cache</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            project_id</span>
 <span class="sd">        Returns</span>
 <span class="sd">            None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">proj</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="n">project_id</span><span class="p">)</span>
-        <span class="c1"># proj.location[8:-30] removes the default: at the beginning and</span>
-        <span class="c1"># .polarion/polarion-project.xml</span>
-        <span class="c1"># Getting the location of the verifying CA-Bundle</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">_server</span><span class="o">.</span><span class="n">cert_path</span><span class="p">:</span>
-            <span class="n">cert_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">_server</span><span class="o">.</span><span class="n">cert_path</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">cert_path</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="n">file_download</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{0}{1}{2}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">proj</span><span class="o">.</span><span class="n">location</span><span class="p">[</span><span class="mi">8</span><span class="p">:</span><span class="o">-</span><span class="mi">30</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">CUSTOM_FIELDS_FILE</span><span class="p">),</span>
-            <span class="n">auth</span><span class="o">=</span><span class="n">HTTPBasicAuth</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logged_in_user_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">password</span><span class="p">),</span>
-            <span class="n">verify</span><span class="o">=</span><span class="n">cert_path</span><span class="p">)</span>
-        <span class="n">file_content</span> <span class="o">=</span> <span class="n">file_download</span><span class="o">.</span><span class="n">text</span>
-        <span class="n">xmldoc</span> <span class="o">=</span> <span class="n">minidom</span><span class="o">.</span><span class="n">parseString</span><span class="p">(</span><span class="n">file_content</span><span class="p">)</span>
-        <span class="n">fields</span> <span class="o">=</span> <span class="n">xmldoc</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;field&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_custom_field_cache</span><span class="p">[</span><span class="n">project_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
-            <span class="n">f_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_custom_field_types</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">))</span>
-            <span class="n">f_name</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
-            <span class="n">f_req</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s2">&quot;required&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;true&quot;</span><span class="p">:</span>
-                <span class="n">f_req</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="n">f_multi</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s2">&quot;multi&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;true&quot;</span><span class="p">:</span>
-                <span class="n">f_multi</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_custom_field_cache</span><span class="p">[</span><span class="n">project_id</span><span class="p">][</span><span class="n">f_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_custom_field_cache</span><span class="p">[</span><span class="n">project_id</span><span class="p">][</span><span class="n">f_name</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f_type</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_custom_field_cache</span><span class="p">[</span><span class="n">project_id</span><span class="p">][</span><span class="n">f_name</span><span class="p">][</span><span class="s2">&quot;required&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f_req</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_custom_field_cache</span><span class="p">[</span><span class="n">project_id</span><span class="p">][</span><span class="n">f_name</span><span class="p">][</span><span class="s2">&quot;multi&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f_multi</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_defined_custom_field_types</span><span class="p">(</span><span class="n">project_id</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">&quot;enum_id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">cft_id</span>
+            <span class="n">f_type</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_custom_field_types</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_custom_field_cache</span><span class="p">[</span><span class="n">project_id</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_custom_field_cache</span><span class="p">[</span><span class="n">project_id</span><span class="p">][</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f_type</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_custom_field_cache</span><span class="p">[</span><span class="n">project_id</span><span class="p">][</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;required&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span>
+                <span class="n">result</span><span class="p">,</span> <span class="s2">&quot;required&quot;</span><span class="p">,</span> <span class="kc">False</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_custom_field_cache</span><span class="p">[</span><span class="n">project_id</span><span class="p">][</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;multi&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span>
+                <span class="n">result</span><span class="p">,</span> <span class="s2">&quot;multi&quot;</span><span class="p">,</span> <span class="kc">False</span>
+            <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_add_custom_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_id</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; This generates object attributes, with validation, so that custom</span>
+        <span class="sd">&quot;&quot;&quot;This generates object attributes, with validation, so that custom</span>
 <span class="sd">        fields can be related to as regular attributes. It takes the custom</span>
 <span class="sd">        fields from the cache and calls the cache function if the values are</span>
 <span class="sd">        not already there.</span>
@@ -644,11 +710,16 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="n">field</span><span class="p">][</span><span class="s2">&quot;cls&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">EnumOptionId</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="n">field</span><span class="p">][</span><span class="s2">&quot;enum_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cache</span><span class="p">[</span><span class="n">field</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cache</span><span class="p">[</span><span class="n">field</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">],</span> <span class="nb">type</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;project_id&quot;</span> <span class="ow">in</span> \
-                        <span class="n">cache</span><span class="p">[</span><span class="n">field</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span><span class="o">.</span><span class="fm">__init__</span><span class="o">.</span><span class="vm">__code__</span><span class="o">.</span><span class="n">co_varnames</span><span class="p">[</span>
-                        <span class="p">:</span><span class="n">cache</span><span class="p">[</span><span class="n">field</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span><span class="o">.</span><span class="fm">__init__</span><span class="o">.</span><span class="vm">__code__</span><span class="o">.</span><span class="n">co_argcount</span><span class="p">]:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="n">field</span><span class="p">][</span><span class="s2">&quot;additional_parms&quot;</span><span class="p">]</span> <span class="o">=</span> \
-                        <span class="p">{</span><span class="s2">&quot;project_id&quot;</span><span class="p">:</span> <span class="n">project_id</span><span class="p">}</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="nb">isinstance</span><span class="p">(</span><span class="n">cache</span><span class="p">[</span><span class="n">field</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">],</span> <span class="nb">type</span><span class="p">)</span>
+                    <span class="ow">and</span> <span class="s2">&quot;project_id&quot;</span>
+                    <span class="ow">in</span> <span class="n">cache</span><span class="p">[</span><span class="n">field</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span><span class="o">.</span><span class="fm">__init__</span><span class="o">.</span><span class="vm">__code__</span><span class="o">.</span><span class="n">co_varnames</span><span class="p">[</span>
+                        <span class="p">:</span> <span class="n">cache</span><span class="p">[</span><span class="n">field</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span><span class="o">.</span><span class="fm">__init__</span><span class="o">.</span><span class="vm">__code__</span><span class="o">.</span><span class="n">co_argcount</span>
+                    <span class="p">]</span>
+                <span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="n">field</span><span class="p">][</span><span class="s2">&quot;additional_parms&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                        <span class="s2">&quot;project_id&quot;</span><span class="p">:</span> <span class="n">project_id</span>
+                    <span class="p">}</span>
 
     <span class="k">def</span> <span class="nf">_get_index_of_test_record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_case_id</span><span class="p">):</span>
         <span class="c1"># specific functions request the index of the test record within the</span>
@@ -664,8 +735,10 @@
                 <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="k">if</span> <span class="n">test_case_id</span> <span class="ow">in</span> <span class="n">test_record</span><span class="o">.</span><span class="n">_suds_object</span><span class="o">.</span><span class="n">testCaseURI</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">index</span>
-        <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span><span class="s2">&quot;The Test Case is either not part of &quot;</span>
-                                   <span class="s2">&quot;this TestRun or has not been executed&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span>
+            <span class="s2">&quot;The Test Case is either not part of &quot;</span>
+            <span class="s2">&quot;this TestRun or has not been executed&quot;</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_status_change</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># load a new object to test if the status should be changed.</span>
@@ -693,16 +766,17 @@
         <span class="c1"># verifies the number of records is not less then the index given.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">record_index</span> <span class="o">&gt;</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span><span class="s2">&quot;There are only </span><span class="si">{0}</span><span class="s2"> test records&quot;</span><span class="o">.</span>
-                                       <span class="nb">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="p">)))</span>
+            <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span>
+                <span class="s2">&quot;There are only </span><span class="si">{0}</span><span class="s2"> test records&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="p">))</span>
+            <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_verify_test_step_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record_index</span><span class="p">,</span> <span class="n">test_step_index</span><span class="p">):</span>
         <span class="c1"># verifies the number of test steps is not less then the index given.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_verify_record_count</span><span class="p">(</span><span class="n">record_index</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">test_step_index</span> <span class="o">&gt;</span> \
-                <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="p">[</span><span class="n">record_index</span><span class="p">]</span><span class="o">.</span><span class="n">test_step_results</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span><span class="s2">&quot;There are only </span><span class="si">{0}</span><span class="s2"> test records&quot;</span><span class="o">.</span>
-                                       <span class="nb">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="n">test_step_index</span> <span class="o">&gt;</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="p">[</span><span class="n">record_index</span><span class="p">]</span><span class="o">.</span><span class="n">test_step_results</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span>
+                <span class="s2">&quot;There are only </span><span class="si">{0}</span><span class="s2"> test records&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="p">))</span>
+            <span class="p">)</span>
 
 <div class="viewcode-block" id="TestRun.add_attachment_to_test_record"><a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.add_attachment_to_test_record">[docs]</a>    <span class="k">def</span> <span class="nf">add_attachment_to_test_record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_case_id</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">title</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;method add_attachment_to_test_record, adds the given attachment to</span>
@@ -727,9 +801,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_verify_record_count</span><span class="p">(</span><span class="n">record_index</span><span class="p">)</span>
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_file_data</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
-            <span class="n">addAttachmentToTestRecord</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">record_index</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span>
-                                      <span class="n">title</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">addAttachmentToTestRecord</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">record_index</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">data</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestRun.add_attachment"><a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.add_attachment">[docs]</a>    <span class="k">def</span> <span class="nf">add_attachment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">title</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;method add_attachment adds the given attachment to the current</span>
@@ -751,11 +825,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_file_data</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
-            <span class="n">addAttachmentToTestRun</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">addAttachmentToTestRun</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">data</span>
+        <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestRun.add_attachment_to_test_step"><a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.add_attachment_to_test_step">[docs]</a>    <span class="k">def</span> <span class="nf">add_attachment_to_test_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_case_id</span><span class="p">,</span> <span class="n">test_step_index</span><span class="p">,</span>
-                                    <span class="n">path</span><span class="p">,</span> <span class="n">title</span><span class="p">):</span>
+<div class="viewcode-block" id="TestRun.add_attachment_to_test_step"><a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.add_attachment_to_test_step">[docs]</a>    <span class="k">def</span> <span class="nf">add_attachment_to_test_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_case_id</span><span class="p">,</span> <span class="n">test_step_index</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">title</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;method add_attachment_to_test_step, adds the given attachment to</span>
 <span class="sd">        the specified test step of the specified test record</span>
 
@@ -781,7 +855,8 @@
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_file_data</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">addAttachmentToTestStep</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">record_index</span><span class="p">,</span> <span class="n">test_step_index</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">record_index</span><span class="p">,</span> <span class="n">test_step_index</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">data</span>
+        <span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_check_test_record_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_case_id</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Searches the test run to see if the case is already a member of it</span>
@@ -802,21 +877,29 @@
 <span class="sd">            None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">check_tr</span> <span class="o">=</span> <span class="n">TestRun</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
-            <span class="s1">&#39;project.id:</span><span class="si">%s</span><span class="s1"> AND id:&quot;</span><span class="si">%s</span><span class="s1">&quot; AND </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span>
-            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_run_id</span><span class="p">,</span> <span class="n">test_case_id</span><span class="p">))</span>
+            <span class="s1">&#39;project.id:</span><span class="si">%s</span><span class="s1"> AND id:&quot;</span><span class="si">%s</span><span class="s1">&quot; AND </span><span class="si">%s</span><span class="s1">&#39;</span>
+            <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_run_id</span><span class="p">,</span> <span class="n">test_case_id</span><span class="p">)</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">check_tr</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]:</span>
             <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span>
-                <span class="s2">&quot;The search function did not work as expected. Please report.&quot;</span><span class="p">)</span>
+                <span class="s2">&quot;The search function did not work as expected. Please report.&quot;</span>
+            <span class="p">)</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">check_tr</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span>
-                <span class="s2">&quot;This test case is already part of the test run&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span><span class="s2">&quot;This test case is already part of the test run&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="TestRun.add_test_record_by_fields"><a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.add_test_record_by_fields">[docs]</a>    <span class="nd">@tx_wrapper</span>
-    <span class="k">def</span> <span class="nf">add_test_record_by_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_case_id</span><span class="p">,</span> <span class="n">test_result</span><span class="p">,</span>
-                                  <span class="n">test_comment</span><span class="p">,</span> <span class="n">executed_by</span><span class="p">,</span> <span class="n">executed</span><span class="p">,</span>
-                                  <span class="n">duration</span><span class="p">,</span> <span class="n">defect_work_item_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">add_test_record_by_fields</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">test_case_id</span><span class="p">,</span>
+        <span class="n">test_result</span><span class="p">,</span>
+        <span class="n">test_comment</span><span class="p">,</span>
+        <span class="n">executed_by</span><span class="p">,</span>
+        <span class="n">executed</span><span class="p">,</span>
+        <span class="n">duration</span><span class="p">,</span>
+        <span class="n">defect_work_item_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;method add_test_record_by_fields, adds a test record for the given</span>
 <span class="sd">        test case based on the result fields passed in.</span>
 <span class="sd">        When a test record is added, it changes the test run status to</span>
@@ -844,8 +927,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">check_valid_field_values</span><span class="p">(</span><span class="n">test_result</span><span class="p">,</span> <span class="s2">&quot;result&quot;</span><span class="p">,</span> <span class="p">{})</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">executed</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">test_result</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span>
-                <span class="s2">&quot;executed and test_result require values&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span><span class="s2">&quot;executed and test_result require values&quot;</span><span class="p">)</span>
         <span class="n">testrec</span> <span class="o">=</span> <span class="n">TestRecord</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_id</span><span class="p">,</span> <span class="n">test_case_id</span><span class="p">)</span>
         <span class="n">testrec</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">test_result</span>
         <span class="n">testrec</span><span class="o">.</span><span class="n">comment</span> <span class="o">=</span> <span class="n">test_comment</span>
@@ -857,12 +939,17 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">add_test_record_by_object</span><span class="p">(</span><span class="n">testrec</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestRun.add_test_record_by_object"><a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.add_test_record_by_object">[docs]</a>    <span class="nd">@tx_wrapper</span>
-    <span class="k">def</span> <span class="nf">add_test_record_by_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_record</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">add_test_record_by_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_record</span><span class="p">,</span> <span class="n">manual_state_change</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;method add_test_record_by_object, adds a test record for the given</span>
-<span class="sd">        test case based on the TestRecord object passed in</span>
+<span class="sd">        test case based on the TestRecord object passed in.</span>
+<span class="sd">        In addition, the test run is checked for completeness and the test</span>
+<span class="sd">        run state will change accordingly.</span>
+<span class="sd">        Test Run states are [&quot;notrun&quot;, &quot;finished&quot;, &quot;inprogress&quot;].</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            test_record (TestRecord or Polarion TestRecord):</span>
+<span class="sd">            manual_state_change (boolean): Change test run state</span>
+<span class="sd">                                           automatically or manual.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
@@ -878,12 +965,17 @@
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">test_record</span><span class="p">,</span> <span class="n">TestRecord</span><span class="p">()</span><span class="o">.</span><span class="n">_suds_object</span><span class="o">.</span><span class="vm">__class__</span><span class="p">):</span>
             <span class="n">suds_object</span> <span class="o">=</span> <span class="n">test_record</span>
         <span class="k">if</span> <span class="n">test_record</span><span class="o">.</span><span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;failed&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">test_record</span><span class="o">.</span><span class="n">defect_case_id</span><span class="p">:</span>
-            <span class="n">test_record</span><span class="o">.</span><span class="n">defect_case_id</span> <span class="o">=</span> \
-                <span class="n">create_incident_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_record</span><span class="p">,</span>
-                                       <span class="n">TestCase</span><span class="p">(</span><span class="n">work_item_id</span><span class="o">=</span><span class="n">test_case_id</span><span class="p">))</span>
+            <span class="n">test_record</span><span class="o">.</span><span class="n">defect_case_id</span> <span class="o">=</span> <span class="n">create_incident_report</span><span class="p">(</span>
+                <span class="bp">self</span><span class="p">,</span> <span class="n">test_record</span><span class="p">,</span> <span class="n">TestCase</span><span class="p">(</span><span class="n">work_item_id</span><span class="o">=</span><span class="n">test_case_id</span><span class="p">)</span>
+            <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">addTestRecordToTestRun</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">suds_object</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_status_change</span><span class="p">()</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">suds_object</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">manual_state_change</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_status_change</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="TestRun.create_summary_defect"><a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.create_summary_defect">[docs]</a>    <span class="k">def</span> <span class="nf">create_summary_defect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">defect_template_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;method create_summary_defect, adds a new summary _WorkItem for the</span>
@@ -904,11 +996,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
         <span class="n">defect_template_uri</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">defect_template_id</span><span class="p">:</span>
-            <span class="n">suds_defect_template</span> <span class="o">=</span> <span class="n">_WorkItem</span><span class="p">(</span><span class="n">work_item_id</span><span class="o">=</span><span class="n">defect_template_id</span><span class="p">,</span>
-                                             <span class="n">project_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project_id</span><span class="p">)</span>
+            <span class="n">suds_defect_template</span> <span class="o">=</span> <span class="n">_WorkItem</span><span class="p">(</span>
+                <span class="n">work_item_id</span><span class="o">=</span><span class="n">defect_template_id</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project_id</span>
+            <span class="p">)</span>
             <span class="n">defect_template_uri</span> <span class="o">=</span> <span class="n">suds_defect_template</span><span class="o">.</span><span class="n">_uri</span>
-        <span class="n">wi_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
-            <span class="n">createSummaryDefect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">defect_template_uri</span><span class="p">)</span>
+        <span class="n">wi_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">createSummaryDefect</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">defect_template_uri</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="n">_WorkItem</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="n">wi_uri</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestRun.delete_attachment_from_test_record"><a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.delete_attachment_from_test_record">[docs]</a>    <span class="k">def</span> <span class="nf">delete_attachment_from_test_record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_case_id</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
@@ -927,11 +1021,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">record_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_index_of_test_record</span><span class="p">(</span><span class="n">test_case_id</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_verify_record_count</span><span class="p">(</span><span class="n">record_index</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
-            <span class="n">deleteAttachmentFromTestRecord</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">record_index</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">deleteAttachmentFromTestRecord</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">record_index</span><span class="p">,</span> <span class="n">filename</span>
+        <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestRun.delete_attachment_from_test_step"><a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.delete_attachment_from_test_step">[docs]</a>    <span class="k">def</span> <span class="nf">delete_attachment_from_test_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_case_id</span><span class="p">,</span> <span class="n">test_step_index</span><span class="p">,</span>
-                                         <span class="n">filename</span><span class="p">):</span>
+<div class="viewcode-block" id="TestRun.delete_attachment_from_test_step"><a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.delete_attachment_from_test_step">[docs]</a>    <span class="k">def</span> <span class="nf">delete_attachment_from_test_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_case_id</span><span class="p">,</span> <span class="n">test_step_index</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Deletes Test Step Attachment of the specified step in the specified</span>
 <span class="sd">        test record.</span>
 
@@ -947,9 +1041,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">record_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_index_of_test_record</span><span class="p">(</span><span class="n">test_case_id</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_verify_test_step_count</span><span class="p">(</span><span class="n">record_index</span><span class="p">,</span> <span class="n">test_step_index</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
-            <span class="n">deleteAttachmentFromTestStep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">record_index</span><span class="p">,</span>
-                                         <span class="n">test_step_index</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">deleteAttachmentFromTestStep</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">record_index</span><span class="p">,</span> <span class="n">test_step_index</span><span class="p">,</span> <span class="n">filename</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestRun.delete_attachment"><a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.delete_attachment">[docs]</a>    <span class="k">def</span> <span class="nf">delete_attachment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Deletes Test Run Attachment specified by attachment&#39;s</span>
@@ -965,8 +1059,9 @@
 <span class="sd">            test_management.deleteTestRunAttachment</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
-            <span class="n">deleteTestRunAttachment</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">deleteTestRunAttachment</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">filename</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestRun.get_attachment"><a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.get_attachment">[docs]</a>    <span class="k">def</span> <span class="nf">get_attachment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Gets Test Run Attachment specified by attachment&#39;s</span>
@@ -982,8 +1077,9 @@
 <span class="sd">            test_management.getTestRunAttachment</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
-        <span class="n">suds_attach</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
-            <span class="n">getTestRunAttachment</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="n">suds_attach</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">getTestRunAttachment</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">filename</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="n">TestRunAttachment</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">suds_attach</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestRun.get_attachments"><a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.get_attachments">[docs]</a>    <span class="k">def</span> <span class="nf">get_attachments</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -999,10 +1095,13 @@
 <span class="sd">            test_management.getTestRunAttachments</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
-        <span class="n">lst_suds_attach</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
-            <span class="n">getTestRunAttachments</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
-        <span class="n">lst_attach</span> <span class="o">=</span> <span class="p">[</span><span class="n">TestRunAttachment</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">suds_attach</span><span class="p">)</span>
-                      <span class="k">for</span> <span class="n">suds_attach</span> <span class="ow">in</span> <span class="n">lst_suds_attach</span><span class="p">]</span>
+        <span class="n">lst_suds_attach</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">getTestRunAttachments</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">lst_attach</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">TestRunAttachment</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">suds_attach</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">suds_attach</span> <span class="ow">in</span> <span class="n">lst_suds_attach</span>
+        <span class="p">]</span>
         <span class="k">return</span> <span class="n">lst_attach</span></div>
 
 <div class="viewcode-block" id="TestRun.get_custom_field"><a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.get_custom_field">[docs]</a>    <span class="k">def</span> <span class="nf">get_custom_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_name</span><span class="p">):</span>
@@ -1039,8 +1138,11 @@
 <span class="sd">            test_management.getWikiContentForTestRun</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
-        <span class="n">suds_wiki</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
-            <span class="n">getWikiContentForTestRun</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+        <span class="n">suds_wiki</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">getWikiContentForTestRun</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">uri</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="n">Text</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">suds_wiki</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_set_custom_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
@@ -1065,7 +1167,7 @@
             <span class="c1"># check if the custom field already exists and if so, modify it.</span>
             <span class="n">match</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">cf</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">field_name</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
-                <span class="n">match</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+                <span class="k">match</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">cf</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cust</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -1090,8 +1192,7 @@
         <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_changed_fields</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_set_custom_field</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_changed_fields</span><span class="p">[</span><span class="n">field</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_changed_fields</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">updateTestRun</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">updateTestRun</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestRun.update_attachment"><a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.update_attachment">[docs]</a>    <span class="k">def</span> <span class="nf">update_attachment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">original_filename</span><span class="p">,</span> <span class="n">title</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;method update_attachment updates the specified attachment to the</span>
@@ -1115,11 +1216,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_file_data</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">original_filename</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
-            <span class="n">updateTestRunAttachment</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">updateTestRunAttachment</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">data</span>
+        <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestRun.update_summary_defect"><a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.update_summary_defect">[docs]</a>    <span class="k">def</span> <span class="nf">update_summary_defect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">total_failures</span><span class="p">,</span> <span class="n">total_errors</span><span class="p">,</span>
-                              <span class="n">total_tests</span><span class="p">,</span> <span class="n">defect_template_id</span><span class="p">):</span>
+<div class="viewcode-block" id="TestRun.update_summary_defect"><a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.update_summary_defect">[docs]</a>    <span class="k">def</span> <span class="nf">update_summary_defect</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">total_failures</span><span class="p">,</span> <span class="n">total_errors</span><span class="p">,</span> <span class="n">total_tests</span><span class="p">,</span> <span class="n">defect_template_id</span>
+    <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;method update-summary_defect creates or updates the summary defect</span>
 <span class="sd">        Work Item of a test run.</span>
 
@@ -1143,22 +1246,31 @@
 <span class="sd">            test_management.updateSummaryDefect</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
-        <span class="n">suds_defect_template</span> <span class="o">=</span> <span class="n">_WorkItem</span><span class="p">(</span><span class="n">work_item_id</span><span class="o">=</span><span class="n">defect_template_id</span><span class="p">,</span>
-                                         <span class="n">project_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project_id</span><span class="p">)</span>
+        <span class="n">suds_defect_template</span> <span class="o">=</span> <span class="n">_WorkItem</span><span class="p">(</span>
+            <span class="n">work_item_id</span><span class="o">=</span><span class="n">defect_template_id</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project_id</span>
+        <span class="p">)</span>
         <span class="n">defect_template_uri</span> <span class="o">=</span> <span class="n">suds_defect_template</span><span class="o">.</span><span class="n">_uri</span>
-        <span class="n">wi_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
-            <span class="n">updateSummaryDefect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">total_failures</span><span class="p">,</span> <span class="n">total_errors</span><span class="p">,</span>
-                                <span class="n">total_tests</span><span class="p">,</span> <span class="n">defect_template_uri</span><span class="p">)</span>
+        <span class="n">wi_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">updateSummaryDefect</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span>
+            <span class="n">source</span><span class="p">,</span>
+            <span class="n">total_failures</span><span class="p">,</span>
+            <span class="n">total_errors</span><span class="p">,</span>
+            <span class="n">total_tests</span><span class="p">,</span>
+            <span class="n">defect_template_uri</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="n">_WorkItem</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="n">wi_uri</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestRun.update_test_record_by_fields"><a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.update_test_record_by_fields">[docs]</a>    <span class="nd">@tx_wrapper</span>
-    <span class="k">def</span> <span class="nf">update_test_record_by_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_case_id</span><span class="p">,</span>
-                                     <span class="n">test_result</span><span class="p">,</span>
-                                     <span class="n">test_comment</span><span class="p">,</span>
-                                     <span class="n">executed_by</span><span class="p">,</span>
-                                     <span class="n">executed</span><span class="p">,</span>
-                                     <span class="n">duration</span><span class="p">,</span>
-                                     <span class="n">defect_work_item_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">update_test_record_by_fields</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">test_case_id</span><span class="p">,</span>
+        <span class="n">test_result</span><span class="p">,</span>
+        <span class="n">test_comment</span><span class="p">,</span>
+        <span class="n">executed_by</span><span class="p">,</span>
+        <span class="n">executed</span><span class="p">,</span>
+        <span class="n">duration</span><span class="p">,</span>
+        <span class="n">defect_work_item_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;method update_test_record_by_fields updates a test record.</span>
 
 <span class="sd">        Args:</span>
@@ -1198,13 +1310,20 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">update_test_record_by_object</span><span class="p">(</span><span class="n">test_case_id</span><span class="p">,</span> <span class="n">testrec</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestRun.update_test_record_by_object"><a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.update_test_record_by_object">[docs]</a>    <span class="nd">@tx_wrapper</span>
-    <span class="k">def</span> <span class="nf">update_test_record_by_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_case_id</span><span class="p">,</span> <span class="n">test_record</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">update_test_record_by_object</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">test_case_id</span><span class="p">,</span> <span class="n">test_record</span><span class="p">,</span> <span class="n">manual_state_change</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;method update_test_record_by_object, adds a test record for the</span>
-<span class="sd">        given test case based on the TestRecord object passed in</span>
+<span class="sd">        given test case based on the TestRecord object passed in.</span>
+<span class="sd">        In addition, the test run is checked for completeness and the</span>
+<span class="sd">        test run state will change accordingly.</span>
+<span class="sd">        Test Run states are [&quot;notrun&quot;, &quot;finished&quot;, &quot;inprogress&quot;].</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            test_case_id (str): the test case id that the record is related to.</span>
 <span class="sd">            test_record (TestRecord or Polarion TestRecord)</span>
+<span class="sd">            manual_state_change (boolean): Change the test</span>
+<span class="sd">                                           run result automatically or manual.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
@@ -1221,19 +1340,22 @@
         <span class="k">if</span> <span class="n">test_case_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">test_case_ids</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_test_record_by_object</span><span class="p">(</span><span class="n">test_record</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">test_record</span><span class="o">.</span><span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;failed&quot;</span> <span class="ow">and</span> \
-                    <span class="ow">not</span> <span class="n">test_record</span><span class="o">.</span><span class="n">defect_case_id</span><span class="p">:</span>
-                <span class="n">test_record</span><span class="o">.</span><span class="n">defect_case_id</span> <span class="o">=</span> \
-                    <span class="n">create_incident_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_record</span><span class="p">,</span>
-                                           <span class="n">TestCase</span><span class="p">(</span><span class="n">work_item_id</span><span class="o">=</span><span class="n">test_case_id</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">test_record</span><span class="o">.</span><span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;failed&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">test_record</span><span class="o">.</span><span class="n">defect_case_id</span><span class="p">:</span>
+                <span class="n">test_record</span><span class="o">.</span><span class="n">defect_case_id</span> <span class="o">=</span> <span class="n">create_incident_report</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="p">,</span> <span class="n">test_record</span><span class="p">,</span> <span class="n">TestCase</span><span class="p">(</span><span class="n">work_item_id</span><span class="o">=</span><span class="n">test_case_id</span><span class="p">)</span>
+                <span class="p">)</span>
             <span class="n">index</span> <span class="o">=</span> <span class="n">test_case_ids</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">test_case_id</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">test_record</span><span class="p">,</span> <span class="n">TestRecord</span><span class="p">):</span>
                 <span class="n">suds_object</span> <span class="o">=</span> <span class="n">test_record</span><span class="o">.</span><span class="n">_suds_object</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">test_record</span><span class="p">,</span> <span class="n">TestRecord</span><span class="p">()</span><span class="o">.</span><span class="n">_suds_object</span><span class="o">.</span><span class="vm">__class__</span><span class="p">):</span>
                 <span class="n">suds_object</span> <span class="o">=</span> <span class="n">test_record</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
-                <span class="n">updateTestRecordAtIndex</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">suds_object</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_status_change</span><span class="p">()</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">updateTestRecordAtIndex</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">suds_object</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">manual_state_change</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_status_change</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="TestRun.update_wiki_content"><a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.update_wiki_content">[docs]</a>    <span class="k">def</span> <span class="nf">update_wiki_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;method update_wiki_content updates the wiki for the current TestRun</span>
@@ -1258,8 +1380,9 @@
                 <span class="n">suds_content</span> <span class="o">=</span> <span class="n">content</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">suds_content</span> <span class="o">=</span> <span class="n">suds</span><span class="o">.</span><span class="n">null</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span> \
-            <span class="n">updateWikiContentForTestRun</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">suds_content</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">updateWikiContentForTestRun</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">suds_content</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestRun.verify_required"><a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.verify_required">[docs]</a>    <span class="k">def</span> <span class="nf">verify_required</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;function that checks if all required fields are passed in</span>
@@ -1272,8 +1395,9 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">):</span>
                 <span class="n">fields</span> <span class="o">+=</span> <span class="p">(</span><span class="s2">&quot;, &quot;</span> <span class="k">if</span> <span class="n">fields</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">req</span>
         <span class="k">if</span> <span class="n">fields</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span><span class="s2">&quot;These parameters are required: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span>
-                                       <span class="nb">format</span><span class="p">(</span><span class="n">fields</span><span class="p">))</span></div>
+            <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span>
+                <span class="s2">&quot;These parameters are required: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
+            <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestRun.verify_params"><a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.verify_params">[docs]</a>    <span class="k">def</span> <span class="nf">verify_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;function that checks if all the kwargs are valid attributes.</span>
@@ -1291,8 +1415,7 @@
                 <span class="n">params</span> <span class="o">+=</span> <span class="p">(</span><span class="s2">&quot;, &quot;</span> <span class="k">if</span> <span class="n">params</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">param</span>
 
         <span class="k">if</span> <span class="n">params</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span><span class="s2">&quot;These parameters are unknown: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span>
-                                       <span class="nb">format</span><span class="p">(</span><span class="n">params</span><span class="p">))</span></div></div>
+            <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span><span class="s2">&quot;These parameters are unknown: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">params</span><span class="p">))</span></div></div>
 </pre></div>
 
           </div>
@@ -1328,12 +1451,12 @@
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -1350,7 +1473,7 @@
       &copy;2021, Sim Zacks and Pylero Contributors.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.3.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

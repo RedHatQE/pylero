@@ -6,12 +6,14 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>pylero.module_comment &#8212; pylero  documentation</title>
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
    
@@ -32,17 +34,20 @@
             
   <h1>Source code for pylero.module_comment</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf8 -*-</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">unicode_literals</span>
+
 <span class="kn">from</span> <span class="nn">pylero.base_polarion</span> <span class="kn">import</span> <span class="n">BasePolarion</span>
-<span class="kn">from</span> <span class="nn">pylero.user</span> <span class="kn">import</span> <span class="n">User</span>
-<span class="kn">from</span> <span class="nn">pylero.imported_comment</span> <span class="kn">import</span> <span class="n">ImportedComment</span>
-<span class="kn">from</span> <span class="nn">pylero.subterra_uri</span> <span class="kn">import</span> <span class="n">SubterraURI</span>
-<span class="kn">from</span> <span class="nn">pylero.subterra_uri</span> <span class="kn">import</span> <span class="n">ArrayOfSubterraURI</span>
-<span class="kn">from</span> <span class="nn">pylero.signature_data</span> <span class="kn">import</span> <span class="n">SignatureData</span>
-<span class="kn">from</span> <span class="nn">pylero.enum_option_id</span> <span class="kn">import</span> <span class="n">EnumOptionId</span>
 <span class="kn">from</span> <span class="nn">pylero.enum_option_id</span> <span class="kn">import</span> <span class="n">ArrayOfEnumOptionId</span>
+<span class="kn">from</span> <span class="nn">pylero.enum_option_id</span> <span class="kn">import</span> <span class="n">EnumOptionId</span>
+<span class="kn">from</span> <span class="nn">pylero.imported_comment</span> <span class="kn">import</span> <span class="n">ImportedComment</span>
+<span class="kn">from</span> <span class="nn">pylero.signature_data</span> <span class="kn">import</span> <span class="n">SignatureData</span>
+<span class="kn">from</span> <span class="nn">pylero.subterra_uri</span> <span class="kn">import</span> <span class="n">ArrayOfSubterraURI</span>
+<span class="kn">from</span> <span class="nn">pylero.subterra_uri</span> <span class="kn">import</span> <span class="n">SubterraURI</span>
 <span class="kn">from</span> <span class="nn">pylero.text</span> <span class="kn">import</span> <span class="n">Text</span>
+<span class="kn">from</span> <span class="nn">pylero.user</span> <span class="kn">import</span> <span class="n">User</span>
 
 
 <div class="viewcode-block" id="ModuleComment"><a class="viewcode-back" href="../../pylero.html#pylero.module_comment.ModuleComment">[docs]</a><span class="k">class</span> <span class="nc">ModuleComment</span><span class="p">(</span><span class="n">BasePolarion</span><span class="p">):</span>
@@ -59,43 +64,38 @@
 <span class="sd">        resolved (boolean)</span>
 <span class="sd">        signature_data (SignatureData)</span>
 <span class="sd">        tags (ArrayOfEnumOptionId)</span>
-<span class="sd">        text (Text)</span>
-<span class="sd">&quot;&quot;&quot;</span>
-    <span class="n">_cls_suds_map</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;author&quot;</span><span class="p">:</span>
-                     <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;author&quot;</span><span class="p">,</span>
-                      <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">User</span><span class="p">},</span>
-                     <span class="s2">&quot;child_comment_uris&quot;</span><span class="p">:</span>
-                     <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;childCommentURIs&quot;</span><span class="p">,</span>
-                      <span class="s2">&quot;is_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-                      <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">SubterraURI</span><span class="p">,</span>
-                      <span class="s2">&quot;arr_cls&quot;</span><span class="p">:</span> <span class="n">ArrayOfSubterraURI</span><span class="p">,</span>
-                      <span class="s2">&quot;inner_field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;SubterraURI&quot;</span><span class="p">},</span>
-                     <span class="s2">&quot;created&quot;</span><span class="p">:</span> <span class="s2">&quot;created&quot;</span><span class="p">,</span>
-                     <span class="s2">&quot;module_comment_id&quot;</span><span class="p">:</span> <span class="s2">&quot;id&quot;</span><span class="p">,</span>
-                     <span class="s2">&quot;imported_comment&quot;</span><span class="p">:</span>
-                     <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;importedComment&quot;</span><span class="p">,</span>
-                      <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">ImportedComment</span><span class="p">},</span>
-                     <span class="s2">&quot;parent_comment_uri&quot;</span><span class="p">:</span>
-                     <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;parentCommentURI&quot;</span><span class="p">,</span>
-                      <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">SubterraURI</span><span class="p">},</span>
-                     <span class="s2">&quot;referred_work_item_uri&quot;</span><span class="p">:</span>
-                     <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;referredWorkItemURI&quot;</span><span class="p">,</span>
-                      <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">SubterraURI</span><span class="p">},</span>
-                     <span class="s2">&quot;resolved&quot;</span><span class="p">:</span> <span class="s2">&quot;resolved&quot;</span><span class="p">,</span>
-                     <span class="s2">&quot;signature_data&quot;</span><span class="p">:</span>
-                     <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;signatureData&quot;</span><span class="p">,</span>
-                      <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">SignatureData</span><span class="p">},</span>
-                     <span class="s2">&quot;tags&quot;</span><span class="p">:</span>
-                     <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;tags&quot;</span><span class="p">,</span>
-                      <span class="s2">&quot;is_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-                      <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">EnumOptionId</span><span class="p">,</span>
-                      <span class="s2">&quot;arr_cls&quot;</span><span class="p">:</span> <span class="n">ArrayOfEnumOptionId</span><span class="p">,</span>
-                      <span class="s2">&quot;inner_field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;EnumOptionId&quot;</span><span class="p">},</span>
-                     <span class="s2">&quot;text&quot;</span><span class="p">:</span>
-                     <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span>
-                      <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">Text</span><span class="p">},</span>
-                     <span class="s2">&quot;uri&quot;</span><span class="p">:</span> <span class="s2">&quot;_uri&quot;</span><span class="p">,</span>
-                     <span class="s2">&quot;_unresolved&quot;</span><span class="p">:</span> <span class="s2">&quot;_unresolved&quot;</span><span class="p">}</span>
+<span class="sd">        text (Text)&quot;&quot;&quot;</span>
+
+    <span class="n">_cls_suds_map</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;author&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;author&quot;</span><span class="p">,</span> <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">User</span><span class="p">},</span>
+        <span class="s2">&quot;child_comment_uris&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;childCommentURIs&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;is_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">SubterraURI</span><span class="p">,</span>
+            <span class="s2">&quot;arr_cls&quot;</span><span class="p">:</span> <span class="n">ArrayOfSubterraURI</span><span class="p">,</span>
+            <span class="s2">&quot;inner_field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;SubterraURI&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;created&quot;</span><span class="p">:</span> <span class="s2">&quot;created&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;module_comment_id&quot;</span><span class="p">:</span> <span class="s2">&quot;id&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;imported_comment&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;importedComment&quot;</span><span class="p">,</span> <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">ImportedComment</span><span class="p">},</span>
+        <span class="s2">&quot;parent_comment_uri&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;parentCommentURI&quot;</span><span class="p">,</span> <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">SubterraURI</span><span class="p">},</span>
+        <span class="s2">&quot;referred_work_item_uri&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;referredWorkItemURI&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">SubterraURI</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;resolved&quot;</span><span class="p">:</span> <span class="s2">&quot;resolved&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;signature_data&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;signatureData&quot;</span><span class="p">,</span> <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">SignatureData</span><span class="p">},</span>
+        <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;tags&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;is_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">EnumOptionId</span><span class="p">,</span>
+            <span class="s2">&quot;arr_cls&quot;</span><span class="p">:</span> <span class="n">ArrayOfEnumOptionId</span><span class="p">,</span>
+            <span class="s2">&quot;inner_field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;EnumOptionId&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">Text</span><span class="p">},</span>
+        <span class="s2">&quot;uri&quot;</span><span class="p">:</span> <span class="s2">&quot;_uri&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_unresolved&quot;</span><span class="p">:</span> <span class="s2">&quot;_unresolved&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
     <span class="n">_obj_client</span> <span class="o">=</span> <span class="s2">&quot;test_management_client&quot;</span>
     <span class="n">_obj_struct</span> <span class="o">=</span> <span class="s2">&quot;tns4:ModuleComment&quot;</span></div>
 
@@ -138,12 +138,12 @@
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -160,7 +160,7 @@
       &copy;2021, Sim Zacks and Pylero Contributors.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.3.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
