@@ -8,30 +8,37 @@ with open("README.md", "r") as handle:
 PACKAGE_NAME = "pylero"
 CLI_NAME = "pylero-cmd"
 RELEASE_FILE = "/etc/system-release-cpe"
-SUDS_NAME_CHANGE = False
 
 install_requires_ = [
     "click",
 ]
 
-# Update install_requires_ for feodra 36 and greater
+# Update install_requires_ for Fedora, CentOS Stream and RHEL
 if os.path.exists(RELEASE_FILE):
     with open(RELEASE_FILE) as version_file:
         version_file_content = version_file.read().split(":")
         if (
-            (version_file_content[3] == "fedora")
-            and (int(version_file_content[4]) > 35)
-        ) or (
-            (version_file_content[2] == "redhat")
-            and (version_file_content[3] == "enterprise_linux")
-            and (int(version_file_content[4].split(".")[0]) > 8)
+            (
+                (version_file_content[3] == "fedora")
+                and (int(version_file_content[4]) > 35)
+            )
+            or (
+                (version_file_content[2] == "redhat")
+                and (version_file_content[3] == "enterprise_linux")
+                and (int(version_file_content[4].split(".")[0]) > 8)
+            )
+            or (
+                (version_file_content[3] == "centos")
+                and (int(version_file_content[4]) > 8)
+            )
         ):
-            SUDS_NAME_CHANGE = True
-
-if SUDS_NAME_CHANGE:
-    install_requires_.append("suds")
-else:
-    install_requires_.append("suds-community")
+            install_requires_.append("suds")
+        elif (version_file_content[3] == "centos") and (
+            int(version_file_content[4]) < 9
+        ):
+            install_requires_.append("suds-jurko")
+        else:
+            install_requires_.append("suds-community")
 
 
 if __name__ == "__main__":
