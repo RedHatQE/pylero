@@ -44,7 +44,7 @@ if os.path.exists(RELEASE_FILE):
 if __name__ == "__main__":
     setup(
         name=PACKAGE_NAME,
-        version="0.0.5",
+        version="0.0.6",
         description="Python SDK for Polarion",
         long_description=LONG_DESCRIPTION,
         long_description_content_type="text/markdown",
