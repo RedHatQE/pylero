@@ -1,5 +1,5 @@
 Name:           python-pylero
-Version:        0.0.6
+Version:        0.0.7
 Release:        1%{?dist}
 Summary:        Python SDK for Polarion
 
@@ -82,6 +82,9 @@ Summary:        %{summary}
 
 
 %changelog
+* Thu Feb 23 2023 Wayne Sun <gsun@redhat.com> 0.0.7-1
+- Remove platform related info
+
 * Fri Feb 17 2023 Wayne Sun <gsun@redhat.com> 0.0.6-1
 - Update suds dependency for CentOS Stream
 - Rebuilt doc to latest (gsun@redhat.com)
