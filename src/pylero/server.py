@@ -17,8 +17,9 @@ class Server(object):
     def __init__(
         self,
         url,
-        login,
+        user,
         password,
+        token,
         default_project=None,
         relogin_timeout=60,
         timeout=120,
@@ -29,7 +30,7 @@ class Server(object):
 
         Args:
             url: url of the Polarion server
-            login: username
+            user: username
             password: password
             default_project: default project to use to for configuarations
             relogin_timeout: timeout after which the session will try to login
@@ -38,8 +39,9 @@ class Server(object):
             cert_path: path to customize CA bundle
         """
         self.url = url
-        self.login = login
+        self.user = user
         self.password = password
+        self.token = token
         self.default_project = default_project
         self.relogin_timeout = relogin_timeout
         self.timeout = timeout
