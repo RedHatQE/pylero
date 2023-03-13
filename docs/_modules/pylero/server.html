@@ -52,8 +52,9 @@
 <div class="viewcode-block" id="Server.__init__"><a class="viewcode-back" href="../../pylero.html#pylero.server.Server.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">url</span><span class="p">,</span>
-        <span class="n">login</span><span class="p">,</span>
+        <span class="n">user</span><span class="p">,</span>
         <span class="n">password</span><span class="p">,</span>
+        <span class="n">token</span><span class="p">,</span>
         <span class="n">default_project</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">relogin_timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>
         <span class="n">timeout</span><span class="o">=</span><span class="mi">120</span><span class="p">,</span>
@@ -64,7 +65,7 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            url: url of the Polarion server</span>
-<span class="sd">            login: username</span>
+<span class="sd">            user: username</span>
 <span class="sd">            password: password</span>
 <span class="sd">            default_project: default project to use to for configuarations</span>
 <span class="sd">            relogin_timeout: timeout after which the session will try to login</span>
@@ -73,8 +74,9 @@
 <span class="sd">            cert_path: path to customize CA bundle</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">url</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">login</span> <span class="o">=</span> <span class="n">login</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="n">user</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">password</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="n">token</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">default_project</span> <span class="o">=</span> <span class="n">default_project</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">relogin_timeout</span> <span class="o">=</span> <span class="n">relogin_timeout</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span>

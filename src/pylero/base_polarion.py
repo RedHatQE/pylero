@@ -52,9 +52,13 @@ class Configuration(object):
                 for item in (
                     "POLARION_URL",
                     "POLARION_REPO",
-                    "POLARION_USERNAME",
-                    "POLARION_PASSWORD",
                     "POLARION_PROJECT",
+                )
+            ) and not (
+                os.environ.get("POLARION_TOKEN")
+                or (
+                    os.environ.get("POLARION_USERNAME")
+                    and os.environ.get("POLARION_PASSWORD")
                 )
             ):
                 raise PyleroLibException(
@@ -71,11 +75,14 @@ class Configuration(object):
         self.repo = os.environ.get("POLARION_REPO") or config.get(
             self.CONFIG_SECTION, "svn_repo"
         )
-        self.login = os.environ.get("POLARION_USERNAME") or config.get(
+        self.user = os.environ.get("POLARION_USERNAME") or config.get(
             self.CONFIG_SECTION, "user"
         )
         self.pwd = os.environ.get("POLARION_PASSWORD") or config.get(
             self.CONFIG_SECTION, "password"
+        )
+        self.token = os.environ.get("POLARION_TOKEN") or config.get(
+            self.CONFIG_SECTION, "token"
         )
 
         try:
@@ -101,11 +108,11 @@ class Configuration(object):
         except Exception:
             self.cert_path = None
 
-        if not (self.server_url and self.login and self.proj):
+        if not (self.server_url and self.proj) and not (self.user or self.token):
             raise PyleroLibException(
                 "The config files must contain "
-                "valid values for: url, user, "
-                "password and default_project"
+                "valid values for: url, credentials and "
+                "default_project"
             )
 
         try:
@@ -127,13 +134,15 @@ class Connection(object):
     POLARION_REPO
     POLARION_USERNAME
     POLARION_PASSWORD
+    POLARION_TOKEN
     POLARION_TIMEOUT
     POLARION_PROJECT
     """
 
     connected = False
     session = None
-    password_retries = 3
+    retries = 3
+    token_enabled = False
 
     @classmethod
     def session(cls):
@@ -141,14 +150,26 @@ class Connection(object):
             cfg = Configuration()
             # if the password is not supplied in the config file, ask the user
             # for it
-            if not cfg.pwd:
-                cfg.pwd = getpass("Password not in config file.\nEnter Password:")
-            while not cls.connected and cls.password_retries:
+            if cfg.token:
+                cls.token_enabled = True
+            elif cfg.user and not cfg.pwd:
+                cfg.pwd = getpass(
+                    "User name is provided but password not in config file.\n"
+                    + "Note: If want to use personal token please provide token in config file.\n"
+                    + "Enter Password:"
+                )
+            elif not (cfg.user and cfg.pwd):
+                cfg.token = getpass(
+                    "User name is not provided and access token is also not in config file.\nEnter Token:"
+                )
+                cls.token_enabled = True
+            while not cls.connected and cls.retries:
                 try:
                     srv = Server(
                         cfg.server_url,
-                        cfg.login,
+                        cfg.user,
                         cfg.pwd,
+                        cfg.token,
                         timeout=cfg.timeout,
                         cert_path=cfg.cert_path,
                     )
@@ -167,18 +188,23 @@ class Connection(object):
                             raise PyleroLibException(
                                 "Manual authentication " "is disabled"
                             )
-                        cfg.pwd = getpass("Invalid Password.\nEnter Password:")
-                        cls.password_retries -= 1
+                        if cls.token_enabled:
+                            cfg.token = getpass("Invalid Token.\nEnter Token:")
+                        else:
+                            cfg.pwd = getpass("Invalid Password.\nEnter Password:")
+                        cls.retries -= 1
                     else:
                         raise
-            if not cls.password_retries:
+            if not cls.retries:
                 raise PyleroLibException(
                     "Unable to establish pylero session "
                     "due to 3 incorrect login attempts"
                 )
             cls.session.default_project = cfg.proj
-            cls.session.user_id = cfg.login
+            # TODO: Update user from query with token owner
+            cls.session.user_id = cfg.user
             cls.session.password = cfg.pwd
+            cls.session.token = cfg.token
             cls.session.repo = cfg.repo
             # must use try/except instead of or because the config file
             # may return a non empty value, such as " "

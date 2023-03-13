@@ -87,11 +87,15 @@ These are the configurable values:
     svn_repo=https://{your polarion web URL}/repo
     user={your username}
     password={your password}
+    token={your personal access token}
     default_project={your default project}
     #cert_path=/dir/to/my/cert/ca
 
-If the password value is blank, it will prompt you for a password when you try
-to access any of the pylero objects.
+If the token is given it will be used for login by default, else if both user and
+password are given the password will be used for login, else if user is provided
+and password value is blank, it will prompt you for a password, else if none of
+them are provided it will prompt you for the token to login and access any of the
+pylero objects.
 
 These can also be overridden with the following environment variables:
 
@@ -101,6 +105,7 @@ These can also be overridden with the following environment variables:
     POLARION_REPO
     POLARION_USERNAME
     POLARION_PASSWORD
+    POLARION_TOKEN
     POLARION_TIMEOUT
     POLARION_PROJECT
     POLARION_CERT_PATH

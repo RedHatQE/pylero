@@ -87,9 +87,13 @@
                 <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="p">(</span>
                     <span class="s2">&quot;POLARION_URL&quot;</span><span class="p">,</span>
                     <span class="s2">&quot;POLARION_REPO&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;POLARION_USERNAME&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;POLARION_PASSWORD&quot;</span><span class="p">,</span>
                     <span class="s2">&quot;POLARION_PROJECT&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;POLARION_TOKEN&quot;</span><span class="p">)</span>
+                <span class="ow">or</span> <span class="p">(</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;POLARION_USERNAME&quot;</span><span class="p">)</span>
+                    <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;POLARION_PASSWORD&quot;</span><span class="p">)</span>
                 <span class="p">)</span>
             <span class="p">):</span>
                 <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span>
@@ -106,11 +110,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">repo</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;POLARION_REPO&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">CONFIG_SECTION</span><span class="p">,</span> <span class="s2">&quot;svn_repo&quot;</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">login</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;POLARION_USERNAME&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;POLARION_USERNAME&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">CONFIG_SECTION</span><span class="p">,</span> <span class="s2">&quot;user&quot;</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;POLARION_PASSWORD&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">CONFIG_SECTION</span><span class="p">,</span> <span class="s2">&quot;password&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;POLARION_TOKEN&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">CONFIG_SECTION</span><span class="p">,</span> <span class="s2">&quot;token&quot;</span>
         <span class="p">)</span>
 
         <span class="k">try</span><span class="p">:</span>
@@ -136,11 +143,11 @@
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cert_path</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">server_url</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">login</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">proj</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">server_url</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">proj</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span>
                 <span class="s2">&quot;The config files must contain &quot;</span>
-                <span class="s2">&quot;valid values for: url, user, &quot;</span>
-                <span class="s2">&quot;password and default_project&quot;</span>
+                <span class="s2">&quot;valid values for: url, credentials and &quot;</span>
+                <span class="s2">&quot;default_project&quot;</span>
             <span class="p">)</span>
 
         <span class="k">try</span><span class="p">:</span>
@@ -162,13 +169,15 @@
 <span class="sd">    POLARION_REPO</span>
 <span class="sd">    POLARION_USERNAME</span>
 <span class="sd">    POLARION_PASSWORD</span>
+<span class="sd">    POLARION_TOKEN</span>
 <span class="sd">    POLARION_TIMEOUT</span>
 <span class="sd">    POLARION_PROJECT</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">connected</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">session</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">password_retries</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">retries</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">token_enabled</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">session</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
@@ -176,14 +185,26 @@
             <span class="n">cfg</span> <span class="o">=</span> <span class="n">Configuration</span><span class="p">()</span>
             <span class="c1"># if the password is not supplied in the config file, ask the user</span>
             <span class="c1"># for it</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">cfg</span><span class="o">.</span><span class="n">pwd</span><span class="p">:</span>
-                <span class="n">cfg</span><span class="o">.</span><span class="n">pwd</span> <span class="o">=</span> <span class="n">getpass</span><span class="p">(</span><span class="s2">&quot;Password not in config file.</span><span class="se">\n</span><span class="s2">Enter Password:&quot;</span><span class="p">)</span>
-            <span class="k">while</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">connected</span> <span class="ow">and</span> <span class="bp">cls</span><span class="o">.</span><span class="n">password_retries</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">token</span><span class="p">:</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">token_enabled</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">elif</span> <span class="n">cfg</span><span class="o">.</span><span class="n">user</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">cfg</span><span class="o">.</span><span class="n">pwd</span><span class="p">:</span>
+                <span class="n">cfg</span><span class="o">.</span><span class="n">pwd</span> <span class="o">=</span> <span class="n">getpass</span><span class="p">(</span>
+                    <span class="s2">&quot;User name is provided but password not in config file.</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="o">+</span> <span class="s2">&quot;Note: If want to use personal token please provide token in config file.</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="o">+</span> <span class="s2">&quot;Enter Password:&quot;</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">user</span> <span class="ow">and</span> <span class="n">cfg</span><span class="o">.</span><span class="n">pwd</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">cfg</span><span class="o">.</span><span class="n">token</span><span class="p">:</span>
+                <span class="n">cfg</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="n">getpass</span><span class="p">(</span>
+                    <span class="s2">&quot;User name is not provided and access token is also not in config file.</span><span class="se">\n</span><span class="s2">Enter Token:&quot;</span>
+                <span class="p">)</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">token_enabled</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">while</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">connected</span> <span class="ow">and</span> <span class="bp">cls</span><span class="o">.</span><span class="n">retries</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">srv</span> <span class="o">=</span> <span class="n">Server</span><span class="p">(</span>
                         <span class="n">cfg</span><span class="o">.</span><span class="n">server_url</span><span class="p">,</span>
-                        <span class="n">cfg</span><span class="o">.</span><span class="n">login</span><span class="p">,</span>
+                        <span class="n">cfg</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
                         <span class="n">cfg</span><span class="o">.</span><span class="n">pwd</span><span class="p">,</span>
+                        <span class="n">cfg</span><span class="o">.</span><span class="n">token</span><span class="p">,</span>
                         <span class="n">timeout</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">timeout</span><span class="p">,</span>
                         <span class="n">cert_path</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">cert_path</span><span class="p">,</span>
                     <span class="p">)</span>
@@ -202,18 +223,23 @@
                             <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span>
                                 <span class="s2">&quot;Manual authentication &quot;</span> <span class="s2">&quot;is disabled&quot;</span>
                             <span class="p">)</span>
-                        <span class="n">cfg</span><span class="o">.</span><span class="n">pwd</span> <span class="o">=</span> <span class="n">getpass</span><span class="p">(</span><span class="s2">&quot;Invalid Password.</span><span class="se">\n</span><span class="s2">Enter Password:&quot;</span><span class="p">)</span>
-                        <span class="bp">cls</span><span class="o">.</span><span class="n">password_retries</span> <span class="o">-=</span> <span class="mi">1</span>
+                        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">token_enabled</span><span class="p">:</span>
+                            <span class="n">cfg</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="n">getpass</span><span class="p">(</span><span class="s2">&quot;Invalid Token.</span><span class="se">\n</span><span class="s2">Enter Token:&quot;</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">cfg</span><span class="o">.</span><span class="n">pwd</span> <span class="o">=</span> <span class="n">getpass</span><span class="p">(</span><span class="s2">&quot;Invalid Password.</span><span class="se">\n</span><span class="s2">Enter Password:&quot;</span><span class="p">)</span>
+                        <span class="bp">cls</span><span class="o">.</span><span class="n">retries</span> <span class="o">-=</span> <span class="mi">1</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="k">raise</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">password_retries</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">retries</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span>
                     <span class="s2">&quot;Unable to establish pylero session &quot;</span>
                     <span class="s2">&quot;due to 3 incorrect login attempts&quot;</span>
                 <span class="p">)</span>
             <span class="bp">cls</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">default_project</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">proj</span>
-            <span class="bp">cls</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">user_id</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">login</span>
+            <span class="c1"># TODO: Update user from query with token owner</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">user_id</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">user</span>
             <span class="bp">cls</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">pwd</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">token</span>
             <span class="bp">cls</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">repo</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">repo</span>
             <span class="c1"># must use try/except instead of or because the config file</span>
             <span class="c1"># may return a non empty value, such as &quot; &quot;</span>

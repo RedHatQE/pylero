@@ -131,7 +131,10 @@ class Session(object):
     def _login(self):
         """login to the Polarion API"""
         sc = self._session_client
-        sc.service.logIn(self._server.login, self._server.password)
+        if self._server.token:
+            sc.service.logInWithToken("AccessToken", None, self._server.token)
+        else:
+            sc.service.logIn(self._server.user, self._server.password)
         id_element = sc.last_received().childAtPath("Envelope/Header/sessionID")
         session_id = id_element.text
         session_ns = id_element.namespace()
