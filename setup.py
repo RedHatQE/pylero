@@ -2,7 +2,7 @@ import os
 
 from setuptools import setup
 
-with open("README.md", "r") as handle:
+with open("README.rst", "r") as handle:
     LONG_DESCRIPTION = handle.read()
 
 PACKAGE_NAME = "pylero"
