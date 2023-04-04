@@ -31,7 +31,6 @@ from pylero.test_run_attachment import TestRunAttachment
 from pylero.text import Text
 from pylero.user import User
 from pylero.work_item import _WorkItem
-from pylero.work_item import TestCase
 
 # Build is used in custom fields.
 # Plan is used in custom fields.
@@ -931,7 +930,7 @@ class TestRun(BasePolarion):
             suds_object = test_record
         if test_record.result == "failed" and not test_record.defect_case_id:
             test_record.defect_case_id = create_incident_report(
-                self, test_record, TestCase(work_item_id=test_case_id)
+                self, test_record, _WorkItem(work_item_id=test_case_id)
             )
         self.session.test_management_client.service.addTestRecordToTestRun(
             self.uri, suds_object
@@ -1307,7 +1306,7 @@ class TestRun(BasePolarion):
         else:
             if test_record.result == "failed" and not test_record.defect_case_id:
                 test_record.defect_case_id = create_incident_report(
-                    self, test_record, TestCase(work_item_id=test_case_id)
+                    self, test_record, _WorkItem(work_item_id=test_case_id)
                 )
             index = test_case_ids.index(test_case_id)
             if isinstance(test_record, TestRecord):
