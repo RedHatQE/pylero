@@ -342,6 +342,15 @@ class _WorkItem(BasePolarion):
         return results
 
     @classmethod
+    def get_defined_work_item_types(cls):
+        """Get all work item types created upon loading of `pylero.work_item`.
+
+        Returns:
+            list of work item types created in the current session.
+        """
+        return _SpecificWorkItem.__subclasses__()
+
+    @classmethod
     def query(
         cls,
         query,
