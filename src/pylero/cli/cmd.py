@@ -196,7 +196,6 @@ class CmdUpdate(object):
     """An object to manage the command of update"""
 
     def update_all_case_results_for_run(self, run, result, user, comment):
-
         run = run.strip()
         tr = TestRun(run, None, TestRun.default_project)
         print("\nUpdate %s:" % run)
@@ -230,7 +229,6 @@ class CmdUpdate(object):
             print("Please use comma ',' to seperate your runs!")
 
     def update_1_case_result_for_run(self, run, testcase, result, user, comment):
-
         if not comment:
             comment = ""
 
@@ -269,7 +267,6 @@ class CmdUpdate(object):
         structure_link_role="parent",
         content="",
     ):
-
         cl = CmdList()
         if cl.list_documents_by_query(doc_name):
             print("Exit - Found same name '%s/%s'" % (space, doc_name))
@@ -318,7 +315,6 @@ class CmdUpdate(object):
         description=None,
         is_template=False,
     ):
-
         run = run.strip()
         query_ful = 'project.id:%s AND id:"%s"' % (TestRun.default_project, run)
 
@@ -384,7 +380,6 @@ class CmdUpdate(object):
         status=None,
         description=None,
     ):
-
         if runs.find(","):
             for run in runs.split(","):
                 self.update_run(run, template, plannedin, assignee, status, description)

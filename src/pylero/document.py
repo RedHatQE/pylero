@@ -437,9 +437,6 @@ class Document(BasePolarion):
             fields: fields to fill. For nested structures in the lists you can
                     use following syntax to include only subset of fields:
                     myList.LIST.key (e.g. linkedWorkItems.LIST.role).
-                    For custom fields you can specify which fields you want to
-                    be filled using following syntax:
-                    customFields.CUSTOM_FIELD_ID (e.g. customFields.risk).
 
         Returns:
             list of _WorkItem objects
@@ -454,7 +451,13 @@ class Document(BasePolarion):
             ).uri
         else:
             parent_uri = None
-        p_fields = _WorkItem._convert_obj_fields_to_polarion(fields)
+        p_fields = list()
+        for wi_type in _WorkItem.get_defined_work_item_types():
+            if not wi_type._got_custom_fields:
+                wi_type.get_custom_fields(self.project_id)
+            filtered_fields = [f for f in fields if f in wi_type._cls_suds_map.keys()]
+            p_fields.extend(wi_type._convert_obj_fields_to_polarion(filtered_fields))
+        p_fields = list(set(p_fields))
         suds_wi = self.session.tracker_client.service.getModuleWorkItems(
             self.uri, parent_uri, deep, p_fields
         )
