@@ -147,6 +147,23 @@ want to use::
 Examples
 ********
 
+There's a possibility that Workitems mentioned in this example may not exactly
+match the types that your Polarion server was configured with.
+
+In those cases, importing :code:`TestCase`, :code:`Requirement` etc will fail, to overcome
+that, you either need to reach out to your Polarion admin for knowing the
+workitem types that are configured or can find those from below code.
+
+.. code-block:: python
+>>> from pylero.work_item import *
+>>> globals()['workitems'].values()
+dict_values(['TestCase', 'TestSuite', 'BusinessCase', 'Requirement', 'ChangeRequest', 'IncidentReport', 'Defect', 'Task', 'Risk'])
+
+**Note:** This is only required once when you start using Pylero as the work item
+type don't usually change. The :code:`dict_values` from above listing are importable,
+ex: :code:`from pylero.work_item TesCase` works for me and it may differ for you based
+on above returned values.
+
 .. code-block:: python
 
     import datetime
@@ -293,6 +310,54 @@ Examples
     req = Requirement(project_id="myproj", work_item_id="MYPROJ-11")
     for linked in req.linked_work_items_derived:
         print "%s - %s" % (linked.work_item_id, linked.role)
+
+Before you commit
+*****************
+
+In order to ensure you are able to pass the GitHub CI build, it is recommended that you run the following commands in the base of your pylero directory::
+
+    $ pip install pre-commit
+    $ pre-commit autoupdate && pre-commit run -a
+
+Pre-commit will ensure that the changes you made are not in violation of PEP8 standards.
+
+We recommend `autopep8` to fix any pre-commit failures by running below or you are free to use any formatters which can resolve pre-commit failures with least possible diff::
+
+    $ pip install autopep8
+    $ autopep8 --in-place <edited_file.py>
+
+Fedora RPM package build
+*************************
+
+Tito
+----
+
+`Tito <https://github.com/rpm-software-management/tito>`_ is a tool for managing RPM based projects using git for their source code repository.
+
+The tito config dir is `.tito <./.tito>`_
+
+To create a new tag and automaticlly update pylero.spec with all changelog::
+
+    $ tito tag
+
+After tag need push the tag::
+
+    $ git push --follow-tags
+
+After tag been pushed a new Copr build will be automatically triggered.
+
+Copr
+----
+
+Fedora `Copr <https://copr.fedorainfracloud.org/>`_ Build System help make building and managing third party package repositories easy.
+
+Each pylero new release will trigger new copr build to fedora-all, EPEL8 and EPEL9.
+
+The build is triggered by webhook defined in the project configuration.
+
+The build project on Copr is `pylero <https://copr.fedorainfracloud.org/coprs/waynesun20/pylero/>`_.
+
+Check the target rpm package in the build to test locally.
 
 Contents:
 
