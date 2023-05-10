@@ -141,6 +141,25 @@ to use:
 
 ## Examples
 ------------
+
+There's a possibility that Workitems mentioned in this example may not exactly
+match the types that your Polarion server was configured with.
+
+In those cases, importing `TestCase`, `Requirement` etc will fail, to overcome
+that, you either need to reach out to your Polarion admin for knowing the
+workitem types that are configured or can find those from below code.
+
+``` python
+>>> from pylero.work_item import *
+>>> globals()['workitems'].values()
+dict_values(['TestCase', 'TestSuite', 'BusinessCase', 'Requirement', 'ChangeRequest', 'IncidentReport', 'Defect', 'Task', 'Risk'])
+```
+
+**Note:** This is only required once when you start using Pylero as the work item
+type don't usually change. The `dict_values` from above listing are importable,
+ex: `from pylero.work_item TesCase` works for me and it may differ for you based
+on above returned values.
+
 ```python
 import datetime
 from pylero.test_run import TestRun

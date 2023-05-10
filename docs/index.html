@@ -163,6 +163,23 @@ Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;licen
 </section>
 <section id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
+<p>There’s a possibility that Workitems mentioned in this example may not exactly
+match the types that your Polarion server was configured with.</p>
+<p>In those cases, importing <code class="code docutils literal notranslate"><span class="pre">TestCase</span></code>, <code class="code docutils literal notranslate"><span class="pre">Requirement</span></code> etc will fail, to overcome
+that, you either need to reach out to your Polarion admin for knowing the
+workitem types that are configured or can find those from below code.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pylero.work_item</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;workitems&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+<span class="go">dict_values([&#39;TestCase&#39;, &#39;TestSuite&#39;, &#39;BusinessCase&#39;, &#39;Requirement&#39;, &#39;ChangeRequest&#39;, &#39;IncidentReport&#39;, &#39;Defect&#39;, &#39;Task&#39;, &#39;Risk&#39;])</span>
+</pre></div>
+</div>
+<p><strong>Note:</strong> This is only required once when you start using Pylero as the work item
+type don’t usually change. The <code class="code docutils literal notranslate"><span class="pre">dict_values</span></code> from above listing are importable,
+ex: <code class="code docutils literal notranslate"><span class="pre">from</span> <span class="pre">pylero.work_item</span> <span class="pre">TesCase</span></code> works for me and it may differ for you based
+on above returned values.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">from</span> <span class="nn">pylero.test_run</span> <span class="kn">import</span> <span class="n">TestRun</span>
 <span class="kn">from</span> <span class="nn">pylero.test_record</span> <span class="kn">import</span> <span class="n">TestRecord</span>
@@ -309,6 +326,44 @@ Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;licen
     <span class="nb">print</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> - </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">linked</span><span class="o">.</span><span class="n">work_item_id</span><span class="p">,</span> <span class="n">linked</span><span class="o">.</span><span class="n">role</span><span class="p">)</span>
 </pre></div>
 </div>
+</section>
+<section id="before-you-commit">
+<h2>Before you commit<a class="headerlink" href="#before-you-commit" title="Permalink to this heading">¶</a></h2>
+<p>In order to ensure you are able to pass the GitHub CI build, it is recommended that you run the following commands in the base of your pylero directory:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install pre-commit
+$ pre-commit autoupdate &amp;&amp; pre-commit run -a
+</pre></div>
+</div>
+<p>Pre-commit will ensure that the changes you made are not in violation of PEP8 standards.</p>
+<p>We recommend <cite>autopep8</cite> to fix any pre-commit failures by running below or you are free to use any formatters which can resolve pre-commit failures with least possible diff:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install autopep8
+$ autopep8 --in-place &lt;edited_file.py&gt;
+</pre></div>
+</div>
+</section>
+<section id="fedora-rpm-package-build">
+<h2>Fedora RPM package build<a class="headerlink" href="#fedora-rpm-package-build" title="Permalink to this heading">¶</a></h2>
+<section id="tito">
+<h3>Tito<a class="headerlink" href="#tito" title="Permalink to this heading">¶</a></h3>
+<p><a class="reference external" href="https://github.com/rpm-software-management/tito">Tito</a> is a tool for managing RPM based projects using git for their source code repository.</p>
+<p>The tito config dir is <a class="reference external" href="./.tito">.tito</a></p>
+<p>To create a new tag and automaticlly update pylero.spec with all changelog:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ tito tag
+</pre></div>
+</div>
+<p>After tag need push the tag:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git push --follow-tags
+</pre></div>
+</div>
+<p>After tag been pushed a new Copr build will be automatically triggered.</p>
+</section>
+<section id="copr">
+<h3>Copr<a class="headerlink" href="#copr" title="Permalink to this heading">¶</a></h3>
+<p>Fedora <a class="reference external" href="https://copr.fedorainfracloud.org/">Copr</a> Build System help make building and managing third party package repositories easy.</p>
+<p>Each pylero new release will trigger new copr build to fedora-all, EPEL8 and EPEL9.</p>
+<p>The build is triggered by webhook defined in the project configuration.</p>
+<p>The build project on Copr is <a class="reference external" href="https://copr.fedorainfracloud.org/coprs/waynesun20/pylero/">pylero</a>.</p>
+<p>Check the target rpm package in the build to test locally.</p>
 <p>Contents:</p>
 <div class="toctree-wrapper compound">
 <ul>
@@ -627,6 +682,7 @@ Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;licen
 </li>
 </ul>
 </div>
+</section>
 </section>
 </section>
 <section id="indices-and-tables">
