@@ -1591,7 +1591,7 @@ bp = BasePolarion()
 vals = bp.get_valid_field_values("workitem-type")
 workitems = {}
 for item in bp._cache["enums"]["workitem-type"][None]:
-    workitems[item.id] = item.name.replace(" ", "")
+    workitems[item.id] = item.name.replace(" ", "").replace("/", "")
 
 for wi in workitems:
     newclass = type(
