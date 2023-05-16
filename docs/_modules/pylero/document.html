@@ -434,7 +434,7 @@
                 <span class="n">work_item_id</span><span class="o">=</span><span class="n">parent_id</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project_id</span>
             <span class="p">)</span><span class="o">.</span><span class="n">uri</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">doc_wis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_work_items</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">doc_wis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_work_items</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">doc_wis</span><span class="p">:</span>
                 <span class="n">parent_uri</span> <span class="o">=</span> <span class="n">doc_wis</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">uri</span>
             <span class="k">else</span><span class="p">:</span>
@@ -472,9 +472,6 @@
 <span class="sd">            fields: fields to fill. For nested structures in the lists you can</span>
 <span class="sd">                    use following syntax to include only subset of fields:</span>
 <span class="sd">                    myList.LIST.key (e.g. linkedWorkItems.LIST.role).</span>
-<span class="sd">                    For custom fields you can specify which fields you want to</span>
-<span class="sd">                    be filled using following syntax:</span>
-<span class="sd">                    customFields.CUSTOM_FIELD_ID (e.g. customFields.risk).</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            list of _WorkItem objects</span>
@@ -489,7 +486,15 @@
             <span class="p">)</span><span class="o">.</span><span class="n">uri</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">parent_uri</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="n">p_fields</span> <span class="o">=</span> <span class="n">_WorkItem</span><span class="o">.</span><span class="n">_convert_obj_fields_to_polarion</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
+        <span class="n">p_fields</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">wi_type</span> <span class="ow">in</span> <span class="n">_WorkItem</span><span class="o">.</span><span class="n">get_defined_work_item_types</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">wi_type</span><span class="o">.</span><span class="n">_got_custom_fields</span><span class="p">:</span>
+                <span class="n">wi_type</span><span class="o">.</span><span class="n">get_custom_fields</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_id</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">wi_type</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
+            <span class="n">filtered_fields</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span> <span class="k">if</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">wi_type</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span>
+            <span class="n">p_fields</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">wi_type</span><span class="o">.</span><span class="n">_convert_obj_fields_to_polarion</span><span class="p">(</span><span class="n">filtered_fields</span><span class="p">))</span>
+        <span class="n">p_fields</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">p_fields</span><span class="p">))</span>
         <span class="n">suds_wi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">getModuleWorkItems</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">parent_uri</span><span class="p">,</span> <span class="n">deep</span><span class="p">,</span> <span class="n">p_fields</span>
         <span class="p">)</span>

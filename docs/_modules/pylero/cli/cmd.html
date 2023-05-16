@@ -231,7 +231,6 @@
     <span class="sd">&quot;&quot;&quot;An object to manage the command of update&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="CmdUpdate.update_all_case_results_for_run"><a class="viewcode-back" href="../../../pylero.cli.html#pylero.cli.cmd.CmdUpdate.update_all_case_results_for_run">[docs]</a>    <span class="k">def</span> <span class="nf">update_all_case_results_for_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">comment</span><span class="p">):</span>
-
         <span class="n">run</span> <span class="o">=</span> <span class="n">run</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="n">tr</span> <span class="o">=</span> <span class="n">TestRun</span><span class="p">(</span><span class="n">run</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">TestRun</span><span class="o">.</span><span class="n">default_project</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Update </span><span class="si">%s</span><span class="s2">:&quot;</span> <span class="o">%</span> <span class="n">run</span><span class="p">)</span>
@@ -265,7 +264,6 @@
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Please use comma &#39;,&#39; to seperate your runs!&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CmdUpdate.update_1_case_result_for_run"><a class="viewcode-back" href="../../../pylero.cli.html#pylero.cli.cmd.CmdUpdate.update_1_case_result_for_run">[docs]</a>    <span class="k">def</span> <span class="nf">update_1_case_result_for_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run</span><span class="p">,</span> <span class="n">testcase</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">comment</span><span class="p">):</span>
-
         <span class="k">if</span> <span class="ow">not</span> <span class="n">comment</span><span class="p">:</span>
             <span class="n">comment</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
@@ -304,7 +302,6 @@
         <span class="n">structure_link_role</span><span class="o">=</span><span class="s2">&quot;parent&quot;</span><span class="p">,</span>
         <span class="n">content</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
     <span class="p">):</span>
-
         <span class="n">cl</span> <span class="o">=</span> <span class="n">CmdList</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">cl</span><span class="o">.</span><span class="n">list_documents_by_query</span><span class="p">(</span><span class="n">doc_name</span><span class="p">):</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Exit - Found same name &#39;</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">space</span><span class="p">,</span> <span class="n">doc_name</span><span class="p">))</span>
@@ -353,7 +350,6 @@
         <span class="n">description</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">is_template</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
-
         <span class="n">run</span> <span class="o">=</span> <span class="n">run</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="n">query_ful</span> <span class="o">=</span> <span class="s1">&#39;project.id:</span><span class="si">%s</span><span class="s1"> AND id:&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">TestRun</span><span class="o">.</span><span class="n">default_project</span><span class="p">,</span> <span class="n">run</span><span class="p">)</span>
 
@@ -419,7 +415,6 @@
         <span class="n">status</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-
         <span class="k">if</span> <span class="n">runs</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="n">runs</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">update_run</span><span class="p">(</span><span class="n">run</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">plannedin</span><span class="p">,</span> <span class="n">assignee</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">description</span><span class="p">)</span>

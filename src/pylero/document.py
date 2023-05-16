@@ -399,7 +399,7 @@ class Document(BasePolarion):
                 work_item_id=parent_id, project_id=self.project_id
             ).uri
         else:
-            doc_wis = self.get_work_items(None, False, None)
+            doc_wis = self.get_work_items(None, False)
             if doc_wis:
                 parent_uri = doc_wis[0].uri
             else:

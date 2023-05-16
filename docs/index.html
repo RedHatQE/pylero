@@ -249,7 +249,7 @@ on above returned values.</p>
 
 <span class="c1"># Creating a document</span>
 <span class="n">doc</span> <span class="o">=</span> <span class="n">Document</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s2">&quot;myproj&quot;</span><span class="p">,</span> <span class="s2">&quot;Testing&quot;</span><span class="p">,</span> <span class="s2">&quot;API doc&quot;</span><span class="p">,</span> <span class="s2">&quot;The API Document&quot;</span><span class="p">,</span>
-                    <span class="p">[</span><span class="s2">&quot;testcase&quot;</span><span class="p">])</span>
+                      <span class="p">[</span><span class="s2">&quot;testcase&quot;</span><span class="p">],</span> <span class="n">document_type</span><span class="o">=</span><span class="s2">&quot;testspecification&quot;</span><span class="p">)</span>
 <span class="c1"># Adding a Functional Test Case work item to the document</span>
 <span class="n">wi</span> <span class="o">=</span> <span class="n">TestCase</span><span class="p">()</span>
 <span class="n">wi</span><span class="o">.</span><span class="n">tcmscaseid</span> <span class="o">=</span> <span class="s2">&quot;12345&quot;</span>
