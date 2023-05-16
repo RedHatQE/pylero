@@ -346,7 +346,7 @@ class CmdUpdate(object):
                 tr.status = status
                 print("%4sSet Status to %s" % ("", status))
             if description is not None:
-                tr.description = description
+                tr.description.content = description
                 print("%4sSet Description to %s" % ("", description))
             tr.update()
 
