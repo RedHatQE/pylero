@@ -235,7 +235,7 @@ on above returned values.
 
     # Creating a document
     doc = Document.create("myproj", "Testing", "API doc", "The API Document",
-                        ["testcase"])
+                          ["testcase"], document_type="testspecification")
     # Adding a Functional Test Case work item to the document
     wi = TestCase()
     wi.tcmscaseid = "12345"
