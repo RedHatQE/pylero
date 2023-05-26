@@ -237,21 +237,6 @@
             <span class="n">customs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CustomFieldType</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">suds_custom</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">customs</span></div>
 
-<div class="viewcode-block" id="Project.get_document_locations"><a class="viewcode-back" href="../../pylero.html#pylero.project.Project.get_document_locations">[docs]</a>    <span class="k">def</span> <span class="nf">get_document_locations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Gets the document locations (e.g. LiveDocuments) for a project.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            None</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            list of (string) document locations</span>
-
-<span class="sd">        References:</span>
-<span class="sd">            Tracker.getDocumentLocations</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">getDocumentLocations</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_id</span><span class="p">)</span></div>
-
 <div class="viewcode-block" id="Project.get_document_spaces"><a class="viewcode-back" href="../../pylero.html#pylero.project.Project.get_document_spaces">[docs]</a>    <span class="k">def</span> <span class="nf">get_document_spaces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Gets the Module/Document spaces for the project.</span>
 

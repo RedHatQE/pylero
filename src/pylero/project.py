@@ -202,21 +202,6 @@ class Project(BasePolarion):
             customs.append(CustomFieldType(suds_object=suds_custom))
         return customs
 
-    def get_document_locations(self):
-        """Gets the document locations (e.g. LiveDocuments) for a project.
-
-        Args:
-            None
-
-        Returns:
-            list of (string) document locations
-
-        References:
-            Tracker.getDocumentLocations
-        """
-        self._verify_obj()
-        return self.session.tracker_client.service.getDocumentLocations(self.project_id)
-
     def get_document_spaces(self):
         """Gets the Module/Document spaces for the project.
 
