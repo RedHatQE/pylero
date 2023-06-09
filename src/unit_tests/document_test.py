@@ -99,6 +99,16 @@ class DocumentTest(unittest.TestCase):
         self.assertEqual(tr.records[0].test_case_id, WI_ID)
         self.doc_create.session.tx_commit()
 
+    def test_009_export_pdf(self):
+        uri = self.doc_create.uri
+        exportPdfProperties = {
+            "paperSize": "A4",
+            "orientation": "portrait",
+            "fitToPageWidth": True,
+            "includeHeaderFooter": True,
+        }
+        Document.export_pdf(uri, exportPdfProperties)
+
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
