@@ -316,6 +316,30 @@ class Document(BasePolarion):
             lst_doc = [Document(suds_object=doc) for doc in docs]
             return lst_doc
 
+    @classmethod
+    def export_pdf(cls, uri, exportPdfProperties):
+        """Export a document to PDF and download it
+
+        Args:
+            uri: Module/Document URI
+            exportPdfProperties: Export parameters such as:
+                paperSize - the size of the page for export. Possible values are A4, A3, Letter, Legal, Tabloid
+                orientation - the orientation of the page. Possible values are Portrait or Landscape
+                fitToPageWidth - true to fit to the page width
+                generateBookmarks - true to generate bookmarks
+                includeHeaderFooter - true to include header, footer and watermark
+
+        Returns:
+            None
+
+        References:
+            exportDocumentToPDF
+        """
+        function_name = "exportDocumentToPDF"
+        parms = [uri, exportPdfProperties]
+
+        getattr(cls.session.tracker_client.service, function_name)(*parms)
+
     def __init__(
         self,
         project_id=None,
