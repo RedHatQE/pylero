@@ -4,6 +4,7 @@ Created on Apr 13, 2015
 @author: szacks
 """
 import datetime
+import os
 import unittest
 
 from pylero.document import Document
@@ -107,7 +108,9 @@ class DocumentTest(unittest.TestCase):
             "fitToPageWidth": True,
             "includeHeaderFooter": True,
         }
-        Document.export_pdf(uri, exportPdfProperties)
+        output_dir = os.getcwd()
+        Document.export_pdf(uri, exportPdfProperties, output_dir, "test009_export_pdf")
+        assert os.path.isfile(f"{output_dir}/test009_export_pdf.pdf")
 
 
 if __name__ == "__main__":
