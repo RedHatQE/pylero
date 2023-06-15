@@ -4,6 +4,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import base64
+
 import suds
 from pylero._compatible import basestring
 from pylero.base_polarion import BasePolarion
@@ -317,7 +319,7 @@ class Document(BasePolarion):
             return lst_doc
 
     @classmethod
-    def export_pdf(cls, uri, exportPdfProperties):
+    def export_pdf(cls, uri, exportPdfProperties, output_dir="/tmp", output_name=""):
         """Export a document to PDF and download it
 
         Args:
@@ -328,9 +330,11 @@ class Document(BasePolarion):
                 fitToPageWidth - true to fit to the page width
                 generateBookmarks - true to generate bookmarks
                 includeHeaderFooter - true to include header, footer and watermark
+            output_dir: the destination of the PDF file
+            output_name: name of the document (optional)
 
         Returns:
-            None
+            Path to the output file
 
         References:
             exportDocumentToPDF
@@ -338,7 +342,16 @@ class Document(BasePolarion):
         function_name = "exportDocumentToPDF"
         parms = [uri, exportPdfProperties]
 
-        getattr(cls.session.tracker_client.service, function_name)(*parms)
+        if output_name == "":
+            output_name = uri.split("/")[-1]
+
+        base64_output = getattr(cls.session.tracker_client.service, function_name)(
+            *parms
+        )
+        binary_data = base64.b64decode(base64_output)
+
+        with open(f"{output_dir}/{output_name}.pdf", "wb") as file:
+            file.write(binary_data)
 
     def __init__(
         self,
