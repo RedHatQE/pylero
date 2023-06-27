@@ -32,3 +32,12 @@ jobs:
       - name: Pre Commit Checks
         uses: pre-commit/action@v3.0.0
         if: ${{ matrix.python-version != '3.6' }}
+
+      - name: Run unit tests
+        run: |
+          python -m unittest src/unit_tests/test_attribute.py
+          python -m unittest src/unit_tests/test_document.py
+          python -m unittest src/unit_tests/test_plan.py
+          python -m unittest src/unit_tests/test_revert.py
+          python -m unittest src/unit_tests/test_run_test.py
+          python -m unittest src/unit_tests/test_work_item.py
