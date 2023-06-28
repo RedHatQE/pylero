@@ -354,3 +354,6 @@ The build is triggered by webhook defined in the project configuration.
 The build project on Copr is [pylero](https://copr.fedorainfracloud.org/coprs/waynesun20/pylero/).
 
 Check the target rpm package in the build to test locally.
+
+## Contribution Guideline
+Check out [CONTRIBUTION.rst](CONTRIBUTION.rst)
