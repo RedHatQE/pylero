@@ -27,6 +27,29 @@ To install `pre-commit`, simply run the following command:
 
     $ pip install pre-commit
 
+
+-----------------
+Before you commit
+-----------------
+
+In order to ensure you are able to pass the GitHub CI build, it is recommended that you run the following commands in the base of your pylero directory
+
+.. code-block:: python
+
+    $ pre-commit autoupdate && pre-commit run -a
+
+
+
+Pre-commit will ensure that the changes you made are not in violation of PEP8 standards and automatically apply black fixes.
+
+We recommend `black` to automatically fix any pre-commit failures.
+
+.. code-block:: python
+
+    $ pip install black
+    $ black <edited_file.py>
+
+
 -----------------------------------
 Fork the project and clone the repo
 -----------------------------------
