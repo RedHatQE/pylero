@@ -307,24 +307,6 @@ for linked in req.linked_work_items_derived:
     print "%s - %s" % (linked.work_item_id, linked.role)
 ```
 
-## Before you commit
-
-In order to ensure you are able to pass the GitHub CI build, it is recommended that you run the following commands in the base of your pylero directory
-
-``` python
-$ pip install pre-commit
-$ pre-commit autoupdate && pre-commit run -a
-```
-
-Pre-commit will ensure that the changes you made are not in violation of PEP8 standards and automatically apply black fixes.
-
-We recommend `black` to automatically fix any pre-commit failures.
-
-``` python
-$ pip install black
-$ black <edited_file.py>
-```
-
 ## Fedora RPM package build
 
 ### Tito
@@ -354,3 +336,6 @@ The build is triggered by webhook defined in the project configuration.
 The build project on Copr is [pylero](https://copr.fedorainfracloud.org/coprs/waynesun20/pylero/).
 
 Check the target rpm package in the build to test locally.
+
+## Contribution Guideline
+Check out [CONTRIBUTION.rst](CONTRIBUTION.rst)
