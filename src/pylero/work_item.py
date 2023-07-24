@@ -1468,7 +1468,7 @@ class _SpecificWorkItem(_WorkItem):
             if cft.required:
                 cls._required_fields.append(local_name)
         cls._got_custom_fields = True
-        return None
+        return cls._all_custom_fields, cls._required_fields
 
     @classmethod
     def query(
