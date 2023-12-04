@@ -1459,6 +1459,8 @@ class _SpecificWorkItem(_WorkItem):
             # for all object types, I need special processing.
             parse_type = cft.type.split(":")
             if parse_type[0].startswith("ns"):
+                if parse_type[1] not in globals():
+                    continue
                 cls._cls_suds_map[local_name]["cls"] = globals()[parse_type[1]]
             cls._cls_suds_map[local_name]["enum_id"] = getattr(cft, "enum_id", None)
             cls._cls_suds_map[local_name]["is_custom"] = True
