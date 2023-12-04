@@ -90,7 +90,7 @@ class Project(BasePolarion):
 
         References:
             Project.getProject
-            Project.getProjectatLocation
+            Project.getProjectAtLocation
             Project.getProjectByURI
         """
         super(self.__class__, self).__init__(project_id, suds_object)
@@ -107,7 +107,7 @@ class Project(BasePolarion):
                 self._cache["projects"][project_id] = self._suds_object
         elif location:
             self._suds_object = (
-                self.session.project_client.service.getProjectatLocation(location)
+                self.session.project_client.service.getProjectAtLocation(location)
             )
         elif uri:
             self._suds_object = self.session.project_client.service.getProjectByURI(uri)

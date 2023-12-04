@@ -810,10 +810,10 @@ class _WorkItem(BasePolarion):
             None
 
         References:
-            Tracker.doAutoAssign
+            Tracker.doAutoassign
         """
         self._verify_obj()
-        self.session.tracker_client.service.doAutoAssign(self.uri)
+        self.session.tracker_client.service.doAutoassign(self.uri)
 
     def edit_approval(self, approvee_id, status):
         """Changes the status of an approval.
