@@ -175,7 +175,7 @@ class Project(BasePolarion):
         """
         self._verify_obj()
         suds_custom = self.session.tracker_client.service.getDefinedCustomFieldType(
-            self._uri, work_item_type_id, key
+            self.project_id, work_item_type_id, key
         )
         return CustomFieldType(suds_object=suds_custom)
 
@@ -197,7 +197,7 @@ class Project(BasePolarion):
         for (
             suds_custom
         ) in self.session.tracker_client.service.getDefinedCustomFieldType(
-            self._uri, work_item_type_id
+            self.project_id, work_item_type_id
         ):
             customs.append(CustomFieldType(suds_object=suds_custom))
         return customs
