@@ -705,6 +705,7 @@ class TestRun(BasePolarion):
         )
 
     def _status_change(self):
+        """Change status if necessary and possible."""
         # load a new object to test if the status should be changed.
         # can't use existing object because it doesn't include the new test rec
         # if the status needs changing, change it in the new object, so it
@@ -722,9 +723,12 @@ class TestRun(BasePolarion):
         else:
             status = "inprogress"
             check_tr.finished_on = None
-        if status != check_tr.status:
+        # Before setting the status, check if the new value is valid
+        status_id = self._cls_suds_map["status"]["enum_id"]
+        valid_status_values = self.get_valid_field_values(status_id, None)
+        if status != check_tr.status and status in valid_status_values:
             check_tr.status = status
-            check_tr.update()
+        check_tr.update()
 
     def _verify_record_count(self, record_index):
         # verifies the number of records is not less then the index given.
@@ -866,9 +870,10 @@ class TestRun(BasePolarion):
     ):
         """method add_test_record_by_fields, adds a test record for the given
         test case based on the result fields passed in.
-        When a test record is added, it changes the test run status to
+        When a test record is added and the valid options for status contain
+        "inprogress" and "finished", it changes the test run status to
         "inprogress" and when the last test record is run, it changes the
-        status to done.
+        status to "finished".
 
         Args:
             test_case_id (str): The id of the test case that was executed
@@ -908,7 +913,8 @@ class TestRun(BasePolarion):
         test case based on the TestRecord object passed in.
         In addition, the test run is checked for completeness and the test
         run state will change accordingly.
-        Test Run states are ["notrun", "finished", "inprogress"].
+        If possible, the status is set to one of 
+        ["notrun", "finished", "inprogress"].
 
         Args:
             test_record (TestRecord or Polarion TestRecord):
@@ -1281,7 +1287,8 @@ class TestRun(BasePolarion):
         given test case based on the TestRecord object passed in.
         In addition, the test run is checked for completeness and the
         test run state will change accordingly.
-        Test Run states are ["notrun", "finished", "inprogress"].
+        If possible, the status is set to one of 
+        ["notrun", "finished", "inprogress"].
 
         Args:
             test_case_id (str): the test case id that the record is related to.
