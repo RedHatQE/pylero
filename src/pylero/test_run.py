@@ -913,7 +913,7 @@ class TestRun(BasePolarion):
         test case based on the TestRecord object passed in.
         In addition, the test run is checked for completeness and the test
         run state will change accordingly.
-        If possible, the status is set to one of 
+        If possible, the status is set to one of
         ["notrun", "finished", "inprogress"].
 
         Args:
@@ -1287,7 +1287,7 @@ class TestRun(BasePolarion):
         given test case based on the TestRecord object passed in.
         In addition, the test run is checked for completeness and the
         test run state will change accordingly.
-        If possible, the status is set to one of 
+        If possible, the status is set to one of
         ["notrun", "finished", "inprogress"].
 
         Args:
