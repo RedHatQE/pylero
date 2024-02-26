@@ -334,9 +334,11 @@ class _WorkItem(BasePolarion):
         else:
             cfts = cls._cache["custom_field_types"].get(wi_type)
         results = [
-            CustomFieldType(suds_object=item)
-            if isinstance(item, CustomFieldType()._suds_object.__class__)
-            else EnumCustomFieldType(suds_object=item)
+            (
+                CustomFieldType(suds_object=item)
+                if isinstance(item, CustomFieldType()._suds_object.__class__)
+                else EnumCustomFieldType(suds_object=item)
+            )
             for item in cfts
         ]
         return results
@@ -709,14 +711,22 @@ class _WorkItem(BasePolarion):
             self.uri, filename, title, data
         )
 
-    def create_comment(self, content):
-        """method create_comment adds a comment to the current _WorkItem
+    def create_comment(self, title, content, parent_uri=None):
+        """method create_comment adds a comment to the current _WorkItem.
 
         Args:
+            title (str): Is set to None if parent_uri is not None as the title
+                            is not used for commenting existing comments.
             content (Text or str)
-
+            parent_uri (Text or str): the URI of an existing comment to add the
+                                        new comment to. If None, the comment is
+                                        added to the current _WorkItem.
         Returns:
             None
+
+        Notes:
+            Raises an error if parent_uri does not point to a valid comment
+            of this work item.
 
         References:
             Tracker.createComment
@@ -732,8 +742,19 @@ class _WorkItem(BasePolarion):
                 suds_content = content
         else:
             suds_content = suds.null()
-
-        self.session.tracker_client.service.createComment(self.uri, suds_content)
+        if parent_uri is None:
+            parent_uri = self.uri
+            title = None
+        else:
+            parent_uri = str(parent_uri)
+            is_existing_comment = any([str(c.uri) == parent_uri for c in self.comments])
+            if not is_existing_comment:
+                raise PyleroLibException(
+                    "The parent_uri is not a valid comment for this work item"
+                )
+        self.session.tracker_client.service.addComment(
+            str(parent_uri), title, suds_content
+        )
 
     def create_work_record(
         self, user_id, date_worked, time_spent, record_type=None, record_comment=None
