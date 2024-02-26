@@ -603,9 +603,11 @@ class TestRun(BasePolarion):
         else:
             cfts = cls._custom_field_cache[project_id]
         results = [
-            CustomFieldType(suds_object=item)
-            if isinstance(item, CustomFieldType()._suds_object.__class__)
-            else EnumCustomFieldType(suds_object=item)
+            (
+                CustomFieldType(suds_object=item)
+                if isinstance(item, CustomFieldType()._suds_object.__class__)
+                else EnumCustomFieldType(suds_object=item)
+            )
             for item in cfts
         ]
         return results

@@ -332,13 +332,17 @@ class BasePolarion(object):
             p_fields = [
                 "%s%s"
                 % (
-                    "customFields."
-                    if isinstance(cls._cls_suds_map[x], dict)
-                    and cls._cls_suds_map[x].get("is_custom", False)
-                    else "",
-                    cls._cls_suds_map[x]
-                    if not isinstance(cls._cls_suds_map[x], dict)
-                    else cls._cls_suds_map[x]["field_name"],
+                    (
+                        "customFields."
+                        if isinstance(cls._cls_suds_map[x], dict)
+                        and cls._cls_suds_map[x].get("is_custom", False)
+                        else ""
+                    ),
+                    (
+                        cls._cls_suds_map[x]
+                        if not isinstance(cls._cls_suds_map[x], dict)
+                        else cls._cls_suds_map[x]["field_name"]
+                    ),
                 )
                 for x in fields
             ]
