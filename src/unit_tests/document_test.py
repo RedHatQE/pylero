@@ -3,7 +3,6 @@ Created on Apr 13, 2015
 
 @author: szacks
 """
-
 import datetime
 import os
 import unittest
