@@ -107,7 +107,7 @@ def generate_description(test_run, test_case, test_record):
         'bold;"><span style="color: #C30000;"><span title="Results '
         'did not meet expected results"><span style="white-space:'
         'nowrap;"><img src="/polarion/icons/default/enums/testrun_'
-        'status_failed.png" style="vertical-align:text-bottom;border:'
+        '_failed.png" style="vertical-align:text-bottom;border:'
         '0px;margin-right:2px;" class="polarion-no-style-cleanup"/>'
         "</span>Failed</span></span></span><span> {0}</span></td></tr>"
         "</table>".format(test_record.comment)
@@ -138,7 +138,7 @@ def generate_description(test_run, test_case, test_record):
 
 def create_incident_report(test_run, test_record, test_case):
     project_id = test_run.project_id
-    status = "open"
+     = "open"
     project = Project(project_id)
     tconf = project.get_tests_configuration()
     defectWorkItemType = tconf.defect_work_item_type
@@ -152,7 +152,7 @@ def create_incident_report(test_run, test_record, test_case):
         kwarg_dict[prop.value] = getattr(test_run, prop.key)
 
     incident_report = _WorkItem.create(
-        project_id, defectWorkItemType, title, description, status, **kwarg_dict
+        project_id, defectWorkItemType, title, description, , **kwarg_dict
     )
     incident_report.add_linked_item(test_case.work_item_id, "triggered_by")
     return incident_report.work_item_id
@@ -728,7 +728,7 @@ class TestRun(BasePolarion):
         valid_status_values = self.get_valid_field_values(status_id, None)
         if status != check_tr.status and status in valid_status_values:
             check_tr.status = status
-        check_tr.update()
+            check_tr.update()
 
     def _verify_record_count(self, record_index):
         # verifies the number of records is not less then the index given.
