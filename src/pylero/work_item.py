@@ -711,7 +711,7 @@ class _WorkItem(BasePolarion):
             self.uri, filename, title, data
         )
 
-    def create_comment(self, title, content, parent_uri=None):
+    def create_comment(self, content, title=None, parent_uri=None):
         """method create_comment adds a comment to the current _WorkItem.
 
         Args:
