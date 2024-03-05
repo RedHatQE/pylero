@@ -1,5 +1,5 @@
 Name:           python-pylero
-Version:        0.0.8
+Version:        0.0.9
 Release:        1%{?dist}
 Summary:        Python SDK for Polarion
 
@@ -82,6 +82,10 @@ Summary:        %{summary}
 
 
 %changelog
+* Tue Mar 05 2024 Wayne Sun <gsun@redhat.com>
+- Remove Python 3.6 and add 3.12
+- Bug fix and doc update
+
 * Tue Mar 14 2023 Wayne Sun <gsun@redhat.com> 0.0.8-1
 - Add token config support
 
