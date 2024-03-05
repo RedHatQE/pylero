@@ -1,26 +1,23 @@
-
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../../">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>pylero.baseline &#8212; pylero  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/sphinx_highlight.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=12dfc556" />
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
    
   <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
   
+
   
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+  
 
   </head><body>
   
@@ -44,8 +41,10 @@
 <span class="kn">from</span> <span class="nn">pylero.user</span> <span class="kn">import</span> <span class="n">User</span>
 
 
-<div class="viewcode-block" id="Baseline"><a class="viewcode-back" href="../../pylero.html#pylero.baseline.Baseline">[docs]</a><span class="k">class</span> <span class="nc">Baseline</span><span class="p">(</span><span class="n">BasePolarion</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Object to handle the Polarion WSDL tns3:Baseline class</span>
+<div class="viewcode-block" id="Baseline">
+<a class="viewcode-back" href="../../pylero.html#pylero.baseline.Baseline">[docs]</a>
+<span class="k">class</span> <span class="nc">Baseline</span><span class="p">(</span><span class="n">BasePolarion</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Object to handle the Polarion WSDL tns3:Baseline class</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        author (User)</span>
@@ -68,9 +67,11 @@
     <span class="n">_obj_client</span> <span class="o">=</span> <span class="s2">&quot;tracker_client&quot;</span>
     <span class="n">_obj_struct</span> <span class="o">=</span> <span class="s2">&quot;tns3:Baseline&quot;</span>
 
-<div class="viewcode-block" id="Baseline.create"><a class="viewcode-back" href="../../pylero.html#pylero.baseline.Baseline.create">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Baseline.create">
+<a class="viewcode-back" href="../../pylero.html#pylero.baseline.Baseline.create">[docs]</a>
+    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">revision</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;class method create Creates a Baseline from head or particular</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;class method create Creates a Baseline from head or particular</span>
 <span class="sd">        revision.</span>
 
 <span class="sd">        Args:</span>
@@ -90,9 +91,12 @@
         <span class="p">)</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">suds_object</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Baseline.query"><a class="viewcode-back" href="../../pylero.html#pylero.baseline.Baseline.query">[docs]</a>    <span class="nd">@classmethod</span>
+
+<div class="viewcode-block" id="Baseline.query">
+<a class="viewcode-back" href="../../pylero.html#pylero.baseline.Baseline.query">[docs]</a>
+    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="s2">&quot;baseline_id&quot;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Queries for baselines.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Queries for baselines.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            query: the lucene query to be used.</span>
@@ -107,7 +111,9 @@
         <span class="n">baselines</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">suds_base</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">tracker_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">queryBaselines</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">sort</span><span class="p">):</span>
             <span class="n">baselines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Baseline</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">suds_base</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">baselines</span></div></div>
+        <span class="k">return</span> <span class="n">baselines</span></div>
+</div>
+
 </pre></div>
 
           </div>
@@ -162,11 +168,11 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2021, Sim Zacks and Pylero Contributors.
+      &#169;2021, Sim Zacks and Pylero Contributors.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.3.0</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
     </div>
 

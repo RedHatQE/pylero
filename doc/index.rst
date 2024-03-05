@@ -155,6 +155,7 @@ that, you either need to reach out to your Polarion admin for knowing the
 workitem types that are configured or can find those from below code.
 
 .. code-block:: python
+
 >>> from pylero.work_item import *
 >>> globals()['workitems'].values()
 dict_values(['TestCase', 'TestSuite', 'BusinessCase', 'Requirement', 'ChangeRequest', 'IncidentReport', 'Defect', 'Task', 'Risk'])

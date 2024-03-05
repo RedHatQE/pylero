@@ -43,16 +43,16 @@ pol_client = "{}/polarion/sdk/doc/javadoc/com/polarion/alm/ws/client".format(
 )
 
 extlinks = {
-    "project": ("{}/projects/ProjectWebService.html#%s".format(pol_client), ""),
-    "tracker": ("{}/tracker/TrackerWebService.html#%s".format(pol_client), ""),
+    "project": ("{}/projects/ProjectWebService.html#%s".format(pol_client), "%s"),
+    "tracker": ("{}/tracker/TrackerWebService.html#%s".format(pol_client), "%s"),
     "testmanagement": (
         "{}/testmanagement/TestManagementWebService.html#%s".format(pol_client),
-        "",
+        "%s",
     ),
-    "planning": ("{}/planning/PlanningWebService.html#%s".format(pol_client), ""),
-    "security": ("{}/security/SecurityWebService.html#%s".format(pol_client), ""),
-    "session": ("{}/session/SessionWebService.html#%s".format(pol_client), ""),
-    "builder": ("{}/builder/BuilderWebService.html#%s".format(pol_client), ""),
+    "planning": ("{}/planning/PlanningWebService.html#%s".format(pol_client), "%s"),
+    "security": ("{}/security/SecurityWebService.html#%s".format(pol_client), "%s"),
+    "session": ("{}/session/SessionWebService.html#%s".format(pol_client), "%s"),
+    "builder": ("{}/builder/BuilderWebService.html#%s".format(pol_client), "%s"),
 }
 
 # Add any paths that contain templates here, relative to this directory.
