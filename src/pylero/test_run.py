@@ -943,7 +943,9 @@ class TestRun(BasePolarion):
             suds_object = test_record
         if test_record.result == "failed" and not test_record.defect_case_id:
             test_record.defect_case_id = create_incident_report(
-                self, test_record, TestCase(work_item_id=test_case_id)
+                self,
+                test_record,
+                TestCase(work_item_id=test_case_id, project_id=self.project_id),
             )
         self.session.test_management_client.service.addTestRecordToTestRun(
             self.uri, suds_object
