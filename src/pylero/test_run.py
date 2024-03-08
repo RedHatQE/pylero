@@ -4,6 +4,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import importlib
 import os
 
 import suds
@@ -32,138 +33,9 @@ from pylero.text import Text
 from pylero.user import User
 from pylero.work_item import _WorkItem
 
-try:
-    from pylero.work_item import TestCase
-except ImportError:
-    class TestCase(_WorkItem):
-        def __init__(self, *args, **kwargs):
-            super(TestCase, self).__init__(*args, **kwargs)
-    pass
 
 # Build is used in custom fields.
 # Plan is used in custom fields.
-
-
-def generate_description(test_run, test_case, test_record):
-    tr_html = (
-        '<b>Test Run:</b> <span id="link" class=    '
-        '"polarion-rte-link" data-type="testRun" '
-        'data-item-id="{0}" data-option-id="long">'
-        "</span><br/>".format(test_run.test_run_id)
-    )
-    tc_html = (
-        '<b>Test Case:</b> <span id="link" class='
-        '"polarion-rte-link" data-type="workItem" '
-        'data-item-id="{0}" data-option-id="long"></span>'
-        "<br/>".format(test_case.work_item_id)
-    )
-    table_cell_style = (
-        'style="text-align: left; padding: 10px; '
-        'vertical-align: top; background-color: #ffffff;"'
-    )
-    table_row_style = 'style="border-bottom: 1px solid #f0f0f0;"'
-    columns = [
-        "",
-        "#",
-        '<span title="Step">Step</span>',
-        '<span title="Expected Result">Expected Result</span>',
-        "Actual Result",
-    ]
-    test_step_results = {
-        "passed": '<span title="Results met expected results'
-        '"><span style="white-space:nowrap;"><im'
-        'g src="/polarion/icons/default/enums/test'
-        'run_status_passed.png" style="vertical-a'
-        "lign:text-bottom;border:0px;margin-right:2"
-        'px;" class="polarion-no-style-cleanup"/'
-        "></span></span>",
-        "failed": '<span title="Results did not meet expecte'
-        'd results"><span style="white-space:nowr'
-        'ap;"><img src="/polarion/icons/default/e'
-        'nums/testrun_status_failed.png" style="v'
-        "ertical-align:text-bottom;border:0px;margi"
-        'n-right:2px;" class="polarion-no-style-c'
-        'leanup"/></span></span>',
-        "blocked": '<span title="Errors in the product preve'
-        'nted test from being executed"><span sty'
-        'le="white-space:nowrap;"><img src="/po'
-        "larion/icons/default/enums/testrun_status"
-        '_blocked.png" style="vertical-align:tex'
-        't-bottom;border:0px;margin-right:2px;" c'
-        'lass="polarion-no-style-cleanup"/>'
-        "</span></span>",
-    }
-    table_header = (
-        '<table class="polarion-no-style-cleanup" style="border'
-        '-collapse: collapse;"><tr style="text-align: left; '
-        "white-space: nowrap; color: #757575; border-bottom: 1px "
-        'solid #d2d7da; background-color: #ffffff;">{0}</tr>'.format(
-            "".join(
-                [
-                    "<th {0}>{1}</th>".format(table_cell_style, column)
-                    for column in columns
-                ]
-            )
-        )
-    )
-    verdict = (
-        '</table><table style="margin-bottom: 15px; ;border-collapse: '
-        'collapse; width:100%; ;margin-top: 13px;" class="polarion-no'
-        '-style-cleanup"><tr><th style="width: 80%; text-align: left;'
-        ' background-color: #ffffff;">Test Case Verdict:</th></tr><tr>'
-        '<td style="vertical-align: top;"><span style="font-weight: '
-        'bold;"><span style="color: #C30000;"><span title="Results '
-        'did not meet expected results"><span style="white-space:'
-        'nowrap;"><img src="/polarion/icons/default/enums/testrun_'
-        'status_failed.png" style="vertical-align:text-bottom;border:'
-        '0px;margin-right:2px;" class="polarion-no-style-cleanup"/>'
-        "</span>Failed</span></span></span><span> {0}</span></td></tr>"
-        "</table>".format(test_record.comment)
-    )
-    table_rows = ""
-    for step in range(len(test_record.test_step_results)):
-        table_rows += (
-            "<tr {0}>"
-            "<td {1}>{2}</td>"
-            "<td {1}>{3}</td>"
-            "<td {1}>{4}</td>"
-            "<td {1}>{5}</td>"
-            "<td {1}>{6}</td>"
-            "</tr>".format(
-                table_row_style,
-                table_cell_style,
-                test_step_results.get(test_record.test_step_results[step].result),
-                step + 1,
-                test_case.test_steps.steps[step].values[0].content,
-                test_case.test_steps.steps[step].values[1].content,
-                test_record.test_step_results[step].comment,
-            )
-        )
-    content = tr_html + tc_html + table_header + table_rows + verdict
-
-    return content
-
-
-def create_incident_report(test_run, test_record, test_case):
-    project_id = test_run.project_id
-    status = "open"
-    project = Project(project_id)
-    tconf = project.get_tests_configuration()
-    defectWorkItemType = tconf.defect_work_item_type
-    title = "Failed: " + test_case.title
-    description = generate_description(test_run, test_case, test_record)
-    kwarg_dict = {}
-
-    for prop in tconf.fields_to_copy_from_test_case_to_defect.property:
-        kwarg_dict[prop.value] = getattr(test_case, prop.key)
-    for prop in tconf.fields_to_copy_from_test_run_to_linked_defect.property:
-        kwarg_dict[prop.value] = getattr(test_run, prop.key)
-
-    incident_report = _WorkItem.create(
-        project_id, defectWorkItemType, title, description, status, **kwarg_dict
-    )
-    incident_report.add_linked_item(test_case.work_item_id, "triggered_by")
-    return incident_report.work_item_id
 
 
 class TestRun(BasePolarion):
@@ -380,7 +252,7 @@ class TestRun(BasePolarion):
         select_test_cases_by=None,
         query=None,
         doc_with_space=None,
-        **kwargs
+        **kwargs,
     ):  # , test_case_ids=[]):
         # see comment below regarding test_case)ids.
         """class method create_template for creating a new template in Polarion
@@ -917,6 +789,190 @@ class TestRun(BasePolarion):
             testrec.defect_case_id = defect_work_item_id
         self.add_test_record_by_object(testrec)
 
+    def __generate_description(
+        self, test_case: _WorkItem, test_record: TestRecord
+    ) -> str:
+        """Generates the description for the incident report.
+
+        If the test case has test steps that match the steps of the test record,
+        the description will include a table with the test steps and their results.
+
+        Args:
+            test_case (_WorkItem): Test case as a work item.
+            test_record (TestRecord): The test record contains the results of the
+                test execution.
+
+        Returns:
+            str: The incident report in HTML format.
+        """
+
+        tr_html = (
+            '<b>Test Run:</b> <span id="link" class=    '
+            '"polarion-rte-link" data-type="testRun" '
+            'data-item-id="{0}" data-option-id="long">'
+            "</span><br/>".format(self.test_run_id)
+        )
+        tc_html = (
+            '<b>Test Case:</b> <span id="link" class='
+            '"polarion-rte-link" data-type="workItem" '
+            'data-item-id="{0}" data-option-id="long"></span>'
+            "<br/>".format(test_case.work_item_id)
+        )
+        table_cell_style = (
+            'style="text-align: left; padding: 10px; '
+            'vertical-align: top; background-color: #ffffff;"'
+        )
+        table_row_style = 'style="border-bottom: 1px solid #f0f0f0;"'
+        columns = [
+            "",
+            "#",
+            '<span title="Step">Step</span>',
+            '<span title="Expected Result">Expected Result</span>',
+            "Actual Result",
+        ]
+        test_step_results = {
+            "passed": '<span title="Results met expected results'
+            '"><span style="white-space:nowrap;"><im'
+            'g src="/polarion/icons/default/enums/test'
+            'run_status_passed.png" style="vertical-a'
+            "lign:text-bottom;border:0px;margin-right:2"
+            'px;" class="polarion-no-style-cleanup"/'
+            "></span></span>",
+            "failed": '<span title="Results did not meet expecte'
+            'd results"><span style="white-space:nowr'
+            'ap;"><img src="/polarion/icons/default/e'
+            'nums/testrun_status_failed.png" style="v'
+            "ertical-align:text-bottom;border:0px;margi"
+            'n-right:2px;" class="polarion-no-style-c'
+            'leanup"/></span></span>',
+            "blocked": '<span title="Errors in the product preve'
+            'nted test from being executed"><span sty'
+            'le="white-space:nowrap;"><img src="/po'
+            "larion/icons/default/enums/testrun_status"
+            '_blocked.png" style="vertical-align:tex'
+            't-bottom;border:0px;margin-right:2px;" c'
+            'lass="polarion-no-style-cleanup"/>'
+            "</span></span>",
+        }
+        table_header = (
+            '<table class="polarion-no-style-cleanup" style="border'
+            '-collapse: collapse;"><tr style="text-align: left; '
+            "white-space: nowrap; color: #757575; border-bottom: 1px "
+            'solid #d2d7da; background-color: #ffffff;">{0}</tr>'.format(
+                "".join(
+                    [
+                        "<th {0}>{1}</th>".format(table_cell_style, column)
+                        for column in columns
+                    ]
+                )
+            )
+        )
+        verdict = (
+            '</table><table style="margin-bottom: 15px; ;border-collapse: '
+            'collapse; width:100%; ;margin-top: 13px;" class="polarion-no'
+            '-style-cleanup"><tr><th style="width: 80%; text-align: left;'
+            ' background-color: #ffffff;">Test Case Verdict:</th></tr><tr>'
+            '<td style="vertical-align: top;"><span style="font-weight: '
+            'bold;"><span style="color: #C30000;"><span title="Results '
+            'did not meet expected results"><span style="white-space:'
+            'nowrap;"><img src="/polarion/icons/default/enums/testrun_'
+            'status_failed.png" style="vertical-align:text-bottom;border:'
+            '0px;margin-right:2px;" class="polarion-no-style-cleanup"/>'
+            "</span>Failed</span></span></span><span> {0}</span></td></tr>"
+            "</table>".format(test_record.comment)
+        )
+        try:
+            table_rows = ""
+            test_steps = test_case.get_test_steps()
+            for step in range(len(test_record.test_step_results)):
+                table_rows += (
+                    "<tr {0}>"
+                    "<td {1}>{2}</td>"
+                    "<td {1}>{3}</td>"
+                    "<td {1}>{4}</td>"
+                    "<td {1}>{5}</td>"
+                    "<td {1}>{6}</td>"
+                    "</tr>".format(
+                        table_row_style,
+                        table_cell_style,
+                        test_step_results.get(
+                            test_record.test_step_results[step].result
+                        ),
+                        step + 1,
+                        test_steps.steps[step].values[0].content,
+                        test_steps.steps[step].values[1].content,
+                        test_record.test_step_results[step].comment,
+                    )
+                )
+        except PyleroLibException:
+            table_rows = ""
+        content = tr_html + tc_html + table_header + table_rows + verdict
+        return content
+
+    def __create_incident_report(
+        self, test_case_id: str, test_record: TestRecord
+    ) -> str:
+        """Create and populate an incident work item.
+
+        The work_item type of the incident and the fields to copy from the test
+        case and test run to the incident are defined in the tests configuration
+        of the project.
+        Throws an exception if the test case does not exists or if the incident
+        could not be created.
+
+        Args:
+            test_case_id (str): The ID of the test case.
+            test_record (TestRecord): The test record contains the results of the
+                test execution.
+                executed.
+
+        Returns:
+            str: work_item_id of the created incident.
+        """
+        project_id = self.project_id
+        status = "open"
+        project = Project(project_id)
+        tconf = project.get_tests_configuration()
+
+        defectWorkItemType = tconf.defect_work_item_type
+        testCaseWorkItemType = tconf.test_case_work_item_type
+        workItemModule = importlib.import_module("pylero.work_item")
+        try:
+            test_case_class = getattr(workItemModule, testCaseWorkItemType)
+            test_case = test_case_class(
+                project_id=self.project_id, work_item_id=test_case_id
+            )
+        except (AttributeError, PyleroLibException):
+            test_case = _WorkItem(project_id=self.project_id, work_item_id=test_case_id)
+
+        title = "Failed: " + test_case.title
+        description = self.__generate_description(test_case, test_record)
+        kwarg_dict = {}
+        for prop in tconf.fields_to_copy_from_test_case_to_defect.property:
+            if hasattr(test_case, prop.key):
+                kwarg_dict[prop.value] = getattr(test_case, prop.key)
+        for prop in tconf.fields_to_copy_from_test_run_to_linked_defect.property:
+            if hasattr(self, prop.key):
+                kwarg_dict[prop.value] = getattr(self, prop.key)
+
+        try:
+            incident_report = _WorkItem.create(
+                project_id, defectWorkItemType, title, description, status, **kwarg_dict
+            )
+        except PyleroLibException as e:
+            msg = "\n".join(
+                [
+                    (
+                        f"Failed to create the work item {title} in"
+                        f"project {project_id} of type {defectWorkItemType}."
+                    ),
+                    f"Error: {e}",
+                ]
+            )
+            raise PyleroLibException(msg)
+        incident_report.add_linked_item(test_case.work_item_id, "triggered_by")
+        return incident_report.work_item_id
+
     @tx_wrapper
     def add_test_record_by_object(self, test_record, manual_state_change=False):
         """method add_test_record_by_object, adds a test record for the given
@@ -945,10 +1001,9 @@ class TestRun(BasePolarion):
         elif isinstance(test_record, TestRecord()._suds_object.__class__):
             suds_object = test_record
         if test_record.result == "failed" and not test_record.defect_case_id:
-            test_record.defect_case_id = create_incident_report(
-                self,
+            test_record.defect_case_id = self.__create_incident_report(
+                test_case_id,
                 test_record,
-                TestCase(work_item_id=test_case_id, project_id=self.project_id),
             )
         self.session.test_management_client.service.addTestRecordToTestRun(
             self.uri, suds_object
@@ -1324,8 +1379,8 @@ class TestRun(BasePolarion):
             self.add_test_record_by_object(test_record)
         else:
             if test_record.result == "failed" and not test_record.defect_case_id:
-                test_record.defect_case_id = create_incident_report(
-                    self, test_record, TestCase(work_item_id=test_case_id)
+                test_record.defect_case_id = self.__create_incident_report(
+                    test_case_id, test_record
                 )
             index = test_case_ids.index(test_case_id)
             if isinstance(test_record, TestRecord):
