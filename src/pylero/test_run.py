@@ -38,7 +38,6 @@ except ImportError:
     class TestCase(_WorkItem):
         def __init__(self, *args, **kwargs):
             super(TestCase, self).__init__(*args, **kwargs)
-    pass
 
 # Build is used in custom fields.
 # Plan is used in custom fields.
