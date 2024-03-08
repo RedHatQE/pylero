@@ -35,6 +35,9 @@ from pylero.work_item import _WorkItem
 try:
     from pylero.work_item import TestCase
 except ImportError:
+    class TestCase(_WorkItem):
+        def __init__(self, *args, **kwargs):
+            super(TestCase, self).__init__(*args, **kwargs)
     pass
 
 # Build is used in custom fields.
