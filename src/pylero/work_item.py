@@ -669,7 +669,7 @@ class _WorkItem(BasePolarion):
             function_name = "addLinkedItem"
         else:
             function_name = "addExternallyLinkedItem"
-            if revesion:
+            if revision:
                 raise PyleroLibException(
                     f"Cannot link an external work item to {serlf.work_item_id} using a revision!"
                 )
