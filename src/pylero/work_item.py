@@ -666,18 +666,11 @@ class _WorkItem(BasePolarion):
         self.check_valid_field_values(role, "workitem-link-role", {})
         if project_id is None:
             project_id = self.project_id
-            function_name = "addLinkedItem"
-        else:
-            function_name = "addExternallyLinkedItem"
-            if revision:
-                raise PyleroLibException(
-                    f"Cannot link an external work item to {serlf.work_item_id} using a revision!"
-                )
         wi_linked = _WorkItem(
             work_item_id=linked_work_item_id, project_id=project_id
         )
-        enum_role = EnumOptionId( )._suds_object
-       
+        enum_role = EnumOptionId(role)._suds_object
+        function_name = "addLinkedItem"
         parms = [self.uri, wi_linked.uri, enum_role]
         if revision:
             function_name += "WithRev"
