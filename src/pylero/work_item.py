@@ -655,6 +655,9 @@ class _WorkItem(BasePolarion):
             suspect (bool): true if the link should be marked with suspect flag
                       Only valid if revision is set.
                       default: None
+            project_id (str): optional, the project where the target item is.
+                    If not set, the current project is used.
+                    default: None
 
         Returns:
             bool
