@@ -636,7 +636,9 @@ class _WorkItem(BasePolarion):
             self.uri, url, suds_role
         )
 
-    def add_linked_item(self, linked_work_item_id, role, revision=None, suspect=None, project_id=None):
+    def add_linked_item(
+        self, linked_work_item_id, role, revision=None, suspect=None, project_id=None
+    ):
         """method add_linked_item adds a linked _WorkItem to current _WorkItem
         The linking is done to the "child" object. For example, if you have a
         Test Case that verifies a requirement, you would add the
@@ -666,9 +668,7 @@ class _WorkItem(BasePolarion):
         self.check_valid_field_values(role, "workitem-link-role", {})
         if project_id is None:
             project_id = self.project_id
-        wi_linked = _WorkItem(
-            work_item_id=linked_work_item_id, project_id=project_id
-        )
+        wi_linked = _WorkItem(work_item_id=linked_work_item_id, project_id=project_id)
         enum_role = EnumOptionId(role)._suds_object
         function_name = "addLinkedItem"
         parms = [self.uri, wi_linked.uri, enum_role]
