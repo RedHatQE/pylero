@@ -749,9 +749,9 @@ class _WorkItem(BasePolarion):
             suds_content = suds.null()
         if parent_uri is None:
             parent_uri = self.uri
-            title = None
         else:
             parent_uri = str(parent_uri)
+            title = None
             is_existing_comment = any([str(c.uri) == parent_uri for c in self.comments])
             if not is_existing_comment:
                 raise PyleroLibException(
