@@ -906,7 +906,11 @@ class TestRun(BasePolarion):
                 )
         except PyleroLibException:
             table_rows = ""
-        content = tr_html + tc_html + table_header + table_rows + verdict
+        if table_rows:
+            table = table_header + table_rows
+        else:
+            table = ""
+        content = tr_html + tc_html + table + verdict
         return content
 
     def __create_incident_report(
