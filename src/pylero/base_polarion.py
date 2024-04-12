@@ -1077,3 +1077,37 @@ class BasePolarion(object):
         if getattr(self, "uri", None):
             obj = self.__class__(uri=self.uri)
             self._suds_object = obj._suds_object
+
+    def get_revision(self, repository_name, revision_id):
+        """
+        Gets a revision
+        Args:
+            repository_name - The repository name. (Put "default" for the default repository.)
+            revision_id - The revision name.
+        Returns:
+            a Revision object
+        """
+        return self.session.tracker_client.service.getrevision(
+            repository_name, revision_id
+        )
+
+    def get_revision_by_uri(self, revision_uri):
+        """
+        Gets a revision by its URI
+        Args:
+             revision_uri - The URI of the revision.
+        Returns:
+            a Revision object
+
+        """
+        return self.session.tracker_client.service.getRevisionByUri(revision_uri)
+
+    def get_revisions(self, uri):
+        """
+        Returns all revisions for a specific URI.
+        Args:
+             uri - URI of the persistence object (Work Item, Module/Document, User, etc).
+        Returns:
+            All revisions for a specific URI.
+        """
+        return self.session.tracker_client.service.getRevisions(uri)
