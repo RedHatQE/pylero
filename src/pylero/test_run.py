@@ -983,7 +983,9 @@ class TestRun(BasePolarion):
         return incident_report.work_item_id
 
     @tx_wrapper
-    def add_test_record_by_object(self, test_record, manual_state_change=False):
+    def add_test_record_by_object(
+        self, test_record, manual_state_change=False, create_incident=True
+    ):
         """method add_test_record_by_object, adds a test record for the given
         test case based on the TestRecord object passed in.
         In addition, the test run is checked for completeness and the test
@@ -995,6 +997,8 @@ class TestRun(BasePolarion):
             test_record (TestRecord or Polarion TestRecord):
             manual_state_change (boolean): Change test run state
                                            automatically or manual.
+            create_incident (boolean): Create an incident report if the test
+                                        case fails and no incident is linked.
 
         Returns:
             None
@@ -1009,7 +1013,11 @@ class TestRun(BasePolarion):
             suds_object = test_record._suds_object
         elif isinstance(test_record, TestRecord()._suds_object.__class__):
             suds_object = test_record
-        if test_record.result == "failed" and not test_record.defect_case_id:
+        if (
+            test_record.result == "failed"
+            and not test_record.defect_case_id
+            and create_incident
+        ):
             test_record.defect_case_id = self.__create_incident_report(
                 test_case_id,
                 test_record,
@@ -1357,7 +1365,11 @@ class TestRun(BasePolarion):
 
     @tx_wrapper
     def update_test_record_by_object(
-        self, test_case_id, test_record, manual_state_change=False
+        self,
+        test_case_id,
+        test_record,
+        manual_state_change=False,
+        create_incident=True,
     ):
         """method update_test_record_by_object, adds a test record for the
         given test case based on the TestRecord object passed in.
@@ -1371,6 +1383,9 @@ class TestRun(BasePolarion):
             test_record (TestRecord or Polarion TestRecord)
             manual_state_change (boolean): Change the test
                                            run result automatically or manual.
+            create_incident (boolean): Create an incident report if the test
+                                        record result is failed and no defect
+                                        case id is set.
 
         Returns:
             None
@@ -1387,7 +1402,11 @@ class TestRun(BasePolarion):
         if test_case_id not in test_case_ids:
             self.add_test_record_by_object(test_record)
         else:
-            if test_record.result == "failed" and not test_record.defect_case_id:
+            if (
+                test_record.result == "failed"
+                and not test_record.defect_case_id
+                and create_incident
+            ):
                 test_record.defect_case_id = self.__create_incident_report(
                     test_case_id, test_record
                 )
