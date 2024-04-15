@@ -904,9 +904,16 @@ class TestRun(BasePolarion):
                         test_record.test_step_results[step].comment,
                     )
                 )
-        except PyleroLibException:
+        except (suds.WebFault, AttributeError):
+            # test_case.get_test_steps() can raise a webfault
+            # test_record.test_step_results cab raise an attribute error
+            # other errors should be passed up the call stack
             table_rows = ""
-        content = tr_html + tc_html + table_header + table_rows + verdict
+        if table_rows:
+            table = table_header + table_rows
+        else:
+            table = ""
+        content = tr_html + tc_html + table + verdict
         return content
 
     def __create_incident_report(
