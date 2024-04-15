@@ -940,12 +940,14 @@ class TestRun(BasePolarion):
         status = "open"
         project = Project(project_id)
         tconf = project.get_tests_configuration()
+        defect_wi_type = tconf.defect_work_item_type
+        test_case_wi_type = tconf.test_case_work_item_type
 
-        defectWorkItemType = tconf.defect_work_item_type
-        testCaseWorkItemType = tconf.test_case_work_item_type
-        workItemModule = importlib.import_module("pylero.work_item")
         try:
-            test_case_class = getattr(workItemModule, testCaseWorkItemType)
+            work_item_module = importlib.import_module("pylero.work_item")
+            wi_class_names = getattr(work_item_module, "workitems")
+            test_case_class_name = wi_class_names[test_case_wi_type]
+            test_case_class = getattr(work_item_module, test_case_class_name)
             test_case = test_case_class(
                 project_id=self.project_id, work_item_id=test_case_id
             )
@@ -964,14 +966,14 @@ class TestRun(BasePolarion):
 
         try:
             incident_report = _WorkItem.create(
-                project_id, defectWorkItemType, title, description, status, **kwarg_dict
+                project_id, defect_wi_type, title, description, status, **kwarg_dict
             )
         except PyleroLibException as e:
             msg = "\n".join(
                 [
                     (
                         f"Failed to create the work item {title} in"
-                        f"project {project_id} of type {defectWorkItemType}."
+                        f"project {project_id} of type {defect_wi_type}."
                     ),
                     f"Error: {e}",
                 ]
