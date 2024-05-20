@@ -14,7 +14,7 @@ install_requires_ = ["click", "suds"]
 if __name__ == "__main__":
     setup(
         name=PACKAGE_NAME,
-        version="0.0.9",
+        version="0.1.0",
         description="Python SDK for Polarion",
         long_description=LONG_DESCRIPTION,
         long_description_content_type="text/markdown",

@@ -1,5 +1,5 @@
 Name:           python-pylero
-Version:        0.0.9
+Version:        0.1.0
 Release:        1%{?dist}
 Summary:        Python SDK for Polarion
 
@@ -82,6 +82,23 @@ Summary:        %{summary}
 
 
 %changelog
+* Mon May 20 2024 Wayne Sun <gsun@redhat.com> 0.1.0-1
+- feat: add flag for incident creation (konstantin.althaus.ext@vaillant-
+  group.com)
+- refactor: safely import test case workitem type
+  (konstantin.althaus.ext@vaillant-group.com)
+- fix: catch exceptions, avoid empty tables (konstantin.althaus.ext@vaillant-
+  group.com)
+- refactor: auxiliary functions become methods
+  (konstantin.althaus.ext@vaillant-group.com)
+- feat: add dummy TestCase class (konstantin.althaus.ext@vaillant-group.com)
+- fix: add project_id to _WorkItem (konstantin.althaus.ext@vaillant-group.com)
+- Adding methods that get document revision/s (emesika@redhat.com)
+- fix: erase title only for subcomments
+  (45875998+AlthausKonstantin@users.noreply.github.com)
+- Feat/link external workitmes (#176)
+  (45875998+AlthausKonstantin@users.noreply.github.com)
+
 * Tue Mar 05 2024 Wayne Sun <gsun@redhat.com>
 - Remove Python 3.6 and add 3.12
 - Bug fix and doc update
