@@ -9,7 +9,7 @@
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
     <script src="_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -602,7 +602,7 @@ given key of the current object.</p>
 <dd><p>Checks if the current user can delete the current object</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>None</strong> – </p>
+<dd class="field-odd"><p><strong>None</strong></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>bool</p>
@@ -618,7 +618,7 @@ given key of the current object.</p>
 <dd><p>Checks if the current user can modify the current object</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>None</strong> – </p>
+<dd class="field-odd"><p><strong>None</strong></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>bool</p>
@@ -651,7 +651,7 @@ the current object.</p>
 <dd><p>Checks if the current user can read the current object</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>None</strong> – </p>
+<dd class="field-odd"><p><strong>None</strong></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>bool</p>
@@ -736,7 +736,7 @@ in as enum_id</p></li>
 <dd><p>Returns all global roles.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>None</strong> – </p>
+<dd class="field-odd"><p><strong>None</strong></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>list of global roles</p>
@@ -754,7 +754,7 @@ service the method should be used to get the location of a
 project(-group).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>None</strong> – </p>
+<dd class="field-odd"><p><strong>None</strong></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>location (string)</p>
@@ -762,6 +762,45 @@ project(-group).</p>
 </dl>
 <p class="rubric">References</p>
 <p>Security.getLocationForURI</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pylero.base_polarion.BasePolarion.get_revision">
+<span class="sig-name descname"><span class="pre">get_revision</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repository_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">revision_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylero/base_polarion.html#BasePolarion.get_revision"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylero.base_polarion.BasePolarion.get_revision" title="Link to this definition">¶</a></dt>
+<dd><p>Gets a revision
+:param repository_name - The repository name.:
+:type repository_name - The repository name.: Put “default” for the default repository.
+:param revision_id - The revision name.:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>a Revision object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pylero.base_polarion.BasePolarion.get_revision_by_uri">
+<span class="sig-name descname"><span class="pre">get_revision_by_uri</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">revision_uri</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylero/base_polarion.html#BasePolarion.get_revision_by_uri"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylero.base_polarion.BasePolarion.get_revision_by_uri" title="Link to this definition">¶</a></dt>
+<dd><p>Gets a revision by its URI
+:param revision_uri - The URI of the revision.:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>a Revision object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pylero.base_polarion.BasePolarion.get_revisions">
+<span class="sig-name descname"><span class="pre">get_revisions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylero/base_polarion.html#BasePolarion.get_revisions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylero.base_polarion.BasePolarion.get_revisions" title="Link to this definition">¶</a></dt>
+<dd><p>Returns all revisions for a specific URI.
+:param uri - URI of the persistence object:
+:type uri - URI of the persistence object: Work Item, Module/Document, User, etc</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>All revisions for a specific URI.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -807,7 +846,7 @@ None to check global permissions.</p></li>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pylero.base_polarion.BasePolarion.logged_in_user_id">
-<span class="sig-name descname"><span class="pre">logged_in_user_id</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'gsun'</span></em><a class="headerlink" href="#pylero.base_polarion.BasePolarion.logged_in_user_id" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">logged_in_user_id</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'POLARION_USERNAME'</span></em><a class="headerlink" href="#pylero.base_polarion.BasePolarion.logged_in_user_id" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -820,7 +859,7 @@ data changing function was called (such as TestRun.add_attachment)</p>
 <p>This will overwrite any unsaved data in the object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>None</strong> – </p>
+<dd class="field-odd"><p><strong>None</strong></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
@@ -830,7 +869,7 @@ data changing function was called (such as TestRun.add_attachment)</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pylero.base_polarion.BasePolarion.repo">
-<span class="sig-name descname"><span class="pre">repo</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'POLARION_URL/repo'</span></em><a class="headerlink" href="#pylero.base_polarion.BasePolarion.repo" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">repo</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'https://polarion.engineering.redhat.com/repo'</span></em><a class="headerlink" href="#pylero.base_polarion.BasePolarion.repo" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -865,12 +904,12 @@ child objects. This project currently has no need of a setter or deleter.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pylero.base_polarion.Configuration.GLOBAL_CONFIG">
-<span class="sig-name descname"><span class="pre">GLOBAL_CONFIG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/home/waynesun/.local/share/virtualenvs/pylero-xZ4TB2uX/lib/python3.11/site-packages/pylero/pylero.cfg'</span></em><a class="headerlink" href="#pylero.base_polarion.Configuration.GLOBAL_CONFIG" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">GLOBAL_CONFIG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/home/wayne/.local/share/virtualenvs/pylero-mnliz9Ju/lib/python3.12/site-packages/pylero/pylero.cfg'</span></em><a class="headerlink" href="#pylero.base_polarion.Configuration.GLOBAL_CONFIG" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pylero.base_polarion.Configuration.LOCAL_CONFIG">
-<span class="sig-name descname"><span class="pre">LOCAL_CONFIG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/home/waynesun/.pylero'</span></em><a class="headerlink" href="#pylero.base_polarion.Configuration.LOCAL_CONFIG" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">LOCAL_CONFIG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/home/wayne/.pylero'</span></em><a class="headerlink" href="#pylero.base_polarion.Configuration.LOCAL_CONFIG" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -880,7 +919,7 @@ child objects. This project currently has no need of a setter or deleter.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pylero.base_polarion.Configuration.pkgdir">
-<span class="sig-name descname"><span class="pre">pkgdir</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/home/waynesun/.local/share/virtualenvs/pylero-xZ4TB2uX/lib/python3.11/site-packages/pylero'</span></em><a class="headerlink" href="#pylero.base_polarion.Configuration.pkgdir" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">pkgdir</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/home/wayne/.local/share/virtualenvs/pylero-mnliz9Ju/lib/python3.12/site-packages/pylero'</span></em><a class="headerlink" href="#pylero.base_polarion.Configuration.pkgdir" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -919,7 +958,7 @@ POLARION_PROJECT</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pylero.base_polarion.Connection.token_enabled">
-<span class="sig-name descname"><span class="pre">token_enabled</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#pylero.base_polarion.Connection.token_enabled" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">token_enabled</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#pylero.base_polarion.Connection.token_enabled" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1005,7 +1044,7 @@ revision.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>project_id</strong> – </p></li>
+<li><p><strong>project_id</strong></p></li>
 <li><p><strong>name</strong> – baseline name (not None)</p></li>
 <li><p><strong>description</strong> – baseline description (can be None)</p></li>
 <li><p><strong>revision</strong> – revision or null value for head revision</p></li>
@@ -2060,7 +2099,7 @@ end of the current document.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>work_item_id</strong> (<em>str</em>) – the id of a work item in the same project as</p></li>
-<li><p><strong>document</strong> (<em>the current</em>) – </p></li>
+<li><p><strong>document</strong> (<em>the current</em>)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -2122,7 +2161,7 @@ work items inside the Module, default: parent</p></li>
 <dd><p>delete the current document</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>None</strong> – </p>
+<dd class="field-odd"><p><strong>None</strong></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
@@ -2277,7 +2316,7 @@ queryModulesInBaselineBySQL</p>
 <dd><p>updates the server with the current module data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>None</strong> – </p>
+<dd class="field-odd"><p><strong>None</strong></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
@@ -3326,7 +3365,7 @@ Planning.getPlanByUri</p>
 <dd><p>get statistics of the plan</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>None</strong> – </p>
+<dd class="field-odd"><p><strong>None</strong></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>PlanStatistics object</p>
@@ -3342,7 +3381,7 @@ Planning.getPlanByUri</p>
 <dd><p>Returns the wiki content of the plan</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>None</strong> – </p>
+<dd class="field-odd"><p><strong>None</strong></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Text object</p>
@@ -3397,7 +3436,7 @@ Planning.searchPlansWithFields</p>
 <dd><p>method set_wiki_content updates the wiki for the current Plan</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>Content</strong> (<em>str</em><em> or </em><em>Text object</em>) – </p>
+<dd class="field-odd"><p><strong>Content</strong> (<em>str</em><em> or </em><em>Text object</em>)</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
@@ -3413,7 +3452,7 @@ Planning.searchPlansWithFields</p>
 <dd><p>updates the server with the current plan content</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>None</strong> – </p>
+<dd class="field-odd"><p><strong>None</strong></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
@@ -3429,7 +3468,7 @@ Planning.searchPlansWithFields</p>
 <dd><p>checks if the plan was started yet</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>None</strong> – </p>
+<dd class="field-odd"><p><strong>None</strong></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>bool</p>
@@ -4074,7 +4113,7 @@ Project.getProjectByURI</p>
 <dd><p>method get_categories retrieves a list of Category objects</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>None</strong> – </p>
+<dd class="field-odd"><p><strong>None</strong></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>list of Category objects</p>
@@ -4159,7 +4198,7 @@ of a work item type all keys.</p>
 <dd><p>Gets the Module/Document spaces for the project.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>None</strong> – </p>
+<dd class="field-odd"><p><strong>None</strong></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>list of (string) document spaces</p>
@@ -4175,7 +4214,7 @@ of a work item type all keys.</p>
 <dd><p>Gets users of the project</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>None</strong> – </p>
+<dd class="field-odd"><p><strong>None</strong></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>list of u.User objects</p>
@@ -4192,7 +4231,7 @@ of a work item type all keys.</p>
 Test Steps configuration for the project</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>None</strong> – </p>
+<dd class="field-odd"><p><strong>None</strong></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>list of configuration of the Test Steps custom field.</p>
@@ -4209,7 +4248,7 @@ Test Steps configuration for the project</p>
 configuration for the project</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>None</strong> – </p>
+<dd class="field-odd"><p><strong>None</strong></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>TestsConfiguration object</p>
@@ -4225,7 +4264,7 @@ configuration for the project</p>
 <dd><p>Returns Wiki spaces from current project</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>None</strong> – </p>
+<dd class="field-odd"><p><strong>None</strong></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Array of string</p>
@@ -4324,7 +4363,7 @@ p.Project.getProjectGroupAtLocation</p>
 <dd><p>Gets all project groups located directly below the project group.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>None</strong> – </p>
+<dd class="field-odd"><p><strong>None</strong></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>list of p.ProjectGroup objects</p>
@@ -4340,7 +4379,7 @@ p.Project.getProjectGroupAtLocation</p>
 <dd><p>Gets all projects located directly below the project group.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>None</strong> – </p>
+<dd class="field-odd"><p><strong>None</strong></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>list of p.Project objects</p>
@@ -4356,7 +4395,7 @@ p.Project.getProjectGroupAtLocation</p>
 <dd><p>Gets all projects located below the project group.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>None</strong> – </p>
+<dd class="field-odd"><p><strong>None</strong></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>list of p.Project objects</p>
@@ -4372,7 +4411,7 @@ p.Project.getProjectGroupAtLocation</p>
 <dd><p>Gets the root project group.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>None</strong> – </p>
+<dd class="field-odd"><p><strong>None</strong></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>ProjectGroup object</p>
@@ -5202,9 +5241,10 @@ number of steps.</p>
 <span class="sig-name descname"><span class="pre">add_test_record_by_fields</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_case_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_result</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_comment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">executed_by</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">executed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">defect_work_item_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylero/test_run.html#TestRun.add_test_record_by_fields"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylero.test_run.TestRun.add_test_record_by_fields" title="Link to this definition">¶</a></dt>
 <dd><p>method add_test_record_by_fields, adds a test record for the given
 test case based on the result fields passed in.
-When a test record is added, it changes the test run status to
+When a test record is added and the valid options for status contain
+“inprogress” and “finished”, it changes the test run status to
 “inprogress” and when the last test record is run, it changes the
-status to done.</p>
+status to “finished”.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -5215,8 +5255,8 @@ failed
 blocked</p></li>
 <li><p><strong>test_comment</strong> (<em>str</em><em> or </em><em>Text object</em>) – may be None</p></li>
 <li><p><strong>executed_by</strong> (<em>str</em>) – user id</p></li>
-<li><p><strong>executed</strong> (<em>datetime</em>) – </p></li>
-<li><p><strong>duration</strong> (<em>float</em>) – </p></li>
+<li><p><strong>executed</strong> (<em>datetime</em>)</p></li>
+<li><p><strong>duration</strong> (<em>float</em>)</p></li>
 <li><p><strong>defect_work_item_id</strong> (<em>str</em>) – _WorkItem id of defect, default: None</p></li>
 </ul>
 </dd>
@@ -5230,18 +5270,21 @@ blocked</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pylero.test_run.TestRun.add_test_record_by_object">
-<span class="sig-name descname"><span class="pre">add_test_record_by_object</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_record</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">manual_state_change</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylero/test_run.html#TestRun.add_test_record_by_object"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylero.test_run.TestRun.add_test_record_by_object" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">add_test_record_by_object</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_record</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">manual_state_change</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_incident</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylero/test_run.html#TestRun.add_test_record_by_object"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylero.test_run.TestRun.add_test_record_by_object" title="Link to this definition">¶</a></dt>
 <dd><p>method add_test_record_by_object, adds a test record for the given
 test case based on the TestRecord object passed in.
 In addition, the test run is checked for completeness and the test
 run state will change accordingly.
-Test Run states are [“notrun”, “finished”, “inprogress”].</p>
+If possible, the status is set to one of
+[“notrun”, “finished”, “inprogress”].</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>test_record</strong> (<a class="reference internal" href="#pylero.test_record.TestRecord" title="pylero.test_record.TestRecord"><em>TestRecord</em></a><em> or </em><em>Polarion TestRecord</em>) – </p></li>
+<li><p><strong>test_record</strong> (<a class="reference internal" href="#pylero.test_record.TestRecord" title="pylero.test_record.TestRecord"><em>TestRecord</em></a><em> or </em><em>Polarion TestRecord</em>)</p></li>
 <li><p><strong>manual_state_change</strong> (<em>boolean</em>) – Change test run state
 automatically or manual.</p></li>
+<li><p><strong>create_incident</strong> (<em>boolean</em>) – Create an incident report if the test
+case fails and no incident is linked.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -5420,7 +5463,7 @@ file name. Method is applicable also on Test Run Template.</p>
 <dd><p>method get_attachments returns all the attachments for the TestRun</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>None</strong> – </p>
+<dd class="field-odd"><p><strong>None</strong></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>ArrayOfTestRunAttachments object</p>
@@ -5474,7 +5517,7 @@ These 2 classes are mostly interchangeable.</p>
 <dd><p>method get_wiki_content returns the wiki content for the Test Run</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>None</strong> – </p>
+<dd class="field-odd"><p><strong>None</strong></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Text object containing the wiki content</p>
@@ -5492,7 +5535,7 @@ The records array for dynamic queries/documents only includes executed
 records. This returns the unexecuted ones as well.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>None</strong> – </p>
+<dd class="field-odd"><p><strong>None</strong></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>list of TestRecords</p>
@@ -5544,7 +5587,7 @@ test_management.searchTestRunsWithFieldsLimited</p>
 currently in the object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>None</strong> – </p>
+<dd class="field-odd"><p><strong>None</strong></p>
 </dd>
 </dl>
 <dl class="simple">
@@ -5643,19 +5686,23 @@ add_test_record_by_fields function</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pylero.test_run.TestRun.update_test_record_by_object">
-<span class="sig-name descname"><span class="pre">update_test_record_by_object</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_case_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_record</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">manual_state_change</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylero/test_run.html#TestRun.update_test_record_by_object"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylero.test_run.TestRun.update_test_record_by_object" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">update_test_record_by_object</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_case_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_record</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">manual_state_change</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_incident</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylero/test_run.html#TestRun.update_test_record_by_object"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylero.test_run.TestRun.update_test_record_by_object" title="Link to this definition">¶</a></dt>
 <dd><p>method update_test_record_by_object, adds a test record for the
 given test case based on the TestRecord object passed in.
 In addition, the test run is checked for completeness and the
 test run state will change accordingly.
-Test Run states are [“notrun”, “finished”, “inprogress”].</p>
+If possible, the status is set to one of
+[“notrun”, “finished”, “inprogress”].</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>test_case_id</strong> (<em>str</em>) – the test case id that the record is related to.</p></li>
-<li><p><strong>test_record</strong> (<a class="reference internal" href="#pylero.test_record.TestRecord" title="pylero.test_record.TestRecord"><em>TestRecord</em></a><em> or </em><em>Polarion TestRecord</em>) – </p></li>
+<li><p><strong>test_record</strong> (<a class="reference internal" href="#pylero.test_record.TestRecord" title="pylero.test_record.TestRecord"><em>TestRecord</em></a><em> or </em><em>Polarion TestRecord</em>)</p></li>
 <li><p><strong>manual_state_change</strong> (<em>boolean</em>) – Change the test
 run result automatically or manual.</p></li>
+<li><p><strong>create_incident</strong> (<em>boolean</em>) – Create an incident report if the test
+record result is failed and no defect
+case id is set.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -5672,7 +5719,7 @@ run result automatically or manual.</p></li>
 <dd><p>method update_wiki_content updates the wiki for the current TestRun</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>Content</strong> (<em>str</em><em> or </em><em>Text object</em>) – </p>
+<dd class="field-odd"><p><strong>Content</strong> (<em>str</em><em> or </em><em>Text object</em>)</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
@@ -5710,16 +5757,6 @@ in</p>
 </dd></dl>
 
 </dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="pylero.test_run.create_incident_report">
-<span class="sig-prename descclassname"><span class="pre">pylero.test_run.</span></span><span class="sig-name descname"><span class="pre">create_incident_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_record</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_case</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylero/test_run.html#create_incident_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylero.test_run.create_incident_report" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="pylero.test_run.generate_description">
-<span class="sig-prename descclassname"><span class="pre">pylero.test_run.</span></span><span class="sig-name descname"><span class="pre">generate_description</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_case</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_record</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylero/test_run.html#generate_description"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pylero.test_run.generate_description" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
 
 </section>
 <section id="module-pylero.test_run_attachment">
@@ -6450,7 +6487,7 @@ Project.getUserByUri</p>
 location assigned to the user.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>location</strong> – </p>
+<dd class="field-odd"><p><strong>location</strong></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>list of roles</p>
@@ -6467,7 +6504,7 @@ location assigned to the user.</p>
 of the user’s avatar.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>None</strong> – </p>
+<dd class="field-odd"><p><strong>None</strong></p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -6482,7 +6519,7 @@ of the user’s avatar.</p>
 <dd><p>Returns the username of the user that has the assigned token.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>token</strong> – </p>
+<dd class="field-odd"><p><strong>token</strong></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>user_id</p>
@@ -6498,7 +6535,7 @@ of the user’s avatar.</p>
 <dd><p>class method that returns all the system users</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>None</strong> – </p>
+<dd class="field-odd"><p><strong>None</strong></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>list containing User objects for all users.</p>
@@ -6534,7 +6571,7 @@ None to check global permissions.</p></li>
 <dd><p>method update, updates Polarion with the User attributes</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>None</strong> – </p>
+<dd class="field-odd"><p><strong>None</strong></p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -7354,8 +7391,6 @@ queryWikiPagesInBaselineBySQL</p>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-pylero.test_run">pylero.test_run module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#pylero.test_run.TestRun"><code class="docutils literal notranslate"><span class="pre">TestRun</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#pylero.test_run.create_incident_report"><code class="docutils literal notranslate"><span class="pre">create_incident_report()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#pylero.test_run.generate_description"><code class="docutils literal notranslate"><span class="pre">generate_description()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-pylero.test_run_attachment">pylero.test_run_attachment module</a><ul>
@@ -7444,7 +7479,7 @@ queryWikiPagesInBaselineBySQL</p>
   </ul></li>
 </ul>
 </div>
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
@@ -7452,7 +7487,7 @@ queryWikiPagesInBaselineBySQL</p>
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
+</search>
 <script>document.getElementById('searchbox').style.display = "block"</script>
 
 
@@ -7470,7 +7505,7 @@ queryWikiPagesInBaselineBySQL</p>
       &#169;2021, Sim Zacks and Pylero Contributors.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
       |

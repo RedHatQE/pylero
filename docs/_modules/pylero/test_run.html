@@ -8,7 +8,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=12dfc556" />
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -36,6 +36,7 @@
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">unicode_literals</span>
 
+<span class="kn">import</span> <span class="nn">importlib</span>
 <span class="kn">import</span> <span class="nn">os</span>
 
 <span class="kn">import</span> <span class="nn">suds</span>
@@ -64,141 +65,9 @@
 <span class="kn">from</span> <span class="nn">pylero.user</span> <span class="kn">import</span> <span class="n">User</span>
 <span class="kn">from</span> <span class="nn">pylero.work_item</span> <span class="kn">import</span> <span class="n">_WorkItem</span>
 
-<span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">pylero.work_item</span> <span class="kn">import</span> <span class="n">TestCase</span>
-<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="k">pass</span>
 
 <span class="c1"># Build is used in custom fields.</span>
 <span class="c1"># Plan is used in custom fields.</span>
-
-
-<div class="viewcode-block" id="generate_description">
-<a class="viewcode-back" href="../../pylero.html#pylero.test_run.generate_description">[docs]</a>
-<span class="k">def</span> <span class="nf">generate_description</span><span class="p">(</span><span class="n">test_run</span><span class="p">,</span> <span class="n">test_case</span><span class="p">,</span> <span class="n">test_record</span><span class="p">):</span>
-    <span class="n">tr_html</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s1">&#39;&lt;b&gt;Test Run:&lt;/b&gt; &lt;span id=&quot;link&quot; class=    &#39;</span>
-        <span class="s1">&#39;&quot;polarion-rte-link&quot; data-type=&quot;testRun&quot; &#39;</span>
-        <span class="s1">&#39;data-item-id=&quot;</span><span class="si">{0}</span><span class="s1">&quot; data-option-id=&quot;long&quot;&gt;&#39;</span>
-        <span class="s2">&quot;&lt;/span&gt;&lt;br/&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_run</span><span class="o">.</span><span class="n">test_run_id</span><span class="p">)</span>
-    <span class="p">)</span>
-    <span class="n">tc_html</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s1">&#39;&lt;b&gt;Test Case:&lt;/b&gt; &lt;span id=&quot;link&quot; class=&#39;</span>
-        <span class="s1">&#39;&quot;polarion-rte-link&quot; data-type=&quot;workItem&quot; &#39;</span>
-        <span class="s1">&#39;data-item-id=&quot;</span><span class="si">{0}</span><span class="s1">&quot; data-option-id=&quot;long&quot;&gt;&lt;/span&gt;&#39;</span>
-        <span class="s2">&quot;&lt;br/&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_case</span><span class="o">.</span><span class="n">work_item_id</span><span class="p">)</span>
-    <span class="p">)</span>
-    <span class="n">table_cell_style</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s1">&#39;style=&quot;text-align: left; padding: 10px; &#39;</span>
-        <span class="s1">&#39;vertical-align: top; background-color: #ffffff;&quot;&#39;</span>
-    <span class="p">)</span>
-    <span class="n">table_row_style</span> <span class="o">=</span> <span class="s1">&#39;style=&quot;border-bottom: 1px solid #f0f0f0;&quot;&#39;</span>
-    <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot;&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;#&quot;</span><span class="p">,</span>
-        <span class="s1">&#39;&lt;span title=&quot;Step&quot;&gt;Step&lt;/span&gt;&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;&lt;span title=&quot;Expected Result&quot;&gt;Expected Result&lt;/span&gt;&#39;</span><span class="p">,</span>
-        <span class="s2">&quot;Actual Result&quot;</span><span class="p">,</span>
-    <span class="p">]</span>
-    <span class="n">test_step_results</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;passed&quot;</span><span class="p">:</span> <span class="s1">&#39;&lt;span title=&quot;Results met expected results&#39;</span>
-        <span class="s1">&#39;&quot;&gt;&lt;span style=&quot;white-space:nowrap;&quot;&gt;&lt;im&#39;</span>
-        <span class="s1">&#39;g src=&quot;/polarion/icons/default/enums/test&#39;</span>
-        <span class="s1">&#39;run_status_passed.png&quot; style=&quot;vertical-a&#39;</span>
-        <span class="s2">&quot;lign:text-bottom;border:0px;margin-right:2&quot;</span>
-        <span class="s1">&#39;px;&quot; class=&quot;polarion-no-style-cleanup&quot;/&#39;</span>
-        <span class="s2">&quot;&gt;&lt;/span&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;failed&quot;</span><span class="p">:</span> <span class="s1">&#39;&lt;span title=&quot;Results did not meet expecte&#39;</span>
-        <span class="s1">&#39;d results&quot;&gt;&lt;span style=&quot;white-space:nowr&#39;</span>
-        <span class="s1">&#39;ap;&quot;&gt;&lt;img src=&quot;/polarion/icons/default/e&#39;</span>
-        <span class="s1">&#39;nums/testrun_status_failed.png&quot; style=&quot;v&#39;</span>
-        <span class="s2">&quot;ertical-align:text-bottom;border:0px;margi&quot;</span>
-        <span class="s1">&#39;n-right:2px;&quot; class=&quot;polarion-no-style-c&#39;</span>
-        <span class="s1">&#39;leanup&quot;/&gt;&lt;/span&gt;&lt;/span&gt;&#39;</span><span class="p">,</span>
-        <span class="s2">&quot;blocked&quot;</span><span class="p">:</span> <span class="s1">&#39;&lt;span title=&quot;Errors in the product preve&#39;</span>
-        <span class="s1">&#39;nted test from being executed&quot;&gt;&lt;span sty&#39;</span>
-        <span class="s1">&#39;le=&quot;white-space:nowrap;&quot;&gt;&lt;img src=&quot;/po&#39;</span>
-        <span class="s2">&quot;larion/icons/default/enums/testrun_status&quot;</span>
-        <span class="s1">&#39;_blocked.png&quot; style=&quot;vertical-align:tex&#39;</span>
-        <span class="s1">&#39;t-bottom;border:0px;margin-right:2px;&quot; c&#39;</span>
-        <span class="s1">&#39;lass=&quot;polarion-no-style-cleanup&quot;/&gt;&#39;</span>
-        <span class="s2">&quot;&lt;/span&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
-    <span class="p">}</span>
-    <span class="n">table_header</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s1">&#39;&lt;table class=&quot;polarion-no-style-cleanup&quot; style=&quot;border&#39;</span>
-        <span class="s1">&#39;-collapse: collapse;&quot;&gt;&lt;tr style=&quot;text-align: left; &#39;</span>
-        <span class="s2">&quot;white-space: nowrap; color: #757575; border-bottom: 1px &quot;</span>
-        <span class="s1">&#39;solid #d2d7da; background-color: #ffffff;&quot;&gt;</span><span class="si">{0}</span><span class="s1">&lt;/tr&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-            <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                <span class="p">[</span>
-                    <span class="s2">&quot;&lt;th </span><span class="si">{0}</span><span class="s2">&gt;</span><span class="si">{1}</span><span class="s2">&lt;/th&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">table_cell_style</span><span class="p">,</span> <span class="n">column</span><span class="p">)</span>
-                    <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">columns</span>
-                <span class="p">]</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
-    <span class="p">)</span>
-    <span class="n">verdict</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s1">&#39;&lt;/table&gt;&lt;table style=&quot;margin-bottom: 15px; ;border-collapse: &#39;</span>
-        <span class="s1">&#39;collapse; width:100%; ;margin-top: 13px;&quot; class=&quot;polarion-no&#39;</span>
-        <span class="s1">&#39;-style-cleanup&quot;&gt;&lt;tr&gt;&lt;th style=&quot;width: 80%; text-align: left;&#39;</span>
-        <span class="s1">&#39; background-color: #ffffff;&quot;&gt;Test Case Verdict:&lt;/th&gt;&lt;/tr&gt;&lt;tr&gt;&#39;</span>
-        <span class="s1">&#39;&lt;td style=&quot;vertical-align: top;&quot;&gt;&lt;span style=&quot;font-weight: &#39;</span>
-        <span class="s1">&#39;bold;&quot;&gt;&lt;span style=&quot;color: #C30000;&quot;&gt;&lt;span title=&quot;Results &#39;</span>
-        <span class="s1">&#39;did not meet expected results&quot;&gt;&lt;span style=&quot;white-space:&#39;</span>
-        <span class="s1">&#39;nowrap;&quot;&gt;&lt;img src=&quot;/polarion/icons/default/enums/testrun_&#39;</span>
-        <span class="s1">&#39;status_failed.png&quot; style=&quot;vertical-align:text-bottom;border:&#39;</span>
-        <span class="s1">&#39;0px;margin-right:2px;&quot; class=&quot;polarion-no-style-cleanup&quot;/&gt;&#39;</span>
-        <span class="s2">&quot;&lt;/span&gt;Failed&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span&gt; </span><span class="si">{0}</span><span class="s2">&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;&quot;</span>
-        <span class="s2">&quot;&lt;/table&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_record</span><span class="o">.</span><span class="n">comment</span><span class="p">)</span>
-    <span class="p">)</span>
-    <span class="n">table_rows</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-    <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">test_record</span><span class="o">.</span><span class="n">test_step_results</span><span class="p">)):</span>
-        <span class="n">table_rows</span> <span class="o">+=</span> <span class="p">(</span>
-            <span class="s2">&quot;&lt;tr </span><span class="si">{0}</span><span class="s2">&gt;&quot;</span>
-            <span class="s2">&quot;&lt;td </span><span class="si">{1}</span><span class="s2">&gt;</span><span class="si">{2}</span><span class="s2">&lt;/td&gt;&quot;</span>
-            <span class="s2">&quot;&lt;td </span><span class="si">{1}</span><span class="s2">&gt;</span><span class="si">{3}</span><span class="s2">&lt;/td&gt;&quot;</span>
-            <span class="s2">&quot;&lt;td </span><span class="si">{1}</span><span class="s2">&gt;</span><span class="si">{4}</span><span class="s2">&lt;/td&gt;&quot;</span>
-            <span class="s2">&quot;&lt;td </span><span class="si">{1}</span><span class="s2">&gt;</span><span class="si">{5}</span><span class="s2">&lt;/td&gt;&quot;</span>
-            <span class="s2">&quot;&lt;td </span><span class="si">{1}</span><span class="s2">&gt;</span><span class="si">{6}</span><span class="s2">&lt;/td&gt;&quot;</span>
-            <span class="s2">&quot;&lt;/tr&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">table_row_style</span><span class="p">,</span>
-                <span class="n">table_cell_style</span><span class="p">,</span>
-                <span class="n">test_step_results</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">test_record</span><span class="o">.</span><span class="n">test_step_results</span><span class="p">[</span><span class="n">step</span><span class="p">]</span><span class="o">.</span><span class="n">result</span><span class="p">),</span>
-                <span class="n">step</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
-                <span class="n">test_case</span><span class="o">.</span><span class="n">test_steps</span><span class="o">.</span><span class="n">steps</span><span class="p">[</span><span class="n">step</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">content</span><span class="p">,</span>
-                <span class="n">test_case</span><span class="o">.</span><span class="n">test_steps</span><span class="o">.</span><span class="n">steps</span><span class="p">[</span><span class="n">step</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">content</span><span class="p">,</span>
-                <span class="n">test_record</span><span class="o">.</span><span class="n">test_step_results</span><span class="p">[</span><span class="n">step</span><span class="p">]</span><span class="o">.</span><span class="n">comment</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
-    <span class="n">content</span> <span class="o">=</span> <span class="n">tr_html</span> <span class="o">+</span> <span class="n">tc_html</span> <span class="o">+</span> <span class="n">table_header</span> <span class="o">+</span> <span class="n">table_rows</span> <span class="o">+</span> <span class="n">verdict</span>
-
-    <span class="k">return</span> <span class="n">content</span></div>
-
-
-
-<div class="viewcode-block" id="create_incident_report">
-<a class="viewcode-back" href="../../pylero.html#pylero.test_run.create_incident_report">[docs]</a>
-<span class="k">def</span> <span class="nf">create_incident_report</span><span class="p">(</span><span class="n">test_run</span><span class="p">,</span> <span class="n">test_record</span><span class="p">,</span> <span class="n">test_case</span><span class="p">):</span>
-    <span class="n">project_id</span> <span class="o">=</span> <span class="n">test_run</span><span class="o">.</span><span class="n">project_id</span>
-    <span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;open&quot;</span>
-    <span class="n">project</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="n">project_id</span><span class="p">)</span>
-    <span class="n">tconf</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">get_tests_configuration</span><span class="p">()</span>
-    <span class="n">defectWorkItemType</span> <span class="o">=</span> <span class="n">tconf</span><span class="o">.</span><span class="n">defect_work_item_type</span>
-    <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Failed: &quot;</span> <span class="o">+</span> <span class="n">test_case</span><span class="o">.</span><span class="n">title</span>
-    <span class="n">description</span> <span class="o">=</span> <span class="n">generate_description</span><span class="p">(</span><span class="n">test_run</span><span class="p">,</span> <span class="n">test_case</span><span class="p">,</span> <span class="n">test_record</span><span class="p">)</span>
-    <span class="n">kwarg_dict</span> <span class="o">=</span> <span class="p">{}</span>
-
-    <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">tconf</span><span class="o">.</span><span class="n">fields_to_copy_from_test_case_to_defect</span><span class="o">.</span><span class="n">property</span><span class="p">:</span>
-        <span class="n">kwarg_dict</span><span class="p">[</span><span class="n">prop</span><span class="o">.</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">test_case</span><span class="p">,</span> <span class="n">prop</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">tconf</span><span class="o">.</span><span class="n">fields_to_copy_from_test_run_to_linked_defect</span><span class="o">.</span><span class="n">property</span><span class="p">:</span>
-        <span class="n">kwarg_dict</span><span class="p">[</span><span class="n">prop</span><span class="o">.</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">test_run</span><span class="p">,</span> <span class="n">prop</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
-
-    <span class="n">incident_report</span> <span class="o">=</span> <span class="n">_WorkItem</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
-        <span class="n">project_id</span><span class="p">,</span> <span class="n">defectWorkItemType</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="o">**</span><span class="n">kwarg_dict</span>
-    <span class="p">)</span>
-    <span class="n">incident_report</span><span class="o">.</span><span class="n">add_linked_item</span><span class="p">(</span><span class="n">test_case</span><span class="o">.</span><span class="n">work_item_id</span><span class="p">,</span> <span class="s2">&quot;triggered_by&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">incident_report</span><span class="o">.</span><span class="n">work_item_id</span></div>
-
 
 
 <div class="viewcode-block" id="TestRun">
@@ -422,7 +291,7 @@
         <span class="n">select_test_cases_by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">doc_with_space</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>  <span class="c1"># , test_case_ids=[]):</span>
         <span class="c1"># see comment below regarding test_case)ids.</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;class method create_template for creating a new template in Polarion</span>
@@ -662,9 +531,11 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">cfts</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_custom_field_cache</span><span class="p">[</span><span class="n">project_id</span><span class="p">]</span>
         <span class="n">results</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">CustomFieldType</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">item</span><span class="p">)</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">CustomFieldType</span><span class="p">()</span><span class="o">.</span><span class="n">_suds_object</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
-            <span class="k">else</span> <span class="n">EnumCustomFieldType</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">item</span><span class="p">)</span>
+            <span class="p">(</span>
+                <span class="n">CustomFieldType</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">item</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">CustomFieldType</span><span class="p">()</span><span class="o">.</span><span class="n">_suds_object</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
+                <span class="k">else</span> <span class="n">EnumCustomFieldType</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">item</span><span class="p">)</span>
+            <span class="p">)</span>
             <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">cfts</span>
         <span class="p">]</span>
         <span class="k">return</span> <span class="n">results</span></div>
@@ -765,6 +636,7 @@
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_status_change</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Change status if necessary and possible.&quot;&quot;&quot;</span>
         <span class="c1"># load a new object to test if the status should be changed.</span>
         <span class="c1"># can&#39;t use existing object because it doesn&#39;t include the new test rec</span>
         <span class="c1"># if the status needs changing, change it in the new object, so it</span>
@@ -782,7 +654,10 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;inprogress&quot;</span>
             <span class="n">check_tr</span><span class="o">.</span><span class="n">finished_on</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">status</span> <span class="o">!=</span> <span class="n">check_tr</span><span class="o">.</span><span class="n">status</span><span class="p">:</span>
+        <span class="c1"># Before setting the status, check if the new value is valid</span>
+        <span class="n">status_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">][</span><span class="s2">&quot;enum_id&quot;</span><span class="p">]</span>
+        <span class="n">valid_status_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_valid_field_values</span><span class="p">(</span><span class="n">status_id</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="o">!=</span> <span class="n">check_tr</span><span class="o">.</span><span class="n">status</span> <span class="ow">and</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">valid_status_values</span><span class="p">:</span>
             <span class="n">check_tr</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">status</span>
             <span class="n">check_tr</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
 
@@ -937,9 +812,10 @@
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;method add_test_record_by_fields, adds a test record for the given</span>
 <span class="sd">        test case based on the result fields passed in.</span>
-<span class="sd">        When a test record is added, it changes the test run status to</span>
+<span class="sd">        When a test record is added and the valid options for status contain</span>
+<span class="sd">        &quot;inprogress&quot; and &quot;finished&quot;, it changes the test run status to</span>
 <span class="sd">        &quot;inprogress&quot; and when the last test record is run, it changes the</span>
-<span class="sd">        status to done.</span>
+<span class="sd">        status to &quot;finished&quot;.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            test_case_id (str): The id of the test case that was executed</span>
@@ -974,20 +850,218 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">add_test_record_by_object</span><span class="p">(</span><span class="n">testrec</span><span class="p">)</span></div>
 
 
+    <span class="k">def</span> <span class="nf">__generate_description</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">test_case</span><span class="p">:</span> <span class="n">_WorkItem</span><span class="p">,</span> <span class="n">test_record</span><span class="p">:</span> <span class="n">TestRecord</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generates the description for the incident report.</span>
+
+<span class="sd">        If the test case has test steps that match the steps of the test record,</span>
+<span class="sd">        the description will include a table with the test steps and their results.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            test_case (_WorkItem): Test case as a work item.</span>
+<span class="sd">            test_record (TestRecord): The test record contains the results of the</span>
+<span class="sd">                test execution.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The incident report in HTML format.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">tr_html</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s1">&#39;&lt;b&gt;Test Run:&lt;/b&gt; &lt;span id=&quot;link&quot; class=    &#39;</span>
+            <span class="s1">&#39;&quot;polarion-rte-link&quot; data-type=&quot;testRun&quot; &#39;</span>
+            <span class="s1">&#39;data-item-id=&quot;</span><span class="si">{0}</span><span class="s1">&quot; data-option-id=&quot;long&quot;&gt;&#39;</span>
+            <span class="s2">&quot;&lt;/span&gt;&lt;br/&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_run_id</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">tc_html</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s1">&#39;&lt;b&gt;Test Case:&lt;/b&gt; &lt;span id=&quot;link&quot; class=&#39;</span>
+            <span class="s1">&#39;&quot;polarion-rte-link&quot; data-type=&quot;workItem&quot; &#39;</span>
+            <span class="s1">&#39;data-item-id=&quot;</span><span class="si">{0}</span><span class="s1">&quot; data-option-id=&quot;long&quot;&gt;&lt;/span&gt;&#39;</span>
+            <span class="s2">&quot;&lt;br/&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_case</span><span class="o">.</span><span class="n">work_item_id</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">table_cell_style</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s1">&#39;style=&quot;text-align: left; padding: 10px; &#39;</span>
+            <span class="s1">&#39;vertical-align: top; background-color: #ffffff;&quot;&#39;</span>
+        <span class="p">)</span>
+        <span class="n">table_row_style</span> <span class="o">=</span> <span class="s1">&#39;style=&quot;border-bottom: 1px solid #f0f0f0;&quot;&#39;</span>
+        <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;#&quot;</span><span class="p">,</span>
+            <span class="s1">&#39;&lt;span title=&quot;Step&quot;&gt;Step&lt;/span&gt;&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;&lt;span title=&quot;Expected Result&quot;&gt;Expected Result&lt;/span&gt;&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;Actual Result&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="n">test_step_results</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;passed&quot;</span><span class="p">:</span> <span class="s1">&#39;&lt;span title=&quot;Results met expected results&#39;</span>
+            <span class="s1">&#39;&quot;&gt;&lt;span style=&quot;white-space:nowrap;&quot;&gt;&lt;im&#39;</span>
+            <span class="s1">&#39;g src=&quot;/polarion/icons/default/enums/test&#39;</span>
+            <span class="s1">&#39;run_status_passed.png&quot; style=&quot;vertical-a&#39;</span>
+            <span class="s2">&quot;lign:text-bottom;border:0px;margin-right:2&quot;</span>
+            <span class="s1">&#39;px;&quot; class=&quot;polarion-no-style-cleanup&quot;/&#39;</span>
+            <span class="s2">&quot;&gt;&lt;/span&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;failed&quot;</span><span class="p">:</span> <span class="s1">&#39;&lt;span title=&quot;Results did not meet expecte&#39;</span>
+            <span class="s1">&#39;d results&quot;&gt;&lt;span style=&quot;white-space:nowr&#39;</span>
+            <span class="s1">&#39;ap;&quot;&gt;&lt;img src=&quot;/polarion/icons/default/e&#39;</span>
+            <span class="s1">&#39;nums/testrun_status_failed.png&quot; style=&quot;v&#39;</span>
+            <span class="s2">&quot;ertical-align:text-bottom;border:0px;margi&quot;</span>
+            <span class="s1">&#39;n-right:2px;&quot; class=&quot;polarion-no-style-c&#39;</span>
+            <span class="s1">&#39;leanup&quot;/&gt;&lt;/span&gt;&lt;/span&gt;&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;blocked&quot;</span><span class="p">:</span> <span class="s1">&#39;&lt;span title=&quot;Errors in the product preve&#39;</span>
+            <span class="s1">&#39;nted test from being executed&quot;&gt;&lt;span sty&#39;</span>
+            <span class="s1">&#39;le=&quot;white-space:nowrap;&quot;&gt;&lt;img src=&quot;/po&#39;</span>
+            <span class="s2">&quot;larion/icons/default/enums/testrun_status&quot;</span>
+            <span class="s1">&#39;_blocked.png&quot; style=&quot;vertical-align:tex&#39;</span>
+            <span class="s1">&#39;t-bottom;border:0px;margin-right:2px;&quot; c&#39;</span>
+            <span class="s1">&#39;lass=&quot;polarion-no-style-cleanup&quot;/&gt;&#39;</span>
+            <span class="s2">&quot;&lt;/span&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">table_header</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s1">&#39;&lt;table class=&quot;polarion-no-style-cleanup&quot; style=&quot;border&#39;</span>
+            <span class="s1">&#39;-collapse: collapse;&quot;&gt;&lt;tr style=&quot;text-align: left; &#39;</span>
+            <span class="s2">&quot;white-space: nowrap; color: #757575; border-bottom: 1px &quot;</span>
+            <span class="s1">&#39;solid #d2d7da; background-color: #ffffff;&quot;&gt;</span><span class="si">{0}</span><span class="s1">&lt;/tr&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="p">[</span>
+                        <span class="s2">&quot;&lt;th </span><span class="si">{0}</span><span class="s2">&gt;</span><span class="si">{1}</span><span class="s2">&lt;/th&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">table_cell_style</span><span class="p">,</span> <span class="n">column</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">columns</span>
+                    <span class="p">]</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">verdict</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s1">&#39;&lt;/table&gt;&lt;table style=&quot;margin-bottom: 15px; ;border-collapse: &#39;</span>
+            <span class="s1">&#39;collapse; width:100%; ;margin-top: 13px;&quot; class=&quot;polarion-no&#39;</span>
+            <span class="s1">&#39;-style-cleanup&quot;&gt;&lt;tr&gt;&lt;th style=&quot;width: 80%; text-align: left;&#39;</span>
+            <span class="s1">&#39; background-color: #ffffff;&quot;&gt;Test Case Verdict:&lt;/th&gt;&lt;/tr&gt;&lt;tr&gt;&#39;</span>
+            <span class="s1">&#39;&lt;td style=&quot;vertical-align: top;&quot;&gt;&lt;span style=&quot;font-weight: &#39;</span>
+            <span class="s1">&#39;bold;&quot;&gt;&lt;span style=&quot;color: #C30000;&quot;&gt;&lt;span title=&quot;Results &#39;</span>
+            <span class="s1">&#39;did not meet expected results&quot;&gt;&lt;span style=&quot;white-space:&#39;</span>
+            <span class="s1">&#39;nowrap;&quot;&gt;&lt;img src=&quot;/polarion/icons/default/enums/testrun_&#39;</span>
+            <span class="s1">&#39;status_failed.png&quot; style=&quot;vertical-align:text-bottom;border:&#39;</span>
+            <span class="s1">&#39;0px;margin-right:2px;&quot; class=&quot;polarion-no-style-cleanup&quot;/&gt;&#39;</span>
+            <span class="s2">&quot;&lt;/span&gt;Failed&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span&gt; </span><span class="si">{0}</span><span class="s2">&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;&quot;</span>
+            <span class="s2">&quot;&lt;/table&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_record</span><span class="o">.</span><span class="n">comment</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">table_rows</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="n">test_steps</span> <span class="o">=</span> <span class="n">test_case</span><span class="o">.</span><span class="n">get_test_steps</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">test_record</span><span class="o">.</span><span class="n">test_step_results</span><span class="p">)):</span>
+                <span class="n">table_rows</span> <span class="o">+=</span> <span class="p">(</span>
+                    <span class="s2">&quot;&lt;tr </span><span class="si">{0}</span><span class="s2">&gt;&quot;</span>
+                    <span class="s2">&quot;&lt;td </span><span class="si">{1}</span><span class="s2">&gt;</span><span class="si">{2}</span><span class="s2">&lt;/td&gt;&quot;</span>
+                    <span class="s2">&quot;&lt;td </span><span class="si">{1}</span><span class="s2">&gt;</span><span class="si">{3}</span><span class="s2">&lt;/td&gt;&quot;</span>
+                    <span class="s2">&quot;&lt;td </span><span class="si">{1}</span><span class="s2">&gt;</span><span class="si">{4}</span><span class="s2">&lt;/td&gt;&quot;</span>
+                    <span class="s2">&quot;&lt;td </span><span class="si">{1}</span><span class="s2">&gt;</span><span class="si">{5}</span><span class="s2">&lt;/td&gt;&quot;</span>
+                    <span class="s2">&quot;&lt;td </span><span class="si">{1}</span><span class="s2">&gt;</span><span class="si">{6}</span><span class="s2">&lt;/td&gt;&quot;</span>
+                    <span class="s2">&quot;&lt;/tr&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">table_row_style</span><span class="p">,</span>
+                        <span class="n">table_cell_style</span><span class="p">,</span>
+                        <span class="n">test_step_results</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                            <span class="n">test_record</span><span class="o">.</span><span class="n">test_step_results</span><span class="p">[</span><span class="n">step</span><span class="p">]</span><span class="o">.</span><span class="n">result</span>
+                        <span class="p">),</span>
+                        <span class="n">step</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                        <span class="n">test_steps</span><span class="o">.</span><span class="n">steps</span><span class="p">[</span><span class="n">step</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">content</span><span class="p">,</span>
+                        <span class="n">test_steps</span><span class="o">.</span><span class="n">steps</span><span class="p">[</span><span class="n">step</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">content</span><span class="p">,</span>
+                        <span class="n">test_record</span><span class="o">.</span><span class="n">test_step_results</span><span class="p">[</span><span class="n">step</span><span class="p">]</span><span class="o">.</span><span class="n">comment</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">suds</span><span class="o">.</span><span class="n">WebFault</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
+            <span class="c1"># test_case.get_test_steps() can raise a webfault</span>
+            <span class="c1"># test_record.test_step_results cab raise an attribute error</span>
+            <span class="c1"># other errors should be passed up the call stack</span>
+            <span class="n">table_rows</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">table_rows</span><span class="p">:</span>
+            <span class="n">table</span> <span class="o">=</span> <span class="n">table_header</span> <span class="o">+</span> <span class="n">table_rows</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">table</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="n">tr_html</span> <span class="o">+</span> <span class="n">tc_html</span> <span class="o">+</span> <span class="n">table</span> <span class="o">+</span> <span class="n">verdict</span>
+        <span class="k">return</span> <span class="n">content</span>
+
+    <span class="k">def</span> <span class="nf">__create_incident_report</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">test_case_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">test_record</span><span class="p">:</span> <span class="n">TestRecord</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create and populate an incident work item.</span>
+
+<span class="sd">        The work_item type of the incident and the fields to copy from the test</span>
+<span class="sd">        case and test run to the incident are defined in the tests configuration</span>
+<span class="sd">        of the project.</span>
+<span class="sd">        Throws an exception if the test case does not exists or if the incident</span>
+<span class="sd">        could not be created.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            test_case_id (str): The ID of the test case.</span>
+<span class="sd">            test_record (TestRecord): The test record contains the results of the</span>
+<span class="sd">                test execution.</span>
+<span class="sd">                executed.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: work_item_id of the created incident.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">project_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_id</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;open&quot;</span>
+        <span class="n">project</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="n">project_id</span><span class="p">)</span>
+        <span class="n">tconf</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">get_tests_configuration</span><span class="p">()</span>
+        <span class="n">defect_wi_type</span> <span class="o">=</span> <span class="n">tconf</span><span class="o">.</span><span class="n">defect_work_item_type</span>
+        <span class="n">test_case_wi_type</span> <span class="o">=</span> <span class="n">tconf</span><span class="o">.</span><span class="n">test_case_work_item_type</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">work_item_module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s2">&quot;pylero.work_item&quot;</span><span class="p">)</span>
+            <span class="n">wi_class_names</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">work_item_module</span><span class="p">,</span> <span class="s2">&quot;workitems&quot;</span><span class="p">)</span>
+            <span class="n">test_case_class_name</span> <span class="o">=</span> <span class="n">wi_class_names</span><span class="p">[</span><span class="n">test_case_wi_type</span><span class="p">]</span>
+            <span class="n">test_case_class</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">work_item_module</span><span class="p">,</span> <span class="n">test_case_class_name</span><span class="p">)</span>
+            <span class="n">test_case</span> <span class="o">=</span> <span class="n">test_case_class</span><span class="p">(</span>
+                <span class="n">project_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project_id</span><span class="p">,</span> <span class="n">work_item_id</span><span class="o">=</span><span class="n">test_case_id</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="n">PyleroLibException</span><span class="p">):</span>
+            <span class="n">test_case</span> <span class="o">=</span> <span class="n">_WorkItem</span><span class="p">(</span><span class="n">project_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project_id</span><span class="p">,</span> <span class="n">work_item_id</span><span class="o">=</span><span class="n">test_case_id</span><span class="p">)</span>
+
+        <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Failed: &quot;</span> <span class="o">+</span> <span class="n">test_case</span><span class="o">.</span><span class="n">title</span>
+        <span class="n">description</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__generate_description</span><span class="p">(</span><span class="n">test_case</span><span class="p">,</span> <span class="n">test_record</span><span class="p">)</span>
+        <span class="n">kwarg_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">tconf</span><span class="o">.</span><span class="n">fields_to_copy_from_test_case_to_defect</span><span class="o">.</span><span class="n">property</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">test_case</span><span class="p">,</span> <span class="n">prop</span><span class="o">.</span><span class="n">key</span><span class="p">):</span>
+                <span class="n">kwarg_dict</span><span class="p">[</span><span class="n">prop</span><span class="o">.</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">test_case</span><span class="p">,</span> <span class="n">prop</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">tconf</span><span class="o">.</span><span class="n">fields_to_copy_from_test_run_to_linked_defect</span><span class="o">.</span><span class="n">property</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prop</span><span class="o">.</span><span class="n">key</span><span class="p">):</span>
+                <span class="n">kwarg_dict</span><span class="p">[</span><span class="n">prop</span><span class="o">.</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prop</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">incident_report</span> <span class="o">=</span> <span class="n">_WorkItem</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                <span class="n">project_id</span><span class="p">,</span> <span class="n">defect_wi_type</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="o">**</span><span class="n">kwarg_dict</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="n">PyleroLibException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Failed to create the work item </span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s2"> in&quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;project </span><span class="si">{</span><span class="n">project_id</span><span class="si">}</span><span class="s2"> of type </span><span class="si">{</span><span class="n">defect_wi_type</span><span class="si">}</span><span class="s2">.&quot;</span>
+                    <span class="p">),</span>
+                    <span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="n">incident_report</span><span class="o">.</span><span class="n">add_linked_item</span><span class="p">(</span><span class="n">test_case</span><span class="o">.</span><span class="n">work_item_id</span><span class="p">,</span> <span class="s2">&quot;triggered_by&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">incident_report</span><span class="o">.</span><span class="n">work_item_id</span>
+
 <div class="viewcode-block" id="TestRun.add_test_record_by_object">
 <a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.add_test_record_by_object">[docs]</a>
     <span class="nd">@tx_wrapper</span>
-    <span class="k">def</span> <span class="nf">add_test_record_by_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_record</span><span class="p">,</span> <span class="n">manual_state_change</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">add_test_record_by_object</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">test_record</span><span class="p">,</span> <span class="n">manual_state_change</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">create_incident</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;method add_test_record_by_object, adds a test record for the given</span>
 <span class="sd">        test case based on the TestRecord object passed in.</span>
 <span class="sd">        In addition, the test run is checked for completeness and the test</span>
 <span class="sd">        run state will change accordingly.</span>
-<span class="sd">        Test Run states are [&quot;notrun&quot;, &quot;finished&quot;, &quot;inprogress&quot;].</span>
+<span class="sd">        If possible, the status is set to one of</span>
+<span class="sd">        [&quot;notrun&quot;, &quot;finished&quot;, &quot;inprogress&quot;].</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            test_record (TestRecord or Polarion TestRecord):</span>
 <span class="sd">            manual_state_change (boolean): Change test run state</span>
 <span class="sd">                                           automatically or manual.</span>
+<span class="sd">            create_incident (boolean): Create an incident report if the test</span>
+<span class="sd">                                        case fails and no incident is linked.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
@@ -1002,9 +1076,14 @@
             <span class="n">suds_object</span> <span class="o">=</span> <span class="n">test_record</span><span class="o">.</span><span class="n">_suds_object</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">test_record</span><span class="p">,</span> <span class="n">TestRecord</span><span class="p">()</span><span class="o">.</span><span class="n">_suds_object</span><span class="o">.</span><span class="vm">__class__</span><span class="p">):</span>
             <span class="n">suds_object</span> <span class="o">=</span> <span class="n">test_record</span>
-        <span class="k">if</span> <span class="n">test_record</span><span class="o">.</span><span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;failed&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">test_record</span><span class="o">.</span><span class="n">defect_case_id</span><span class="p">:</span>
-            <span class="n">test_record</span><span class="o">.</span><span class="n">defect_case_id</span> <span class="o">=</span> <span class="n">create_incident_report</span><span class="p">(</span>
-                <span class="bp">self</span><span class="p">,</span> <span class="n">test_record</span><span class="p">,</span> <span class="n">TestCase</span><span class="p">(</span><span class="n">work_item_id</span><span class="o">=</span><span class="n">test_case_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">test_record</span><span class="o">.</span><span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;failed&quot;</span>
+            <span class="ow">and</span> <span class="ow">not</span> <span class="n">test_record</span><span class="o">.</span><span class="n">defect_case_id</span>
+            <span class="ow">and</span> <span class="n">create_incident</span>
+        <span class="p">):</span>
+            <span class="n">test_record</span><span class="o">.</span><span class="n">defect_case_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__create_incident_report</span><span class="p">(</span>
+                <span class="n">test_case_id</span><span class="p">,</span>
+                <span class="n">test_record</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">addTestRecordToTestRun</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">suds_object</span>
@@ -1388,19 +1467,27 @@
 <a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.update_test_record_by_object">[docs]</a>
     <span class="nd">@tx_wrapper</span>
     <span class="k">def</span> <span class="nf">update_test_record_by_object</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">test_case_id</span><span class="p">,</span> <span class="n">test_record</span><span class="p">,</span> <span class="n">manual_state_change</span><span class="o">=</span><span class="kc">False</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">test_case_id</span><span class="p">,</span>
+        <span class="n">test_record</span><span class="p">,</span>
+        <span class="n">manual_state_change</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">create_incident</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;method update_test_record_by_object, adds a test record for the</span>
 <span class="sd">        given test case based on the TestRecord object passed in.</span>
 <span class="sd">        In addition, the test run is checked for completeness and the</span>
 <span class="sd">        test run state will change accordingly.</span>
-<span class="sd">        Test Run states are [&quot;notrun&quot;, &quot;finished&quot;, &quot;inprogress&quot;].</span>
+<span class="sd">        If possible, the status is set to one of</span>
+<span class="sd">        [&quot;notrun&quot;, &quot;finished&quot;, &quot;inprogress&quot;].</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            test_case_id (str): the test case id that the record is related to.</span>
 <span class="sd">            test_record (TestRecord or Polarion TestRecord)</span>
 <span class="sd">            manual_state_change (boolean): Change the test</span>
 <span class="sd">                                           run result automatically or manual.</span>
+<span class="sd">            create_incident (boolean): Create an incident report if the test</span>
+<span class="sd">                                        record result is failed and no defect</span>
+<span class="sd">                                        case id is set.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
@@ -1417,9 +1504,13 @@
         <span class="k">if</span> <span class="n">test_case_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">test_case_ids</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_test_record_by_object</span><span class="p">(</span><span class="n">test_record</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">test_record</span><span class="o">.</span><span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;failed&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">test_record</span><span class="o">.</span><span class="n">defect_case_id</span><span class="p">:</span>
-                <span class="n">test_record</span><span class="o">.</span><span class="n">defect_case_id</span> <span class="o">=</span> <span class="n">create_incident_report</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="p">,</span> <span class="n">test_record</span><span class="p">,</span> <span class="n">TestCase</span><span class="p">(</span><span class="n">work_item_id</span><span class="o">=</span><span class="n">test_case_id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">test_record</span><span class="o">.</span><span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;failed&quot;</span>
+                <span class="ow">and</span> <span class="ow">not</span> <span class="n">test_record</span><span class="o">.</span><span class="n">defect_case_id</span>
+                <span class="ow">and</span> <span class="n">create_incident</span>
+            <span class="p">):</span>
+                <span class="n">test_record</span><span class="o">.</span><span class="n">defect_case_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__create_incident_report</span><span class="p">(</span>
+                    <span class="n">test_case_id</span><span class="p">,</span> <span class="n">test_record</span>
                 <span class="p">)</span>
             <span class="n">index</span> <span class="o">=</span> <span class="n">test_case_ids</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">test_case_id</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">test_record</span><span class="p">,</span> <span class="n">TestRecord</span><span class="p">):</span>
@@ -1535,7 +1626,7 @@
   </ul></li>
 </ul>
 </div>
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
@@ -1543,7 +1634,7 @@
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
+</search>
 <script>document.getElementById('searchbox').style.display = "block"</script>
 
 
@@ -1561,7 +1652,7 @@
       &#169;2021, Sim Zacks and Pylero Contributors.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
     </div>
