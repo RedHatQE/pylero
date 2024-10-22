@@ -749,6 +749,7 @@ class TestRun(BasePolarion):
         executed,
         duration,
         defect_work_item_id=None,
+        create_incident=True
     ):
         """method add_test_record_by_fields, adds a test record for the given
         test case based on the result fields passed in.
@@ -787,7 +788,7 @@ class TestRun(BasePolarion):
         testrec.duration = duration
         if defect_work_item_id:
             testrec.defect_case_id = defect_work_item_id
-        self.add_test_record_by_object(testrec)
+        self.add_test_record_by_object(testrec, create_incident=create_incident)
 
     def __generate_description(
         self, test_case: _WorkItem, test_record: TestRecord
@@ -1324,6 +1325,7 @@ class TestRun(BasePolarion):
         executed,
         duration,
         defect_work_item_id=None,
+        create_incident=True
     ):
         """method update_test_record_by_fields updates a test record.
 
@@ -1361,7 +1363,7 @@ class TestRun(BasePolarion):
         testrec.duration = duration
         if defect_work_item_id:
             testrec.defect_case_id = defect_work_item_id
-        self.update_test_record_by_object(test_case_id, testrec)
+        self.update_test_record_by_object(test_case_id, testrec, create_incident=create_incident)
 
     @tx_wrapper
     def update_test_record_by_object(
@@ -1400,7 +1402,7 @@ class TestRun(BasePolarion):
         # executed records.
         test_case_ids = [rec.test_case_id for rec in self._records]
         if test_case_id not in test_case_ids:
-            self.add_test_record_by_object(test_record)
+            self.add_test_record_by_object(test_record, create_incident=create_incident)
         else:
             if (
                 test_record.result == "failed"
