@@ -5,10 +5,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>pylero.document &#8212; pylero  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=12dfc556" />
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -31,36 +31,36 @@
             
   <h1>Source code for pylero.document</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf8 -*-</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">unicode_literals</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">absolute_import</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">division</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">print_function</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">unicode_literals</span>
 
-<span class="kn">import</span> <span class="nn">base64</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">base64</span>
 
-<span class="kn">import</span> <span class="nn">suds</span>
-<span class="kn">from</span> <span class="nn">pylero._compatible</span> <span class="kn">import</span> <span class="n">basestring</span>
-<span class="kn">from</span> <span class="nn">pylero.base_polarion</span> <span class="kn">import</span> <span class="n">BasePolarion</span>
-<span class="kn">from</span> <span class="nn">pylero.base_polarion</span> <span class="kn">import</span> <span class="n">tx_wrapper</span>
-<span class="kn">from</span> <span class="nn">pylero.custom</span> <span class="kn">import</span> <span class="n">ArrayOfCustom</span>
-<span class="kn">from</span> <span class="nn">pylero.custom</span> <span class="kn">import</span> <span class="n">Custom</span>
-<span class="kn">from</span> <span class="nn">pylero.enum_option_id</span> <span class="kn">import</span> <span class="n">ArrayOfEnumOptionId</span>
-<span class="kn">from</span> <span class="nn">pylero.enum_option_id</span> <span class="kn">import</span> <span class="n">EnumOptionId</span>
-<span class="kn">from</span> <span class="nn">pylero.exceptions</span> <span class="kn">import</span> <span class="n">PyleroLibException</span>
-<span class="kn">from</span> <span class="nn">pylero.module_comment</span> <span class="kn">import</span> <span class="n">ArrayOfModuleComment</span>
-<span class="kn">from</span> <span class="nn">pylero.module_comment</span> <span class="kn">import</span> <span class="n">ModuleComment</span>
-<span class="kn">from</span> <span class="nn">pylero.project</span> <span class="kn">import</span> <span class="n">Project</span>
-<span class="kn">from</span> <span class="nn">pylero.signature_context</span> <span class="kn">import</span> <span class="n">ArrayOfSignatureContext</span>
-<span class="kn">from</span> <span class="nn">pylero.signature_context</span> <span class="kn">import</span> <span class="n">SignatureContext</span>
-<span class="kn">from</span> <span class="nn">pylero.subterra_uri</span> <span class="kn">import</span> <span class="n">SubterraURI</span>
-<span class="kn">from</span> <span class="nn">pylero.text</span> <span class="kn">import</span> <span class="n">Text</span>
-<span class="kn">from</span> <span class="nn">pylero.user</span> <span class="kn">import</span> <span class="n">User</span>
-<span class="kn">from</span> <span class="nn">pylero.work_item</span> <span class="kn">import</span> <span class="n">_WorkItem</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">suds</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero._compatible</span><span class="w"> </span><span class="kn">import</span> <span class="n">basestring</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.base_polarion</span><span class="w"> </span><span class="kn">import</span> <span class="n">BasePolarion</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.base_polarion</span><span class="w"> </span><span class="kn">import</span> <span class="n">tx_wrapper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.custom</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArrayOfCustom</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.custom</span><span class="w"> </span><span class="kn">import</span> <span class="n">Custom</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.enum_option_id</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArrayOfEnumOptionId</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.enum_option_id</span><span class="w"> </span><span class="kn">import</span> <span class="n">EnumOptionId</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">PyleroLibException</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.module_comment</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArrayOfModuleComment</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.module_comment</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModuleComment</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.project</span><span class="w"> </span><span class="kn">import</span> <span class="n">Project</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.signature_context</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArrayOfSignatureContext</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.signature_context</span><span class="w"> </span><span class="kn">import</span> <span class="n">SignatureContext</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.subterra_uri</span><span class="w"> </span><span class="kn">import</span> <span class="n">SubterraURI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.text</span><span class="w"> </span><span class="kn">import</span> <span class="n">Text</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.user</span><span class="w"> </span><span class="kn">import</span> <span class="n">User</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.work_item</span><span class="w"> </span><span class="kn">import</span> <span class="n">_WorkItem</span>
 
 
 <div class="viewcode-block" id="Document">
 <a class="viewcode-back" href="../../pylero.html#pylero.document.Document">[docs]</a>
-<span class="k">class</span> <span class="nc">Document</span><span class="p">(</span><span class="n">BasePolarion</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Document</span><span class="p">(</span><span class="n">BasePolarion</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;An object to manage the TestManagement WS tns4:Module</span>
 
 <span class="sd">    Attributes:</span>
@@ -176,7 +176,7 @@
 <a class="viewcode-back" href="../../pylero.html#pylero.document.Document.create">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="nd">@tx_wrapper</span>
-    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">project_id</span><span class="p">,</span>
         <span class="n">space</span><span class="p">,</span>
@@ -253,7 +253,7 @@
 <div class="viewcode-block" id="Document.get_documents">
 <a class="viewcode-back" href="../../pylero.html#pylero.document.Document.get_documents">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">get_documents</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">space</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="p">[]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_documents</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">space</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="p">[]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;returns a list of Document objects</span>
 
 <span class="sd">        Args:</span>
@@ -288,7 +288,7 @@
 <div class="viewcode-block" id="Document.query">
 <a class="viewcode-back" href="../../pylero.html#pylero.document.Document.query">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">query</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">query</span><span class="p">,</span>
         <span class="n">is_sql</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -364,7 +364,7 @@
 <div class="viewcode-block" id="Document.export_pdf">
 <a class="viewcode-back" href="../../pylero.html#pylero.document.Document.export_pdf">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">export_pdf</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">exportPdfProperties</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s2">&quot;/tmp&quot;</span><span class="p">,</span> <span class="n">output_name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">export_pdf</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">exportPdfProperties</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s2">&quot;/tmp&quot;</span><span class="p">,</span> <span class="n">output_name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Export a document to PDF and download it</span>
 
 <span class="sd">        Args:</span>
@@ -401,7 +401,7 @@
 
 <div class="viewcode-block" id="Document.__init__">
 <a class="viewcode-back" href="../../pylero.html#pylero.document.Document.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">project_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">doc_with_space</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -455,7 +455,7 @@
                 <span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_fix_circular_refs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fix_circular_refs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># a class can&#39;t reference itself as a class attribute.</span>
         <span class="c1"># defined after instatiation</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="s2">&quot;branched_from&quot;</span><span class="p">][</span><span class="s2">&quot;cls&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span>
@@ -463,7 +463,7 @@
 <div class="viewcode-block" id="Document.create_work_item">
 <a class="viewcode-back" href="../../pylero.html#pylero.document.Document.create_work_item">[docs]</a>
     <span class="nd">@tx_wrapper</span>
-    <span class="k">def</span> <span class="nf">create_work_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent_id</span><span class="p">,</span> <span class="n">w_item</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_work_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent_id</span><span class="p">,</span> <span class="n">w_item</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;create a work item in the current document</span>
 
 <span class="sd">        Args:</span>
@@ -504,7 +504,7 @@
 
 <div class="viewcode-block" id="Document.delete">
 <a class="viewcode-back" href="../../pylero.html#pylero.document.Document.delete">[docs]</a>
-    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;delete the current document</span>
 
 <span class="sd">        Args:</span>
@@ -519,7 +519,7 @@
 
 <div class="viewcode-block" id="Document.get_work_items">
 <a class="viewcode-back" href="../../pylero.html#pylero.document.Document.get_work_items">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_work_items</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_work_items</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">parent_work_item_id</span><span class="p">,</span> <span class="n">deep</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;work_item_id&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">]</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns work items (with given fields set) contained in given</span>
@@ -563,7 +563,7 @@
 
 <div class="viewcode-block" id="Document.move_work_item_here">
 <a class="viewcode-back" href="../../pylero.html#pylero.document.Document.move_work_item_here">[docs]</a>
-    <span class="k">def</span> <span class="nf">move_work_item_here</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">move_work_item_here</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">work_item_id</span><span class="p">,</span> <span class="n">parent_id</span><span class="p">,</span> <span class="n">position</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">retain_flow</span><span class="o">=</span><span class="kc">True</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Moves a work item to a specific position in a Document. If the work</span>
@@ -601,7 +601,7 @@
 
 <div class="viewcode-block" id="Document.add_referenced_work_item">
 <a class="viewcode-back" href="../../pylero.html#pylero.document.Document.add_referenced_work_item">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_referenced_work_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">work_item_id</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_referenced_work_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">work_item_id</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds a work item to the document as a referenced work_item to the</span>
 <span class="sd">        end of the current document.</span>
 
@@ -625,7 +625,7 @@
 
 <div class="viewcode-block" id="Document.update">
 <a class="viewcode-back" href="../../pylero.html#pylero.document.Document.update">[docs]</a>
-    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;updates the server with the current module data</span>
 
 <span class="sd">        Args:</span>
@@ -646,7 +646,7 @@
           
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
 <h1 class="logo"><a href="../../index.html">pylero</a></h1>
 
@@ -697,7 +697,7 @@
       &#169;2021, Sim Zacks and Pylero Contributors.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
     </div>

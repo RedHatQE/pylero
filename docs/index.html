@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Welcome to pylero’s documentation! &#8212; pylero  documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
     <script src="_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -168,7 +168,7 @@ workitem types that are configured or can find those from below code.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pylero.work_item</span> <span class="kn">import</span> <span class="o">*</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pylero.work_item</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;workitems&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
 <span class="go">dict_values([&#39;TestCase&#39;, &#39;TestSuite&#39;, &#39;BusinessCase&#39;, &#39;Requirement&#39;, &#39;ChangeRequest&#39;, &#39;IncidentReport&#39;, &#39;Defect&#39;, &#39;Task&#39;, &#39;Risk&#39;])</span>
 </pre></div>
@@ -177,11 +177,11 @@ workitem types that are configured or can find those from below code.</p>
 type don’t usually change. The <code class="code docutils literal notranslate"><span class="pre">dict_values</span></code> from above listing are importable,
 ex: <code class="code docutils literal notranslate"><span class="pre">from</span> <span class="pre">pylero.work_item</span> <span class="pre">TesCase</span></code> works for me and it may differ for you based
 on above returned values.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">datetime</span>
-<span class="kn">from</span> <span class="nn">pylero.test_run</span> <span class="kn">import</span> <span class="n">TestRun</span>
-<span class="kn">from</span> <span class="nn">pylero.test_record</span> <span class="kn">import</span> <span class="n">TestRecord</span>
-<span class="kn">from</span> <span class="nn">pylero.work_item</span> <span class="kn">import</span> <span class="n">TestCase</span><span class="p">,</span> <span class="n">Requirement</span>
-<span class="kn">from</span> <span class="nn">pylero.document</span> <span class="kn">import</span> <span class="n">Document</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.test_run</span><span class="w"> </span><span class="kn">import</span> <span class="n">TestRun</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.test_record</span><span class="w"> </span><span class="kn">import</span> <span class="n">TestRecord</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.work_item</span><span class="w"> </span><span class="kn">import</span> <span class="n">TestCase</span><span class="p">,</span> <span class="n">Requirement</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.document</span><span class="w"> </span><span class="kn">import</span> <span class="n">Document</span>
 
 <span class="c1"># Creating a Test Run Template:</span>
 <span class="n">tr</span> <span class="o">=</span> <span class="n">TestRun</span><span class="o">.</span><span class="n">create_template</span><span class="p">(</span><span class="s2">&quot;myproj&quot;</span><span class="p">,</span>
@@ -694,7 +694,7 @@ $ autopep8 --in-place &lt;edited_file.py&gt;
           
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
 <h1 class="logo"><a href="#">pylero</a></h1>
 
@@ -744,7 +744,7 @@ $ autopep8 --in-place &lt;edited_file.py&gt;
       &#169;2021, Sim Zacks and Pylero Contributors.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
       |
