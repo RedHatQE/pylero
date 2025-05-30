@@ -5,10 +5,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>pylero.test_run &#8212; pylero  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=12dfc556" />
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -31,39 +31,39 @@
             
   <h1>Source code for pylero.test_run</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf8 -*-</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">unicode_literals</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">absolute_import</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">division</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">print_function</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">unicode_literals</span>
 
-<span class="kn">import</span> <span class="nn">importlib</span>
-<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">importlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
-<span class="kn">import</span> <span class="nn">suds</span>
-<span class="kn">from</span> <span class="nn">pylero._compatible</span> <span class="kn">import</span> <span class="n">basestring</span>
-<span class="kn">from</span> <span class="nn">pylero._compatible</span> <span class="kn">import</span> <span class="nb">classmethod</span>
-<span class="kn">from</span> <span class="nn">pylero._compatible</span> <span class="kn">import</span> <span class="nb">object</span>  <span class="c1"># noqa</span>
-<span class="kn">from</span> <span class="nn">pylero._compatible</span> <span class="kn">import</span> <span class="nb">range</span>
-<span class="kn">from</span> <span class="nn">pylero.base_polarion</span> <span class="kn">import</span> <span class="n">BasePolarion</span>
-<span class="kn">from</span> <span class="nn">pylero.base_polarion</span> <span class="kn">import</span> <span class="n">tx_wrapper</span>
-<span class="kn">from</span> <span class="nn">pylero.build</span> <span class="kn">import</span> <span class="n">Build</span>  <span class="c1"># noqa: F401</span>
-<span class="kn">from</span> <span class="nn">pylero.custom</span> <span class="kn">import</span> <span class="n">ArrayOfCustom</span>
-<span class="kn">from</span> <span class="nn">pylero.custom</span> <span class="kn">import</span> <span class="n">Custom</span>
-<span class="kn">from</span> <span class="nn">pylero.custom_field_type</span> <span class="kn">import</span> <span class="n">CustomFieldType</span>
-<span class="kn">from</span> <span class="nn">pylero.document</span> <span class="kn">import</span> <span class="n">Document</span>
-<span class="kn">from</span> <span class="nn">pylero.enum_custom_field_type</span> <span class="kn">import</span> <span class="n">EnumCustomFieldType</span>
-<span class="kn">from</span> <span class="nn">pylero.enum_option_id</span> <span class="kn">import</span> <span class="n">ArrayOfEnumOptionId</span>
-<span class="kn">from</span> <span class="nn">pylero.enum_option_id</span> <span class="kn">import</span> <span class="n">EnumOptionId</span>
-<span class="kn">from</span> <span class="nn">pylero.exceptions</span> <span class="kn">import</span> <span class="n">PyleroLibException</span>
-<span class="kn">from</span> <span class="nn">pylero.plan</span> <span class="kn">import</span> <span class="n">Plan</span>  <span class="c1"># NOQA</span>
-<span class="kn">from</span> <span class="nn">pylero.project</span> <span class="kn">import</span> <span class="n">Project</span>
-<span class="kn">from</span> <span class="nn">pylero.test_record</span> <span class="kn">import</span> <span class="n">ArrayOfTestRecord</span>
-<span class="kn">from</span> <span class="nn">pylero.test_record</span> <span class="kn">import</span> <span class="n">TestRecord</span>
-<span class="kn">from</span> <span class="nn">pylero.test_run_attachment</span> <span class="kn">import</span> <span class="n">ArrayOfTestRunAttachment</span>
-<span class="kn">from</span> <span class="nn">pylero.test_run_attachment</span> <span class="kn">import</span> <span class="n">TestRunAttachment</span>
-<span class="kn">from</span> <span class="nn">pylero.text</span> <span class="kn">import</span> <span class="n">Text</span>
-<span class="kn">from</span> <span class="nn">pylero.user</span> <span class="kn">import</span> <span class="n">User</span>
-<span class="kn">from</span> <span class="nn">pylero.work_item</span> <span class="kn">import</span> <span class="n">_WorkItem</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">suds</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero._compatible</span><span class="w"> </span><span class="kn">import</span> <span class="n">basestring</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero._compatible</span><span class="w"> </span><span class="kn">import</span> <span class="nb">classmethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero._compatible</span><span class="w"> </span><span class="kn">import</span> <span class="nb">object</span>  <span class="c1"># noqa</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero._compatible</span><span class="w"> </span><span class="kn">import</span> <span class="nb">range</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.base_polarion</span><span class="w"> </span><span class="kn">import</span> <span class="n">BasePolarion</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.base_polarion</span><span class="w"> </span><span class="kn">import</span> <span class="n">tx_wrapper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.build</span><span class="w"> </span><span class="kn">import</span> <span class="n">Build</span>  <span class="c1"># noqa: F401</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.custom</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArrayOfCustom</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.custom</span><span class="w"> </span><span class="kn">import</span> <span class="n">Custom</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.custom_field_type</span><span class="w"> </span><span class="kn">import</span> <span class="n">CustomFieldType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.document</span><span class="w"> </span><span class="kn">import</span> <span class="n">Document</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.enum_custom_field_type</span><span class="w"> </span><span class="kn">import</span> <span class="n">EnumCustomFieldType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.enum_option_id</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArrayOfEnumOptionId</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.enum_option_id</span><span class="w"> </span><span class="kn">import</span> <span class="n">EnumOptionId</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">PyleroLibException</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.plan</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plan</span>  <span class="c1"># NOQA</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.project</span><span class="w"> </span><span class="kn">import</span> <span class="n">Project</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.test_record</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArrayOfTestRecord</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.test_record</span><span class="w"> </span><span class="kn">import</span> <span class="n">TestRecord</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.test_run_attachment</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArrayOfTestRunAttachment</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.test_run_attachment</span><span class="w"> </span><span class="kn">import</span> <span class="n">TestRunAttachment</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.text</span><span class="w"> </span><span class="kn">import</span> <span class="n">Text</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.user</span><span class="w"> </span><span class="kn">import</span> <span class="n">User</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.work_item</span><span class="w"> </span><span class="kn">import</span> <span class="n">_WorkItem</span>
 
 
 <span class="c1"># Build is used in custom fields.</span>
@@ -72,7 +72,7 @@
 
 <div class="viewcode-block" id="TestRun">
 <a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun">[docs]</a>
-<span class="k">class</span> <span class="nc">TestRun</span><span class="p">(</span><span class="n">BasePolarion</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TestRun</span><span class="p">(</span><span class="n">BasePolarion</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Object to manage the Polarion Test Management WS tns3:TestRun</span>
 
 <span class="sd">    Attributes:</span>
@@ -190,7 +190,7 @@
     <span class="n">_custom_field_cache</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">records</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">records</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;function to return all the test records of a TestRun.</span>
 <span class="sd">        The records array for dynamic queries/documents only includes executed</span>
 <span class="sd">        records. This returns the unexecuted ones as well.</span>
@@ -222,14 +222,14 @@
         <span class="k">return</span> <span class="n">test_recs</span>
 
     <span class="nd">@records</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">records</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">records</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_records</span> <span class="o">=</span> <span class="n">val</span>
 
 <div class="viewcode-block" id="TestRun.create">
 <a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.create">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="nd">@tx_wrapper</span>
-    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">test_run_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">test_run_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;class method create for creating a new test run in Polarion</span>
 
 <span class="sd">        Args:</span>
@@ -283,7 +283,7 @@
 <a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.create_template">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="nd">@tx_wrapper</span>
-    <span class="k">def</span> <span class="nf">create_template</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_template</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">project_id</span><span class="p">,</span>
         <span class="n">template_id</span><span class="p">,</span>
@@ -348,7 +348,7 @@
 <div class="viewcode-block" id="TestRun.search">
 <a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.search">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">search</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">query</span><span class="p">,</span>
         <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;test_run_id&quot;</span><span class="p">],</span>
@@ -426,7 +426,7 @@
 
 <div class="viewcode-block" id="TestRun.__init__">
 <a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_run_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">suds_object</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_run_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">suds_object</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;TestRun constructor.</span>
 
 <span class="sd">        Args:</span>
@@ -470,12 +470,12 @@
                 <span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_fix_circular_refs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fix_circular_refs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># a class can&#39;t reference itself as a class attribute so it is</span>
         <span class="c1"># defined after instatiation</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="s2">&quot;template&quot;</span><span class="p">][</span><span class="s2">&quot;cls&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span>
 
-    <span class="k">def</span> <span class="nf">_custom_field_types</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_type</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_custom_field_types</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_type</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;There are 4 types of custom fields in test runs:</span>
 <span class="sd">        * built-in types (string, boolean, ...)</span>
 <span class="sd">        * Pylero Text object (text)</span>
@@ -509,7 +509,7 @@
 <div class="viewcode-block" id="TestRun.get_defined_custom_field_types">
 <a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.get_defined_custom_field_types">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">get_defined_custom_field_types</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">project_id</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_defined_custom_field_types</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">project_id</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets all the custom fields defined for the specified project.</span>
 <span class="sd">        the custom fields are all either of type CustomFieldType or</span>
 <span class="sd">        EnumCustomFieldType in the case where the field is an enumeration.</span>
@@ -541,7 +541,7 @@
         <span class="k">return</span> <span class="n">results</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_cache_custom_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_id</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_cache_custom_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_id</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Polarion API provides the custom fields of a TestRun.</span>
 <span class="sd">        Get all custom fields and save in the dict self._custom_field_cache</span>
 
@@ -567,7 +567,7 @@
                 <span class="n">result</span><span class="p">,</span> <span class="s2">&quot;multi&quot;</span><span class="p">,</span> <span class="kc">False</span>
             <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_add_custom_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_id</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_custom_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_id</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;This generates object attributes, with validation, so that custom</span>
 <span class="sd">        fields can be related to as regular attributes. It takes the custom</span>
 <span class="sd">        fields from the cache and calls the cache function if the values are</span>
@@ -616,7 +616,7 @@
                         <span class="s2">&quot;project_id&quot;</span><span class="p">:</span> <span class="n">project_id</span>
                     <span class="p">}</span>
 
-    <span class="k">def</span> <span class="nf">_get_index_of_test_record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_case_id</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_index_of_test_record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_case_id</span><span class="p">):</span>
         <span class="c1"># specific functions request the index of the test record within the</span>
         <span class="c1"># test run. However, the user doesn&#39;t know what the index is.</span>
         <span class="c1"># Therefore the user passes in the test case id and this function</span>
@@ -635,7 +635,7 @@
             <span class="s2">&quot;this TestRun or has not been executed&quot;</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_status_change</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_status_change</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Change status if necessary and possible.&quot;&quot;&quot;</span>
         <span class="c1"># load a new object to test if the status should be changed.</span>
         <span class="c1"># can&#39;t use existing object because it doesn&#39;t include the new test rec</span>
@@ -661,7 +661,7 @@
             <span class="n">check_tr</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">status</span>
             <span class="n">check_tr</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_verify_record_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record_index</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_verify_record_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record_index</span><span class="p">):</span>
         <span class="c1"># verifies the number of records is not less then the index given.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_verify_obj</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">record_index</span> <span class="o">&gt;</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
@@ -669,7 +669,7 @@
                 <span class="s2">&quot;There are only </span><span class="si">{0}</span><span class="s2"> test records&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="p">))</span>
             <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_verify_test_step_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record_index</span><span class="p">,</span> <span class="n">test_step_index</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_verify_test_step_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record_index</span><span class="p">,</span> <span class="n">test_step_index</span><span class="p">):</span>
         <span class="c1"># verifies the number of test steps is not less then the index given.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_verify_record_count</span><span class="p">(</span><span class="n">record_index</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">test_step_index</span> <span class="o">&gt;</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="p">[</span><span class="n">record_index</span><span class="p">]</span><span class="o">.</span><span class="n">test_step_results</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
@@ -679,7 +679,7 @@
 
 <div class="viewcode-block" id="TestRun.add_attachment_to_test_record">
 <a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.add_attachment_to_test_record">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_attachment_to_test_record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_case_id</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">title</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_attachment_to_test_record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_case_id</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">title</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;method add_attachment_to_test_record, adds the given attachment to</span>
 <span class="sd">        the specified test record</span>
 
@@ -709,7 +709,7 @@
 
 <div class="viewcode-block" id="TestRun.add_attachment">
 <a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.add_attachment">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_attachment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">title</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_attachment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">title</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;method add_attachment adds the given attachment to the current</span>
 <span class="sd">        test run</span>
 
@@ -736,7 +736,7 @@
 
 <div class="viewcode-block" id="TestRun.add_attachment_to_test_step">
 <a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.add_attachment_to_test_step">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_attachment_to_test_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_case_id</span><span class="p">,</span> <span class="n">test_step_index</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">title</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_attachment_to_test_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_case_id</span><span class="p">,</span> <span class="n">test_step_index</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">title</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;method add_attachment_to_test_step, adds the given attachment to</span>
 <span class="sd">        the specified test step of the specified test record</span>
 
@@ -766,7 +766,7 @@
         <span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_check_test_record_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_case_id</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_test_record_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_case_id</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Searches the test run to see if the case is already a member of it</span>
 <span class="sd">        and if so raises an exception. It should only receive one result set</span>
 <span class="sd">        and if it returns more then that it raises a different exception.</span>
@@ -800,7 +800,7 @@
 <div class="viewcode-block" id="TestRun.add_test_record_by_fields">
 <a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.add_test_record_by_fields">[docs]</a>
     <span class="nd">@tx_wrapper</span>
-    <span class="k">def</span> <span class="nf">add_test_record_by_fields</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_test_record_by_fields</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">test_case_id</span><span class="p">,</span>
         <span class="n">test_result</span><span class="p">,</span>
@@ -809,6 +809,7 @@
         <span class="n">executed</span><span class="p">,</span>
         <span class="n">duration</span><span class="p">,</span>
         <span class="n">defect_work_item_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">create_incident</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;method add_test_record_by_fields, adds a test record for the given</span>
 <span class="sd">        test case based on the result fields passed in.</span>
@@ -847,10 +848,10 @@
         <span class="n">testrec</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">duration</span>
         <span class="k">if</span> <span class="n">defect_work_item_id</span><span class="p">:</span>
             <span class="n">testrec</span><span class="o">.</span><span class="n">defect_case_id</span> <span class="o">=</span> <span class="n">defect_work_item_id</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_test_record_by_object</span><span class="p">(</span><span class="n">testrec</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_test_record_by_object</span><span class="p">(</span><span class="n">testrec</span><span class="p">,</span> <span class="n">create_incident</span><span class="o">=</span><span class="n">create_incident</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">__generate_description</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__generate_description</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">test_case</span><span class="p">:</span> <span class="n">_WorkItem</span><span class="p">,</span> <span class="n">test_record</span><span class="p">:</span> <span class="n">TestRecord</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generates the description for the incident report.</span>
@@ -977,7 +978,7 @@
         <span class="n">content</span> <span class="o">=</span> <span class="n">tr_html</span> <span class="o">+</span> <span class="n">tc_html</span> <span class="o">+</span> <span class="n">table</span> <span class="o">+</span> <span class="n">verdict</span>
         <span class="k">return</span> <span class="n">content</span>
 
-    <span class="k">def</span> <span class="nf">__create_incident_report</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__create_incident_report</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">test_case_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">test_record</span><span class="p">:</span> <span class="n">TestRecord</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create and populate an incident work item.</span>
@@ -1046,7 +1047,7 @@
 <div class="viewcode-block" id="TestRun.add_test_record_by_object">
 <a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.add_test_record_by_object">[docs]</a>
     <span class="nd">@tx_wrapper</span>
-    <span class="k">def</span> <span class="nf">add_test_record_by_object</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_test_record_by_object</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">test_record</span><span class="p">,</span> <span class="n">manual_state_change</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">create_incident</span><span class="o">=</span><span class="kc">True</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;method add_test_record_by_object, adds a test record for the given</span>
@@ -1097,7 +1098,7 @@
 
 <div class="viewcode-block" id="TestRun.create_summary_defect">
 <a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.create_summary_defect">[docs]</a>
-    <span class="k">def</span> <span class="nf">create_summary_defect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">defect_template_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_summary_defect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">defect_template_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;method create_summary_defect, adds a new summary _WorkItem for the</span>
 <span class="sd">        test case based on the _WorkItem template id passed in. If not template</span>
 <span class="sd">        is passed in, it creates it based on the default template.</span>
@@ -1128,7 +1129,7 @@
 
 <div class="viewcode-block" id="TestRun.delete_attachment_from_test_record">
 <a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.delete_attachment_from_test_record">[docs]</a>
-    <span class="k">def</span> <span class="nf">delete_attachment_from_test_record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_case_id</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete_attachment_from_test_record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_case_id</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Deletes Test Record Attachment of specified record and</span>
 <span class="sd">        attachment&#39;s file name.</span>
 
@@ -1151,7 +1152,7 @@
 
 <div class="viewcode-block" id="TestRun.delete_attachment_from_test_step">
 <a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.delete_attachment_from_test_step">[docs]</a>
-    <span class="k">def</span> <span class="nf">delete_attachment_from_test_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_case_id</span><span class="p">,</span> <span class="n">test_step_index</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete_attachment_from_test_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_case_id</span><span class="p">,</span> <span class="n">test_step_index</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Deletes Test Step Attachment of the specified step in the specified</span>
 <span class="sd">        test record.</span>
 
@@ -1174,7 +1175,7 @@
 
 <div class="viewcode-block" id="TestRun.delete_attachment">
 <a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.delete_attachment">[docs]</a>
-    <span class="k">def</span> <span class="nf">delete_attachment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete_attachment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Deletes Test Run Attachment specified by attachment&#39;s</span>
 <span class="sd">        file name. Method is applicable also on Test Run Template.</span>
 
@@ -1195,7 +1196,7 @@
 
 <div class="viewcode-block" id="TestRun.get_attachment">
 <a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.get_attachment">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_attachment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_attachment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets Test Run Attachment specified by attachment&#39;s</span>
 <span class="sd">        file name. Method is applicable also on Test Run Template.</span>
 
@@ -1217,7 +1218,7 @@
 
 <div class="viewcode-block" id="TestRun.get_attachments">
 <a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.get_attachments">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_attachments</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_attachments</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;method get_attachments returns all the attachments for the TestRun</span>
 
 <span class="sd">        Args:</span>
@@ -1242,7 +1243,7 @@
 
 <div class="viewcode-block" id="TestRun.get_custom_field">
 <a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.get_custom_field">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_custom_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_name</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_custom_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;gets custom field values.</span>
 
 <span class="sd">        Args:</span>
@@ -1266,7 +1267,7 @@
 
 <div class="viewcode-block" id="TestRun.get_wiki_content">
 <a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.get_wiki_content">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_wiki_content</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_wiki_content</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;method get_wiki_content returns the wiki content for the Test Run</span>
 
 <span class="sd">        Args:</span>
@@ -1287,7 +1288,7 @@
         <span class="k">return</span> <span class="n">Text</span><span class="p">(</span><span class="n">suds_object</span><span class="o">=</span><span class="n">suds_wiki</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_set_custom_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_custom_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;sets custom field values.</span>
 
 <span class="sd">        Args:</span>
@@ -1318,7 +1319,7 @@
 
 <div class="viewcode-block" id="TestRun.update">
 <a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.update">[docs]</a>
-    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;method update updates the testRun object with the attribute values</span>
 <span class="sd">        currently in the object.</span>
 
@@ -1341,7 +1342,7 @@
 
 <div class="viewcode-block" id="TestRun.update_attachment">
 <a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.update_attachment">[docs]</a>
-    <span class="k">def</span> <span class="nf">update_attachment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">original_filename</span><span class="p">,</span> <span class="n">title</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_attachment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">original_filename</span><span class="p">,</span> <span class="n">title</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;method update_attachment updates the specified attachment to the</span>
 <span class="sd">        current test run</span>
 
@@ -1370,7 +1371,7 @@
 
 <div class="viewcode-block" id="TestRun.update_summary_defect">
 <a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.update_summary_defect">[docs]</a>
-    <span class="k">def</span> <span class="nf">update_summary_defect</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_summary_defect</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">total_failures</span><span class="p">,</span> <span class="n">total_errors</span><span class="p">,</span> <span class="n">total_tests</span><span class="p">,</span> <span class="n">defect_template_id</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;method update-summary_defect creates or updates the summary defect</span>
@@ -1414,7 +1415,7 @@
 <div class="viewcode-block" id="TestRun.update_test_record_by_fields">
 <a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.update_test_record_by_fields">[docs]</a>
     <span class="nd">@tx_wrapper</span>
-    <span class="k">def</span> <span class="nf">update_test_record_by_fields</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_test_record_by_fields</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">test_case_id</span><span class="p">,</span>
         <span class="n">test_result</span><span class="p">,</span>
@@ -1423,6 +1424,7 @@
         <span class="n">executed</span><span class="p">,</span>
         <span class="n">duration</span><span class="p">,</span>
         <span class="n">defect_work_item_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">create_incident</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;method update_test_record_by_fields updates a test record.</span>
 
@@ -1460,13 +1462,15 @@
         <span class="n">testrec</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">duration</span>
         <span class="k">if</span> <span class="n">defect_work_item_id</span><span class="p">:</span>
             <span class="n">testrec</span><span class="o">.</span><span class="n">defect_case_id</span> <span class="o">=</span> <span class="n">defect_work_item_id</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">update_test_record_by_object</span><span class="p">(</span><span class="n">test_case_id</span><span class="p">,</span> <span class="n">testrec</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_test_record_by_object</span><span class="p">(</span>
+            <span class="n">test_case_id</span><span class="p">,</span> <span class="n">testrec</span><span class="p">,</span> <span class="n">create_incident</span><span class="o">=</span><span class="n">create_incident</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TestRun.update_test_record_by_object">
 <a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.update_test_record_by_object">[docs]</a>
     <span class="nd">@tx_wrapper</span>
-    <span class="k">def</span> <span class="nf">update_test_record_by_object</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_test_record_by_object</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">test_case_id</span><span class="p">,</span>
         <span class="n">test_record</span><span class="p">,</span>
@@ -1502,7 +1506,7 @@
         <span class="c1"># executed records.</span>
         <span class="n">test_case_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">rec</span><span class="o">.</span><span class="n">test_case_id</span> <span class="k">for</span> <span class="n">rec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_records</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">test_case_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">test_case_ids</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add_test_record_by_object</span><span class="p">(</span><span class="n">test_record</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_test_record_by_object</span><span class="p">(</span><span class="n">test_record</span><span class="p">,</span> <span class="n">create_incident</span><span class="o">=</span><span class="n">create_incident</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="p">(</span>
                 <span class="n">test_record</span><span class="o">.</span><span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;failed&quot;</span>
@@ -1528,7 +1532,7 @@
 
 <div class="viewcode-block" id="TestRun.update_wiki_content">
 <a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.update_wiki_content">[docs]</a>
-    <span class="k">def</span> <span class="nf">update_wiki_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_wiki_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;method update_wiki_content updates the wiki for the current TestRun</span>
 
 <span class="sd">        Args:</span>
@@ -1558,7 +1562,7 @@
 
 <div class="viewcode-block" id="TestRun.verify_required">
 <a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.verify_required">[docs]</a>
-    <span class="k">def</span> <span class="nf">verify_required</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">verify_required</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;function that checks if all required fields are passed in</span>
 
 <span class="sd">        Exceptions:</span>
@@ -1576,7 +1580,7 @@
 
 <div class="viewcode-block" id="TestRun.verify_params">
 <a class="viewcode-back" href="../../pylero.html#pylero.test_run.TestRun.verify_params">[docs]</a>
-    <span class="k">def</span> <span class="nf">verify_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">verify_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;function that checks if all the kwargs are valid attributes.</span>
 
 <span class="sd">        Args:</span>
@@ -1601,7 +1605,7 @@
           
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
 <h1 class="logo"><a href="../../index.html">pylero</a></h1>
 
@@ -1652,7 +1656,7 @@
       &#169;2021, Sim Zacks and Pylero Contributors.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
     </div>

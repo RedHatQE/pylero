@@ -5,10 +5,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>pylero.session &#8212; pylero  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=12dfc556" />
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -31,23 +31,23 @@
             
   <h1>Source code for pylero.session</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf8 -*-</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">unicode_literals</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">absolute_import</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">division</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">print_function</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">unicode_literals</span>
 
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">ssl</span>
-<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ssl</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 
-<span class="kn">import</span> <span class="nn">suds.client</span>
-<span class="kn">import</span> <span class="nn">suds.sax.element</span>
-<span class="kn">from</span> <span class="nn">pylero._compatible</span> <span class="kn">import</span> <span class="n">builtins</span>  <span class="c1"># noqa</span>
-<span class="kn">from</span> <span class="nn">pylero._compatible</span> <span class="kn">import</span> <span class="nb">object</span>
-<span class="kn">from</span> <span class="nn">pylero._compatible</span> <span class="kn">import</span> <span class="n">urlparse</span>
-<span class="kn">from</span> <span class="nn">suds.plugin</span> <span class="kn">import</span> <span class="n">MessagePlugin</span>
-<span class="kn">from</span> <span class="nn">suds.sax.attribute</span> <span class="kn">import</span> <span class="n">Attribute</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">suds.client</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">suds.sax.element</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero._compatible</span><span class="w"> </span><span class="kn">import</span> <span class="n">builtins</span>  <span class="c1"># noqa</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero._compatible</span><span class="w"> </span><span class="kn">import</span> <span class="nb">object</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero._compatible</span><span class="w"> </span><span class="kn">import</span> <span class="n">urlparse</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">suds.plugin</span><span class="w"> </span><span class="kn">import</span> <span class="n">MessagePlugin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">suds.sax.attribute</span><span class="w"> </span><span class="kn">import</span> <span class="n">Attribute</span>
 
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -64,10 +64,10 @@
 
 <div class="viewcode-block" id="ListenFilter">
 <a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.ListenFilter">[docs]</a>
-<span class="k">class</span> <span class="nc">ListenFilter</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">Filter</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ListenFilter</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">Filter</span><span class="p">):</span>
 <div class="viewcode-block" id="ListenFilter.filter">
 <a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.ListenFilter.filter">[docs]</a>
-    <span class="k">def</span> <span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Determine which log records to output.</span>
 <span class="sd">        Returns 0 for no, nonzero for yes.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -91,7 +91,7 @@
 <span class="c1"># assigned to &quot;ssl._create_default_https_context&quot;, few lines below</span>
 <div class="viewcode-block" id="create_ssl_context">
 <a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.create_ssl_context">[docs]</a>
-<span class="k">def</span> <span class="nf">create_ssl_context</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_ssl_context</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;this function creates a custom ssl context which is required for ssl</span>
 <span class="sd">    connection in python-version &gt;=2.7.10. this ssl context is customize to use</span>
 <span class="sd">    certificate which is located in &#39;CERT_PATH&#39;.</span>
@@ -106,7 +106,7 @@
 
 <div class="viewcode-block" id="SoapNull">
 <a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.SoapNull">[docs]</a>
-<span class="k">class</span> <span class="nc">SoapNull</span><span class="p">(</span><span class="n">MessagePlugin</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SoapNull</span><span class="p">(</span><span class="n">MessagePlugin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;suds plugin that is called before any suds message is sent to the remote</span>
 <span class="sd">    server. It adds the xsi:nil=true attribute to any element that is blank.</span>
 <span class="sd">    Without this plugin, a number of functions that were supposed to accept</span>
@@ -115,7 +115,7 @@
 
 <div class="viewcode-block" id="SoapNull.marshalled">
 <a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.SoapNull.marshalled">[docs]</a>
-    <span class="k">def</span> <span class="nf">marshalled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">marshalled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
         <span class="c1"># Go through every node in the document and check if it is empty and</span>
         <span class="c1"># if so set the xsi:nil tag to true</span>
         <span class="n">context</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">add_nil</span><span class="p">)</span></div>
@@ -123,7 +123,7 @@
 
 <div class="viewcode-block" id="SoapNull.add_nil">
 <a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.SoapNull.add_nil">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_nil</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_nil</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Used as a filter function with walk to add xsi:nil to blank attrs.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">isempty</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">element</span><span class="o">.</span><span class="n">isnil</span><span class="p">():</span>
             <span class="n">element</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Attribute</span><span class="p">(</span><span class="s2">&quot;xsi:nil&quot;</span><span class="p">,</span> <span class="s2">&quot;true&quot;</span><span class="p">))</span></div>
@@ -133,8 +133,8 @@
 
 <div class="viewcode-block" id="Session">
 <a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.Session">[docs]</a>
-<span class="k">class</span> <span class="nc">Session</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">_url_for_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_name</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Session</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_url_for_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;generate the full URL for the WSDL client services&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2">/ws/services/</span><span class="si">{1}</span><span class="s2">WebService?wsdl&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_server</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">service_name</span>
@@ -142,7 +142,7 @@
 
 <div class="viewcode-block" id="Session.__init__">
 <a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.Session.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Session constructor, initialize the WSDL clients</span>
 
 <span class="sd">        Args:</span>
@@ -183,7 +183,7 @@
             <span class="n">ssl</span><span class="o">.</span><span class="n">_create_default_https_context</span> <span class="o">=</span> <span class="n">create_ssl_context</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_login</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_login</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;login to the Polarion API&quot;&quot;&quot;</span>
         <span class="n">sc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session_client</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_server</span><span class="o">.</span><span class="n">token</span><span class="p">:</span>
@@ -200,11 +200,11 @@
         <span class="n">sc</span><span class="o">.</span><span class="n">set_options</span><span class="p">(</span><span class="n">soapheaders</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_session_id_header</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_request_at</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_logout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_logout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;logout from Polarion server&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_session_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">endSession</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_reauth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_reauth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;auto relogin after timeout, set in the getattr function of each</span>
 <span class="sd">        client obj</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -218,32 +218,32 @@
 
 <div class="viewcode-block" id="Session.tx_begin">
 <a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.Session.tx_begin">[docs]</a>
-    <span class="k">def</span> <span class="nf">tx_begin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tx_begin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_session_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">beginTransaction</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="Session.tx_commit">
 <a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.Session.tx_commit">[docs]</a>
-    <span class="k">def</span> <span class="nf">tx_commit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tx_commit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_session_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">endTransaction</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Session.tx_rollback">
 <a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.Session.tx_rollback">[docs]</a>
-    <span class="k">def</span> <span class="nf">tx_rollback</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tx_rollback</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_session_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">endTransaction</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Session.tx_release">
 <a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.Session.tx_release">[docs]</a>
-    <span class="k">def</span> <span class="nf">tx_release</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tx_release</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session_client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">transactionExists</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">tx_rollback</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="Session.tx_in">
 <a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.Session.tx_in">[docs]</a>
-    <span class="k">def</span> <span class="nf">tx_in</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tx_in</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Function checks if a transaction is in progress. You can not have a</span>
 <span class="sd">        transaction within another transaction. This function helps the system</span>
 <span class="sd">        determine if it should start a new transaction or if it is already in</span>
@@ -257,10 +257,10 @@
 
 
 
-<span class="k">class</span> <span class="nc">_SudsClientWrapper</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_SudsClientWrapper</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;class that manages the WSDL clients&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">enclosing_session</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">enclosing_session</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;has the actual WSDL client as a private _suds_client attribute so</span>
 <span class="sd">        that the &quot;magic&quot; __getattr__ function will be able to verify</span>
 <span class="sd">        functions called on it and after processing to call the WSDL function</span>
@@ -275,7 +275,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_suds_client</span> <span class="o">=</span> <span class="n">suds</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">plugin</span><span class="p">],</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_enclosing_session</span> <span class="o">=</span> <span class="n">enclosing_session</span>
 
-    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
         <span class="c1"># every time a client function is called, this verifies that there is</span>
         <span class="c1"># still an active connection and if not, it reconnects.</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;attr=</span><span class="si">{0}</span><span class="s2"> self=</span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">))</span>
@@ -309,7 +309,7 @@
           
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
 <h1 class="logo"><a href="../../index.html">pylero</a></h1>
 
@@ -360,7 +360,7 @@
       &#169;2021, Sim Zacks and Pylero Contributors.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
     </div>

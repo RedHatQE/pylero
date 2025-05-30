@@ -5,10 +5,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>pylero.base_polarion &#8212; pylero  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=12dfc556" />
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -31,43 +31,43 @@
             
   <h1>Source code for pylero.base_polarion</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf8 -*-</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">unicode_literals</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">absolute_import</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">division</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">print_function</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">unicode_literals</span>
 
-<span class="kn">import</span> <span class="nn">base64</span>
-<span class="kn">import</span> <span class="nn">copy</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
-<span class="kn">from</span> <span class="nn">getpass</span> <span class="kn">import</span> <span class="n">getpass</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">base64</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">wraps</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">getpass</span><span class="w"> </span><span class="kn">import</span> <span class="n">getpass</span>
 
-<span class="kn">import</span> <span class="nn">suds</span>
-<span class="kn">from</span> <span class="nn">pylero._compatible</span> <span class="kn">import</span> <span class="n">basestring</span>
-<span class="kn">from</span> <span class="nn">pylero._compatible</span> <span class="kn">import</span> <span class="nb">classmethod</span>
-<span class="kn">from</span> <span class="nn">pylero._compatible</span> <span class="kn">import</span> <span class="n">ConfigParser</span>
-<span class="kn">from</span> <span class="nn">pylero.exceptions</span> <span class="kn">import</span> <span class="n">PyleroLibException</span>
-<span class="kn">from</span> <span class="nn">pylero.server</span> <span class="kn">import</span> <span class="n">Server</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">suds</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero._compatible</span><span class="w"> </span><span class="kn">import</span> <span class="n">basestring</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero._compatible</span><span class="w"> </span><span class="kn">import</span> <span class="nb">classmethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero._compatible</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigParser</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">PyleroLibException</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.server</span><span class="w"> </span><span class="kn">import</span> <span class="n">Server</span>
 
 
 <span class="c1"># classproperty is a property that works on the class level</span>
 <div class="viewcode-block" id="ClassProperty">
 <a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.ClassProperty">[docs]</a>
-<span class="k">class</span> <span class="nc">ClassProperty</span><span class="p">(</span><span class="nb">property</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ClassProperty</span><span class="p">(</span><span class="nb">property</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a classmethod as the getter so that the property can be used as</span>
 <span class="sd">    a class property. This is needed so that the property can be set for all</span>
 <span class="sd">    child objects. This project currently has no need of a setter or deleter.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="bp">cls</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="bp">cls</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">classmethod</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fget</span><span class="p">)</span><span class="o">.</span><span class="fm">__get__</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)()</span></div>
 
 
 
 <div class="viewcode-block" id="Configuration">
 <a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.Configuration">[docs]</a>
-<span class="k">class</span> <span class="nc">Configuration</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Configuration</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="n">pkgdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
     <span class="n">GLOBAL_CONFIG</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/pylero.cfg&quot;</span> <span class="o">%</span> <span class="n">pkgdir</span>
     <span class="n">LOCAL_CONFIG</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&quot;~&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;/.pylero&quot;</span>
@@ -78,7 +78,7 @@
 
 <div class="viewcode-block" id="Configuration.__init__">
 <a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.Configuration.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">defaults</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;cachingpolicy&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;timeout&quot;</span><span class="p">:</span> <span class="s2">&quot;120&quot;</span><span class="p">}</span>
         <span class="n">config</span> <span class="o">=</span> <span class="n">ConfigParser</span><span class="p">(</span><span class="n">defaults</span><span class="p">)</span>
         <span class="c1"># Check for existence of config file and config_section</span>
@@ -166,7 +166,7 @@
 
 <div class="viewcode-block" id="Connection">
 <a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.Connection">[docs]</a>
-<span class="k">class</span> <span class="nc">Connection</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Connection</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates a Polarion session as a class method, so that it is used for all</span>
 <span class="sd">    objects inherited by BasePolarion.</span>
 <span class="sd">    The url, repo, user and password are read from config files, which are</span>
@@ -188,7 +188,7 @@
     <span class="n">token_enabled</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">session</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">session</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">connected</span><span class="p">:</span>
             <span class="n">cfg</span> <span class="o">=</span> <span class="n">Configuration</span><span class="p">()</span>
             <span class="c1"># if the password is not supplied in the config file, ask the user</span>
@@ -257,13 +257,13 @@
 
 <div class="viewcode-block" id="tx_wrapper">
 <a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.tx_wrapper">[docs]</a>
-<span class="k">def</span> <span class="nf">tx_wrapper</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">tx_wrapper</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
     <span class="c1"># decorator function to run specific functions in.</span>
     <span class="c1"># Because they have multiple modifying stmts, they should be run</span>
     <span class="c1"># in a transaction. It first checks if it is already in a tx and if</span>
     <span class="c1"># not, it starts one itself.</span>
     <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">inner</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">inner</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># the first object is the instance or class object.</span>
         <span class="bp">self</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">new_tx</span> <span class="o">=</span> <span class="kc">False</span>
@@ -286,7 +286,7 @@
 
 <div class="viewcode-block" id="BasePolarion">
 <a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.BasePolarion">[docs]</a>
-<span class="k">class</span> <span class="nc">BasePolarion</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BasePolarion</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;BasePolarion is the parent class for all the WSDL Polarion objects that</span>
 <span class="sd">    are published. Using the _cls_suds_map, the class creates a property for</span>
 <span class="sd">    each attribute so that any access of the object attribute, will access the</span>
@@ -335,7 +335,7 @@
     <span class="n">URI_ID_SET_REPLACE</span> <span class="o">=</span> <span class="nb">classmethod</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">)</span>
 
     <span class="nd">@ClassProperty</span>
-    <span class="k">def</span> <span class="nf">session</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">session</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="c1"># Uses a class property for the session, so that the library doesn&#39;t</span>
         <span class="c1"># connect to the server until the library is actually used.</span>
         <span class="k">if</span> <span class="n">BasePolarion</span><span class="o">.</span><span class="n">_session</span><span class="p">:</span>
@@ -353,7 +353,7 @@
             <span class="k">return</span> <span class="n">BasePolarion</span><span class="o">.</span><span class="n">_session</span>
 
     <span class="nd">@ClassProperty</span>
-    <span class="k">def</span> <span class="nf">default_project</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">default_project</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="c1"># Uses a class property for the session, so that the library connects</span>
         <span class="c1"># when accessing it.</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">BasePolarion</span><span class="o">.</span><span class="n">_default_project</span><span class="p">:</span>
@@ -361,7 +361,7 @@
         <span class="k">return</span> <span class="n">BasePolarion</span><span class="o">.</span><span class="n">_default_project</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_convert_obj_fields_to_polarion</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="p">[]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_convert_obj_fields_to_polarion</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="p">[]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;All child methods that take a fields parameter should pass the field</span>
 <span class="sd">        array and it converts it to the Polarion attribute name using the</span>
 <span class="sd">        _cls_suds_map. It uses the python map function over the fields list to</span>
@@ -402,7 +402,7 @@
 <div class="viewcode-block" id="BasePolarion.get_global_roles">
 <a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.BasePolarion.get_global_roles">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">get_global_roles</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_global_roles</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns all global roles.</span>
 
 <span class="sd">        Args:</span>
@@ -420,7 +420,7 @@
 <div class="viewcode-block" id="BasePolarion.has_current_user_permission">
 <a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.BasePolarion.has_current_user_permission">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">has_current_user_permission</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">permission</span><span class="p">,</span> <span class="n">project_id</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">has_current_user_permission</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">permission</span><span class="p">,</span> <span class="n">project_id</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if given permission is granted to the current user.</span>
 
 <span class="sd">        Args:</span>
@@ -441,7 +441,7 @@
 
 <div class="viewcode-block" id="BasePolarion.__init__">
 <a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.BasePolarion.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">suds_object</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">suds_object</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># cls_suds_map must be available for some parameters on the class</span>
         <span class="c1"># level, but gets changed on the instance level and those changes</span>
         <span class="c1"># should not be accessible to other instances. This is the reason</span>
@@ -554,7 +554,7 @@
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id_field</span><span class="p">,</span> <span class="n">obj_id</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_get_suds_object</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_suds_object</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the WSDL object as created by the Polarion WSDL factory&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj_client</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj_struct</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj_client</span><span class="p">)</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
@@ -563,7 +563,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">_obj_getter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_name</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_obj_getter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;get function for attributes that reference an object.</span>
 <span class="sd">        Returns the referenced object. If the WSDL attribute contains a value</span>
 <span class="sd">        that value is given to the object as its obj_id. Classes that have an</span>
@@ -594,7 +594,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">obj</span>
 
-    <span class="k">def</span> <span class="nf">_obj_setter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">field_name</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_obj_setter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">field_name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;set function for attributes that reference an object. It can accept</span>
 <span class="sd">        a string, a Pylero object or a raw WSDL object. If a string is given,</span>
 <span class="sd">        it is passed in to the object as its obj_id.</span>
@@ -638,7 +638,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span><span class="s2">&quot;the value </span><span class="si">{0}</span><span class="s2"> is not a valid type&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">_arr_obj_getter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_name</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_arr_obj_getter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;get function for attributes that reference an array of objects.</span>
 <span class="sd">        The Polarion array object always has a single Python list item which</span>
 <span class="sd">        contains a list of the WSDL objects. This function converts each WSDL</span>
@@ -663,7 +663,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[]</span>
 
-    <span class="k">def</span> <span class="nf">_arr_obj_setter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">field_name</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_arr_obj_setter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">field_name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;set function for attributes that reference an array of objects. It</span>
 <span class="sd">        requires a single instance or list of either Pylero or WSDL objects</span>
 <span class="sd">        or an empty list.</span>
@@ -715,7 +715,7 @@
 
 <div class="viewcode-block" id="BasePolarion.custom_obj">
 <a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.BasePolarion.custom_obj">[docs]</a>
-    <span class="k">def</span> <span class="nf">custom_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">custom_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># This returns a custom Polarion object. It can&#39;t use the Custom class</span>
         <span class="c1"># as that is a child of this class.</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s2">&quot;tns4:Custom&quot;</span><span class="p">)</span></div>
@@ -723,13 +723,13 @@
 
 <div class="viewcode-block" id="BasePolarion.custom_array_obj">
 <a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.BasePolarion.custom_array_obj">[docs]</a>
-    <span class="k">def</span> <span class="nf">custom_array_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">custom_array_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># This returns a custom Polarion object. It can&#39;t use the Custom class</span>
         <span class="c1"># as that is a child of this class.</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">test_management_client</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s2">&quot;tns4:ArrayOfCustom&quot;</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_custom_getter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_name</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_custom_getter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Works with custom fields that has attributes stored differently</span>
 <span class="sd">        then regular attributes. It first checks if there is a value in the</span>
 <span class="sd">        local copy, which may have already been modified by the user. If not,</span>
@@ -787,7 +787,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">_custom_setter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">field_name</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_custom_setter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">field_name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Works with custom fields that has to keep track of values and what</span>
 <span class="sd">        changed so that on update it can also update all the custom fields at</span>
 <span class="sd">        the same time.</span>
@@ -874,7 +874,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_custom_fields</span> <span class="o">=</span> <span class="p">[</span><span class="n">cust</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">_regular_setter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">field_name</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_regular_setter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">field_name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;This setter is used for any attributes that are not Polarion object</span>
 <span class="sd">        data types. If the attribute type is a string, then it validates it</span>
 <span class="sd">        using the check_encode function</span>
@@ -887,7 +887,7 @@
             <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_encode</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_suds_object</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_check_encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate @val is a UTF-8 because Polarion doesn&#39;t support not</span>
 <span class="sd">        UTF-8 characters. The only use case that is not taken into account</span>
 <span class="sd">        is when an attribute is set directly with a SUDS object. The users</span>
@@ -907,7 +907,7 @@
                 <span class="s2">&quot;raised when converting it to unicode: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
             <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_get_file_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_file_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Method for getting attachment data that can be passed to the soap</span>
 <span class="sd">        library. Is used by a number of child classes.</span>
 
@@ -930,7 +930,7 @@
             <span class="c1"># Python3</span>
             <span class="k">return</span> <span class="n">bencode</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_verify_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_verify_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># verifies if the object contains a suds object from the server by</span>
         <span class="c1"># checking if the uri field is populated. If no URI it didn&#39;t come from</span>
         <span class="c1"># the server</span>
@@ -941,7 +941,7 @@
 
 <div class="viewcode-block" id="BasePolarion.can_add_element_to_key">
 <a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.BasePolarion.can_add_element_to_key">[docs]</a>
-    <span class="k">def</span> <span class="nf">can_add_element_to_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">can_add_element_to_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if the current user can add elements to the collection at</span>
 <span class="sd">        given key of the current object.</span>
 
@@ -960,7 +960,7 @@
 
 <div class="viewcode-block" id="BasePolarion.can_delete_instance">
 <a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.BasePolarion.can_delete_instance">[docs]</a>
-    <span class="k">def</span> <span class="nf">can_delete_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">can_delete_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if the current user can delete the current object</span>
 
 <span class="sd">        Args:</span>
@@ -978,7 +978,7 @@
 
 <div class="viewcode-block" id="BasePolarion.can_modify_instance">
 <a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.BasePolarion.can_modify_instance">[docs]</a>
-    <span class="k">def</span> <span class="nf">can_modify_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">can_modify_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if the current user can modify the current object</span>
 
 <span class="sd">        Args:</span>
@@ -996,7 +996,7 @@
 
 <div class="viewcode-block" id="BasePolarion.can_modify_key">
 <a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.BasePolarion.can_modify_key">[docs]</a>
-    <span class="k">def</span> <span class="nf">can_modify_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">can_modify_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if the current user can modify the field with given key of</span>
 <span class="sd">        the current object.</span>
 
@@ -1015,7 +1015,7 @@
 
 <div class="viewcode-block" id="BasePolarion.can_read_instance">
 <a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.BasePolarion.can_read_instance">[docs]</a>
-    <span class="k">def</span> <span class="nf">can_read_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">can_read_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if the current user can read the current object</span>
 
 <span class="sd">        Args:</span>
@@ -1033,7 +1033,7 @@
 
 <div class="viewcode-block" id="BasePolarion.can_read_key">
 <a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.BasePolarion.can_read_key">[docs]</a>
-    <span class="k">def</span> <span class="nf">can_read_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">can_read_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if the current user can read the field with given key of</span>
 <span class="sd">        the current object.</span>
 
@@ -1052,7 +1052,7 @@
 
 <div class="viewcode-block" id="BasePolarion.can_remove_element_from_key">
 <a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.BasePolarion.can_remove_element_from_key">[docs]</a>
-    <span class="k">def</span> <span class="nf">can_remove_element_from_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">can_remove_element_from_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if the current user can remove elements from the collection</span>
 <span class="sd">        at given key of the current object.</span>
 
@@ -1073,7 +1073,7 @@
 
 <div class="viewcode-block" id="BasePolarion.get_location">
 <a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.BasePolarion.get_location">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_location</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_location</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the location of the current object. In the context of this</span>
 <span class="sd">        service the method should be used to get the location of a</span>
 <span class="sd">        project(-group).</span>
@@ -1093,7 +1093,7 @@
 
 <div class="viewcode-block" id="BasePolarion.check_valid_field_values">
 <a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.BasePolarion.check_valid_field_values">[docs]</a>
-    <span class="k">def</span> <span class="nf">check_valid_field_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">enum_id</span><span class="p">,</span> <span class="n">additional_parms</span><span class="p">,</span> <span class="n">control</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_valid_field_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">enum_id</span><span class="p">,</span> <span class="n">additional_parms</span><span class="p">,</span> <span class="n">control</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;verifies id the value passed in is valid for the enum or object</span>
 <span class="sd">        passed in. for example, if we want to see if a valid user is given,</span>
 <span class="sd">        this will try to instantiate the User class with the given parameter</span>
@@ -1125,7 +1125,7 @@
 
 <div class="viewcode-block" id="BasePolarion.get_valid_field_values">
 <a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.BasePolarion.get_valid_field_values">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_valid_field_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enum_id</span><span class="p">,</span> <span class="n">control</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_valid_field_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enum_id</span><span class="p">,</span> <span class="n">control</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets the available enumeration options.</span>
 <span class="sd">        Uses a cache dict because the time to get valid fields from server</span>
 <span class="sd">        is time prohibitive.</span>
@@ -1157,7 +1157,7 @@
 
 <div class="viewcode-block" id="BasePolarion.reload">
 <a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.BasePolarion.reload">[docs]</a>
-    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Reloads the object with data from the server.</span>
 <span class="sd">        This function is useful if the data on the server changed or if a</span>
 <span class="sd">        data changing function was called (such as TestRun.add_attachment)</span>
@@ -1177,7 +1177,7 @@
 
 <div class="viewcode-block" id="BasePolarion.get_revision">
 <a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.BasePolarion.get_revision">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_revision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repository_name</span><span class="p">,</span> <span class="n">revision_id</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_revision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repository_name</span><span class="p">,</span> <span class="n">revision_id</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets a revision</span>
 <span class="sd">        Args:</span>
@@ -1193,7 +1193,7 @@
 
 <div class="viewcode-block" id="BasePolarion.get_revision_by_uri">
 <a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.BasePolarion.get_revision_by_uri">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_revision_by_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">revision_uri</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_revision_by_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">revision_uri</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets a revision by its URI</span>
 <span class="sd">        Args:</span>
@@ -1207,7 +1207,7 @@
 
 <div class="viewcode-block" id="BasePolarion.get_revisions">
 <a class="viewcode-back" href="../../pylero.html#pylero.base_polarion.BasePolarion.get_revisions">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_revisions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_revisions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns all revisions for a specific URI.</span>
 <span class="sd">        Args:</span>
@@ -1224,7 +1224,7 @@
           
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
 <h1 class="logo"><a href="../../index.html">pylero</a></h1>
 
@@ -1275,7 +1275,7 @@
       &#169;2021, Sim Zacks and Pylero Contributors.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
     </div>

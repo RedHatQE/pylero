@@ -5,10 +5,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>pylero.project &#8212; pylero  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=12dfc556" />
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -31,25 +31,25 @@
             
   <h1>Source code for pylero.project</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf8 -*-</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">unicode_literals</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">absolute_import</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">division</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">print_function</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">unicode_literals</span>
 
-<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
 
-<span class="kn">from</span> <span class="nn">pylero.base_polarion</span> <span class="kn">import</span> <span class="n">BasePolarion</span>
-<span class="kn">from</span> <span class="nn">pylero.category</span> <span class="kn">import</span> <span class="n">Category</span>
-<span class="kn">from</span> <span class="nn">pylero.custom_field_type</span> <span class="kn">import</span> <span class="n">CustomFieldType</span>
-<span class="kn">from</span> <span class="nn">pylero.exceptions</span> <span class="kn">import</span> <span class="n">PyleroLibException</span>
-<span class="kn">from</span> <span class="nn">pylero.tests_configuration</span> <span class="kn">import</span> <span class="n">TestsConfiguration</span>
-<span class="kn">from</span> <span class="nn">pylero.text</span> <span class="kn">import</span> <span class="n">Text</span>
-<span class="kn">from</span> <span class="nn">pylero.user</span> <span class="kn">import</span> <span class="n">User</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.base_polarion</span><span class="w"> </span><span class="kn">import</span> <span class="n">BasePolarion</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.category</span><span class="w"> </span><span class="kn">import</span> <span class="n">Category</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.custom_field_type</span><span class="w"> </span><span class="kn">import</span> <span class="n">CustomFieldType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">PyleroLibException</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.tests_configuration</span><span class="w"> </span><span class="kn">import</span> <span class="n">TestsConfiguration</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.text</span><span class="w"> </span><span class="kn">import</span> <span class="n">Text</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pylero.user</span><span class="w"> </span><span class="kn">import</span> <span class="n">User</span>
 
 
 <div class="viewcode-block" id="Project">
 <a class="viewcode-back" href="../../pylero.html#pylero.project.Project">[docs]</a>
-<span class="k">class</span> <span class="nc">Project</span><span class="p">(</span><span class="n">BasePolarion</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Project</span><span class="p">(</span><span class="n">BasePolarion</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Object to handle the Polarion WSDL tns4:Project class</span>
 
 <span class="sd">    Attributes:</span>
@@ -94,7 +94,7 @@
 <div class="viewcode-block" id="Project.get_context_roles">
 <a class="viewcode-back" href="../../pylero.html#pylero.project.Project.get_context_roles">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">get_context_roles</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">location</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_context_roles</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">location</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the context (project) roles for the given location.</span>
 
 <span class="sd">        Args:</span>
@@ -111,7 +111,7 @@
 
 <div class="viewcode-block" id="Project.__init__">
 <a class="viewcode-back" href="../../pylero.html#pylero.project.Project.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">suds_object</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">suds_object</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Project constructor.</span>
 
 <span class="sd">        Args:</span>
@@ -155,16 +155,16 @@
                 <span class="k">raise</span> <span class="n">PyleroLibException</span><span class="p">(</span><span class="s2">&quot;The Project was not found.&quot;</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_fix_circular_refs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fix_circular_refs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># The module references ProjectGroup, which references this class</span>
         <span class="c1"># This is not allowed, so the self reference is defined here.</span>
-        <span class="kn">from</span> <span class="nn">pylero.project_group</span> <span class="kn">import</span> <span class="n">ProjectGroup</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">pylero.project_group</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProjectGroup</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_cls_suds_map</span><span class="p">[</span><span class="s2">&quot;project_group&quot;</span><span class="p">][</span><span class="s2">&quot;cls&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ProjectGroup</span>
 
 <div class="viewcode-block" id="Project.get_categories">
 <a class="viewcode-back" href="../../pylero.html#pylero.project.Project.get_categories">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;method get_categories retrieves a list of Category objects</span>
 
 <span class="sd">        Args:</span>
@@ -187,7 +187,7 @@
 
 <div class="viewcode-block" id="Project.get_defined_custom_field_keys">
 <a class="viewcode-back" href="../../pylero.html#pylero.project.Project.get_defined_custom_field_keys">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_defined_custom_field_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">work_item_type_id</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_defined_custom_field_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">work_item_type_id</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets all custom field keys defined for a workitem type in a project.</span>
 
 <span class="sd">        Args:</span>
@@ -207,7 +207,7 @@
 
 <div class="viewcode-block" id="Project.get_defined_custom_field_type">
 <a class="viewcode-back" href="../../pylero.html#pylero.project.Project.get_defined_custom_field_type">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_defined_custom_field_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">work_item_type_id</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_defined_custom_field_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">work_item_type_id</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;method get_defined_custom_field_type gets custom field definition</span>
 <span class="sd">        of a work item type for the given key.</span>
 
@@ -230,7 +230,7 @@
 
 <div class="viewcode-block" id="Project.get_defined_custom_field_types">
 <a class="viewcode-back" href="../../pylero.html#pylero.project.Project.get_defined_custom_field_types">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_defined_custom_field_types</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">work_item_type_id</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_defined_custom_field_types</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">work_item_type_id</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;method get_defined_custom_field_type gets custom field definition</span>
 <span class="sd">        of a work item type all keys.</span>
 
@@ -256,7 +256,7 @@
 
 <div class="viewcode-block" id="Project.get_document_spaces">
 <a class="viewcode-back" href="../../pylero.html#pylero.project.Project.get_document_spaces">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_document_spaces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_document_spaces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets the Module/Document spaces for the project.</span>
 
 <span class="sd">        Args:</span>
@@ -274,7 +274,7 @@
 
 <div class="viewcode-block" id="Project.get_project_users">
 <a class="viewcode-back" href="../../pylero.html#pylero.project.Project.get_project_users">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_project_users</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_project_users</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets users of the project</span>
 
 <span class="sd">        Args:</span>
@@ -296,7 +296,7 @@
 
 <div class="viewcode-block" id="Project.get_test_steps_configuration">
 <a class="viewcode-back" href="../../pylero.html#pylero.project.Project.get_test_steps_configuration">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_test_steps_configuration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_test_steps_configuration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;method get_test_steps_configuration retrieves a list of the</span>
 <span class="sd">        Test Steps configuration for the project</span>
 
@@ -320,7 +320,7 @@
 
 <div class="viewcode-block" id="Project.get_tests_configuration">
 <a class="viewcode-back" href="../../pylero.html#pylero.project.Project.get_tests_configuration">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_tests_configuration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_tests_configuration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;method get_tests_configuration retrieves the test management</span>
 <span class="sd">        configuration for the project</span>
 
@@ -344,7 +344,7 @@
 
 <div class="viewcode-block" id="Project.get_wiki_spaces">
 <a class="viewcode-back" href="../../pylero.html#pylero.project.Project.get_wiki_spaces">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_wiki_spaces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_wiki_spaces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns Wiki spaces from current project</span>
 
 <span class="sd">        Args:</span>
@@ -366,7 +366,7 @@
           
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
 <h1 class="logo"><a href="../../index.html">pylero</a></h1>
 
@@ -417,7 +417,7 @@
       &#169;2021, Sim Zacks and Pylero Contributors.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
     </div>
