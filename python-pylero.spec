@@ -1,5 +1,5 @@
 Name:           python-pylero
-Version:        0.1.0
+Version:        0.1.1
 Release:        1%{?dist}
 Summary:        Python SDK for Polarion
 
@@ -82,6 +82,17 @@ Summary:        %{summary}
 
 
 %changelog
+* Fri May 30 2025 Wayne Sun <gsun@redhat.com> 0.1.1-1
+- Update doc to latest (gsun@redhat.com)
+- Add python 3.13 in support list (gsun@redhat.com)
+- chore(test_run): run pre-commit hooks (konstantin.althaus.ext@vaillant-
+  group.com)
+- fix(test_run): consistent use of create_incident
+  (konstantin.althaus.ext@vaillant-group.com)
+- Automatic commit of package [python-pylero] release [0.1.0-1].
+  (gsun@redhat.com)
+- Update doc to latest (gsun@redhat.com)
+
 * Mon May 20 2024 Wayne Sun <gsun@redhat.com> 0.1.0-1
 - feat: add flag for incident creation (konstantin.althaus.ext@vaillant-
   group.com)
