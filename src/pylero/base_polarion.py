@@ -1061,6 +1061,36 @@ class BasePolarion(object):
         # the _cache contains _suds_object, so the id attribute is used.
         return [enum.id for enum in enums]
 
+    def get_name_for_field_value(self, enum_id, value, control=None):
+        """Gets the available enumeration options.
+        Uses a cache dict because the time to get valid fields from server
+        is time prohibitive.
+
+        Args:
+            enum_id: The enum code to get values for
+            value: The enum value to get the `name` for
+            control: the control key for the enumeration. default:None
+
+        Returns:
+            the linked name
+
+        References:
+            Tracker.getEnumOptionsForId
+        """
+        project_id = getattr(self, "project_id", None) or self.default_project
+        enum_base = self._cache["enums"].get(enum_id)
+        enums = None
+        if enum_base:
+            enums = enum_base.get(control)
+        if not enums:
+            enums = self.session.tracker_client.service.getEnumOptionsForIdWithControl(
+                project_id, enum_id, control
+            )
+            self._cache["enums"][enum_id] = {}
+            self._cache["enums"][enum_id][control] = enums
+        # the _cache contains _suds_object, so the id attribute is used.
+        return next([enum.name for enum in enums if enum.id == value])
+
     def reload(self):
         """Reloads the object with data from the server.
         This function is useful if the data on the server changed or if a
