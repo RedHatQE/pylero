@@ -1089,9 +1089,9 @@ class BasePolarion(object):
             self._cache["enums"][enum_id] = {}
             self._cache["enums"][enum_id][control] = enums
         # the _cache contains _suds_object, so the id attribute is used.
-        if items := [enum.name for enum in enums if enum.id == value]:
-            if len(items) > 0:
-                return items[0]
+        for enum in enums:
+          if enum.id == value:
+                return enum.name
         raise PyleroLibException(
                 f'The enum element "{enum_id}"'
                 'or its value "{value}" do not exist.'
