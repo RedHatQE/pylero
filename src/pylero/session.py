@@ -100,6 +100,14 @@ class Session(object):
         self._last_request_at = None
         self._session_id_header = None
         self._cookies = None
+
+        # This block forces ssl certificate verification
+        # Must be set BEFORE creating any WSDL clients (fixes #185)
+        if self._server.cert_path:
+            global CERT_PATH
+            CERT_PATH = self._server.cert_path
+            ssl._create_default_https_context = create_ssl_context
+
         self._session_client = _SudsClientWrapper(
             self._url_for_name("Session"), None, timeout
         )
@@ -121,12 +129,6 @@ class Session(object):
         self.tracker_client = _SudsClientWrapper(
             self._url_for_name("Tracker"), self, timeout
         )
-
-        # This block forces ssl certificate verification
-        if self._server.cert_path:
-            global CERT_PATH
-            CERT_PATH = self._server.cert_path
-            ssl._create_default_https_context = create_ssl_context
 
     def _login(self):
         """login to the Polarion API"""
