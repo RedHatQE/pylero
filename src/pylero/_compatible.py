@@ -1,9 +1,9 @@
 # flake8: noqa
 """
-    _compatible.py
+_compatible.py
 
-    This is a compatibility module that assists on keeping the pylero
-    Library compatible with python 2.x and python 3.x.
+This is a compatibility module that assists on keeping the pylero
+Library compatible with python 2.x and python 3.x.
 """
 
 try:

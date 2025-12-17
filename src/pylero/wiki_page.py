@@ -1,17 +1,12 @@
 # -*- coding: utf8 -*-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 from pylero.base_polarion import BasePolarion
 from pylero.project import Project
-from pylero.subterra_uri import ArrayOfSubterraURI
-from pylero.subterra_uri import SubterraURI
+from pylero.subterra_uri import ArrayOfSubterraURI, SubterraURI
 from pylero.text import Text
 from pylero.user import User
-from pylero.wiki_page_attachment import ArrayOfWikiPageAttachment
-from pylero.wiki_page_attachment import WikiPageAttachment
+from pylero.wiki_page_attachment import ArrayOfWikiPageAttachment, WikiPageAttachment
 
 
 class WikiPage(BasePolarion):
@@ -85,9 +80,7 @@ class WikiPage(BasePolarion):
             function_name += "WithFields"
             parms += [cls._convert_obj_fields_to_polarion(fields)]
         wikis = []
-        for suds_wiki in getattr(cls.session.tracker_client.service, function_name)(
-            *parms
-        ):
+        for suds_wiki in getattr(cls.session.tracker_client.service, function_name)(*parms):
             wikis.append(cls(suds_object=suds_wiki))
         return wikis
 
@@ -183,6 +176,4 @@ class WikiPage(BasePolarion):
             if fields:
                 function_name += "WithFields"
                 parms += [self._convert_obj_fields_to_polarion(fields)]
-            self._suds_object = getattr(
-                self.session.tracker_client.service, function_name
-            )(*parms)
+            self._suds_object = getattr(self.session.tracker_client.service, function_name)(*parms)

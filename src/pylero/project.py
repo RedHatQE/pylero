@@ -1,8 +1,5 @@
 # -*- coding: utf8 -*-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import copy
 
@@ -101,14 +98,10 @@ class Project(BasePolarion):
             if project:
                 self._suds_object = copy.deepcopy(project)
             else:
-                self._suds_object = self.session.project_client.service.getProject(
-                    project_id
-                )
+                self._suds_object = self.session.project_client.service.getProject(project_id)
                 self._cache["projects"][project_id] = self._suds_object
         elif location:
-            self._suds_object = (
-                self.session.project_client.service.getProjectAtLocation(location)
-            )
+            self._suds_object = self.session.project_client.service.getProjectAtLocation(location)
         elif uri:
             self._suds_object = self.session.project_client.service.getProjectByURI(uri)
         if project_id or location or uri:
@@ -136,9 +129,7 @@ class Project(BasePolarion):
         """
         self._verify_obj()
         categories = []
-        for suds_cat in self.session.tracker_client.service.getCategories(
-            self.project_id
-        ):
+        for suds_cat in self.session.tracker_client.service.getCategories(self.project_id):
             categories.append(Category(suds_object=suds_cat))
         return categories
 
@@ -155,9 +146,7 @@ class Project(BasePolarion):
             Tracker.getDefinedCustomFieldkeys
         """
         self._verify_obj()
-        return self.session.tracker_client.service.getDefinedCustomFieldkeys(
-            self.project_id, work_item_type_id
-        )
+        return self.session.tracker_client.service.getDefinedCustomFieldkeys(self.project_id, work_item_type_id)
 
     def get_defined_custom_field_type(self, work_item_type_id, key):
         """method get_defined_custom_field_type gets custom field definition
@@ -194,9 +183,7 @@ class Project(BasePolarion):
         """
         self._verify_obj()
         customs = []
-        for (
-            suds_custom
-        ) in self.session.tracker_client.service.getDefinedCustomFieldType(
+        for suds_custom in self.session.tracker_client.service.getDefinedCustomFieldType(
             self.project_id, work_item_type_id
         ):
             customs.append(CustomFieldType(suds_object=suds_custom))
@@ -231,9 +218,7 @@ class Project(BasePolarion):
         """
         self._verify_obj()
         users = []
-        for suds_user in self.session.project_client.service.getProjectUsers(
-            self.project_id
-        ):
+        for suds_user in self.session.project_client.service.getProjectUsers(self.project_id):
             users.append(User(suds_object=suds_user))
 
     def get_test_steps_configuration(self):
@@ -250,11 +235,7 @@ class Project(BasePolarion):
             TestManagement.getTestStepsConfiguration
         """
         self._verify_obj()
-        config_steps = (
-            self.session.test_management_client.service.getTestStepsConfiguration(
-                self.project_id
-            )
-        )
+        config_steps = self.session.test_management_client.service.getTestStepsConfiguration(self.project_id)
         return config_steps[0]
 
     def get_tests_configuration(self):
@@ -271,11 +252,7 @@ class Project(BasePolarion):
             TestManagement.getTestsConfiguration
         """
         self._verify_obj()
-        tests_config = (
-            self.session.test_management_client.service.getTestsConfiguration(
-                self.project_id
-            )
-        )
+        tests_config = self.session.test_management_client.service.getTestsConfiguration(self.project_id)
         return TestsConfiguration(suds_object=tests_config)
 
     def get_wiki_spaces(self):

@@ -3,6 +3,7 @@ Created on Apr 19, 2015
 
 @author: szacks
 """
+
 import datetime
 import os
 import unittest
@@ -13,8 +14,7 @@ from pylero.test_record import TestRecord
 from pylero.test_run import TestRun
 from pylero.test_step import TestStep
 from pylero.test_step_result import TestStepResult
-from pylero.work_item import IncidentReport
-from pylero.work_item import TestCase
+from pylero.work_item import IncidentReport, TestCase
 
 DEFAULT_PROJ = TestRun.default_project
 TIME_STAMP = datetime.datetime.now().strftime("%Y%m%d%H%M%s")
@@ -78,9 +78,7 @@ class TestRunTest(unittest.TestCase):
         * Tries to create another template with an invalid kwarg
         """
         global TEMPLATE_ID
-        template = TestRun.create_template(
-            DEFAULT_PROJ, TEMPLATE_ID, "Empty", title=TEMPLATE_TITLE, arch="i386"
-        )
+        template = TestRun.create_template(DEFAULT_PROJ, TEMPLATE_ID, "Empty", title=TEMPLATE_TITLE, arch="i386")
         TEMPLATE_ID = template.test_run_id
         self.assertIsNotNone(template.test_run_id)
         self.assertTrue(template.is_template)
@@ -200,9 +198,7 @@ class TestRunTest(unittest.TestCase):
         rec = tr.records[-1]
         self.assertTrue(len(rec.attachments) == 1)
         self.assertEqual(rec.attachments[0].title, ATTACH_TITLE)
-        tr.delete_attachment_from_test_record(
-            rec.test_case_id, rec.attachments[0].filename
-        )
+        tr.delete_attachment_from_test_record(rec.test_case_id, rec.attachments[0].filename)
         tr.reload()
         rec = tr.records[-1]
         self.assertEqual(rec.attachments, [])
