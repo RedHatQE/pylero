@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import datetime
 import unittest
@@ -13,8 +10,7 @@ from pylero.test_record import TestRecord
 from pylero.test_run import TestRun
 from pylero.test_steps import TestSteps
 from pylero.user import User
-from pylero.work_item import Requirement
-from pylero.work_item import TestCase
+from pylero.work_item import Requirement, TestCase
 
 USER = "user1"
 ALT_USER = "user2"
@@ -42,9 +38,7 @@ class AttributeTest(unittest.TestCase):
             ["testcase"],
             "testspecification",
         )
-        cls.testrun = TestRun.create(
-            DEFAULT_PROJ, TEST_RUN_ID, "example", TEST_RUN_TITLE
-        )
+        cls.testrun = TestRun.create(DEFAULT_PROJ, TEST_RUN_ID, "example", TEST_RUN_TITLE)
         TEST_RUN_ID = cls.testrun.test_run_id
         # arch is a custom field defined by global admins for test runs.
         # It is set here for a test on custom fields that requires at least two
@@ -162,9 +156,7 @@ class AttributeTest(unittest.TestCase):
     def test_uri_obj(self):
         testrun2 = TestRun(project_id=DEFAULT_PROJ, test_run_id=TEST_RUN_ID)
         self.assertEqual(testrun2.template, "example")
-        new_template = TestRun.create_template(
-            DEFAULT_PROJ, TEMPLATE_ID, "example", title=TEMPLATE_TITLE
-        )
+        new_template = TestRun.create_template(DEFAULT_PROJ, TEMPLATE_ID, "example", title=TEMPLATE_TITLE)
         testrun2.template = new_template
         self.assertEqual(testrun2.template, new_template.test_run_id)
         self.assertNotEqual(testrun2.template, "example")

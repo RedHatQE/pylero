@@ -1,55 +1,38 @@
 # -*- coding: utf8 -*-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import copy
 import os
 import re
 
 import suds
+
 from pylero._compatible import basestring
-from pylero.approval import Approval
-from pylero.approval import ArrayOfApproval
-from pylero.attachment import ArrayOfAttachment
-from pylero.attachment import Attachment
-from pylero.base_polarion import BasePolarion
-from pylero.base_polarion import Configuration
-from pylero.base_polarion import tx_wrapper
-from pylero.category import ArrayOfCategory
-from pylero.category import Category
-from pylero.comment import ArrayOfComment
-from pylero.comment import Comment
-from pylero.custom import ArrayOfCustom
-from pylero.custom import Custom
+from pylero.approval import Approval, ArrayOfApproval
+from pylero.attachment import ArrayOfAttachment, Attachment
+from pylero.base_polarion import BasePolarion, Configuration, tx_wrapper
+from pylero.category import ArrayOfCategory, Category
+from pylero.comment import ArrayOfComment, Comment
+from pylero.custom import ArrayOfCustom, Custom
 from pylero.custom_field import CustomField
 from pylero.custom_field_type import CustomFieldType
 from pylero.enum_custom_field_type import EnumCustomFieldType
-from pylero.enum_option_id import ArrayOfEnumOptionId  # NOQA
 from pylero.enum_option_id import EnumOptionId
 from pylero.exceptions import PyleroLibException
-from pylero.externally_linked_work_item import ArrayOfExternallyLinkedWorkItem
-from pylero.externally_linked_work_item import ExternallyLinkedWorkItem
-from pylero.hyperlink import ArrayOfHyperlink
-from pylero.hyperlink import Hyperlink
-from pylero.linked_work_item import ArrayOfLinkedWorkItem
-from pylero.linked_work_item import LinkedWorkItem
-from pylero.planning_constraint import ArrayOfPlanningConstraint
-from pylero.planning_constraint import PlanningConstraint
+from pylero.externally_linked_work_item import ArrayOfExternallyLinkedWorkItem, ExternallyLinkedWorkItem
+from pylero.hyperlink import ArrayOfHyperlink, Hyperlink
+from pylero.linked_work_item import ArrayOfLinkedWorkItem, LinkedWorkItem
+from pylero.planning_constraint import ArrayOfPlanningConstraint, PlanningConstraint
 from pylero.priority_option_id import PriorityOptionId
 from pylero.project import Project
-from pylero.revision import ArrayOfRevision
-from pylero.revision import Revision
+from pylero.revision import ArrayOfRevision, Revision
 from pylero.subterra_uri import SubterraURI
 from pylero.test_step import TestStep
 from pylero.test_steps import TestSteps
 from pylero.text import Text
 from pylero.time_point import TimePoint
-from pylero.user import ArrayOfUser
-from pylero.user import User
-from pylero.work_record import ArrayOfWorkRecord
-from pylero.work_record import WorkRecord
+from pylero.user import ArrayOfUser, User
+from pylero.work_record import ArrayOfWorkRecord, WorkRecord
 from pylero.workflow_action import WorkflowAction
 
 # ArrayOfEnumOptionId is used in dynamic code for custom fields
@@ -327,9 +310,7 @@ class _WorkItem(BasePolarion):
             tracker.getDefinedCustomFieldTypes
         """
         if not cls._cache["custom_field_types"].get(wi_type):
-            cfts = cls.session.tracker_client.service.getDefinedCustomFieldTypes(
-                project_id, wi_type
-            )
+            cfts = cls.session.tracker_client.service.getDefinedCustomFieldTypes(project_id, wi_type)
             cls._cache["custom_field_types"][wi_type] = cfts
         else:
             cfts = cls._cache["custom_field_types"].get(wi_type)
@@ -501,24 +482,12 @@ class _WorkItem(BasePolarion):
                 function_name += "Id" if not p_fields else "IdsWithFields"
                 parms = [project_id, work_item_id] + ([p_fields] if p_fields else [])
             elif uri:
-                function_name += (
-                    "Uri"
-                    + ("InRevision" if revision else "")
-                    + ("WithFields" if p_fields else "")
-                )
-                parms = (
-                    [uri]
-                    + ([revision] if revision else [])
-                    + ([p_fields] if p_fields else [])
-                )
-            self._suds_object = getattr(
-                self.session.tracker_client.service, function_name
-            )(*parms)
+                function_name += "Uri" + ("InRevision" if revision else "") + ("WithFields" if p_fields else "")
+                parms = [uri] + ([revision] if revision else []) + ([p_fields] if p_fields else [])
+            self._suds_object = getattr(self.session.tracker_client.service, function_name)(*parms)
         if not suds_object:
             if getattr(self._suds_object, "_unresolvable", True):
-                raise PyleroLibException(
-                    "The WorkItem {0} was not found.".format(work_item_id)
-                )
+                raise PyleroLibException("The WorkItem {0} was not found.".format(work_item_id))
         # if it is a suds object, only relevant fields are passed in.
         if not self.project_id and not suds_object:
             self.project_id = self.default_project
@@ -527,8 +496,7 @@ class _WorkItem(BasePolarion):
         # This module imports plan and plan imports this module.
         # The module references itself as a class attribute, which is not
         # allowed, so the self reference is defined here.
-        from pylero.plan import Plan
-        from pylero.plan import ArrayOfPlan
+        from pylero.plan import ArrayOfPlan, Plan
 
         self._cls_suds_map["planned_in"]["is_array"] = True
         self._cls_suds_map["planned_in"]["cls"] = Plan
@@ -612,9 +580,7 @@ class _WorkItem(BasePolarion):
             Tracker.addExternalLinkedRevision
         """
         self._verify_obj()
-        return self.session.tracker_client.service.addExternalLinkedRevision(
-            self.uri, repository_name, revision_id
-        )
+        return self.session.tracker_client.service.addExternalLinkedRevision(self.uri, repository_name, revision_id)
 
     def add_hyperlink(self, url, role):
         """method add_hyperlink adds a hyperlink to a _WorkItem
@@ -632,13 +598,9 @@ class _WorkItem(BasePolarion):
         self._verify_obj()
         self.check_valid_field_values(role, "hyperlink-role", {})
         suds_role = EnumOptionId(role)._suds_object
-        return self.session.tracker_client.service.addHyperlink(
-            self.uri, url, suds_role
-        )
+        return self.session.tracker_client.service.addHyperlink(self.uri, url, suds_role)
 
-    def add_linked_item(
-        self, linked_work_item_id, role, revision=None, suspect=None, project_id=None
-    ):
+    def add_linked_item(self, linked_work_item_id, role, revision=None, suspect=None, project_id=None):
         """method add_linked_item adds a linked _WorkItem to current _WorkItem
         The linking is done to the "child" object. For example, if you have a
         Test Case that verifies a requirement, you would add the
@@ -712,9 +674,7 @@ class _WorkItem(BasePolarion):
         self._verify_obj()
         data = self._get_file_data(path)
         filename = os.path.basename(path)
-        self.session.tracker_client.service.createAttachment(
-            self.uri, filename, title, data
-        )
+        self.session.tracker_client.service.createAttachment(self.uri, filename, title, data)
 
     def create_comment(self, content, title=None, parent_uri=None):
         """method create_comment adds a comment to the current _WorkItem.
@@ -754,16 +714,10 @@ class _WorkItem(BasePolarion):
             title = None
             is_existing_comment = any([str(c.uri) == parent_uri for c in self.comments])
             if not is_existing_comment:
-                raise PyleroLibException(
-                    "The parent_uri is not a valid comment for this work item"
-                )
-        self.session.tracker_client.service.addComment(
-            str(parent_uri), title, suds_content
-        )
+                raise PyleroLibException("The parent_uri is not a valid comment for this work item")
+        self.session.tracker_client.service.addComment(str(parent_uri), title, suds_content)
 
-    def create_work_record(
-        self, user_id, date_worked, time_spent, record_type=None, record_comment=None
-    ):
+    def create_work_record(self, user_id, date_worked, time_spent, record_type=None, record_comment=None):
         """Creates a work record
 
         Args:
@@ -859,9 +813,7 @@ class _WorkItem(BasePolarion):
         User(approvee_id)
         self.check_valid_field_values(status, "approval-status", {})
         suds_status = EnumOptionId(status)._suds_object
-        self.session.tracker_client.service.editApproval(
-            self.uri, approvee_id, suds_status
-        )
+        self.session.tracker_client.service.editApproval(self.uri, approvee_id, suds_status)
 
     def get_allowed_approvers(self):
         """Gets all allowed approvers"
@@ -876,9 +828,7 @@ class _WorkItem(BasePolarion):
             Tracker.getAllowedApprovers
         """
         users = []
-        for suds_user in self.session.tracker_client.service.getAllowedApprovers(
-            self.uri
-        ):
+        for suds_user in self.session.tracker_client.service.getAllowedApprovers(self.uri):
             users.append(User(suds_object=suds_user))
         return users
 
@@ -895,9 +845,7 @@ class _WorkItem(BasePolarion):
             Tracker.getAllowedAssignees
         """
         users = []
-        for suds_user in self.session.tracker_client.service.getAllowedAssignees(
-            self.uri
-        ):
+        for suds_user in self.session.tracker_client.service.getAllowedAssignees(self.uri):
             users.append(User(suds_object=suds_user))
         return users
 
@@ -917,9 +865,7 @@ class _WorkItem(BasePolarion):
         """
         self._verify_obj()
         actions = []
-        for suds_action in self.session.tracker_client.service.getAvailableActions(
-            self.uri
-        ):
+        for suds_action in self.session.tracker_client.service.getAvailableActions(self.uri):
             actions.append(WorkflowAction(suds_object=suds_action))
         return actions
 
@@ -938,9 +884,7 @@ class _WorkItem(BasePolarion):
         """
         self._verify_obj()
         linked_work_items = []
-        for suds_lwi in self.session.tracker_client.service.getBackLinkedWorkitems(
-            self.uri
-        ):
+        for suds_lwi in self.session.tracker_client.service.getBackLinkedWorkitems(self.uri):
             linked_work_items.append(LinkedWorkItem(suds_object=suds_lwi))
         return linked_work_items
 
@@ -990,9 +934,7 @@ class _WorkItem(BasePolarion):
             Tracker.getCustomFieldType
         """
         self._verify_obj()
-        suds_custom = self.session.tracker_client.service.getCustomFieldType(
-            self.uri, key
-        )
+        suds_custom = self.session.tracker_client.service.getCustomFieldType(self.uri, key)
         return CustomFieldType(suds_object=suds_custom)
 
     def get_custom_field_types(self):
@@ -1010,9 +952,7 @@ class _WorkItem(BasePolarion):
         """
         self._verify_obj()
         custom_types = []
-        for suds_custom in self.session.tracker_client.service.getCustomFieldTypes(
-            self.uri
-        ):
+        for suds_custom in self.session.tracker_client.service.getCustomFieldTypes(self.uri):
             custom_types.append(CustomFieldType(suds_object=suds_custom))
 
     def get_enum_control_key_for_id(self, enum_id):
@@ -1027,9 +967,7 @@ class _WorkItem(BasePolarion):
         References:
             Tracker.getEnumControlKeyForId
         """
-        return self.session.tracker_client.service.getEnumControlKeyForId(
-            self.project_id, enum_id
-        )
+        return self.session.tracker_client.service.getEnumControlKeyForId(self.project_id, enum_id)
 
     def get_enum_control_key_for_key(self, key):
         """Gets the enumeration control key for the specified work item key.
@@ -1044,9 +982,7 @@ class _WorkItem(BasePolarion):
         References:
             Tracker.getEnumControlKeyForId
         """
-        return self.session.tracker_client.service.getEnumControlKeyForId(
-            self.project_id, key
-        )
+        return self.session.tracker_client.service.getEnumControlKeyForId(self.project_id, key)
 
     def get_initial_workflow_action(self, work_item_type=None):
         """Gets the initial workflow action for the specified object, returns
@@ -1106,9 +1042,7 @@ class _WorkItem(BasePolarion):
         """
         self._verify_obj()
         actions = []
-        for suds_action in self.session.tracker_client.service.getUnavailableActions(
-            self.uri
-        ):
+        for suds_action in self.session.tracker_client.service.getUnavailableActions(self.uri):
             actions.append(WorkflowAction(suds_object=suds_action))
         return actions
 
@@ -1172,9 +1106,7 @@ class _WorkItem(BasePolarion):
             Tracker.removeExternalLinkedRevision
         """
         self._verify_obj()
-        return self.session.tracker_client.service.removeExternalLinkedRevision(
-            self.uri, repository_name, revision_id
-        )
+        return self.session.tracker_client.service.removeExternalLinkedRevision(self.uri, repository_name, revision_id)
 
     def remove_externally_linked_item(self, linked_external_workitem_id, role):
         """Removes an externally linked work item.
@@ -1191,9 +1123,7 @@ class _WorkItem(BasePolarion):
         """
         self._verify_obj()
         external_wi = _WorkItem(uri=linked_external_workitem_id)
-        return self.session.tracker_client.service.removeExternallyLinkedItem(
-            self.uri, external_wi.uri, role
-        )
+        return self.session.tracker_client.service.removeExternallyLinkedItem(self.uri, external_wi.uri, role)
 
     def remove_hyperlink(self, url):
         """Removes a hyperlink from the _WorkItem
@@ -1226,9 +1156,7 @@ class _WorkItem(BasePolarion):
         self._verify_obj()
         wi_linked = _WorkItem(work_item_id=linked_item_id, project_id=self.project_id)
         enum_role = EnumOptionId(role)._suds_object
-        return self.session.tracker_client.service.removeLinkedItem(
-            self.uri, wi_linked.uri, enum_role
-        )
+        return self.session.tracker_client.service.removeLinkedItem(self.uri, wi_linked.uri, enum_role)
 
     def remove_linked_revision(self, revision_id):
         """Removes a revision
@@ -1243,9 +1171,7 @@ class _WorkItem(BasePolarion):
             Tracker.removeLinkedRevision
         """
         self._verify_obj()
-        return self.session.tracker_client.service.removeLinkedRevision(
-            self.uri, revision_id
-        )
+        return self.session.tracker_client.service.removeLinkedRevision(self.uri, revision_id)
 
     def remove_planning_constraint(self, constraint_date, constraint):
         """Removes a planning constraint
@@ -1261,9 +1187,7 @@ class _WorkItem(BasePolarion):
             Tracker.removePlaningConstraint
         """
         self._verify_obj()
-        return self.session.tracker_client.service.removePlaningConstraint(
-            self.uri, constraint_date, constraint
-        )
+        return self.session.tracker_client.service.removePlaningConstraint(self.uri, constraint_date, constraint)
 
     def reset_workflow(self):
         """resets the workflow for the current object. Performs initial action
@@ -1380,9 +1304,7 @@ class _WorkItem(BasePolarion):
         self._verify_obj()
         data = self._get_file_data(path)
         filename = os.path.basename(path)
-        self.session.tracker_client.service.updateAttachment(
-            self.uri, attachment_id, filename, title, data
-        )
+        self.session.tracker_client.service.updateAttachment(self.uri, attachment_id, filename, title, data)
 
     def verify_required(self):
         for field in self._required_fields:
@@ -1438,17 +1360,13 @@ class _SpecificWorkItem(_WorkItem):
             if req not in kwargs:
                 fields += (", " if fields else "") + req
         if fields:
-            raise PyleroLibException(
-                "These parameters are required: {0}".format(fields)
-            )
+            raise PyleroLibException("These parameters are required: {0}".format(fields))
         for field in kwargs:
             if field not in cls._all_custom_fields and field not in cls._cls_suds_map:
                 fields += (", " if fields else "") + field
         if fields:
             raise PyleroLibException("These parameters are unknown: {0}".format(fields))
-        return super(_SpecificWorkItem, cls).create(
-            project_id, cls._wi_type, title, desc, status, **kwargs
-        )
+        return super(_SpecificWorkItem, cls).create(project_id, cls._wi_type, title, desc, status, **kwargs)
 
     @classmethod
     def get_custom_fields(cls, project_id):
@@ -1470,11 +1388,7 @@ class _SpecificWorkItem(_WorkItem):
             # possible
             split_name = re.findall("[a-zA-Z][^A-Z]*", cft.cft_id)
             local_name = (
-                "_".join(split_name)
-                .replace("_U_R_I", "_uri")
-                .replace("_W_I", "_wi")
-                .replace("_I_D", "_id")
-                .lower()
+                "_".join(split_name).replace("_U_R_I", "_uri").replace("_W_I", "_wi").replace("_I_D", "_id").lower()
             )
             cls._all_custom_fields.append(local_name)
             cls._cls_suds_map[local_name] = {}
@@ -1564,9 +1478,7 @@ class _SpecificWorkItem(_WorkItem):
             cls._wi_type,
             project_id or cls.default_project,
         )
-        return super(_SpecificWorkItem, cls).query(
-            query, False, fields, sort, limit, baseline_revision, query_uris
-        )
+        return super(_SpecificWorkItem, cls).query(query, False, fields, sort, limit, baseline_revision, query_uris)
 
     def __init__(
         self,
@@ -1586,15 +1498,11 @@ class _SpecificWorkItem(_WorkItem):
             project_id = self.default_project
         self._changed_fields = {}
         self.get_custom_fields(project_id)
-        super(_SpecificWorkItem, self).__init__(
-            project_id, work_item_id, suds_object, uri, fields, revision
-        )
+        super(_SpecificWorkItem, self).__init__(project_id, work_item_id, suds_object, uri, fields, revision)
         if not self.type:
             self.type = self._wi_type
         if self.type != self._wi_type:
-            raise PyleroLibException(
-                "This is of type {0}, not type {1}".format(self.type, self._wi_type)
-            )
+            raise PyleroLibException("This is of type {0}, not type {1}".format(self.type, self._wi_type))
 
     @tx_wrapper
     def update(self):

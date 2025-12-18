@@ -1,15 +1,10 @@
 # -*- coding: utf8 -*-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 from pylero.base_polarion import BasePolarion
 from pylero.enum_option_id import EnumOptionId
-from pylero.test_run_attachment import ArrayOfTestRunAttachment
-from pylero.test_run_attachment import TestRunAttachment
-from pylero.test_step_result import ArrayOfTestStepResult
-from pylero.test_step_result import TestStepResult
+from pylero.test_run_attachment import ArrayOfTestRunAttachment, TestRunAttachment
+from pylero.test_step_result import ArrayOfTestStepResult, TestStepResult
 from pylero.text import Text
 from pylero.user import User
 from pylero.work_item import _WorkItem
@@ -80,12 +75,8 @@ class TestRecord(BasePolarion):
     def _fix_circular_refs(self):
         # need to pass in the project_id parm to the Work Item,
         # but it is not given before instatiation
-        self._cls_suds_map["test_case_id"]["additional_parms"] = {
-            "project_id": self.project_id
-        }
-        self._cls_suds_map["defect_case_id"]["additional_parms"] = {
-            "project_id": self.project_id
-        }
+        self._cls_suds_map["test_case_id"]["additional_parms"] = {"project_id": self.project_id}
+        self._cls_suds_map["defect_case_id"]["additional_parms"] = {"project_id": self.project_id}
 
 
 class ArrayOfTestRecord(BasePolarion):

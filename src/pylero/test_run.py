@@ -1,38 +1,27 @@
 # -*- coding: utf8 -*-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import importlib
 import os
 
 import suds
-from pylero._compatible import basestring
-from pylero._compatible import classmethod
-from pylero._compatible import object  # noqa
-from pylero._compatible import range
-from pylero.base_polarion import BasePolarion
-from pylero.base_polarion import tx_wrapper
+
+from pylero._compatible import basestring, classmethod, range
+from pylero.base_polarion import BasePolarion, tx_wrapper
 from pylero.build import Build  # noqa: F401
-from pylero.custom import ArrayOfCustom
-from pylero.custom import Custom
+from pylero.custom import ArrayOfCustom, Custom
 from pylero.custom_field_type import CustomFieldType
 from pylero.document import Document
 from pylero.enum_custom_field_type import EnumCustomFieldType
-from pylero.enum_option_id import ArrayOfEnumOptionId
-from pylero.enum_option_id import EnumOptionId
+from pylero.enum_option_id import ArrayOfEnumOptionId, EnumOptionId
 from pylero.exceptions import PyleroLibException
 from pylero.plan import Plan  # NOQA
 from pylero.project import Project
-from pylero.test_record import ArrayOfTestRecord
-from pylero.test_record import TestRecord
-from pylero.test_run_attachment import ArrayOfTestRunAttachment
-from pylero.test_run_attachment import TestRunAttachment
+from pylero.test_record import ArrayOfTestRecord, TestRecord
+from pylero.test_run_attachment import ArrayOfTestRunAttachment, TestRunAttachment
 from pylero.text import Text
 from pylero.user import User
 from pylero.work_item import _WorkItem
-
 
 # Build is used in custom fields.
 # Plan is used in custom fields.
@@ -177,9 +166,7 @@ class TestRun(BasePolarion):
         elif "Query" in self.select_test_cases_by:
             cases = _WorkItem.query(self.query + " AND project.id:" + self.project_id)
         else:
-            raise PyleroLibException(
-                "Only Test Runs based on Docs or" " Queries can be dynamic"
-            )
+            raise PyleroLibException("Only Test Runs based on Docs or" " Queries can be dynamic")
         executed_ids = [rec.test_case_id for rec in self._records]
         test_recs = self._records
         for case in cases:
@@ -229,9 +216,7 @@ class TestRun(BasePolarion):
                 project_id, test_run_id or title, title, template
             )
         else:
-            uri = cls.session.test_management_client.service.createTestRun(
-                project_id, test_run_id, template
-            )
+            uri = cls.session.test_management_client.service.createTestRun(project_id, test_run_id, template)
         if uri:
             run = cls(uri=uri)
             run.verify_params(**kwargs)
@@ -373,9 +358,7 @@ class TestRun(BasePolarion):
             function_name += "Limited"
             parms.append(limit)
         test_runs = []
-        results = getattr(cls.session.test_management_client.service, function_name)(
-            *parms
-        )
+        results = getattr(cls.session.test_management_client.service, function_name)(*parms)
         for suds_obj in results:
             tr = TestRun(suds_object=suds_obj)
             test_runs.append(tr)
@@ -406,23 +389,13 @@ class TestRun(BasePolarion):
         super(self.__class__, self).__init__(test_run_id, suds_object)
         if test_run_id:
             if not project_id:
-                raise PyleroLibException(
-                    "When test_run_id is passed in, " "project_id is required"
-                )
-            self._suds_object = (
-                self.session.test_management_client.service.getTestRunById(
-                    project_id, test_run_id
-                )
-            )
+                raise PyleroLibException("When test_run_id is passed in, " "project_id is required")
+            self._suds_object = self.session.test_management_client.service.getTestRunById(project_id, test_run_id)
         elif uri:
-            self._suds_object = (
-                self.session.test_management_client.service.getTestRunByUri(uri)
-            )
+            self._suds_object = self.session.test_management_client.service.getTestRunByUri(uri)
         if test_run_id or uri:
             if getattr(self._suds_object, "_unresolvable", True):
-                raise PyleroLibException(
-                    "The Test Run {0} was not found.".format(test_run_id)
-                )
+                raise PyleroLibException("The Test Run {0} was not found.".format(test_run_id))
 
     def _fix_circular_refs(self):
         # a class can't reference itself as a class attribute so it is
@@ -453,9 +426,7 @@ class TestRun(BasePolarion):
         field_type = field_type.split("[")[0]
         if field_type.startswith("@"):
             # an enum based on an object
-            return [
-                globals()[x] for x in globals() if x.lower() == field_type[1:].lower()
-            ][0]
+            return [globals()[x] for x in globals() if x.lower() == field_type[1:].lower()][0]
         else:
             # a regular enum
             return field_type
@@ -477,9 +448,7 @@ class TestRun(BasePolarion):
             testmanagement.getDefinedTestRunCustomFieldTypes
         """
         if not cls._custom_field_cache[project_id]:
-            cfts = cls.session.test_management_client.service.getDefinedTestRunCustomFieldTypes(
-                project_id
-            )
+            cfts = cls.session.test_management_client.service.getDefinedTestRunCustomFieldTypes(project_id)
         else:
             cfts = cls._custom_field_cache[project_id]
         results = [
@@ -511,12 +480,8 @@ class TestRun(BasePolarion):
                 f_type = self._custom_field_types(f)
             self._custom_field_cache[project_id][key] = {}
             self._custom_field_cache[project_id][key]["type"] = f_type
-            self._custom_field_cache[project_id][key]["required"] = getattr(
-                result, "required", False
-            )
-            self._custom_field_cache[project_id][key]["multi"] = getattr(
-                result, "multi", False
-            )
+            self._custom_field_cache[project_id][key]["required"] = getattr(result, "required", False)
+            self._custom_field_cache[project_id][key]["multi"] = getattr(result, "multi", False)
 
     def _add_custom_fields(self, project_id):
         """This generates object attributes, with validation, so that custom
@@ -563,9 +528,7 @@ class TestRun(BasePolarion):
                         : cache[field]["type"].__init__.__code__.co_argcount
                     ]
                 ):
-                    self._cls_suds_map[field]["additional_parms"] = {
-                        "project_id": project_id
-                    }
+                    self._cls_suds_map[field]["additional_parms"] = {"project_id": project_id}
 
     def _get_index_of_test_record(self, test_case_id):
         # specific functions request the index of the test record within the
@@ -581,10 +544,7 @@ class TestRun(BasePolarion):
                 index += 1
             if test_case_id in test_record._suds_object.testCaseURI:
                 return index
-        raise PyleroLibException(
-            "The Test Case is either not part of "
-            "this TestRun or has not been executed"
-        )
+        raise PyleroLibException("The Test Case is either not part of " "this TestRun or has not been executed")
 
     def _status_change(self):
         """Change status if necessary and possible."""
@@ -616,17 +576,13 @@ class TestRun(BasePolarion):
         # verifies the number of records is not less then the index given.
         self._verify_obj()
         if record_index > (len(self.records) - 1):
-            raise PyleroLibException(
-                "There are only {0} test records".format(len(self.records))
-            )
+            raise PyleroLibException("There are only {0} test records".format(len(self.records)))
 
     def _verify_test_step_count(self, record_index, test_step_index):
         # verifies the number of test steps is not less then the index given.
         self._verify_record_count(record_index)
         if test_step_index > (len(self.records[record_index].test_step_results) - 1):
-            raise PyleroLibException(
-                "There are only {0} test records".format(len(self.records))
-            )
+            raise PyleroLibException("There are only {0} test records".format(len(self.records)))
 
     def add_attachment_to_test_record(self, test_case_id, path, title):
         """method add_attachment_to_test_record, adds the given attachment to
@@ -675,9 +631,7 @@ class TestRun(BasePolarion):
         self._verify_obj()
         data = self._get_file_data(path)
         filename = os.path.basename(path)
-        self.session.test_management_client.service.addAttachmentToTestRun(
-            self.uri, filename, title, data
-        )
+        self.session.test_management_client.service.addAttachmentToTestRun(self.uri, filename, title, data)
 
     def add_attachment_to_test_step(self, test_case_id, test_step_index, path, title):
         """method add_attachment_to_test_step, adds the given attachment to
@@ -727,13 +681,10 @@ class TestRun(BasePolarion):
             None
         """
         check_tr = TestRun.search(
-            'project.id:%s AND id:"%s" AND %s'
-            % (self.project_id, self.test_run_id, test_case_id)
+            'project.id:%s AND id:"%s" AND %s' % (self.project_id, self.test_run_id, test_case_id)
         )
         if len(check_tr) not in [0, 1]:
-            raise PyleroLibException(
-                "The search function did not work as expected. Please report."
-            )
+            raise PyleroLibException("The search function did not work as expected. Please report.")
         elif len(check_tr) == 1:
             raise PyleroLibException("This test case is already part of the test run")
         else:
@@ -790,9 +741,7 @@ class TestRun(BasePolarion):
             testrec.defect_case_id = defect_work_item_id
         self.add_test_record_by_object(testrec, create_incident=create_incident)
 
-    def __generate_description(
-        self, test_case: _WorkItem, test_record: TestRecord
-    ) -> str:
+    def __generate_description(self, test_case: _WorkItem, test_record: TestRecord) -> str:
         """Generates the description for the incident report.
 
         If the test case has test steps that match the steps of the test record,
@@ -819,10 +768,7 @@ class TestRun(BasePolarion):
             'data-item-id="{0}" data-option-id="long"></span>'
             "<br/>".format(test_case.work_item_id)
         )
-        table_cell_style = (
-            'style="text-align: left; padding: 10px; '
-            'vertical-align: top; background-color: #ffffff;"'
-        )
+        table_cell_style = 'style="text-align: left; padding: 10px; ' 'vertical-align: top; background-color: #ffffff;"'
         table_row_style = 'style="border-bottom: 1px solid #f0f0f0;"'
         columns = [
             "",
@@ -860,12 +806,7 @@ class TestRun(BasePolarion):
             '-collapse: collapse;"><tr style="text-align: left; '
             "white-space: nowrap; color: #757575; border-bottom: 1px "
             'solid #d2d7da; background-color: #ffffff;">{0}</tr>'.format(
-                "".join(
-                    [
-                        "<th {0}>{1}</th>".format(table_cell_style, column)
-                        for column in columns
-                    ]
-                )
+                "".join(["<th {0}>{1}</th>".format(table_cell_style, column) for column in columns])
             )
         )
         verdict = (
@@ -896,9 +837,7 @@ class TestRun(BasePolarion):
                     "</tr>".format(
                         table_row_style,
                         table_cell_style,
-                        test_step_results.get(
-                            test_record.test_step_results[step].result
-                        ),
+                        test_step_results.get(test_record.test_step_results[step].result),
                         step + 1,
                         test_steps.steps[step].values[0].content,
                         test_steps.steps[step].values[1].content,
@@ -917,9 +856,7 @@ class TestRun(BasePolarion):
         content = tr_html + tc_html + table + verdict
         return content
 
-    def __create_incident_report(
-        self, test_case_id: str, test_record: TestRecord
-    ) -> str:
+    def __create_incident_report(self, test_case_id: str, test_record: TestRecord) -> str:
         """Create and populate an incident work item.
 
         The work_item type of the incident and the fields to copy from the test
@@ -949,9 +886,7 @@ class TestRun(BasePolarion):
             wi_class_names = getattr(work_item_module, "workitems")
             test_case_class_name = wi_class_names[test_case_wi_type]
             test_case_class = getattr(work_item_module, test_case_class_name)
-            test_case = test_case_class(
-                project_id=self.project_id, work_item_id=test_case_id
-            )
+            test_case = test_case_class(project_id=self.project_id, work_item_id=test_case_id)
         except (AttributeError, PyleroLibException):
             test_case = _WorkItem(project_id=self.project_id, work_item_id=test_case_id)
 
@@ -966,16 +901,11 @@ class TestRun(BasePolarion):
                 kwarg_dict[prop.value] = getattr(self, prop.key)
 
         try:
-            incident_report = _WorkItem.create(
-                project_id, defect_wi_type, title, description, status, **kwarg_dict
-            )
+            incident_report = _WorkItem.create(project_id, defect_wi_type, title, description, status, **kwarg_dict)
         except PyleroLibException as e:
             msg = "\n".join(
                 [
-                    (
-                        f"Failed to create the work item {title} in"
-                        f"project {project_id} of type {defect_wi_type}."
-                    ),
+                    (f"Failed to create the work item {title} in" f"project {project_id} of type {defect_wi_type}."),
                     f"Error: {e}",
                 ]
             )
@@ -984,9 +914,7 @@ class TestRun(BasePolarion):
         return incident_report.work_item_id
 
     @tx_wrapper
-    def add_test_record_by_object(
-        self, test_record, manual_state_change=False, create_incident=True
-    ):
+    def add_test_record_by_object(self, test_record, manual_state_change=False, create_incident=True):
         """method add_test_record_by_object, adds a test record for the given
         test case based on the TestRecord object passed in.
         In addition, the test run is checked for completeness and the test
@@ -1014,18 +942,12 @@ class TestRun(BasePolarion):
             suds_object = test_record._suds_object
         elif isinstance(test_record, TestRecord()._suds_object.__class__):
             suds_object = test_record
-        if (
-            test_record.result == "failed"
-            and not test_record.defect_case_id
-            and create_incident
-        ):
+        if test_record.result == "failed" and not test_record.defect_case_id and create_incident:
             test_record.defect_case_id = self.__create_incident_report(
                 test_case_id,
                 test_record,
             )
-        self.session.test_management_client.service.addTestRecordToTestRun(
-            self.uri, suds_object
-        )
+        self.session.test_management_client.service.addTestRecordToTestRun(self.uri, suds_object)
 
         if manual_state_change:
             self.update()
@@ -1051,13 +973,9 @@ class TestRun(BasePolarion):
         self._verify_obj()
         defect_template_uri = None
         if defect_template_id:
-            suds_defect_template = _WorkItem(
-                work_item_id=defect_template_id, project_id=self.project_id
-            )
+            suds_defect_template = _WorkItem(work_item_id=defect_template_id, project_id=self.project_id)
             defect_template_uri = suds_defect_template._uri
-        wi_uri = self.session.test_management_client.service.createSummaryDefect(
-            self.uri, defect_template_uri
-        )
+        wi_uri = self.session.test_management_client.service.createSummaryDefect(self.uri, defect_template_uri)
         return _WorkItem(uri=wi_uri)
 
     def delete_attachment_from_test_record(self, test_case_id, filename):
@@ -1076,9 +994,7 @@ class TestRun(BasePolarion):
         """
         record_index = self._get_index_of_test_record(test_case_id)
         self._verify_record_count(record_index)
-        self.session.test_management_client.service.deleteAttachmentFromTestRecord(
-            self.uri, record_index, filename
-        )
+        self.session.test_management_client.service.deleteAttachmentFromTestRecord(self.uri, record_index, filename)
 
     def delete_attachment_from_test_step(self, test_case_id, test_step_index, filename):
         """Deletes Test Step Attachment of the specified step in the specified
@@ -1114,9 +1030,7 @@ class TestRun(BasePolarion):
             test_management.deleteTestRunAttachment
         """
         self._verify_obj()
-        self.session.test_management_client.service.deleteTestRunAttachment(
-            self.uri, filename
-        )
+        self.session.test_management_client.service.deleteTestRunAttachment(self.uri, filename)
 
     def get_attachment(self, filename):
         """Gets Test Run Attachment specified by attachment's
@@ -1132,9 +1046,7 @@ class TestRun(BasePolarion):
             test_management.getTestRunAttachment
         """
         self._verify_obj()
-        suds_attach = self.session.test_management_client.service.getTestRunAttachment(
-            self.uri, filename
-        )
+        suds_attach = self.session.test_management_client.service.getTestRunAttachment(self.uri, filename)
         return TestRunAttachment(suds_object=suds_attach)
 
     def get_attachments(self):
@@ -1150,13 +1062,8 @@ class TestRun(BasePolarion):
             test_management.getTestRunAttachments
         """
         self._verify_obj()
-        lst_suds_attach = (
-            self.session.test_management_client.service.getTestRunAttachments(self.uri)
-        )
-        lst_attach = [
-            TestRunAttachment(suds_object=suds_attach)
-            for suds_attach in lst_suds_attach
-        ]
+        lst_suds_attach = self.session.test_management_client.service.getTestRunAttachments(self.uri)
+        lst_attach = [TestRunAttachment(suds_object=suds_attach) for suds_attach in lst_suds_attach]
         return lst_attach
 
     def get_custom_field(self, field_name):
@@ -1193,11 +1100,7 @@ class TestRun(BasePolarion):
             test_management.getWikiContentForTestRun
         """
         self._verify_obj()
-        suds_wiki = (
-            self.session.test_management_client.service.getWikiContentForTestRun(
-                self.uri
-            )
-        )
+        suds_wiki = self.session.test_management_client.service.getWikiContentForTestRun(self.uri)
         return Text(suds_object=suds_wiki)
 
     def _set_custom_field(self, field_name, value):
@@ -1271,13 +1174,9 @@ class TestRun(BasePolarion):
         self._verify_obj()
         data = self._get_file_data(path)
         filename = os.path.basename(original_filename)
-        self.session.test_management_client.service.updateTestRunAttachment(
-            self.uri, filename, title, data
-        )
+        self.session.test_management_client.service.updateTestRunAttachment(self.uri, filename, title, data)
 
-    def update_summary_defect(
-        self, source, total_failures, total_errors, total_tests, defect_template_id
-    ):
+    def update_summary_defect(self, source, total_failures, total_errors, total_tests, defect_template_id):
         """method update-summary_defect creates or updates the summary defect
         Work Item of a test run.
 
@@ -1301,9 +1200,7 @@ class TestRun(BasePolarion):
             test_management.updateSummaryDefect
         """
         self._verify_obj()
-        suds_defect_template = _WorkItem(
-            work_item_id=defect_template_id, project_id=self.project_id
-        )
+        suds_defect_template = _WorkItem(work_item_id=defect_template_id, project_id=self.project_id)
         defect_template_uri = suds_defect_template._uri
         wi_uri = self.session.test_management_client.service.updateSummaryDefect(
             self.uri,
@@ -1363,9 +1260,7 @@ class TestRun(BasePolarion):
         testrec.duration = duration
         if defect_work_item_id:
             testrec.defect_case_id = defect_work_item_id
-        self.update_test_record_by_object(
-            test_case_id, testrec, create_incident=create_incident
-        )
+        self.update_test_record_by_object(test_case_id, testrec, create_incident=create_incident)
 
     @tx_wrapper
     def update_test_record_by_object(
@@ -1406,22 +1301,14 @@ class TestRun(BasePolarion):
         if test_case_id not in test_case_ids:
             self.add_test_record_by_object(test_record, create_incident=create_incident)
         else:
-            if (
-                test_record.result == "failed"
-                and not test_record.defect_case_id
-                and create_incident
-            ):
-                test_record.defect_case_id = self.__create_incident_report(
-                    test_case_id, test_record
-                )
+            if test_record.result == "failed" and not test_record.defect_case_id and create_incident:
+                test_record.defect_case_id = self.__create_incident_report(test_case_id, test_record)
             index = test_case_ids.index(test_case_id)
             if isinstance(test_record, TestRecord):
                 suds_object = test_record._suds_object
             elif isinstance(test_record, TestRecord()._suds_object.__class__):
                 suds_object = test_record
-            self.session.test_management_client.service.updateTestRecordAtIndex(
-                self.uri, index, suds_object
-            )
+            self.session.test_management_client.service.updateTestRecordAtIndex(self.uri, index, suds_object)
             if manual_state_change:
                 self.update()
             else:
@@ -1450,9 +1337,7 @@ class TestRun(BasePolarion):
                 suds_content = content
         else:
             suds_content = suds.null()
-        self.session.test_management_client.service.updateWikiContentForTestRun(
-            self.uri, suds_content
-        )
+        self.session.test_management_client.service.updateWikiContentForTestRun(self.uri, suds_content)
 
     def verify_required(self):
         """function that checks if all required fields are passed in
@@ -1465,9 +1350,7 @@ class TestRun(BasePolarion):
             if not getattr(self, req):
                 fields += (", " if fields else "") + req
         if fields:
-            raise PyleroLibException(
-                "These parameters are required: {0}".format(fields)
-            )
+            raise PyleroLibException("These parameters are required: {0}".format(fields))
 
     def verify_params(self, **kwargs):
         """function that checks if all the kwargs are valid attributes.

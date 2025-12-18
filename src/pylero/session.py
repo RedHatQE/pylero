@@ -1,8 +1,5 @@
 # -*- coding: utf8 -*-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import logging
 import re
@@ -11,12 +8,14 @@ import time
 
 import suds.client
 import suds.sax.element
-from pylero._compatible import builtins  # noqa
-from pylero._compatible import object
-from pylero._compatible import urlparse
 from suds.plugin import MessagePlugin
 from suds.sax.attribute import Attribute
 
+from pylero._compatible import (
+    builtins,  # noqa
+    object,
+    urlparse,
+)
 
 logger = logging.getLogger(__name__)
 # We create a logger in order to intercept log records from suds.client
@@ -25,9 +24,7 @@ suds_logger = logging.getLogger("suds.client")
 CERT_PATH = None
 
 # Regular expression to catch SOAP message containing password field
-REGEX_SOAP_MESSAGE_PASSWORD_FIELD = re.compile(
-    r"(<ns\d:password>)(.*)(</ns\d:password>).*"
-)
+REGEX_SOAP_MESSAGE_PASSWORD_FIELD = re.compile(r"(<ns\d:password>)(.*)(</ns\d:password>).*")
 
 
 class ListenFilter(logging.Filter):
@@ -38,9 +35,7 @@ class ListenFilter(logging.Filter):
         # We assume that this message contains the password in plaintext
         # which as part of SOAP message
         if "<ns" and ":password" in record.getMessage():
-            masked_record = re.sub(
-                REGEX_SOAP_MESSAGE_PASSWORD_FIELD, r"\1*********\3", record.getMessage()
-            )
+            masked_record = re.sub(REGEX_SOAP_MESSAGE_PASSWORD_FIELD, r"\1*********\3", record.getMessage())
             logger.critical(masked_record)
             return False
         return True
@@ -84,9 +79,7 @@ class SoapNull(MessagePlugin):
 class Session(object):
     def _url_for_name(self, service_name):
         """generate the full URL for the WSDL client services"""
-        return "{0}/ws/services/{1}WebService?wsdl".format(
-            self._server.url, service_name
-        )
+        return "{0}/ws/services/{1}WebService?wsdl".format(self._server.url, service_name)
 
     def __init__(self, server, timeout):
         """Session constructor, initialize the WSDL clients
@@ -100,33 +93,21 @@ class Session(object):
         self._last_request_at = None
         self._session_id_header = None
         self._cookies = None
-        self._session_client = _SudsClientWrapper(
-            self._url_for_name("Session"), None, timeout
-        )
-        self.builder_client = _SudsClientWrapper(
-            self._url_for_name("Builder"), self, timeout
-        )
-        self.planning_client = _SudsClientWrapper(
-            self._url_for_name("Planning"), self, timeout
-        )
-        self.project_client = _SudsClientWrapper(
-            self._url_for_name("Project"), self, timeout
-        )
-        self.security_client = _SudsClientWrapper(
-            self._url_for_name("Security"), self, timeout
-        )
-        self.test_management_client = _SudsClientWrapper(
-            self._url_for_name("TestManagement"), self, timeout
-        )
-        self.tracker_client = _SudsClientWrapper(
-            self._url_for_name("Tracker"), self, timeout
-        )
 
         # This block forces ssl certificate verification
+        # Must be set BEFORE creating any WSDL clients (fixes #185)
         if self._server.cert_path:
             global CERT_PATH
             CERT_PATH = self._server.cert_path
             ssl._create_default_https_context = create_ssl_context
+
+        self._session_client = _SudsClientWrapper(self._url_for_name("Session"), None, timeout)
+        self.builder_client = _SudsClientWrapper(self._url_for_name("Builder"), self, timeout)
+        self.planning_client = _SudsClientWrapper(self._url_for_name("Planning"), self, timeout)
+        self.project_client = _SudsClientWrapper(self._url_for_name("Project"), self, timeout)
+        self.security_client = _SudsClientWrapper(self._url_for_name("Security"), self, timeout)
+        self.test_management_client = _SudsClientWrapper(self._url_for_name("TestManagement"), self, timeout)
+        self.tracker_client = _SudsClientWrapper(self._url_for_name("Tracker"), self, timeout)
 
     def _login(self):
         """login to the Polarion API"""
@@ -138,9 +119,7 @@ class Session(object):
         id_element = sc.last_received().childAtPath("Envelope/Header/sessionID")
         session_id = id_element.text
         session_ns = id_element.namespace()
-        self._session_id_header = suds.sax.element.Element(
-            "sessionID", ns=session_ns
-        ).setText(session_id)
+        self._session_id_header = suds.sax.element.Element("sessionID", ns=session_ns).setText(session_id)
         self._cookies = sc.options.transport.cookiejar
         sc.set_options(soapheaders=self._session_id_header)
         self._last_request_at = time.time()
@@ -208,27 +187,17 @@ class _SudsClientWrapper(object):
         # every time a client function is called, this verifies that there is
         # still an active connection and if not, it reconnects.
         logger.debug("attr={0} self={1}".format(attr, self.__dict__))
-        if (
-            attr == "service"
-            and self._enclosing_session
-            and self._enclosing_session._session_id_header is not None
-        ):
+        if attr == "service" and self._enclosing_session and self._enclosing_session._session_id_header is not None:
             logger.debug("Calling hook before _suds_client_wrapper.service " "access")
             self._enclosing_session._reauth()
-            self._suds_client.set_options(
-                soapheaders=self._enclosing_session._session_id_header
-            )
+            self._suds_client.set_options(soapheaders=self._enclosing_session._session_id_header)
             # for some reason adding the cookiejar didn't work, so the
             # cookie is being added to the header manually.
             # self._suds_client.options.transport.cookiejar = \
             #    self._enclosing_session._cookies
             # adding the RouteID cookie, if it exists to the headers.
             hostname = urlparse(self._enclosing_session._server.url).hostname
-            route = (
-                self._enclosing_session._cookies._cookies.get(hostname, {})
-                .get("/", {})
-                .get("ROUTEID")
-            )
+            route = self._enclosing_session._cookies._cookies.get(hostname, {}).get("/", {}).get("ROUTEID")
             if route:
                 self._suds_client.options.headers["Cookie"] = "ROUTEID=%s" % route.value
         return getattr(self._suds_client, attr)

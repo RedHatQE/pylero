@@ -1,5 +1,3 @@
-import os
-
 from setuptools import setup
 
 with open("README.md", "r") as handle:
@@ -41,8 +39,6 @@ if __name__ == "__main__":
             "Topic :: Software Development :: Build Tools",
             "License :: OSI Approved :: MIT License",  # Again, pick a license
             "Programming Language :: Python :: 3",  # Specify which pyhton versions that you want to support
-            "Programming Language :: Python :: 3.8",
-            "Programming Language :: Python :: 3.9",
             "Programming Language :: Python :: 3.10",
             "Programming Language :: Python :: 3.11",
             "Programming Language :: Python :: 3.12",

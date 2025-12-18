@@ -1,8 +1,5 @@
 # -*- coding: utf8 -*-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 from pylero.base_polarion import BasePolarion
 from pylero.enum_option_id import EnumOptionId
@@ -42,9 +39,7 @@ class ExternallyLinkedWorkItem(BasePolarion):
         from pylero.work_item import _WorkItem
 
         self._cls_suds_map["work_item_id"]["cls"] = _WorkItem
-        self._cls_suds_map["work_item_id"]["additional_parms"] = {
-            "project_id": self.project_id
-        }
+        self._cls_suds_map["work_item_id"]["additional_parms"] = {"project_id": self.project_id}
 
 
 class ArrayOfExternallyLinkedWorkItem(BasePolarion):
