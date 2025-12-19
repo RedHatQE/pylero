@@ -17,7 +17,7 @@ from pylero.custom import ArrayOfCustom, Custom
 from pylero.custom_field import CustomField
 from pylero.custom_field_type import CustomFieldType
 from pylero.enum_custom_field_type import EnumCustomFieldType
-from pylero.enum_option_id import EnumOptionId
+from pylero.enum_option_id import ArrayOfEnumOptionId, EnumOptionId  # noqa: F401
 from pylero.exceptions import PyleroLibException
 from pylero.externally_linked_work_item import ArrayOfExternallyLinkedWorkItem, ExternallyLinkedWorkItem
 from pylero.hyperlink import ArrayOfHyperlink, Hyperlink
@@ -25,6 +25,7 @@ from pylero.linked_work_item import ArrayOfLinkedWorkItem, LinkedWorkItem
 from pylero.planning_constraint import ArrayOfPlanningConstraint, PlanningConstraint
 from pylero.priority_option_id import PriorityOptionId
 from pylero.project import Project
+from pylero.properties import Properties  # noqa: F401
 from pylero.revision import ArrayOfRevision, Revision
 from pylero.subterra_uri import SubterraURI
 from pylero.test_step import TestStep
@@ -35,7 +36,7 @@ from pylero.user import ArrayOfUser, User
 from pylero.work_record import ArrayOfWorkRecord, WorkRecord
 from pylero.workflow_action import WorkflowAction
 
-# ArrayOfEnumOptionId is used in dynamic code for custom fields
+# ArrayOfEnumOptionId and Properties are used in dynamic code for custom fields
 
 
 class _WorkItem(BasePolarion):
