@@ -7,10 +7,11 @@
 
     <title>pylero &#8212; pylero  documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
     <script src="_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="_static/doctools.js?v=9bcbadda"></script>
-    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="pylero package" href="pylero.html" />
@@ -40,7 +41,7 @@
 <li class="toctree-l2"><a class="reference internal" href="pylero.html#subpackages">Subpackages</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="pylero.cli.html">pylero.cli package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="pylero.cli.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.cli.html#module-pylero.cli.cmd">pylero.cli.cmd module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylero.cli.html#pylero-cli-cmd-module">pylero.cli.cmd module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pylero.cli.html#module-pylero.cli">Module contents</a></li>
 </ul>
 </li>
@@ -153,9 +154,7 @@
 <li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.base_polarion.BasePolarion.get_revisions"><code class="docutils literal notranslate"><span class="pre">BasePolarion.get_revisions()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.base_polarion.BasePolarion.get_valid_field_values"><code class="docutils literal notranslate"><span class="pre">BasePolarion.get_valid_field_values()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.base_polarion.BasePolarion.has_current_user_permission"><code class="docutils literal notranslate"><span class="pre">BasePolarion.has_current_user_permission()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.base_polarion.BasePolarion.logged_in_user_id"><code class="docutils literal notranslate"><span class="pre">BasePolarion.logged_in_user_id</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.base_polarion.BasePolarion.reload"><code class="docutils literal notranslate"><span class="pre">BasePolarion.reload()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.base_polarion.BasePolarion.repo"><code class="docutils literal notranslate"><span class="pre">BasePolarion.repo</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pylero.html#id1"><code class="docutils literal notranslate"><span class="pre">BasePolarion.session</span></code></a></li>
 </ul>
 </li>
@@ -193,38 +192,8 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="pylero.html#module-pylero.build">pylero.build module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="pylero.html#pylero.build.Build"><code class="docutils literal notranslate"><span class="pre">Build</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.build.Build.author"><code class="docutils literal notranslate"><span class="pre">Build.author</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.build.Build.bir_location"><code class="docutils literal notranslate"><span class="pre">Build.bir_location</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.build.Build.build_descriptor_name"><code class="docutils literal notranslate"><span class="pre">Build.build_descriptor_name</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.build.Build.build_stamp"><code class="docutils literal notranslate"><span class="pre">Build.build_stamp</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.build.Build.build_status"><code class="docutils literal notranslate"><span class="pre">Build.build_status</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.build.Build.build_tag"><code class="docutils literal notranslate"><span class="pre">Build.build_tag</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.build.Build.build_test_results"><code class="docutils literal notranslate"><span class="pre">Build.build_test_results</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.build.Build.calculation_descriptor_name"><code class="docutils literal notranslate"><span class="pre">Build.calculation_descriptor_name</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.build.Build.creation_time"><code class="docutils literal notranslate"><span class="pre">Build.creation_time</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.build.Build.finish_time"><code class="docutils literal notranslate"><span class="pre">Build.finish_time</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.build.Build.build_id"><code class="docutils literal notranslate"><span class="pre">Build.build_id</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.build.Build.job_id"><code class="docutils literal notranslate"><span class="pre">Build.job_id</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.build.Build.linked_work_items"><code class="docutils literal notranslate"><span class="pre">Build.linked_work_items</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.build.Build.local_deployment_space_name"><code class="docutils literal notranslate"><span class="pre">Build.local_deployment_space_name</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.build.Build.log_files"><code class="docutils literal notranslate"><span class="pre">Build.log_files</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.build.Build.start_time"><code class="docutils literal notranslate"><span class="pre">Build.start_time</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="pylero.html#module-pylero.build_linked_work_item">pylero.build_linked_work_item module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="pylero.html#pylero.build_linked_work_item.ArrayOfBuildLinkedWorkItem"><code class="docutils literal notranslate"><span class="pre">ArrayOfBuildLinkedWorkItem</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="pylero.html#pylero.build_linked_work_item.BuildLinkedWorkItem"><code class="docutils literal notranslate"><span class="pre">BuildLinkedWorkItem</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.build_linked_work_item.BuildLinkedWorkItem.revision"><code class="docutils literal notranslate"><span class="pre">BuildLinkedWorkItem.revision</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.build_linked_work_item.BuildLinkedWorkItem.role"><code class="docutils literal notranslate"><span class="pre">BuildLinkedWorkItem.role</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.build_linked_work_item.BuildLinkedWorkItem.work_item"><code class="docutils literal notranslate"><span class="pre">BuildLinkedWorkItem.work_item</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="pylero.html#pylero-build-module">pylero.build module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pylero.html#pylero-build-linked-work-item-module">pylero.build_linked_work_item module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pylero.html#module-pylero.build_test_results">pylero.build_test_results module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="pylero.html#pylero.build_test_results.BuildTestResults"><code class="docutils literal notranslate"><span class="pre">BuildTestResults</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.build_test_results.BuildTestResults.error_count"><code class="docutils literal notranslate"><span class="pre">BuildTestResults.error_count</span></code></a></li>
@@ -308,54 +277,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="pylero.html#module-pylero.document">pylero.document module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="pylero.html#pylero.document.Document"><code class="docutils literal notranslate"><span class="pre">Document</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.allowed_wi_types"><code class="docutils literal notranslate"><span class="pre">Document.allowed_wi_types</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.are_links_from_parent_to_child"><code class="docutils literal notranslate"><span class="pre">Document.are_links_from_parent_to_child</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.author"><code class="docutils literal notranslate"><span class="pre">Document.author</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.auto_suspect"><code class="docutils literal notranslate"><span class="pre">Document.auto_suspect</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.branched_from"><code class="docutils literal notranslate"><span class="pre">Document.branched_from</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.branched_with_query"><code class="docutils literal notranslate"><span class="pre">Document.branched_with_query</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.comments"><code class="docutils literal notranslate"><span class="pre">Document.comments</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.created"><code class="docutils literal notranslate"><span class="pre">Document.created</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.custom_fields"><code class="docutils literal notranslate"><span class="pre">Document.custom_fields</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.derived_fields"><code class="docutils literal notranslate"><span class="pre">Document.derived_fields</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.derived_from_link_role"><code class="docutils literal notranslate"><span class="pre">Document.derived_from_link_role</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.derived_from_uri"><code class="docutils literal notranslate"><span class="pre">Document.derived_from_uri</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.home_page_content"><code class="docutils literal notranslate"><span class="pre">Document.home_page_content</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.id"><code class="docutils literal notranslate"><span class="pre">Document.id</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.location"><code class="docutils literal notranslate"><span class="pre">Document.location</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.module_absolute_location"><code class="docutils literal notranslate"><span class="pre">Document.module_absolute_location</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.module_folder"><code class="docutils literal notranslate"><span class="pre">Document.module_folder</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.module_location"><code class="docutils literal notranslate"><span class="pre">Document.module_location</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.module_name"><code class="docutils literal notranslate"><span class="pre">Document.module_name</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.project"><code class="docutils literal notranslate"><span class="pre">Document.project</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.signature_contexts"><code class="docutils literal notranslate"><span class="pre">Document.signature_contexts</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.status"><code class="docutils literal notranslate"><span class="pre">Document.status</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.structure_link_role"><code class="docutils literal notranslate"><span class="pre">Document.structure_link_role</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.title"><code class="docutils literal notranslate"><span class="pre">Document.title</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.type"><code class="docutils literal notranslate"><span class="pre">Document.type</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.updated"><code class="docutils literal notranslate"><span class="pre">Document.updated</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.updated_by"><code class="docutils literal notranslate"><span class="pre">Document.updated_by</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.uses_outline_numbering"><code class="docutils literal notranslate"><span class="pre">Document.uses_outline_numbering</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.URI_ID_GET_REPLACE"><code class="docutils literal notranslate"><span class="pre">Document.URI_ID_GET_REPLACE()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.URI_ID_SET_REPLACE"><code class="docutils literal notranslate"><span class="pre">Document.URI_ID_SET_REPLACE()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.URI_STRUCT"><code class="docutils literal notranslate"><span class="pre">Document.URI_STRUCT</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.__init__"><code class="docutils literal notranslate"><span class="pre">Document.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.add_referenced_work_item"><code class="docutils literal notranslate"><span class="pre">Document.add_referenced_work_item()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.create"><code class="docutils literal notranslate"><span class="pre">Document.create()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.create_work_item"><code class="docutils literal notranslate"><span class="pre">Document.create_work_item()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.delete"><code class="docutils literal notranslate"><span class="pre">Document.delete()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.export_pdf"><code class="docutils literal notranslate"><span class="pre">Document.export_pdf()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.get_documents"><code class="docutils literal notranslate"><span class="pre">Document.get_documents()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.get_work_items"><code class="docutils literal notranslate"><span class="pre">Document.get_work_items()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.move_work_item_here"><code class="docutils literal notranslate"><span class="pre">Document.move_work_item_here()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.query"><code class="docutils literal notranslate"><span class="pre">Document.query()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.document.Document.update"><code class="docutils literal notranslate"><span class="pre">Document.update()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="pylero.html#pylero-document-module">pylero.document module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pylero.html#module-pylero.enum_custom_field_type">pylero.enum_custom_field_type module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="pylero.html#pylero.enum_custom_field_type.EnumCustomFieldType"><code class="docutils literal notranslate"><span class="pre">EnumCustomFieldType</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.enum_custom_field_type.EnumCustomFieldType.default_value"><code class="docutils literal notranslate"><span class="pre">EnumCustomFieldType.default_value</span></code></a></li>
@@ -482,60 +404,8 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="pylero.html#module-pylero.plan">pylero.plan module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="pylero.html#pylero.plan.ArrayOfPlan"><code class="docutils literal notranslate"><span class="pre">ArrayOfPlan</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="pylero.html#pylero.plan.Plan"><code class="docutils literal notranslate"><span class="pre">Plan</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.plan.Plan.allowed_types"><code class="docutils literal notranslate"><span class="pre">Plan.allowed_types</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.plan.Plan.author_uri"><code class="docutils literal notranslate"><span class="pre">Plan.author_uri</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.plan.Plan.calculation_type"><code class="docutils literal notranslate"><span class="pre">Plan.calculation_type</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.plan.Plan.capacity"><code class="docutils literal notranslate"><span class="pre">Plan.capacity</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.plan.Plan.color"><code class="docutils literal notranslate"><span class="pre">Plan.color</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.plan.Plan.created"><code class="docutils literal notranslate"><span class="pre">Plan.created</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.plan.Plan.custom_fields"><code class="docutils literal notranslate"><span class="pre">Plan.custom_fields</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.plan.Plan.default_estimate"><code class="docutils literal notranslate"><span class="pre">Plan.default_estimate</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.plan.Plan.description"><code class="docutils literal notranslate"><span class="pre">Plan.description</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.plan.Plan.due_date"><code class="docutils literal notranslate"><span class="pre">Plan.due_date</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.plan.Plan.estimation_field"><code class="docutils literal notranslate"><span class="pre">Plan.estimation_field</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.plan.Plan.finished_on"><code class="docutils literal notranslate"><span class="pre">Plan.finished_on</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.plan.Plan.is_template"><code class="docutils literal notranslate"><span class="pre">Plan.is_template</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.plan.Plan.location"><code class="docutils literal notranslate"><span class="pre">Plan.location</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.plan.Plan.name"><code class="docutils literal notranslate"><span class="pre">Plan.name</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.plan.Plan.parent"><code class="docutils literal notranslate"><span class="pre">Plan.parent</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.plan.Plan.plan_id"><code class="docutils literal notranslate"><span class="pre">Plan.plan_id</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.plan.Plan.previous_time_spent"><code class="docutils literal notranslate"><span class="pre">Plan.previous_time_spent</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.plan.Plan.prioritization_field"><code class="docutils literal notranslate"><span class="pre">Plan.prioritization_field</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.plan.Plan.project_uri"><code class="docutils literal notranslate"><span class="pre">Plan.project_uri</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.plan.Plan.records"><code class="docutils literal notranslate"><span class="pre">Plan.records</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.plan.Plan.sort_order"><code class="docutils literal notranslate"><span class="pre">Plan.sort_order</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.plan.Plan.start_date"><code class="docutils literal notranslate"><span class="pre">Plan.start_date</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.plan.Plan.started_on"><code class="docutils literal notranslate"><span class="pre">Plan.started_on</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.plan.Plan.status"><code class="docutils literal notranslate"><span class="pre">Plan.status</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.plan.Plan.template_uri"><code class="docutils literal notranslate"><span class="pre">Plan.template_uri</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.plan.Plan.updated"><code class="docutils literal notranslate"><span class="pre">Plan.updated</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.plan.Plan.__init__"><code class="docutils literal notranslate"><span class="pre">Plan.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.plan.Plan.add_plan_items"><code class="docutils literal notranslate"><span class="pre">Plan.add_plan_items()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.plan.Plan.create"><code class="docutils literal notranslate"><span class="pre">Plan.create()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.plan.Plan.create_plan_template"><code class="docutils literal notranslate"><span class="pre">Plan.create_plan_template()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.plan.Plan.delete_plans"><code class="docutils literal notranslate"><span class="pre">Plan.delete_plans()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.plan.Plan.get_statistics"><code class="docutils literal notranslate"><span class="pre">Plan.get_statistics()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.plan.Plan.get_wiki_content"><code class="docutils literal notranslate"><span class="pre">Plan.get_wiki_content()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.plan.Plan.remove_plan_items"><code class="docutils literal notranslate"><span class="pre">Plan.remove_plan_items()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.plan.Plan.search"><code class="docutils literal notranslate"><span class="pre">Plan.search()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.plan.Plan.set_wiki_content"><code class="docutils literal notranslate"><span class="pre">Plan.set_wiki_content()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.plan.Plan.update"><code class="docutils literal notranslate"><span class="pre">Plan.update()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.plan.Plan.was_started"><code class="docutils literal notranslate"><span class="pre">Plan.was_started()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="pylero.html#module-pylero.plan_record">pylero.plan_record module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="pylero.html#pylero.plan_record.ArrayOfPlanRecord"><code class="docutils literal notranslate"><span class="pre">ArrayOfPlanRecord</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="pylero.html#pylero.plan_record.PlanRecord"><code class="docutils literal notranslate"><span class="pre">PlanRecord</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.plan_record.PlanRecord.item"><code class="docutils literal notranslate"><span class="pre">PlanRecord.item</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="pylero.html#pylero-plan-module">pylero.plan module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pylero.html#pylero-plan-record-module">pylero.plan_record module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pylero.html#module-pylero.plan_statistics">pylero.plan_statistics module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="pylero.html#pylero.plan_statistics.PlanStatistics"><code class="docutils literal notranslate"><span class="pre">PlanStatistics</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.plan_statistics.PlanStatistics.done"><code class="docutils literal notranslate"><span class="pre">PlanStatistics.done</span></code></a></li>
@@ -753,67 +623,8 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="pylero.html#module-pylero.test_record">pylero.test_record module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="pylero.html#pylero.test_record.ArrayOfTestRecord"><code class="docutils literal notranslate"><span class="pre">ArrayOfTestRecord</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="pylero.html#pylero.test_record.TestRecord"><code class="docutils literal notranslate"><span class="pre">TestRecord</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_record.TestRecord.__init__"><code class="docutils literal notranslate"><span class="pre">TestRecord.__init__()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="pylero.html#module-pylero.test_run">pylero.test_run module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun"><code class="docutils literal notranslate"><span class="pre">TestRun</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.attachments"><code class="docutils literal notranslate"><span class="pre">TestRun.attachments</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.author"><code class="docutils literal notranslate"><span class="pre">TestRun.author</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.created"><code class="docutils literal notranslate"><span class="pre">TestRun.created</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.document"><code class="docutils literal notranslate"><span class="pre">TestRun.document</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.finished_on"><code class="docutils literal notranslate"><span class="pre">TestRun.finished_on</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.group_id"><code class="docutils literal notranslate"><span class="pre">TestRun.group_id</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.is_template"><code class="docutils literal notranslate"><span class="pre">TestRun.is_template</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.keep_in_history"><code class="docutils literal notranslate"><span class="pre">TestRun.keep_in_history</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.location"><code class="docutils literal notranslate"><span class="pre">TestRun.location</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.project"><code class="docutils literal notranslate"><span class="pre">TestRun.project</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.query"><code class="docutils literal notranslate"><span class="pre">TestRun.query</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.records"><code class="docutils literal notranslate"><span class="pre">TestRun.records</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.select_test_cases_by"><code class="docutils literal notranslate"><span class="pre">TestRun.select_test_cases_by</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.status"><code class="docutils literal notranslate"><span class="pre">TestRun.status</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.summary_defect"><code class="docutils literal notranslate"><span class="pre">TestRun.summary_defect</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.template"><code class="docutils literal notranslate"><span class="pre">TestRun.template</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.test_run_id"><code class="docutils literal notranslate"><span class="pre">TestRun.test_run_id</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.type"><code class="docutils literal notranslate"><span class="pre">TestRun.type</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.updated"><code class="docutils literal notranslate"><span class="pre">TestRun.updated</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.custom_fields"><code class="docutils literal notranslate"><span class="pre">TestRun.custom_fields</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.__init__"><code class="docutils literal notranslate"><span class="pre">TestRun.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.add_attachment"><code class="docutils literal notranslate"><span class="pre">TestRun.add_attachment()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.add_attachment_to_test_record"><code class="docutils literal notranslate"><span class="pre">TestRun.add_attachment_to_test_record()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.add_attachment_to_test_step"><code class="docutils literal notranslate"><span class="pre">TestRun.add_attachment_to_test_step()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.add_test_record_by_fields"><code class="docutils literal notranslate"><span class="pre">TestRun.add_test_record_by_fields()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.add_test_record_by_object"><code class="docutils literal notranslate"><span class="pre">TestRun.add_test_record_by_object()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.create"><code class="docutils literal notranslate"><span class="pre">TestRun.create()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.create_summary_defect"><code class="docutils literal notranslate"><span class="pre">TestRun.create_summary_defect()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.create_template"><code class="docutils literal notranslate"><span class="pre">TestRun.create_template()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.delete_attachment"><code class="docutils literal notranslate"><span class="pre">TestRun.delete_attachment()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.delete_attachment_from_test_record"><code class="docutils literal notranslate"><span class="pre">TestRun.delete_attachment_from_test_record()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.delete_attachment_from_test_step"><code class="docutils literal notranslate"><span class="pre">TestRun.delete_attachment_from_test_step()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.get_attachment"><code class="docutils literal notranslate"><span class="pre">TestRun.get_attachment()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.get_attachments"><code class="docutils literal notranslate"><span class="pre">TestRun.get_attachments()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.get_custom_field"><code class="docutils literal notranslate"><span class="pre">TestRun.get_custom_field()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.get_defined_custom_field_types"><code class="docutils literal notranslate"><span class="pre">TestRun.get_defined_custom_field_types()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.get_wiki_content"><code class="docutils literal notranslate"><span class="pre">TestRun.get_wiki_content()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#id2"><code class="docutils literal notranslate"><span class="pre">TestRun.records</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.search"><code class="docutils literal notranslate"><span class="pre">TestRun.search()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.update"><code class="docutils literal notranslate"><span class="pre">TestRun.update()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.update_attachment"><code class="docutils literal notranslate"><span class="pre">TestRun.update_attachment()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.update_summary_defect"><code class="docutils literal notranslate"><span class="pre">TestRun.update_summary_defect()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.update_test_record_by_fields"><code class="docutils literal notranslate"><span class="pre">TestRun.update_test_record_by_fields()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.update_test_record_by_object"><code class="docutils literal notranslate"><span class="pre">TestRun.update_test_record_by_object()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.update_wiki_content"><code class="docutils literal notranslate"><span class="pre">TestRun.update_wiki_content()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.verify_params"><code class="docutils literal notranslate"><span class="pre">TestRun.verify_params()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylero.html#pylero.test_run.TestRun.verify_required"><code class="docutils literal notranslate"><span class="pre">TestRun.verify_required()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="pylero.html#pylero-test-record-module">pylero.test_record module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pylero.html#pylero-test-run-module">pylero.test_run module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pylero.html#module-pylero.test_run_attachment">pylero.test_run_attachment module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="pylero.html#pylero.test_run_attachment.ArrayOfTestRunAttachment"><code class="docutils literal notranslate"><span class="pre">ArrayOfTestRunAttachment</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="pylero.html#pylero.test_run_attachment.TestRunAttachment"><code class="docutils literal notranslate"><span class="pre">TestRunAttachment</span></code></a><ul>
@@ -970,19 +781,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="pylero.html#module-pylero.work_item">pylero.work_item module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="pylero.html#pylero.work_item.BusinessCase"><code class="docutils literal notranslate"><span class="pre">BusinessCase</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="pylero.html#pylero.work_item.ChangeRequest"><code class="docutils literal notranslate"><span class="pre">ChangeRequest</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="pylero.html#pylero.work_item.Defect"><code class="docutils literal notranslate"><span class="pre">Defect</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="pylero.html#pylero.work_item.IncidentReport"><code class="docutils literal notranslate"><span class="pre">IncidentReport</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="pylero.html#pylero.work_item.Requirement"><code class="docutils literal notranslate"><span class="pre">Requirement</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="pylero.html#pylero.work_item.Risk"><code class="docutils literal notranslate"><span class="pre">Risk</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="pylero.html#pylero.work_item.Task"><code class="docutils literal notranslate"><span class="pre">Task</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="pylero.html#pylero.work_item.TestCase"><code class="docutils literal notranslate"><span class="pre">TestCase</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="pylero.html#pylero.work_item.TestSuite"><code class="docutils literal notranslate"><span class="pre">TestSuite</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="pylero.html#pylero.work_item.newclass"><code class="docutils literal notranslate"><span class="pre">newclass</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="pylero.html#pylero-work-item-module">pylero.work_item module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pylero.html#module-pylero.work_record">pylero.work_record module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="pylero.html#pylero.work_record.ArrayOfWorkRecord"><code class="docutils literal notranslate"><span class="pre">ArrayOfWorkRecord</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="pylero.html#pylero.work_record.WorkRecord"><code class="docutils literal notranslate"><span class="pre">WorkRecord</span></code></a><ul>
@@ -1033,7 +832,16 @@
 
 
 
-<h3>Navigation</h3>
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">pylero</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="pylero.html">pylero package</a></li>
@@ -1050,16 +858,6 @@
   </ul></li>
 </ul>
 </div>
-<search id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</search>
-<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -1076,8 +874,8 @@
       &#169;2021, Sim Zacks and Pylero Contributors.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
-      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.0.4</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
       |
       <a href="_sources/modules.rst.txt"
