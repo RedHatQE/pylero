@@ -1090,7 +1090,7 @@ class BasePolarion(object):
             self._cache["enums"][enum_id][control] = enums
         # the _cache contains _suds_object, so the id attribute is used.
         for enum in enums:
-          if enum.id == value:
+            if enum.id == value:
                 return enum.name
         raise PyleroLibException(
                 f'The enum element "{enum_id}" '
