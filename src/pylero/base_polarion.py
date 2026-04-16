@@ -966,9 +966,7 @@ class BasePolarion(object):
         if enum_base:
             enums = enum_base.get(control)
         if not enums:
-            enums = self.session.tracker_client.service.getEnumOptionsForIdWithControl(
-                project_id, enum_id, control
-            )
+            enums = self.session.tracker_client.service.getEnumOptionsForIdWithControl(project_id, enum_id, control)
             if enum_id not in self._cache["enums"]:
                 self._cache["enums"][enum_id] = {}
             self._cache["enums"][enum_id][control] = enums
@@ -1014,10 +1012,7 @@ class BasePolarion(object):
         for enum in self._get_enum_options(enum_id, control):
             if enum.id == value:
                 return enum.name
-        raise PyleroLibException(
-                f'The enum element "{enum_id}" '
-                f'or its value "{value}" do not exist.'
-            )
+        raise PyleroLibException(f'The enum element "{enum_id}" or its value "{value}" do not exist.')
 
     def reload(self):
         """Reloads the object with data from the server.
