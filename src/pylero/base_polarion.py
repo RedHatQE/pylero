@@ -1093,8 +1093,8 @@ class BasePolarion(object):
           if enum.id == value:
                 return enum.name
         raise PyleroLibException(
-                f'The enum element "{enum_id}"'
-                'or its value "{value}" do not exist.'
+                f'The enum element "{enum_id}" '
+                f'or its value "{value}" do not exist.'
             )
 
     def reload(self):
