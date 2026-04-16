@@ -4,13 +4,11 @@ from __future__ import print_function
 import datetime
 import os
 
-from pylero._compatible import object
-from pylero._compatible import str
+from pylero._compatible import object, str
 from pylero.document import Document
 from pylero.plan import Plan
 from pylero.test_run import TestRun
-from pylero.work_item import Requirement
-from pylero.work_item import TestCase
+from pylero.work_item import Requirement, TestCase
 
 
 class CmdList(object):
@@ -34,10 +32,7 @@ class CmdList(object):
         print("-------%7s------%7s--------" % ("", ""))
 
         for doc in docs:
-            print(
-                "%-14s %-11s %s"
-                % (doc.created.strftime("%Y-%m-%d"), doc.author, doc.document_id)
-            )
+            print("%-14s %-11s %s" % (doc.created.strftime("%Y-%m-%d"), doc.author, doc.document_id))
 
     def list_workitems_in_doc(self, doc_name_with_space):
         if doc_name_with_space.find("/") < 0:
@@ -69,9 +64,7 @@ class CmdList(object):
 
         for wi in workitems:
             created = str(wi.created).split(" ")[0]
-            print(
-                "%-13s %-13s %-13s %s" % (created, wi.type, wi.work_item_id, wi.title)
-            )
+            print("%-13s %-13s %-13s %s" % (created, wi.type, wi.work_item_id, wi.title))
 
     def list_workitems_by_query(self, query, wi_type):
         fields = ["work_item_id", "title", "author", "created"]
@@ -81,9 +74,7 @@ class CmdList(object):
         elif wi_type in ["requirement", "Requirement"]:
             workitem_list = Requirement.query(query, fields)
         elif wi_type == "":
-            workitem_list = TestCase.query(query, fields) + Requirement.query(
-                query, fields
-            )
+            workitem_list = TestCase.query(query, fields) + Requirement.query(query, fields)
         else:
             print("'%s' is invalid. Use testcase or requirement" % wi_type)
             exit(0)
@@ -173,15 +164,10 @@ class CmdList(object):
 
         for rec in tr.records:
             time = str(rec.executed).split(".")[0]
-            print(
-                "%-21s%-9s%-12s%-10s"
-                % (time, rec.result, rec.executed_by, rec.test_case_id)
-            )
+            print("%-21s%-9s%-12s%-10s" % (time, rec.result, rec.executed_by, rec.test_case_id))
 
     def print_plan_ids(self, query):
-        pls = Plan.search(
-            query, sort="due_date", limit=-1, fields=["due_date", "name", "plan_id"]
-        )
+        pls = Plan.search(query, sort="due_date", limit=-1, fields=["due_date", "name", "plan_id"])
 
         ttstr = "Due Date%-5sPlan ID%-24sPlan Name" % ("", "")
         lnstr = "-----------  ---------- %-20s---------" % ""
@@ -248,10 +234,7 @@ class CmdUpdate(object):
                 rec.comment = comment
 
                 tr.update_test_record_by_object(testcase, rec)
-                print(
-                    "%4sSet %s to %s (verdict comment: '%s')"
-                    % ("", testcase, result, comment)
-                )
+                print("%4sSet %s to %s (verdict comment: '%s')" % ("", testcase, result, comment))
                 return 0
 
         if not is_found:

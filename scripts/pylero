@@ -11,14 +11,14 @@ import pylero
 # import, pressing the arrow keys shows ctrl chars.
 if sys.version_info > (3, 6):
     try:
-        import gnureadline as readline
+        import gnureadline as readline  # noqa: F401
     except ImportError:
         # `readline` is deprecated and `gnureadline` requires `Python.h` and
         # `ncurses-devel` packages. TODO: Furnish steps to install `gnureadline`
         pass
 else:
     # `readline` on python > 3.6 resulting in Traceback at times
-    import readline
+    pass
 
 USAGE = """\
 Welcome to Pylero, the Python wrapper for the Polarion WSDL API. The Pylero

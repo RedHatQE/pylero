@@ -9,46 +9,13 @@ Setting up the environment
 ==========================
 
 -----------------
-Installing pip
+Installing uv
 -----------------
-This project uses `pip <https://pip.pypa.io/en/stable/>`_ as a package manager. To install, simply run the follow command:
+This project uses `uv <https://docs.astral.sh/uv/>`_ as a package manager. To install uv, simply run:
 
 .. code-block:: bash
 
-    $ python -m pip install
-
-------------------------
-Installing pre-commit
-------------------------
-`pre-commit <https://pre-commit.com/>`_ is a multi-language package manager for pre-commit hooks. It is used to check code before it makes it to commit. A list of hooks is specified in `.pre-commit-config.yaml` in the root directory of the project.
-To install `pre-commit`, simply run the following command:
-
-.. code-block:: bash
-
-    $ pip install pre-commit
-
-
------------------
-Before you commit
------------------
-
-In order to ensure you are able to pass the GitHub CI build, it is recommended that you run the following commands in the base of your pylero directory
-
-.. code-block:: python
-
-    $ pre-commit autoupdate && pre-commit run -a
-
-
-
-Pre-commit will ensure that the changes you made are not in violation of PEP8 standards and automatically apply black fixes.
-
-We recommend `black` to automatically fix any pre-commit failures.
-
-.. code-block:: python
-
-    $ pip install black
-    $ black <edited_file.py>
-
+    $ curl -LsSf https://astral.sh/uv/install.sh | sh
 
 -----------------------------------
 Fork the project and clone the repo
@@ -64,27 +31,55 @@ Fork the project and clone the repo
 Installing dependencies
 -----------------------
 
-All the project dependencies are listed in `requirements.txt` file located in the root directory. To install all the dependencies of the project, simply run:
+Create a virtual environment and install all dependencies:
 
 .. code-block:: bash
 
-    $ pip install -r requirements.txt
-
-
+    $ uv venv
+    $ uv pip install -e .
+    $ uv pip install pre-commit ruff
 
 -----------------------------
 Setting up configuration file
 -----------------------------
 You will need to setup config values, for that you need to get some values from Polarion and provide it to the config file. For more detail, check out project's `README.md <https://github.com/RedHatQE/pylero/blob/main/README.md#configuration>`_
 
-----------------------------
-Install the project with pip
-----------------------------
-`Pylero` supports command line interface. Simply run `pylero` on you terminal, it will prompt to the command line interface. However, before you can do that you will have to install the project by running:
+------------------------
+Installing pre-commit
+------------------------
+`pre-commit <https://pre-commit.com/>`_ is a multi-language package manager for pre-commit hooks. It is used to check code before it makes it to commit. A list of hooks is specified in `.pre-commit-config.yaml` in the root directory of the project.
 
 .. code-block:: bash
 
-    $ pip install .
+    $ pre-commit install
+
+-----------------
+Before you commit
+-----------------
+
+In order to ensure you are able to pass the GitHub CI build, it is recommended that you run the following commands in the base of your pylero directory:
+
+.. code-block:: bash
+
+    $ pre-commit run -a
+
+Pre-commit will ensure that the changes you made are not in violation of PEP8 standards and automatically apply ruff fixes.
+
+You can also run `ruff` directly to fix any issues:
+
+.. code-block:: bash
+
+    $ ruff check --fix .
+    $ ruff format .
+
+----------------------------
+Install the project with uv
+----------------------------
+`Pylero` supports command line interface. Simply run `pylero` on your terminal, it will prompt to the command line interface. However, before you can do that you will have to install the project by running:
+
+.. code-block:: bash
+
+    $ uv pip install -e .
 
 in your project root directory. With that, you're ready to submit your first contribution.
 

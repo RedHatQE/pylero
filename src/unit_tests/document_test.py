@@ -3,6 +3,7 @@ Created on Apr 13, 2015
 
 @author: szacks
 """
+
 import datetime
 import os
 import unittest
@@ -44,9 +45,7 @@ class DocumentTest(unittest.TestCase):
         self.assertIsInstance(doc, Document)
 
     def test_004_get_name(self):
-        self.doc_get1 = Document(
-            project_id=Document.default_project, doc_with_space="Testing/" + DOC_NAME
-        )
+        self.doc_get1 = Document(project_id=Document.default_project, doc_with_space="Testing/" + DOC_NAME)
         self.assertIsInstance(self.doc_get1, Document)
 
     def test_005_get_uri(self):

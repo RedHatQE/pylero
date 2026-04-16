@@ -1,13 +1,9 @@
 # -*- coding: utf8 -*-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 from pylero.base_polarion import BasePolarion
 from pylero.exceptions import PyleroLibException
-from pylero.subterra_uri import ArrayOfSubterraURI
-from pylero.subterra_uri import SubterraURI
+from pylero.subterra_uri import ArrayOfSubterraURI, SubterraURI
 from pylero.text import Text
 
 
@@ -126,9 +122,7 @@ class User(BasePolarion):
             if user_id:
                 self._suds_object = self.session.project_client.service.getUser(user_id)
             elif uri:
-                self._suds_object = self.session.project_client.service.getUserByUri(
-                    uri
-                )
+                self._suds_object = self.session.project_client.service.getUserByUri(uri)
             if getattr(self._suds_object, "_unresolvable", True):
                 raise PyleroLibException("The user {0} was not found.".format(user_id))
 
@@ -145,9 +139,7 @@ class User(BasePolarion):
             Security.getContextRolesForUser
         """
         self._verify_obj()
-        return self.session.security_client.service.getContextRolesForUser(
-            self.user_id, location
-        )
+        return self.session.security_client.service.getContextRolesForUser(self.user_id, location)
 
     def get_roles(self, location):
         """Returns all global and context roles for the context at given
@@ -163,9 +155,7 @@ class User(BasePolarion):
             Security.getRolesForUser
         """
         self._verify_obj()
-        return self.session.security_client.service.getRolesForUser(
-            self.user_id, location
-        )
+        return self.session.security_client.service.getRolesForUser(self.user_id, location)
 
     # getUserAvatarURL parameter is misnamed in the docs. it really takes user id.
     def get_user_avatar_url(self):
@@ -201,9 +191,7 @@ class User(BasePolarion):
             Security.hasPermission
         """
         self._verify_obj()
-        return self.session.security_client.service.hasPermission(
-            self.user_id, permission, project_id
-        )
+        return self.session.security_client.service.hasPermission(self.user_id, permission, project_id)
 
     def update(self):
         """method update, updates Polarion with the User attributes

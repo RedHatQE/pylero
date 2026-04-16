@@ -12,7 +12,6 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 import os
-import shlex
 import sys
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -38,9 +37,7 @@ extensions = [
 ]
 
 POLARION_URL = "https://almdemo.polarion.com"
-pol_client = "{}/polarion/sdk/doc/javadoc/com/polarion/alm/ws/client".format(
-    POLARION_URL
-)
+pol_client = "{}/polarion/sdk/doc/javadoc/com/polarion/alm/ws/client".format(POLARION_URL)
 
 extlinks = {
     "project": ("{}/projects/ProjectWebService.html#%s".format(pol_client), "%s"),
@@ -77,7 +74,7 @@ author = "Sim Zacks and Pylero Contributors"
 # built documents.
 #
 # The short X.Y version.
-version = "0.0.3"
+version = "0.2.0"
 # The full version, including alpha/beta/rc tags.
 release = ""
 

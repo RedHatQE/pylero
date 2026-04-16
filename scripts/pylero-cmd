@@ -46,8 +46,7 @@ if len(sys.argv) == 2 and sys.argv[1] in ("-h", "--help"):
     print(USAGE)
     sys.exit(0)
 
-from pylero.cli.cmd import CmdList
-from pylero.cli.cmd import CmdUpdate
+from pylero.cli.cmd import CmdList, CmdUpdate  # noqa: E402
 
 
 @click.group()
@@ -97,9 +96,7 @@ def cli():
     is_flag=True,
     help="flag indicating that the action will reference workitem",
 )
-@click.option(
-    "-w", "--wi_type", default="", help="type of workitem. e.g testcase, requirement"
-)
+@click.option("-w", "--wi_type", default="", help="type of workitem. e.g testcase, requirement")
 def list(
     document,
     query,
@@ -123,7 +120,7 @@ def list(
     # get documents
     if is_document and query:
         docs = list_obj.list_documents_by_query(query)
-        list_obj.print_documents(docs),
+        (list_obj.print_documents(docs),)
 
     # get workitems
     elif workitem:
@@ -262,27 +259,19 @@ def update(
         doc_title = doc_name
 
         # create document from string or html file
-        update_obj.update_document(
-            space, doc_name, doc_title, doc_wi_type, doc_type, "parent", doc_content
-        )
+        update_obj.update_document(space, doc_name, doc_title, doc_wi_type, doc_type, "parent", doc_content)
 
     elif run:
         if result:
             if testcase:
                 # update one case result for runs
-                update_obj.update_1_case_result_for_run(
-                    run, testcase, result, assignee, comment
-                )
+                update_obj.update_1_case_result_for_run(run, testcase, result, assignee, comment)
             else:
                 # update all case results for runs
-                update_obj.update_all_case_results_for_runs(
-                    run, result, assignee, comment
-                )
+                update_obj.update_all_case_results_for_runs(run, result, assignee, comment)
         else:
             # update/create runs
-            update_obj.update_runs(
-                run, template, plannedin, assignee, status, description
-            )
+            update_obj.update_runs(run, template, plannedin, assignee, status, description)
     else:
         click.echo("Please get usage: pylero-cmd update --help")
 

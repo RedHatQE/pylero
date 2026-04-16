@@ -1,12 +1,8 @@
 # -*- coding: utf8 -*-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 from pylero.base_polarion import BasePolarion
-from pylero.subterra_uri import ArrayOfSubterraURI
-from pylero.subterra_uri import SubterraURI
+from pylero.subterra_uri import ArrayOfSubterraURI, SubterraURI
 
 
 class Revision(BasePolarion):
@@ -67,13 +63,9 @@ class Revision(BasePolarion):
             Tracker.queryRevisions
         """
         if query_uris:
-            return cls.session.tracker_client.service.queryRevisionUris(
-                query, sort, False
-            )
+            return cls.session.tracker_client.service.queryRevisionUris(query, sort, False)
         else:
-            revs = cls.session.tracker_client.service.queryRevisions(
-                query, sort, fields
-            )
+            revs = cls.session.tracker_client.service.queryRevisions(query, sort, fields)
             lst_rev = [Revision(suds_object=rev) for rev in revs]
             return lst_rev
 

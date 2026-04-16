@@ -1,25 +1,18 @@
 # -*- coding: utf8 -*-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import base64
 
 import suds
+
 from pylero._compatible import basestring
-from pylero.base_polarion import BasePolarion
-from pylero.base_polarion import tx_wrapper
-from pylero.custom import ArrayOfCustom
-from pylero.custom import Custom
-from pylero.enum_option_id import ArrayOfEnumOptionId
-from pylero.enum_option_id import EnumOptionId
+from pylero.base_polarion import BasePolarion, tx_wrapper
+from pylero.custom import ArrayOfCustom, Custom
+from pylero.enum_option_id import ArrayOfEnumOptionId, EnumOptionId
 from pylero.exceptions import PyleroLibException
-from pylero.module_comment import ArrayOfModuleComment
-from pylero.module_comment import ModuleComment
+from pylero.module_comment import ArrayOfModuleComment, ModuleComment
 from pylero.project import Project
-from pylero.signature_context import ArrayOfSignatureContext
-from pylero.signature_context import SignatureContext
+from pylero.signature_context import ArrayOfSignatureContext, SignatureContext
 from pylero.subterra_uri import SubterraURI
 from pylero.text import Text
 from pylero.user import User
@@ -130,10 +123,7 @@ class Document(BasePolarion):
     _obj_struct = "tns4:Module"
     # The uri struct of a module is different then others because of extra
     # moduleFolder element. Also requires a substitution from # to / and back
-    URI_STRUCT = (
-        "subterra:data-service:objects:/default/"
-        "%(project)s${%(obj)s}{moduleFolder}%(id)s"
-    )
+    URI_STRUCT = "subterra:data-service:objects:/default/" "%(project)s${%(obj)s}{moduleFolder}%(id)s"
     # must wrap lambda with classmethod so it can be used as such
     URI_ID_GET_REPLACE = classmethod(lambda cls, x: x.replace("#", "/"))
     URI_ID_SET_REPLACE = classmethod(lambda cls, x: x.replace("/", "#"))
@@ -207,9 +197,7 @@ class Document(BasePolarion):
             return doc
         except suds.WebFault as e:
             if "Invalid document on location Location" in e.fault.faultstring:
-                raise PyleroLibException(
-                    "Document {0}/{1} already exists".format(space, document_name)
-                )
+                raise PyleroLibException("Document {0}/{1} already exists".format(space, document_name))
             else:
                 raise PyleroLibException(e.fault)
 
@@ -239,9 +227,7 @@ class Document(BasePolarion):
         if p_fields:
             function_name += "WithFields"
             parms += [p_fields]
-        for suds_module in getattr(cls.session.tracker_client.service, function_name)(
-            *parms
-        ):
+        for suds_module in getattr(cls.session.tracker_client.service, function_name)(*parms):
             docs.append(cls(suds_object=suds_module))
         return docs
 
@@ -345,9 +331,7 @@ class Document(BasePolarion):
         if output_name == "":
             output_name = uri.split("/")[-1]
 
-        base64_output = getattr(cls.session.tracker_client.service, function_name)(
-            *parms
-        )
+        base64_output = getattr(cls.session.tracker_client.service, function_name)(*parms)
         binary_data = base64.b64decode(base64_output)
 
         with open(f"{output_dir}/{output_name}.pdf", "wb") as file:
@@ -398,13 +382,9 @@ class Document(BasePolarion):
             if fields:
                 function_name = "WithFields"
                 parms.append(self._convert_obj_fields_to_polarion(fields))
-            self._suds_object = getattr(
-                self.session.tracker_client.service, function_name
-            )(*parms)
+            self._suds_object = getattr(self.session.tracker_client.service, function_name)(*parms)
             if getattr(self._suds_object, "_unresolvable", True):
-                raise PyleroLibException(
-                    "The Document {0} was not found.".format(doc_with_space or uri)
-                )
+                raise PyleroLibException("The Document {0} was not found.".format(doc_with_space or uri))
 
     def _fix_circular_refs(self):
         # a class can't reference itself as a class attribute.
@@ -432,18 +412,14 @@ class Document(BasePolarion):
         else:
             raise PyleroLibException("the w_item parameter must be a _WorkItem")
         if parent_id:
-            parent_uri = _WorkItem(
-                work_item_id=parent_id, project_id=self.project_id
-            ).uri
+            parent_uri = _WorkItem(work_item_id=parent_id, project_id=self.project_id).uri
         else:
             doc_wis = self.get_work_items(None, False)
             if doc_wis:
                 parent_uri = doc_wis[0].uri
             else:
                 parent_uri = None
-        wi_uri = self.session.tracker_client.service.createWorkItemInModule(
-            self.uri, parent_uri, suds_wi
-        )
+        wi_uri = self.session.tracker_client.service.createWorkItemInModule(self.uri, parent_uri, suds_wi)
         new_wi = w_item.__class__(uri=wi_uri)
         new_wi._changed_fields = w_item._changed_fields
         new_wi.update()
@@ -462,9 +438,7 @@ class Document(BasePolarion):
         self._verify_obj()
         self.session.tracker_client.service.deleteModule(self.uri)
 
-    def get_work_items(
-        self, parent_work_item_id, deep, fields=["work_item_id", "type"]
-    ):
+    def get_work_items(self, parent_work_item_id, deep, fields=["work_item_id", "type"]):
         """Returns work items (with given fields set) contained in given
         Module/Document under given parent (if specified).
 
@@ -483,9 +457,7 @@ class Document(BasePolarion):
         """
         self._verify_obj()
         if parent_work_item_id:
-            parent_uri = _WorkItem(
-                work_item_id=parent_work_item_id, project_id=self.project_id
-            ).uri
+            parent_uri = _WorkItem(work_item_id=parent_work_item_id, project_id=self.project_id).uri
         else:
             parent_uri = None
         p_fields = list()
@@ -495,17 +467,13 @@ class Document(BasePolarion):
             filtered_fields = [f for f in fields if f in wi_type._cls_suds_map.keys()]
             p_fields.extend(wi_type._convert_obj_fields_to_polarion(filtered_fields))
         p_fields = list(set(p_fields))
-        suds_wi = self.session.tracker_client.service.getModuleWorkItems(
-            self.uri, parent_uri, deep, p_fields
-        )
+        suds_wi = self.session.tracker_client.service.getModuleWorkItems(self.uri, parent_uri, deep, p_fields)
         work_items = []
         for w_item in suds_wi:
             work_items.append(_WorkItem(suds_object=w_item))
         return work_items
 
-    def move_work_item_here(
-        self, work_item_id, parent_id, position=-1, retain_flow=True
-    ):
+    def move_work_item_here(self, work_item_id, parent_id, position=-1, retain_flow=True):
         """Moves a work item to a specific position in a Document. If the work
         item is not yet inside the Document it will be moved into the Document.
 
@@ -534,9 +502,7 @@ class Document(BasePolarion):
             parent_uri = _WorkItem(self.project_id, parent_id).uri
         else:
             parent_uri = None
-        self.session.tracker_client.service.moveWorkItemToDocument(
-            wi.uri, self.uri, parent_uri, position, retain_flow
-        )
+        self.session.tracker_client.service.moveWorkItemToDocument(wi.uri, self.uri, parent_uri, position, retain_flow)
 
     def add_referenced_work_item(self, work_item_id):
         """Adds a work item to the document as a referenced work_item to the
@@ -552,10 +518,7 @@ class Document(BasePolarion):
         self._verify_obj()
         # verify that the work item passed in exists
         _WorkItem(project_id=self.project_id, work_item_id=work_item_id)
-        ref_wi_template = (
-            """<div id="polarion_wiki macro name="""
-            """module-workitem;params=id=%s|external=true">"""
-        )
+        ref_wi_template = """<div id="polarion_wiki macro name=""" """module-workitem;params=id=%s|external=true">"""
         self.home_page_content += ref_wi_template % work_item_id
         self.update()
 

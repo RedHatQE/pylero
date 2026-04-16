@@ -1,19 +1,14 @@
 # -*- coding: utf8 -*-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import suds
+
 from pylero._compatible import basestring
 from pylero.base_polarion import BasePolarion
-from pylero.custom import ArrayOfCustom
-from pylero.custom import Custom
-from pylero.enum_option_id import ArrayOfEnumOptionId
-from pylero.enum_option_id import EnumOptionId
+from pylero.custom import ArrayOfCustom, Custom
+from pylero.enum_option_id import ArrayOfEnumOptionId, EnumOptionId
 from pylero.exceptions import PyleroLibException
-from pylero.plan_record import ArrayOfPlanRecord
-from pylero.plan_record import PlanRecord
+from pylero.plan_record import ArrayOfPlanRecord, PlanRecord
 from pylero.plan_statistics import PlanStatistics
 from pylero.project import Project
 from pylero.subterra_uri import SubterraURI
@@ -141,9 +136,7 @@ class Plan(BasePolarion):
         References:
             Planning.createPlan
         """
-        uri = cls.session.planning_client.service.createPlan(
-            project_id, plan_name, plan_id, parent_id, template_id
-        )
+        uri = cls.session.planning_client.service.createPlan(project_id, plan_name, plan_id, parent_id, template_id)
         return Plan(uri=uri)
 
     @classmethod
@@ -163,9 +156,7 @@ class Plan(BasePolarion):
         References:
             Planning.createPlanTemplate
         """
-        uri = cls.session.planning_client.service.createPlanTemplate(
-            project_id, template_name, template_id, parent_id
-        )
+        uri = cls.session.planning_client.service.createPlanTemplate(project_id, template_name, template_id, parent_id)
         return Plan(uri=uri)
 
     @classmethod
@@ -216,13 +207,9 @@ class Plan(BasePolarion):
             if not isinstance(cls._cls_suds_map[sort], dict)
             else cls._cls_suds_map[sort]["field_name"]
         )
-        parms = [query, p_sort, limit] + (
-            [cls._convert_obj_fields_to_polarion(fields)] if fields else []
-        )
+        parms = [query, p_sort, limit] + ([cls._convert_obj_fields_to_polarion(fields)] if fields else [])
         plans = []
-        for sud_plan in getattr(cls.session.planning_client.service, function_name)(
-            *parms
-        ):
+        for sud_plan in getattr(cls.session.planning_client.service, function_name)(*parms):
             plans.append(Plan(suds_object=sud_plan))
         return plans
 
@@ -246,12 +233,8 @@ class Plan(BasePolarion):
         super(self.__class__, self).__init__(obj_id=plan_id, suds_object=suds_object)
         if plan_id:
             if not project_id:
-                raise PyleroLibException(
-                    "When plan_id is passed in, " "project_id is required"
-                )
-            self._suds_object = self.session.planning_client.service.getPlanById(
-                project_id, plan_id
-            )
+                raise PyleroLibException("When plan_id is passed in, " "project_id is required")
+            self._suds_object = self.session.planning_client.service.getPlanById(project_id, plan_id)
         elif uri:
             self._suds_object = self.session.planning_client.service.getPlanByUri(uri)
         if plan_id or uri:
@@ -281,9 +264,7 @@ class Plan(BasePolarion):
         self._verify_obj()
         if work_items:
             if not isinstance(work_items, list):
-                raise PyleroLibException(
-                    "work_items must be a list of _WorkItem objects"
-                )
+                raise PyleroLibException("work_items must be a list of _WorkItem objects")
         p_items = []
         for item in work_items:
             wi = _WorkItem(self.project_id, work_item_id=item)
@@ -337,9 +318,7 @@ class Plan(BasePolarion):
         self._verify_obj()
         if work_items:
             if not isinstance(work_items, list):
-                raise PyleroLibException(
-                    "work_items must be a list of _WorkItem objects"
-                )
+                raise PyleroLibException("work_items must be a list of _WorkItem objects")
         p_items = []
         for item in work_items:
             wi = _WorkItem(self.project_id, work_item_id=item)

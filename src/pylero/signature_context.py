@@ -1,12 +1,8 @@
 # -*- coding: utf8 -*-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 from pylero.base_polarion import BasePolarion
-from pylero.signature import ArrayOfSignature
-from pylero.signature import Signature
+from pylero.signature import ArrayOfSignature, Signature
 from pylero.user import User
 
 

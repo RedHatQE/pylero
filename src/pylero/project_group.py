@@ -1,13 +1,9 @@
 # -*- coding: utf8 -*-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 from pylero.base_polarion import BasePolarion
 from pylero.project import Project
-from pylero.subterra_uri import ArrayOfSubterraURI
-from pylero.subterra_uri import SubterraURI
+from pylero.subterra_uri import ArrayOfSubterraURI, SubterraURI
 
 
 class ProjectGroup(BasePolarion):
@@ -75,9 +71,7 @@ class ProjectGroup(BasePolarion):
         if uri:
             self._suds_object = self.session.project_client.service.getProjectGroup(uri)
         elif location:
-            self._suds_object = (
-                self.session.project_client.service.getProjectGroupAtLocation(location)
-            )
+            self._suds_object = self.session.project_client.service.getProjectGroupAtLocation(location)
 
     def get_contained_groups(self):
         """Gets all project groups located directly below the project group.
@@ -93,9 +87,7 @@ class ProjectGroup(BasePolarion):
         """
         self._verify_obj()
         groups = []
-        for suds_group in self.session.project_client.service.getContainedGroups(
-            self.uri
-        ):
+        for suds_group in self.session.project_client.service.getContainedGroups(self.uri):
             groups.append(self.__class__(suds_object=suds_group))
         return groups
 
@@ -113,9 +105,7 @@ class ProjectGroup(BasePolarion):
         """
         self._verify_obj()
         projects = []
-        for suds_project in self.session.project_client.service.getContainedProjects(
-            self.uri
-        ):
+        for suds_project in self.session.project_client.service.getContainedProjects(self.uri):
             projects.append(Project(suds_object=suds_project))
         return projects
 
@@ -133,8 +123,6 @@ class ProjectGroup(BasePolarion):
         """
         self._verify_obj()
         projects = []
-        for (
-            suds_project
-        ) in self.session.project_client.service.getDeepContainedProjects(self.uri):
+        for suds_project in self.session.project_client.service.getDeepContainedProjects(self.uri):
             projects.append(Project(suds_object=suds_project))
         return projects

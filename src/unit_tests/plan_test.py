@@ -43,9 +43,7 @@ class PlanTest(unittest.TestCase):
         * Verifies that the returned object exists and is a template
         The parent attribute is not returned
         """
-        template = Plan.create_plan_template(
-            TEMPLATE_ID, "Regression", DEFAULT_PROJ, None
-        )
+        template = Plan.create_plan_template(TEMPLATE_ID, "Regression", DEFAULT_PROJ, None)
         self.assertIsNotNone(template.plan_id)
         self.assertTrue(template.is_template)
 

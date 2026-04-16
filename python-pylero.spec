@@ -1,5 +1,5 @@
 Name:           python-pylero
-Version:        0.1.1
+Version:        0.2.0
 Release:        1%{?dist}
 Summary:        Python SDK for Polarion
 
@@ -82,6 +82,11 @@ Summary:        %{summary}
 
 
 %changelog
+* Thu Dec 18 2025 Wayne Sun <gsun@redhat.com> 0.2.0-1
+- chore: modernize tooling and drop legacy Python versions (gsun@redhat.com)
+- fix(session): set CERT_PATH before WSDL client initialization
+  (gsun@redhat.com)
+
 * Fri May 30 2025 Wayne Sun <gsun@redhat.com> 0.1.1-1
 - Update doc to latest (gsun@redhat.com)
 - Add python 3.13 in support list (gsun@redhat.com)

@@ -26,6 +26,17 @@ Polarion Work Items are configured per installation, to give native workitem
 objects (such as TestCase), the library connects to the Polarion server,
 downloads the list of workitems and creates them.
 
+## Important Notice
+
+**Polarion Web Service (SOAP/WSDL API) is in maintenance mode since Polarion 2410.**
+
+Siemens has announced that the Polarion Web Service API used by Pylero is now in
+maintenance mode. For new features and forward-looking development, users are
+advised to check the [Polarion REST API](https://docs.sw.siemens.com/en-US/doc/230235217/PL20241023686685479.polarion_help_sc.xid2056109/xid2212382).
+
+Pylero will continue to work with the existing WSDL API, but no new features
+will be added to the WSDL API by Polarion.
+
 ## Installation
 -----------------------------
 
