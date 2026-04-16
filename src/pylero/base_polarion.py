@@ -1062,17 +1062,20 @@ class BasePolarion(object):
         return [enum.id for enum in enums]
 
     def get_name_for_field_value(self, enum_id, value, control=None):
-        """Gets the available enumeration options.
+        """Resolves an enumeration value to its display name.
         Uses a cache dict because the time to get valid fields from server
         is time prohibitive.
 
         Args:
-            enum_id: The enum code to get values for
-            value: The enum value to get the `name` for
+            enum_id: The enum code to look up
+            value: The enum option id to resolve
             control: the control key for the enumeration. default:None
 
         Returns:
-            the linked name
+            The display name (enum.name) for the given value
+
+        Raises:
+            PyleroLibException: If no option with the given value exists
 
         References:
             Tracker.getEnumOptionsForId
