@@ -424,6 +424,10 @@ class TestRun(BasePolarion):
         # some custom types have a [] segment. Still unsure of how to handle
         # those specific attributes, but for now, this will ignore them
         field_type = field_type.split("[")[0]
+        if field_type == "@WorkItems":
+            # cf type: Enum -> Work Item -> Query, such as
+            # @WorkItems[type:c_product AND status: approved AND project.id:MWE_Polarion_Testing]
+            return _WorkItem
         if field_type.startswith("@"):
             # an enum based on an object
             return [globals()[x] for x in globals() if x.lower() == field_type[1:].lower()][0]
