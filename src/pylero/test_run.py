@@ -299,6 +299,7 @@ class TestRun(BasePolarion):
         limit=None,
         search_templates=False,
         project_id=None,
+        all_projects=False,
     ):
         """class method search executes the given query and returns the results
 
@@ -316,6 +317,10 @@ class TestRun(BasePolarion):
             search_templates (bool): if set, searches the templates
                                      instead of the test runs, default False
             project_id: if set, searches the project id, else default project
+            all_projects (bool): if set, the query is not limited to a single
+                                 project and searches the whole Polarion
+                                 instance; must not be combined with
+                                 project_id, default False
         Returns:
             list of TestRun objects
 
@@ -333,8 +338,11 @@ class TestRun(BasePolarion):
         # The Polarion functions with limited seem to be the same as without limited
         #    when -1 is passed in as limit. Because of this, the wrapper will not
         #    implement the functions without limited.
+        if all_projects and project_id:
+            raise PyleroLibException("project_id must not be combined with all_projects=True")
         project_id = project_id or cls.default_project
-        query += " AND project.id:%s" % (project_id)
+        if not all_projects:
+            query += " AND project.id:%s" % (project_id)
 
         # The following line one purpose is to instantiate a TestRun and by
         # doing so setting all the class attribute (including 'customFields').

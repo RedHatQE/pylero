@@ -105,6 +105,10 @@ and password value is blank, it will prompt you for a password, else if none of
 them are provided it will prompt you for the token to login and access any of the
 pylero objects.
 
+**default_project** must be set to a valid project id. Work item `query()` and
+`TestRun.search()` are scoped to it by default; pass `project_id` to target a
+different project, or `all_projects=True` to search the whole Polarion instance.
+
 These can also be overridden with the following environment variables:
 ```
     POLARION_URL
