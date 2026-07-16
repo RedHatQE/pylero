@@ -5,6 +5,7 @@ import base64
 import copy
 import os
 import re
+from configparser import NoOptionError
 from functools import wraps
 from getpass import getpass
 
@@ -75,16 +76,25 @@ class Configuration(object):
             self.timeout = int(self.timeout)
         except ValueError:
             raise PyleroLibException("The timeout value in the config" " file must be an integer")
-        self.proj = os.environ.get("POLARION_PROJECT") or config.get(self.CONFIG_SECTION, "default_project")
+        try:
+            self.proj = os.environ.get("POLARION_PROJECT") or config.get(self.CONFIG_SECTION, "default_project")
+        except NoOptionError:
+            self.proj = ""
+        if not self.proj:
+            raise PyleroLibException(
+                "default_project is not set. Set it in one of the config "
+                "files ({0}, {1} or {2}) or in the POLARION_PROJECT env var. "
+                "To query across projects, keep a default_project configured "
+                "and pass all_projects=True to the query/search "
+                "functions.".format(self.GLOBAL_CONFIG, self.LOCAL_CONFIG, self.CURDIR_CONFIG)
+            )
         try:
             self.cert_path = os.environ.get("POLARION_CERT_PATH") or config.get(self.CONFIG_SECTION, "cert_path")
         except Exception:
             self.cert_path = None
 
-        if not (self.server_url and self.proj) and not (self.user or self.token):
-            raise PyleroLibException(
-                "The config files must contain " "valid values for: url, credentials and " "default_project"
-            )
+        if not self.server_url and not (self.user or self.token):
+            raise PyleroLibException("The config files must contain valid values for: url and credentials")
 
         try:
             self.disable_manual_auth = os.environ.get("POLARION_DISABLE_MANUAL_AUTH") or config.getboolean(

@@ -1421,11 +1421,13 @@ class _SpecificWorkItem(_WorkItem):
         baseline_revision=None,
         query_uris=False,
         project_id=None,
+        all_projects=False,
     ):
         """Function overrides the query function in the _WorkItem class. It
         only accepts Lucene queries, specifically queries the specific type of
         work item and the default project. To search other projects, there is a
-        project_id parameter.
+        project_id parameter. To search the whole Polarion instance without
+        project scoping, there is an all_projects parameter.
 
         Notes:
             The query function only returns a partially populated object with
@@ -1467,18 +1469,23 @@ class _SpecificWorkItem(_WorkItem):
                                default: False
             project_id (str): is used to pass in a specific project_id instead
                               of using the default. Default: None
+            all_projects (bool): if set, the query is not limited to a single
+                                 project and searches the whole Polarion
+                                 instance; must not be combined with
+                                 project_id, default False
 
         Returns:
             list of the specific WorkItem objects that were found.
         """
+        if all_projects and project_id:
+            raise PyleroLibException("project_id must not be combined with all_projects=True")
         if not cls._got_custom_fields:
             cls.get_custom_fields(project_id or cls.default_project)
         if query:
             query += " AND "
-        query += "type:%s AND project.id:%s" % (
-            cls._wi_type,
-            project_id or cls.default_project,
-        )
+        query += "type:%s" % cls._wi_type
+        if not all_projects:
+            query += " AND project.id:%s" % (project_id or cls.default_project)
         return super(_SpecificWorkItem, cls).query(query, False, fields, sort, limit, baseline_revision, query_uris)
 
     def __init__(
