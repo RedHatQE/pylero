@@ -143,10 +143,10 @@ class Project(BasePolarion):
             list of key for the project for the given workitem type
 
         References:
-            Tracker.getDefinedCustomFieldkeys
+            Tracker.getDefinedCustomFieldKeys
         """
         self._verify_obj()
-        return self.session.tracker_client.service.getDefinedCustomFieldkeys(self.project_id, work_item_type_id)
+        return self.session.tracker_client.service.getDefinedCustomFieldKeys(self.project_id, work_item_type_id)
 
     def get_defined_custom_field_type(self, work_item_type_id, key):
         """method get_defined_custom_field_type gets custom field definition
@@ -169,8 +169,7 @@ class Project(BasePolarion):
         return CustomFieldType(suds_object=suds_custom)
 
     def get_defined_custom_field_types(self, work_item_type_id):
-        """method get_defined_custom_field_type gets custom field definition
-        of a work item type all keys.
+        """Gets all custom field definitions for a work item type.
 
         Args:
             work_item_type_id: the workitem type ID.
@@ -179,11 +178,11 @@ class Project(BasePolarion):
             list of CustomFieldType object
 
         References:
-            Tracker.getDefinedCustomFieldType
+            Tracker.getDefinedCustomFieldTypes
         """
         self._verify_obj()
         customs = []
-        for suds_custom in self.session.tracker_client.service.getDefinedCustomFieldType(
+        for suds_custom in self.session.tracker_client.service.getDefinedCustomFieldTypes(
             self.project_id, work_item_type_id
         ):
             customs.append(CustomFieldType(suds_object=suds_custom))
